@@ -13,6 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'rich',
+    'libpath',
     'typer',
     'jinja2',
     'pandas',
