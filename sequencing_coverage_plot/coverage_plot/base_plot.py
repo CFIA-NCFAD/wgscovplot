@@ -1,6 +1,8 @@
 from typing import Any, Optional, Union
 import uuid
 import simplejson as json
+from pathlib import Path
+from jinja2 import Environment
 from ..ultilities import utils
 from ..render import engine
 from ..globals_parameters import HTMLPageConfig, RenderType, ThemeType
@@ -49,8 +51,16 @@ class BasePlot:
         self.page_title = _opts.get("page_title", HTMLPageConfig.PAGE_TITLE)
         self.theme = _opts.get("theme", ThemeType.WHITE)
         self.chart_id = _opts.get("chart_id") or uuid.uuid4().hex
+        self.options: dict = {}
 
     def get_options(self) -> dict:
         return utils.remove_key_with_none_value(self.options)
 
-
+    def render_html(
+            self,
+            output_html: Path = "coverage_plot.html",
+            template_file: str = "coverage_bar_chart.html",
+            env: Optional[Environment] = None,
+            **kwargs,
+    ) -> Path:
+        return self

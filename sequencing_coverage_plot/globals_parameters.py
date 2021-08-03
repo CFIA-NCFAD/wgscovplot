@@ -2,6 +2,10 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 
+class _Resources:
+    ECHARTS: str = "https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"
+
+
 class _RenderType:
     CANVAS: str = "canvas"
     SVG: str = "svg"
@@ -27,15 +31,18 @@ class _ThemeType:
 
 class _HTMLPageConfig:
     PAGE_TITLE = "Interactive Coverage Plot"
+    '''
     HTML_ENV = Environment(
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
         loader=FileSystemLoader()
     )
+    '''
 
 
 RenderType = _RenderType()
 FileType = _FileType()
 ThemeType = _ThemeType()
 HTMLPageConfig = _HTMLPageConfig()
+Resources = _Resources()

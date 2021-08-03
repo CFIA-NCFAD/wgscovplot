@@ -1,10 +1,12 @@
+{% import 'macro' as macro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ chart.page_title }}</title>
+    {{ macro.render_chart_dependencies(chart) }}
 </head>
 <body>
-
+    {{ macro.render_chart_content(chart) }}
 </body>
 </html>

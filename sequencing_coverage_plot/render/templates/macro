@@ -1,0 +1,5 @@
+{%- macro render_chart_dependencies(c) -%}
+    {% for dep in c.dependencies %}
+        <script type="text/javascript" src="{{ dep }}"></script>
+    {% endfor %}
+{%- endmacro %}
