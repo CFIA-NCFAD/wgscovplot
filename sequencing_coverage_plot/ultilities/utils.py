@@ -1,3 +1,5 @@
+import re
+
 
 def _expand(dict_generator):
     return dict(list(dict_generator))
@@ -13,6 +15,10 @@ def _clean_array(myarray):
 
         else:
             yield value
+
+
+def replace_placeholder(html: str) -> str:
+    return re.sub('"?--x_x--0_0--"?', "", html)
 
 
 def _clean_dict(mydict):
