@@ -22,13 +22,13 @@ class BasicOpts:
 
 class InitOpts(BasicOpts):
     def __init__(
-        self,
-        width: str = "900px",
-        height: str = "500px",
-        chart_id: Optional[str] = None,
-        renderer: str = RenderType.CANVAS,
-        page_title: str = HTMLPageConfig.PAGE_TITLE,
-        theme: str = ThemeType.WHITE,
+            self,
+            width: str = "900px",
+            height: str = "500px",
+            chart_id: Optional[str] = None,
+            renderer: str = RenderType.CANVAS,
+            page_title: str = HTMLPageConfig.PAGE_TITLE,
+            theme: str = ThemeType.WHITE,
     ):
         self.opts: dict = {
             "width": width,
@@ -37,6 +37,58 @@ class InitOpts(BasicOpts):
             "renderer": renderer,
             "page_title": page_title,
             "theme": theme,
+        }
+
+
+class AxisOpts(BasicOpts):
+    def __init__(
+            self,
+            type_: Optional[str] = None,
+            name: Optional[str] = None,
+            is_show: bool = True,
+            is_scale: bool = False,
+            is_inverse: bool = False,
+            name_location: str = "end",
+            name_gap: int = 15,
+            name_rotate: Optional[int] = None,
+            interval: Optional[int] = None,
+            grid_index: int = 0,
+            position: Optional[str] = None,
+            offset: int = 0,
+            split_number: int = 5,
+            boundary_gap: Union[str, bool, None] = None,
+            min_: Union[int, str, None] = None,
+            max_: Union[int, str, None] = None,
+
+    ):
+        self.opts: dict = {
+            "type": type_,
+            "name": name,
+            "show": is_show,
+            "scale": is_scale,
+            "nameLocation": name_location,
+            "nameGap": name_gap,
+            "nameRotate": name_rotate,
+            "interval": interval,
+            # "nameTextStyle": name_textstyle_opts,
+            # "gridIndex": grid_index,
+            # "axisLine": axisline_opts,
+            # "axisTick": axistick_opts,
+            # "axisLabel": axislabel_opts,
+            # "axisPointer": axispointer_opts,
+            "inverse": is_inverse,
+            "position": position,
+            "offset": offset,
+            "splitNumber": split_number,
+            "boundaryGap": boundary_gap,
+            "min": min_,
+            "max": max_,
+            # "minInterval": min_interval,
+            # "maxInterval": max_interval,
+            # "splitLine": splitline_opts,
+            # "splitArea": splitarea_opts,
+            # "minorTick": minor_tick_opts,
+            # "minorSplitLine": minor_split_line_opts,
         }
 
 
@@ -61,6 +113,8 @@ class BasePlot:
         self.theme = _opts.get("theme", ThemeType.WHITE)
         self.chart_id = _opts.get("chart_id") or uuid.uuid4().hex
         self.options: dict = {}  # store all options and data for Echarts
+        self.options.update(series=[])
+        self.options.update(xAxis=[AxisOpts().opts], yAxis=[AxisOpts().opts])
 
     def get_options(self) -> dict:
         return utils.remove_key_with_none_value(self.options)
@@ -71,11 +125,11 @@ class BasePlot:
         )
 
     def render_html(
-        self,
-        path: Path = "render.html",
-        template_file: Path = "coverage_bar_chart.html",
-        env: Optional[Environment] = None,
-        **kwargs,
+            self,
+            path: Path = "render.html",
+            template_file: Path = "coverage_bar_chart.html",
+            env: Optional[Environment] = None,
+            **kwargs,
     ) -> Path:
         logging.info(f'Jinja2 template file: "{template_file}"')
         self._prepare_render()

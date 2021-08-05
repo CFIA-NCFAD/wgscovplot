@@ -44,7 +44,5 @@ def render_html(
         env: Optional[Environment] = None,
         **kwargs
 ) -> Path:
-    RenderEngine(env).render_chart_to_file(
-        template_file=template_file, chart=chart, path=path, **kwargs
-    )
+    RenderEngine(env).render_chart_to_file(template_file=template_file, chart=chart, path=path, **kwargs)
     return path

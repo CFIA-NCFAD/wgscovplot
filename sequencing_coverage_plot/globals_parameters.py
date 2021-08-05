@@ -1,7 +1,6 @@
 from pathlib import Path
-import os
 from jinja2 import Environment, FileSystemLoader
-import logging
+
 
 class _Resources:
     ECHARTS: str = "https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"
