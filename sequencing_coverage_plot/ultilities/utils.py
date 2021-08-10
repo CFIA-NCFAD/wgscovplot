@@ -17,10 +17,6 @@ def _clean_array(myarray):
             yield value
 
 
-def replace_placeholder(html: str) -> str:
-    return re.sub('"?--x_x--0_0--"?', "", html)
-
-
 def _clean_dict(mydict):
     for key, value in mydict.items():
         if value is not None:

@@ -34,9 +34,7 @@ def render_chart_to_file(template_file: str, chart: Any, path: Path, **kwargs):
     :param template_file: The name of template file.
     """
     tpl = render_env.get_template(template_file)
-    html = utils.replace_placeholder(
-        tpl.render(chart=get_js_link(chart), **kwargs)
-    )
+    html = tpl.render(chart=get_js_link(chart), **kwargs)
     write_utf8_html_file(path, html)
 
 
