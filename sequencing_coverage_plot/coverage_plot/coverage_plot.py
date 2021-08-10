@@ -1,5 +1,5 @@
 from .base_plot import BasePlot
-from typing import Sequence
+from typing import Sequence, Union
 
 
 class CoveragePlot(BasePlot):
@@ -9,10 +9,10 @@ class CoveragePlot(BasePlot):
         return self
 
     def add_yaxis(
-            self,
-            series_name: str,
-            y_axis: Sequence,
-            is_large: bool = True,
+        self,
+        series_name: str,
+        y_axis: Sequence,
+        is_large: bool = True,
     ):
         self.options["title"].update(text="Coverage Plot")
         self.options.get("series").append(
@@ -24,3 +24,13 @@ class CoveragePlot(BasePlot):
             }
         )
         return self
+
+    def data_zoom(
+        self,
+        type: str = "slider",
+    ):
+        self.options.get("dataZoom").append(
+            {
+                "type": type,
+            }
+        )

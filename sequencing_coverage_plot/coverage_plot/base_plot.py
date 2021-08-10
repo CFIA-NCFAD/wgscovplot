@@ -10,25 +10,15 @@ from rich.logging import RichHandler
 from ..options_dict import echarts_options
 
 
-class BasicOpts:
-    __slots__ = ("opts",)
-
-    def update(self, **kwargs):
-        self.opts.update(kwargs)
-
-    def get(self, key: str) -> Any:
-        return self.opts.get(key)
-
-
-class InitOpts(BasicOpts):
+class InitOpts:
     def __init__(
             self,
             width: str = "900px",
             height: str = "500px",
             chart_id: Optional[str] = None,
             renderer: str = RenderType.CANVAS.value,
-            page_title: str = "Interactive Coverage Plot",
-            theme: str = ThemeType.WHITE,
+            page_title: str = "Sequencing Coverage Plot",
+            theme: str = ThemeType.WHITE.value,
     ):
         self.opts: dict = {
             "width": width,
@@ -42,7 +32,7 @@ class InitOpts(BasicOpts):
 
 class BasePlot:
 
-    def __init__(self, init_opts: Union[InitOpts, dict] = InitOpts()):
+    def __init__(self, init_opts=InitOpts()):
         from rich.traceback import install
         install(show_locals=True)
         logging.basicConfig(
@@ -51,15 +41,12 @@ class BasePlot:
             level=logging.INFO,
             handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
         )
-        _opts = init_opts
-        if isinstance(init_opts, InitOpts):
-            _opts = init_opts.opts
-        self.width = _opts.get("width", "900px")
-        self.height = _opts.get("height", "500px")
-        self.renderer = _opts.get("renderer", RenderType.CANVAS.value)
-        self.page_title = _opts.get("page_title", "Interactive Coverage Plot")
-        self.theme = _opts.get("theme", ThemeType.WHITE.value)
-        self.chart_id = _opts.get("chart_id") or uuid.uuid4().hex
+        self.width = init_opts.opts.get("width", "900px")
+        self.height = init_opts.opts.get("height", "500px")
+        self.renderer = init_opts.opts.get("renderer", RenderType.CANVAS.value)
+        self.page_title = init_opts.opts.get("page_title", "Interactive Coverage Plot")
+        self.theme = init_opts.opts.get("theme", ThemeType.WHITE.value)
+        self.chart_id = init_opts.opts.get("chart_id") or uuid.uuid4().hex
         self.options = echarts_options
 
     def get_options(self) -> dict:
@@ -71,10 +58,10 @@ class BasePlot:
         )
 
     def render_html(
-            self,
-            path: Path = "render.html",
-            template_file: Path = "coverage_bar_chart.html",
-            **kwargs,
+        self,
+        path: Path = "render.html",
+        template_file: Path = "coverage_bar_chart.html",
+        **kwargs,
     ) -> Path:
         logging.info(f'Jinja2 template file: "{template_file}"')
         self._prepare_render()

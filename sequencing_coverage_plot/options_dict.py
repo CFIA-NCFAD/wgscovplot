@@ -6,8 +6,7 @@ echarts_options = {
     "xAxis": {
         "type": "category",
         "name": "",
-        "data": [{
-        }]
+        "data": [{}]
     },
     "yAxis": {
     },
@@ -17,6 +16,6 @@ echarts_options = {
     "brush": {
     },
     "dataZoom": [{
-        "type": "slider",
+        "type": "inside",
     }]
 }
