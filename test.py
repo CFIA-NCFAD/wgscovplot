@@ -1,6 +1,5 @@
 from sequencing_coverage_plot import CoveragePlot
 import pandas as pd
-import numpy as np
 
 
 def read_depths(fpath) -> pd.DataFrame:
@@ -18,5 +17,5 @@ y = df_depth['depth'].to_list()
 
 cov_plot = CoveragePlot()
 cov_plot.add_xaxis(x)
-cov_plot.add_yaxis("Sample01-CFIA", y)
-cov_plot.render_html()
+cov_plot.add_yaxis("Sample_01_CFIA", y)
+cov_plot.render_html("first_coverage_plot.html")

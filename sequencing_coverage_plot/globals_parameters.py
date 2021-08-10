@@ -1,17 +1,16 @@
-from pathlib import Path
-from jinja2 import Environment, FileSystemLoader
+from enum import Enum
 
 
-class _Resources:
+class Resources(Enum):
     ECHARTS: str = "https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"
 
 
-class _RenderType:
+class RenderType(Enum):
     CANVAS: str = "canvas"
     SVG: str = "svg"
 
 
-class _FileType:
+class FileType(Enum):
     SVG: str = "svg"
     PNG: str = "png"
     PDF: str = "pdf"
@@ -19,28 +18,11 @@ class _FileType:
     HTML: str = "html"
 
 
-class _ChartType:
+class ChartType(Enum):
     BAR: str = "bar"
 
 
-class _ThemeType:
+class ThemeType(Enum):
     LIGHT = "light"
     DARK = "dark"
     WHITE = "white"
-
-
-class _HTMLPageConfig:
-    PAGE_TITLE = "Interactive Coverage Plot"
-    GLOBAL_ENV = Environment(
-        keep_trailing_newline=True,
-        trim_blocks=True,
-        lstrip_blocks=True,
-        loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "render", "templates")),
-    )
-
-
-RenderType = _RenderType()
-FileType = _FileType()
-ThemeType = _ThemeType()
-HTMLPageConfig = _HTMLPageConfig()
-Resources = _Resources()
