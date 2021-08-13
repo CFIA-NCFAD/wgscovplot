@@ -1,20 +1,18 @@
 from .base_plot import BasePlot
-from typing import Sequence, Union, Optional
+from typing import Sequence, Optional
 import pandas as pd
 
 
 class CoveragePlot(BasePlot):
 
-    def prepare_dataset(self, df_metadata: pd.DataFrame):
-        columns = ["SampleName", "Reference", "Pos", "CoverageDepth"]
-        source = [columns]
-        for data in df_metadata.values.tolist():
-            source.append(data)  # source : [[],[],...,[]]
+    def prepare_dataset(self, df_metadata: pd.DataFrame, header: list = []):
         self.options.get("dataset").append(
             {
-                "source": source
+                "dimensions": header,  # header of table
+                "source": df_metadata.values.tolist()
             }
         )
+        return self
 
     def add_xaxis(self, grid_index: int = 0):
         if Sequence is not None:
@@ -33,16 +31,22 @@ class CoveragePlot(BasePlot):
     def add_yaxis(
             self,
             series_name: str,
+            scale: str = "log",
             is_large: bool = True,
             grid_index: int = 0,
             x_axis_index: int = 0,
             y_axis_index: int = 0,
-            dataset_index: Optional[int] = 0
+            x_data_name: str = "",
+            y_data_name: str = "",
+            dataset_index: Optional[int] = 0,
+            tooltip_data: list = [],
+            range_min: Optional[int] = 10,
+            range_max: Optional[int] = 100000
     ):
         self.options["title"].update(text="Coverage Plot")
         self.options.get("yAxis").append(
             {
-                "type": "log",
+                "type": scale,
                 "gridIndex": grid_index,
                 "name": series_name,
                 "nameTextStyle": {
@@ -50,8 +54,8 @@ class CoveragePlot(BasePlot):
                     "fontWeight": "bolder",
                 },
                 "nameLocation": "end",
-                "min": 10,
-                "max": 100000
+                "min": range_min,
+                "max": range_max
             }
         )
         self.options.get("series").append(
@@ -60,9 +64,9 @@ class CoveragePlot(BasePlot):
                 "xAxisIndex": x_axis_index,
                 "yAxisIndex": y_axis_index,
                 "encode": {
-                    "x": "Pos",
-                    "y": "CoverageDepth",
-                    "tooltip": [0, 1, 2, 3]
+                    "x": x_data_name,
+                    "y": y_data_name,
+                    "tooltip": tooltip_data
                 },
                 "datasetIndex": dataset_index,
                 "large": is_large,
@@ -81,14 +85,13 @@ class CoveragePlot(BasePlot):
             x_axis_index: list = [],
             y_axis_index: list = []
     ):
-        data = self.options.get("dataZoom")
-        data[0]["xAxisIndex"] = x_axis_index
-        data[0]["yAxisIndex"] = y_axis_index
+        self.options.get("dataZoom")[0].update(xAxisIndex=x_axis_index,
+                                               yAxisIndex=y_axis_index)
         if zoom_style == "slider":
-            data[1]["show"] = is_show
-            data[1]["xAxisIndex"] = x_axis_index
-            data[1]["yAxisIndex"] = y_axis_index
-            data[1]["orient"] = orient
+            self.options.get("dataZoom")[1].update(show=is_show,
+                                                   xAxisIndex=x_axis_index,
+                                                   yAxisIndex=y_axis_index,
+                                                   orient=orient)
         return self
 
     def add_grid(

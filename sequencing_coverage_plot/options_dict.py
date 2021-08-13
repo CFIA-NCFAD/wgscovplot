@@ -9,9 +9,9 @@ echarts_options = {
     "xAxis": [],
     "yAxis": [],
     "series": [],
+    "grid": [],
     "tooltip": {},
-    "brush": {
-    },
+    "brush": {},
     "toolbox": {
         "show": "true",
         "feature": {
@@ -41,7 +41,5 @@ echarts_options = {
             "type": "slider",
             "orient": "horizontal"
         }
-    ],
-    "grid": [
     ]
 }

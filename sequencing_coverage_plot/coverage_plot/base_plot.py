@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Optional
 import uuid
 import simplejson as json
 from pathlib import Path
