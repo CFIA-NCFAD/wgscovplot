@@ -12,13 +12,13 @@ from ..options_dict import echarts_options
 
 class InitOpts:
     def __init__(
-            self,
-            width: str = "900px",
-            height: str = "500px",
-            chart_id: Optional[str] = None,
-            renderer: str = RenderType.CANVAS.value,
-            page_title: str = "Sequencing Coverage Plot",
-            theme: str = ThemeType.WHITE.value,
+        self,
+        width: str = "1000px",
+        height: str = "900px",
+        chart_id: Optional[str] = None,
+        renderer: str = RenderType.CANVAS.value,
+        page_title: str = "Sequencing Coverage Plot",
+        theme: str = ThemeType.WHITE.value,
     ):
         self.opts: dict = {
             "width": width,
@@ -41,8 +41,8 @@ class BasePlot:
             level=logging.INFO,
             handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
         )
-        self.width = init_opts.opts.get("width", "900px")
-        self.height = init_opts.opts.get("height", "500px")
+        self.width = init_opts.opts.get("width", "1000px")
+        self.height = init_opts.opts.get("height", "900px")
         self.renderer = init_opts.opts.get("renderer", RenderType.CANVAS.value)
         self.page_title = init_opts.opts.get("page_title", "Interactive Coverage Plot")
         self.theme = init_opts.opts.get("theme", ThemeType.WHITE.value)

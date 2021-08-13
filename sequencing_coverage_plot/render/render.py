@@ -38,11 +38,6 @@ def render_chart_to_file(template_file: str, chart: Any, path: Path, **kwargs):
     write_utf8_html_file(path, html)
 
 
-def render_html(
-        chart,
-        path: Path,
-        template_file: Path,
-        **kwargs
-) -> Path:
+def render_html(chart, path: Path, template_file: Path, **kwargs) -> Path:
     render_chart_to_file(template_file=template_file, chart=chart, path=path, **kwargs)
     return path

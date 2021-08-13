@@ -1,21 +1,47 @@
 
 echarts_options = {
     "title": {
-        "text": ""
+        "text": "",
+        "textAlign": "center",
+        "left": "45%",
     },
-    "xAxis": {
-        "type": "category",
-        "name": "",
-        "data": [{}]
-    },
-    "yAxis": {
-    },
+    "dataset": [],
+    "xAxis": [],
+    "yAxis": [],
     "series": [],
-    "tooltip": {
-    },
+    "tooltip": {},
     "brush": {
     },
-    "dataZoom": [{
-        "type": "inside",
-    }]
+    "toolbox": {
+        "show": "true",
+        "feature": {
+            "dataZoom": {
+                "yAxisIndex": 'none'
+            },
+            "dataView": {
+                "readOnly": "false"
+            },
+            "restore": {},
+            "saveAsImage": {
+                "name": "Coverage_Plot"
+            }
+        }
+    },
+    "dataZoom": [
+        {
+            "type": "inside",
+            "disable": "false",
+            "xAxisIndex": [],
+            "yAxisIndex": [],
+        },
+        {
+            "show": "false",
+            "xAxisIndex": [],
+            "yAxisIndex": [],
+            "type": "slider",
+            "orient": "horizontal"
+        }
+    ],
+    "grid": [
+    ]
 }
