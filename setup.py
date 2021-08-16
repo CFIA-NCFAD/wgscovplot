@@ -13,35 +13,48 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'rich',
-    'libpath',
     'typer',
     'jinja2',
     'pandas',
     'biopython',
-    'requests',
-    'prettytable',
-    'simplejson'
 ]
 
+setup_requirements = ['pytest-runner', ]
+
+test_requirements = ['pytest', ]
+
 setup(
-    name="sequencing_coverage_plot",
-    version="1.0.0",
-    description="A Python library to generate interactive sequencing coverage plots",
-    author="Hai Nguyen",
-    author_email='nhhaidee@gmail.com',
+    developer="Hai Nguyen",
+    developer_email='nhhiadee@gmail.com',
+    development_lead="Peter Kruczkiewicz",
+    development_lead_email ="peter.kruczkiewicz@gmail.com",
     classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Topic :: Software Development :: Libraries",
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
+    description="Generate a standalone HTML file with an interactive coverage plot",
+    entry_points={
+        'console_scripts': [
+            'shicp=sequencing_coverage_plot.coverage_plot.cli:app',
+        ],
+    },
     install_requires=requirements,
-    packages=find_packages(include=['sequencing_coverage_plot']),
+    license="Apache Software License 2.0",
+    long_description=readme + '\n\n' + history,
+    include_package_data=True,
+    keywords='shicp',
+    name='shicp',
+    packages=find_packages(include=['shicp']),
+    setup_requires=setup_requirements,
+    test_suite='tests',
+    tests_require=test_requirements,
+    url='https://github.com/nhhaidee/sequencing_coverage_plot',
+    version='1.0.0',
     zip_safe=False,
 )
