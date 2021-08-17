@@ -161,7 +161,7 @@
         function meanCoverage(depths, start, end, gridIndex) {
                var total = 0;
                if (start < end){
-                   for (var i = start- 1; i <= end - 1; i++){
+                   for (var i = start - 1; i <= end - 1; i++){
                        total +=  depths[gridIndex][i]
                    }
                    return total/(end-start+1)
@@ -169,6 +169,16 @@
                else if (start == end){
                     return depths[gridIndex][start]
                }
+        }
+
+        function genomeCoverage(depths, start, end, gridIndex, low) {
+            var total = 0;
+            for (var i = start - 1; i <= end - 1; i++){
+                   if (depths[gridIndex][i] > low){
+                      total += 1
+                   }
+            }
+            return total/(end-start+1) * 100
         }
 
         function median(arr) {
@@ -181,7 +191,7 @@
         }
 
         function medianCoverage(depths, start, end, gridIndex) {
-           var sub_array = depths[gridIndex].slice(start-1, end).sort()
+           var sub_array = depths[gridIndex].slice(start-1, end)
            return median(sub_array)
         }
 
@@ -219,9 +229,12 @@
                     mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
                     var median_cov;
                     median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                    var genome_cov;
+                    genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
                     output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos+ '<br/>' + 'End pos: ' + end_pos + '<br/>';
                     output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
                     output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
+                    output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
                     output += 'Position: ' + position + '<br/> Coverage Depth: ' + depth + '<br/>';
                     if (variants[i].hasOwnProperty(position)){
                         output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
