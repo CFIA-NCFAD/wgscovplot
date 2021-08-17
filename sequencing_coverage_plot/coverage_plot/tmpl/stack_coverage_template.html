@@ -12,7 +12,6 @@
         var samples = {{ samples_name }}
         var ref_len = ref_seq.length;
         var depths = {{ depth_data }};
-        var mean = [ 1002, 2036, 5623, 8956, 5623, 5463]
         // create array from range 0 to (ref_len + 1)
         var positions = [...Array(ref_len + 1).keys()];
         // remove zero
