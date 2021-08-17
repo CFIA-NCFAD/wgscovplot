@@ -25,14 +25,14 @@ def version_callback(value: bool):
     epilog=f"shicp version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
 )
 def main(
-        samples_data: str = typer.Option(..., "-s", "--samples-data", help="List of Sample Names, Coverage, VCF File"),
-        output_html: Path = typer.Option(
-            "coverage_plot.html", "-o", "--output-html", help="Output Interactive HTML Coverage Plot"),
-        ref_seq: Optional[Path] = typer.Option(
-            None,
-            "-r",
-            "--ref-seq",
-            help="Reference genome sequences file"),
+        samples_data: Path = typer.Option(..., "-s", "--samples-data", help="List of Sample Names, Coverage, VCF File"),
+        output_html: Path = typer.Option("coverage_plot.html",
+                                         "-o", "--output-html",
+                                         help="Output Interactive HTML Coverage Plot"),
+        ref_seq: Optional[Path] = typer.Option(None,
+                                               "-r",
+                                               "--ref-seq",
+                                               help="Reference genome sequences file"),
         verbose: bool = typer.Option(False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(
             None,

@@ -25,6 +25,21 @@ def parse_vcf(vcf_path) -> pd.DataFrame:
     return df
 
 
+def get_interval_coords(df, threshold=0):
+    pos = df[df.depth <= threshold].pos
+    coords = []
+    for i, x in enumerate(pos):
+        if coords:
+            last = coords[-1][-1]
+            if x == last + 1:
+                coords[-1].append(x)
+            else:
+                coords.append([x])
+        else:
+            coords.append([x])
+    return '; '.join([f'{xs[0]}-{xs[-1]}' for xs in coords])
+
+
 def write_html_coverage_plot(samples_name: list,
                              depth_data: list,
                              variant_data: list,
