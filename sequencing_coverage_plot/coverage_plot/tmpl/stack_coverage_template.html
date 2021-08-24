@@ -360,7 +360,6 @@
             }
             return indexes
         }
-        console.log(zoom_index())
         function getVariantsSeries(variants, depths) {
             // var vars = JSON.parse(JSON.stringify(variants))
             var series = []
@@ -406,7 +405,6 @@
                 last_top = (idx / n * 100) + padTop
                 grid.top = (idx / n * 100) + padTop + "%"
             })
-            //console.log(grids)
             grids.push({
                 "show": true,
                 "height": "10%",
@@ -467,10 +465,12 @@
             
             "tooltip": {
                 "trigger": "axis",
+                "enterable": "true",
+                "appendToBody": "true",
+                "renderMode": "html",
                 "formatter": function (params) {
                     var output = "";
                     //console.log(params);
-                    
                     //if (params.length > 1) {
                       //  console.log(params)
                     //}
@@ -520,7 +520,8 @@
                     }
                 }
             },
-            "brush": {},
+            "brush": {
+            },
             "toolbox": {
                 "show": "true",
                 "feature": {
@@ -553,9 +554,6 @@
         chart.setOption(options);
         
         chart.on('click', function(params){
-            //console.log(params)
-            //var zoom_start = (params.value[1]/ref_len*100).toFixed(2)
-            //var zoom_end = (params.value[2]/ref_len*100).toFixed(2)
             chart.dispatchAction({
                 type:'dataZoom',
                 startValue: params.value[1],
