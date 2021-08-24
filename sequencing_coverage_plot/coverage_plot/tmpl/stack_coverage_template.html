@@ -8,8 +8,9 @@
 <body>
     <div id="chart" class="chart-container" style="width:100%; height:1200px;"></div>
     <script>
-        var ref_seq = "{{ ref_seq }}";
         var samples = {{ samples_name }}
+        var ref_seq = "{{ ref_seq }}";
+        
         var ref_len = ref_seq.length;
         var depths = {{ depth_data }};
         // create array from range 0 to (ref_len + 1)
@@ -23,6 +24,232 @@
         window.$chart = $chart;
         var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
         window.chart = chart;
+        /////////////// Define Gene Feature /////////////////////
+        var utr_5_start = 1
+        var utr_5_end = 265
+
+        var orf1ab_start = 266
+        var orf1ab_end = 21555
+
+        var s_start = 21563
+        var s_end = 25384
+
+        var orf3a_start = 25393
+        var orf3a_end = 26220
+
+        var e_start = 26245
+        var e_end = 26472
+
+        var m_start = 26523
+        var m_end = 27191
+
+        var orf6_start = 27202
+        var orf6_end = 27387
+
+        var orf7a_start = 27394
+        var orf7a_end = 27759
+
+        var orf8a_start = 27894
+        var orf8a_end = 28259
+
+        var n_start = 28274
+        var n_end = 29533
+
+        var orf10_start = 29558
+        var orf10_end = 29674
+
+        var utr_3_start = 29675
+        var utr_3_end = 29903
+
+        var rdb_start = 22000
+        var rdb_end = 22500
+
+        var  annotation_data  = [
+            {
+                name: "5' UTR" ,
+                value: [0, utr_5_start , utr_5_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#32a852'
+                    }
+                }
+            },
+            {
+                name: 'ORF1ab' ,
+                value: [1, orf1ab_start , orf1ab_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#a87f32'
+                    }
+                }
+            },
+            {
+                name:  'S' ,
+                value: [2, s_start , s_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#32a89e'
+                    }
+                }
+            },
+            {
+                name:  'ORF3a' ,
+                value: [3, orf3a_start , orf3a_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#FF33D0'
+                    }
+                }
+            },
+            {
+                name:  'E' ,
+                value: [4, e_start , e_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#B3C1B4'
+                    }
+                }
+            },
+            {
+                name:  'M' ,
+                value: [5, m_start , m_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#5033FF'
+                    }
+                }
+            },
+            {
+                name:  'ORF6' ,
+                value: [6, orf6_start , orf6_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#6D5BBC'
+                    }
+                }
+            },
+            {
+                name:  'ORF7a' ,
+                value: [7, orf7a_start , orf7a_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#33AAFF'
+                    }
+                }
+            },
+            {
+                name:  'ORF8a' ,
+                value: [8, orf8a_start , orf8a_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#5B9D84'
+                    }
+                }
+            },
+            {
+                name:  'N' ,
+                value: [9, n_start , n_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#000D06'
+                    }
+                }
+            },
+            {
+                name:  'ORF10' ,
+                value: [10, orf10_start , orf10_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#06510D'
+                    }
+                }
+            },
+            {
+                name: "3' UTR" ,
+                value: [11, utr_3_start , utr_3_end, 0],
+                itemStyle: {
+                    normal: {
+                        color:  '#FF3333'
+                    }
+                }
+            },
+            {
+                name: 'RBD' ,
+                value: [12, rdb_start , rdb_end, 30],
+                itemStyle: {
+                    normal: {
+                        color:  '#0006FC'
+                    }
+                }
+            } 
+        ]
+        var y_start;
+        function renderItem(params, api){
+            var categoryIndex = api.value(0);
+            
+            var start = api.coord([api.value(1), categoryIndex]);
+            if (categoryIndex==0){
+                y_start = start[1]
+            }
+            var end = api.coord([api.value(2), categoryIndex]);
+            var height = api.size([0,1])[1] * 15;
+            var width = end[0] - start[0] ;
+            var x = start[0];
+            var y = y_start - height/2  - api.value(3);
+            /* 5 Points of shape
+            --------------------
+            |                     \
+            |                      \
+            |                      /
+            |                     /
+            --------------------                
+            */                     
+            var points = [
+                [x, y],
+                [x + width - 5 , y],
+                [x + width , y - height / 2 ],
+                [x + width - 5 , y - height ],
+                [x, y - height ]
+            ]
+            var shape = echarts.graphic.clipPointsByRect(points, 
+                {
+                    x: params.coordSys.x,
+                    y: params.coordSys.y,
+                    width: params.coordSys.width,
+                    height: params.coordSys.height
+            });
+            return shape && {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : api.style(
+                    {
+                        text: annotation_data[categoryIndex].name, // display gene name of region
+                        stroke: 'black', // border of shape, filled with black
+                    }
+                ),textConfig:{
+                    position: 'top', // Place text on top of the shape
+                    distance: 20, // text distance to shape
+                    rotation: 0.7, // Rotate text for 0.7 radian
+                }
+            };
+        }
+
+        function gene_feature_series(){
+            var feature_series =[]
+            feature_series.push(
+                {
+                "type": "custom",
+                "xAxisIndex": samples.length,
+                "yAxisIndex": samples.length,
+                "renderItem":renderItem,
+                "data": annotation_data,
+            })
+            return feature_series
+        }
+        ///////////////////////////////////////////////////////////
+
 
         function getXAxes(samples, ref_len) {
             var axes = [];
@@ -37,9 +264,17 @@
                     }
                 });
             }
+            axes.push({
+                    "type": "value",
+                    "gridIndex": samples.length,
+                    "min": 1,
+                    "max": ref_len,
+                    "axisLabel": {
+                        "interval": "auto"
+                    } 
+            })
             return axes;
         }
-
         function getYAxes(samples) {
             var axes = [];
             for (var [i, sample] of samples.entries()) {
@@ -54,12 +289,17 @@
                     "nameLocation": "end",
                     "min": 1,
                     "max": 100000,
-                    "minorSplitLine": { "show": true}
+                    "minorSplitLine": 
+                    { "show": true}
                 });
             }
+            axes.push({
+                "max": 80,
+                "gridIndex": samples.length,
+                "show": false
+            })
             return axes;
         }
-
         function getDatasets(depths, positions) {
             var datasets = [];
             for (var [i, depthArray] of depths.entries()) {
@@ -113,7 +353,14 @@
             "T": "#0FF",
         }
 
-
+        function zoom_index(){
+            var indexes = []
+            for (var i = 0; i <= samples.length; i++){
+                indexes.push(i)
+            }
+            return indexes
+        }
+        console.log(zoom_index())
         function getVariantsSeries(variants, depths) {
             // var vars = JSON.parse(JSON.stringify(variants))
             var series = []
@@ -144,8 +391,11 @@
         }
 
         function getGrids(samples) {
-            var n = samples.length;
+            var n = samples.length + 1;
+            var last_height;
+            var last_top;
             var grids = Object.keys(samples).map(function (sample) {
+                last_height = (1 / n * 100) - 10 
                 return {
                     "show": true,
                     "height": (1 / n * 100) - 10 + "%"
@@ -153,32 +403,40 @@
             });
             grids.forEach(function (grid, idx) {
                 var padTop = idx === 0 ? 5 : 2
+                last_top = (idx / n * 100) + padTop
                 grid.top = (idx / n * 100) + padTop + "%"
             })
             //console.log(grids)
+            grids.push({
+                "show": true,
+                "height": "10%",
+                "top": last_height + last_top + 3 + "%"
+            })
             return grids
         }
         function meanCoverage(depths, start, end, gridIndex) {
-               var total = 0;
-               if (start < end){
-                   for (var i = start - 1; i <= end - 1; i++){
-                       total +=  depths[gridIndex][i]
-                   }
-                   return total/(end-start+1)
-               }
-               else if (start == end){
-                    return depths[gridIndex][start]
-               }
+            var total = 0;
+            if (start < end){
+                for (var i = start - 1; i <= end - 1; i++){
+                    total +=  depths[gridIndex][i]
+                }
+                return total/(end-start+1)
+            }
+            else if (start == end){
+                return depths[gridIndex][start]
+            }
         }
 
         function genomeCoverage(depths, start, end, gridIndex, low) {
             var total = 0;
             for (var i = start - 1; i <= end - 1; i++){
-                   if (depths[gridIndex][i] > low){
-                      total += 1
-                   }
+                if (depths[gridIndex][i] > low){
+                    total += 1
+                }
             }
             return total/(end-start+1) * 100
+
+
         }
 
         function median(arr) {
@@ -191,8 +449,9 @@
         }
 
         function medianCoverage(depths, start, end, gridIndex) {
-           var sub_array = depths[gridIndex].slice(start-1, end)
-           return median(sub_array)
+            var sub_array = depths[gridIndex].slice(start-1, end)
+            return median(sub_array)
+
         }
 
         var options = {
@@ -204,59 +463,67 @@
             "dataset": getDatasets(depths, positions),
             "xAxis": getXAxes(samples, ref_len),
             "yAxis": getYAxes(samples),
-            "series": [...getDepthSeries(samples), ...getVariantsSeries(variants, depths)],
+            "series": [...getDepthSeries(samples), ...getVariantsSeries(variants, depths), ...gene_feature_series()],
+            
             "tooltip": {
                 "trigger": "axis",
                 "formatter": function (params) {
                     var output = "";
                     //console.log(params);
-                    if (params.length > 1) {
-                        console.log(params)
-                    }
+                    
+                    //if (params.length > 1) {
+                      //  console.log(params)
+                    //}
                     var param = params[0];
                     var i = param.axisIndex;
-                    var sample = samples[i];
-                    var depth = param.data[0];
-                    var position = param.data[1];
-                    var st = [];
-                    var start_pos, end_pos;
-                    start_pos = Math.ceil(chart.getOption().dataZoom[0].start * ref_len / 100);
-                    if (start_pos == 0){
-                        start_pos = 1;
-                    }
-                    end_pos = Math.ceil(chart.getOption().dataZoom[0].end * ref_len / 100);
-                    var mean_cov;
-                    mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
-                    var median_cov;
-                    median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
-                    var genome_cov;
-                    genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
-                    output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos+ '<br/>' + 'End pos: ' + end_pos + '<br/>';
-                    output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
-                    output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
-                    output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
-                    output += 'Position: ' + position + '<br/> Coverage Depth: ' + depth + '<br/>';
-                    if (variants[i].hasOwnProperty(position)){
-                        output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
+                    if (i < samples.length){
+                        var sample = samples[i];
+                        var depth = param.data[0];
+                        var position = param.data[1];
+                        var st = [];
+                        var start_pos, end_pos;
+                        //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
+                        start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
+                        if (start_pos == 0){
+                            start_pos = 1;
+                        }
+                        //end_pos = Math.floor(chart.getOption().dataZoom[0].end * ref_len / 100);
+                        end_pos = Math.floor(chart.getOption().dataZoom[0].endValue)
+                        var mean_cov;
+                        mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                        var median_cov;
+                        median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                        var genome_cov;
+                        genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
+                        output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos + '<br/>' + 'End pos: ' + end_pos + '<br/>';
+                        output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
+                        output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
+                        output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
+                        output += 'Position: ' + position + '<br/> Coverage Depth: ' + depth + '<br/>';
+                        
+                        if (variants[i].hasOwnProperty(position)){
+                            output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
+                        }
+                        else{
+                            output += 'Ref: ' + ref_seq[position-1] + '<br/>'
+                        }
+                        if (variants[i].hasOwnProperty(position)) {
+                            //console.log(variants[i][position]);
+                            output = output + 'Variant: ' + variants[i][position][1]
+                        }
+                        
+                        return output;
                     }
                     else{
-                        output += 'Ref: ' + ref_seq[position-1] + '<br/>'
+                        //console.log(params)
+                        return output
                     }
-                    if (variants[i].hasOwnProperty(position)) {
-                        //console.log(variants[i][position]);
-                        output = output + 'Variant: ' + variants[i][position][1]
-                    }
-
-                    return output;
                 }
             },
             "brush": {},
             "toolbox": {
                 "show": "true",
                 "feature": {
-                    "dataZoom": {
-                        "yAxisIndex": [0]
-                    },
                     "dataView": {
                         "readOnly": "false"
                     },
@@ -269,15 +536,13 @@
             "dataZoom": [
                 {
                     "type": "inside",
-                    "xAxisIndex": [...samples.keys()]
-                },
-                {
-                    "type": "inside",
-                    "xAxisIndex": [...samples.keys()]
+                    "filterMode": 'none',
+                    "xAxisIndex": [...zoom_index()]
                 },
                 {
                     "show": "true",
-                    "xAxisIndex": [...samples.keys()],
+                    "filterMode": 'none',
+                    "xAxisIndex": [...zoom_index()],
                     "type": "slider"
                 }
             ],
@@ -286,6 +551,27 @@
 
         window.options = options;
         chart.setOption(options);
+        
+        chart.on('click', function(params){
+            //console.log(params)
+            //var zoom_start = (params.value[1]/ref_len*100).toFixed(2)
+            //var zoom_end = (params.value[2]/ref_len*100).toFixed(2)
+            chart.dispatchAction({
+                type:'dataZoom',
+                startValue: params.value[1],
+                endValue: params.value[2]
+            })
+        })
+        
+        // double click to reset dataZoom
+        chart.on('dblclick', function(params){
+            chart.dispatchAction({
+                type:'dataZoom',
+                start: 0,
+                end: 100
+            })
+        })
+        
         function updateChartDivSize() {
           var BOTTOM_PADDING = 20;
           var top = $chart.getBoundingClientRect().top;
