@@ -271,13 +271,15 @@
                     color:  '#b15928'
                 }
             },
+            
             {
                 name: 'RBD' ,
-                value: [12, rdb_start , rdb_end, 30],
+                value: [12, rdb_start , rdb_end, 25],
                 itemStyle: {
                     color:  '#0006fc',
                 },
             } 
+            
         ]
         var y_start;
         function renderItem(params, api){
@@ -321,10 +323,20 @@
                 },
                 style : api.style(
                     {   
-                        text: annotation_data[categoryIndex].name, // display gene name of region
                         stroke: 'black', // border of shape, filled with black
                     }
-                ),textConfig:{
+                ),
+                textContent: {
+                    type: 'text',
+                    style: {
+                        text: annotation_data[categoryIndex].name, 
+                        fill: annotation_data[categoryIndex].itemStyle.color,
+                        fontStyle: 'normal',
+                        fontSize: 12,
+                        fontWeight: 'bolder'
+                    }
+                },
+                textConfig:{
                     position: 'top', // Place text on top of the shape
                     distance: 20, // text distance to shape
                     rotation: 0.7, // Rotate text for 0.7 radian
