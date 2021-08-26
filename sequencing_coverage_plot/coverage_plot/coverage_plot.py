@@ -44,6 +44,7 @@ def write_html_coverage_plot(samples_name: list,
                              depth_data: list,
                              variant_data: list,
                              ref_seq: str,
+                             coverage_stat: list,
                              output_html: Path) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -52,11 +53,14 @@ def write_html_coverage_plot(samples_name: list,
         loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
     )
     template_file = render_env.get_template("stack_coverage_template.html")
+
+    #coverage_stat = [['Sample 01', '4743.9X', '4743.9X', '99.6%', 114, 93, '1-10; 29800-29903', '1-2; 29813-29903'], ['Sample 02', '14743.9X', '5343.9X', '99.6%', 2514, 86, '1-10; 29800-29903', '1-2; 29813-29903; 1-2; 29813-29903; 1-2; 29813-29903;1-2; 29813-29903;1-2; 29813-29903;1-2; 29813-29903;1-2; 29813-29903;1-2; 29813-29903;1-2; 29813-29903;1-2; 29813-29903']]
     with open(output_html, "w+", encoding="utf-8") as fout:
         fout.write(template_file.render(samples_name=samples_name,
                                         depth_data=depth_data,
                                         variant_data=variant_data,
                                         ref_seq=ref_seq,
+                                        coverage_stat= coverage_stat,
                                         echarts_js=Resources.ECHARTS.value))
 
 
@@ -64,6 +68,8 @@ def prepare_data(samples_name: Path):
     df_samples = pd.read_table(samples_name, names=['coverage_depth_file', 'vcf_file'], index_col=0)
     depth_data = []
     variant_data = []
+    coverage_stat =[]
+    low = 10
     for sample in df_samples.index:
         logging.info(f'Preparing data for "{sample}"')
         df_coverage_depth = read_depths(df_samples.loc[sample, 'coverage_depth_file'])
@@ -73,4 +79,18 @@ def prepare_data(samples_name: Path):
         for idx in df_vcf.index:
             variant_info[df_vcf.loc[idx, 'POS']] = [df_vcf.loc[idx, 'REF'], df_vcf.loc[idx, 'ALT']]
         variant_data.append(variant_info)
-    return df_samples.index.to_list(), depth_data, variant_data
+
+        ## Get Coverage Statistic for each samples ##
+        low_depth = (df_coverage_depth.depth < 10)
+        zero_depth = (df_coverage_depth.depth == 0)
+
+        mean_cov = f'{df_coverage_depth.depth.mean():.1f}X'
+        median_cov = f'{df_coverage_depth.depth.median():.1f}X'
+        genome_cov = "{:.2%}".format((df_coverage_depth.depth >= low).sum() / df_coverage_depth.shape[0])
+        pos_low_cov = low_depth.sum()
+        pos_no_cov = zero_depth.sum()
+        region_low_cov = get_interval_coords(df_coverage_depth, low-1)
+        region_no_cov = get_interval_coords(df_coverage_depth, 0)
+
+        coverage_stat.append([sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov])
+    return df_samples.index.to_list(), depth_data, variant_data, coverage_stat

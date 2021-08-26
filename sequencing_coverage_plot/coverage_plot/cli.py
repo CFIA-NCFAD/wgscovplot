@@ -54,9 +54,9 @@ def main(
         with open(ref_seq) as fh:
             for name, seq in SimpleFastaParser(fh):
                 ref_seq = seq
-    samples_name, depth_data, variant_data = prepare_data(samples_data)
+    samples_name, depth_data, variant_data, coverage_stat = prepare_data(samples_data)
     write_html_coverage_plot(samples_name=samples_name, depth_data=depth_data, variant_data=variant_data,
-                             ref_seq=ref_seq, output_html=output_html)
+                             ref_seq=ref_seq, coverage_stat=coverage_stat, output_html=output_html)
     logging.info(f'Wrote HTML Coverage Plot to "{output_html}"')
 
 
