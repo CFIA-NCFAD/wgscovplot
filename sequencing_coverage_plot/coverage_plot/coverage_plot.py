@@ -1,13 +1,14 @@
 import logging
-
 import pandas as pd
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from enum import Enum
+from Bio import SeqIO
 
 
 class Resources(Enum):
     ECHARTS: str = "https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"
+    GENE_FEATURE_COLOR =['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#FF33D3', '#b15928', '#0006fc']
 
 
 def read_depths(fpath) -> pd.DataFrame:
@@ -40,11 +41,45 @@ def get_interval_coords(df, threshold=0):
     return '; '.join([f'{xs[0]}-{xs[-1]}' for xs in coords])
 
 
+def get_gene_feature(annotation: Path) -> list:
+    
+    gene_feature =[]
+    for seq_record in SeqIO.parse(annotation, "genbank"):
+        index = 0
+        for seq_feature in seq_record.features:
+            if (seq_feature.type != "CDS" and seq_feature.type != "source"):
+                feature_dict = {
+                    "name": "",
+                    "value": [],
+                    "itemStyle":{
+                        "color":''
+                    }
+                }
+                start_pos =  int(seq_feature.location.start)
+                end_pos = int(seq_feature.location.end)
+                strand = seq_feature.strand
+                if seq_feature.type == "5'UTR" or seq_feature.type == "3'UTR":
+                    feature_dict.update({"name": seq_feature.type})
+                    feature_dict.update({"value":[index, start_pos, end_pos, 0, strand]})
+                    feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
+                else:
+
+                    feature_name = seq_feature.qualifiers['gene'][0]
+                    feature_dict.update({"name": feature_name})
+                    feature_dict.update({"value":[index, start_pos, end_pos, 0, strand]})
+                    feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
+                index = index + 1
+                gene_feature.append(feature_dict)
+    return gene_feature
+
+
+
 def write_html_coverage_plot(samples_name: list,
                              depth_data: list,
                              variant_data: list,
                              ref_seq: str,
                              coverage_stat: list,
+                             gene_feature: list,
                              output_html: Path) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -61,6 +96,7 @@ def write_html_coverage_plot(samples_name: list,
                                         variant_data=variant_data,
                                         ref_seq=ref_seq,
                                         coverage_stat= coverage_stat,
+                                        gene_feature=gene_feature,
                                         echarts_js=Resources.ECHARTS.value))
 
 

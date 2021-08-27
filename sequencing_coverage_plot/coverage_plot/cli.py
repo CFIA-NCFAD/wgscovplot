@@ -9,7 +9,7 @@ import typer
 from rich.logging import RichHandler
 from sys import version_info
 from Bio.SeqIO.FastaIO import SimpleFastaParser
-from .coverage_plot import (write_html_coverage_plot, prepare_data)
+from .coverage_plot import (write_html_coverage_plot, prepare_data, get_gene_feature)
 from sequencing_coverage_plot.coverage_plot import __version__
 
 app = typer.Typer()
@@ -33,6 +33,10 @@ def main(
                                                "-r",
                                                "--ref-seq",
                                                help="Reference genome sequences file"),
+        genbank: Optional[Path] = typer.Option(None,
+                                               "-g",
+                                               "--genbank",
+                                               help="Genbank file contains features of reference sequence"),
         verbose: bool = typer.Option(False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(
             None,
@@ -54,9 +58,11 @@ def main(
         with open(ref_seq) as fh:
             for name, seq in SimpleFastaParser(fh):
                 ref_seq = seq
+
+    gene_feature = get_gene_feature(genbank)
     samples_name, depth_data, variant_data, coverage_stat = prepare_data(samples_data)
     write_html_coverage_plot(samples_name=samples_name, depth_data=depth_data, variant_data=variant_data,
-                             ref_seq=ref_seq, coverage_stat=coverage_stat, output_html=output_html)
+                             ref_seq=ref_seq, coverage_stat=coverage_stat, gene_feature=gene_feature, output_html=output_html)
     logging.info(f'Wrote HTML Coverage Plot to "{output_html}"')
 
 

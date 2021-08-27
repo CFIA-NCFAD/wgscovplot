@@ -12,7 +12,7 @@
         <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
     </div>
 
-    <div id="chart" class="chart-container" style="width:100%; height:1500px;"></div>
+    <div id="chart" class="chart-container" style="width:100%; height: 900px;;"></div>
 
     <table id="table_id" class="chart-container">
         <tr>
@@ -147,140 +147,8 @@
         var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
         window.chart = chart;
         /////////////// Define Gene Feature /////////////////////
-        var utr_5_start = 1
-        var utr_5_end = 265
 
-        var orf1ab_start = 266
-        var orf1ab_end = 21555
-
-        var s_start = 21563
-        var s_end = 25384
-
-        var orf3a_start = 25393
-        var orf3a_end = 26220
-
-        var e_start = 26245
-        var e_end = 26472
-
-        var m_start = 26523
-        var m_end = 27191
-
-        var orf6_start = 27202
-        var orf6_end = 27387
-
-        var orf7a_start = 27394
-        var orf7a_end = 27759
-
-        var orf8a_start = 27894
-        var orf8a_end = 28259
-
-        var n_start = 28274
-        var n_end = 29533
-
-        var orf10_start = 29558
-        var orf10_end = 29674
-
-        var utr_3_start = 29675
-        var utr_3_end = 29903
-
-        var rdb_start = 22000
-        var rdb_end = 22500
-
-        var  annotation_data  = [
-            {
-                name: "5' UTR" ,
-                value: [0, utr_5_start , utr_5_end, 0],
-                itemStyle: {
-                    color:  '#a6cee3',
-                }
-            },
-            {
-                name: 'ORF1ab' ,
-                value: [1, orf1ab_start , orf1ab_end, 0],
-                itemStyle: {
-                    color:  '#1f78b4'
-                }
-            },
-            {
-                name:  'S' ,
-                value: [2, s_start , s_end, 0],
-                itemStyle: {
-                    color:  '#b2df8a'
-                }
-            },
-            {
-                name:  'ORF3a' ,
-                value: [3, orf3a_start , orf3a_end, 0],
-                itemStyle: {
-                    color:  '#33a02c'
-                }
-            },
-            {
-                name:  'E' ,
-                value: [4, e_start , e_end, 0],
-                itemStyle: {
-                    color:  '#fb9a99'
-                }
-            },
-            {
-                name:  'M' ,
-                value: [5, m_start , m_end, 0],
-                itemStyle: {
-                    color:  '#e31a1c'
-                }
-            },
-            {
-                name:  'ORF6' ,
-                value: [6, orf6_start , orf6_end, 0],
-                itemStyle: {
-                    color:  '#fdbf6f'
-                }
-            },
-            {
-                name:  'ORF7a' ,
-                value: [7, orf7a_start , orf7a_end, 0],
-                itemStyle: {
-                    color:  '#ff7f00'
-                }
-            },
-            {
-                name:  'ORF8a' ,
-                value: [8, orf8a_start , orf8a_end, 0],
-                itemStyle: {
-                    color:  '#cab2d6'
-                }
-            },
-            {
-                name:  'N' ,
-                value: [9, n_start , n_end, 0],
-                itemStyle: {
-                    color:  '#6a3d9a'
-                }
-            },
-            {
-                name:  'ORF10' ,
-                value: [10, orf10_start , orf10_end, 0],
-                itemStyle: {
-                    color:  '#FF33D3'
-                }
-            },
-            {
-                name: "3' UTR" ,
-                value: [11, utr_3_start , utr_3_end, 0],
-                itemStyle: {
-                    color:  '#b15928'
-                }
-            },
-            
-            {
-                name: 'RBD' ,
-                value: [12, rdb_start , rdb_end, 25],
-                itemStyle: {
-                    color:  '#0006fc',
-                },
-            } 
-            
-        ]
+        var gene_feature  = {{ gene_feature }}
         var y_start;
         function renderItem(params, api){
             var categoryIndex = api.value(0);
@@ -323,50 +191,52 @@
                 },
                 style : api.style(
                     {   
-                        stroke: 'black', // border of shape, filled with black
+                        stroke: 'black'
                     }
                 ),
                 textContent: {
                     type: 'text',
                     style: {
-                        text: annotation_data[categoryIndex].name, 
-                        fill: annotation_data[categoryIndex].itemStyle.color,
+                        text: gene_feature[categoryIndex].name, 
+                        fill: gene_feature[categoryIndex].itemStyle.color,
                         fontStyle: 'normal',
                         fontSize: 12,
                         fontWeight: 'bolder'
                     }
                 },
                 textConfig:{
-                    position: 'top', // Place text on top of the shape
-                    distance: 20, // text distance to shape
-                    rotation: 0.7, // Rotate text for 0.7 radian
+                    position: 'top',
+                    distance: 20, 
+                    rotation: 0.7
                 }
             };
         }
 
         function gene_feature_series(){
             var feature_series =[]
-            feature_series.push(
-                {
-                "type": "custom",
-                "xAxisIndex": samples.length,
-                "yAxisIndex": samples.length,
-                "renderItem":renderItem,
-                "data": annotation_data,
-                "tooltip":{
-                    "trigger": "item",
-                    "enterable": "true",
-                    "appendToBody": "true",
-                    "renderMode": "html",
-                    "borderRadius": 6,
-                    "borderWidth": 2,
-                    "textStyle": {
-                        "fontSize": 15,
-                        "fontWeight": "bolder"
+            feature_series.push({
+                type: "custom",
+                xAxisIndex: samples.length,
+                yAxisIndex: samples.length,
+                labelLayout:{
+                    //hideOverlap: true,
+                },
+                renderItem:renderItem,
+                data: gene_feature,
+                tooltip:{
+                    trigger: "item",
+                    enterable: true,
+                    appendToBody: true,
+                    renderMode: "html",
+                    borderRadius: 6,
+                    borderWidth: 2,
+                    textStyle: {
+                        fontSize: 15,
+                        fontWeight: "bolder"
                     },
-                    "formatter": function (params){
+                    formatter: function (params){
                         var output = ''
-                        output += 'Feature Name: ' +  params.name + '<br/>' + 'Start pos: ' + params.value[1] + '<br/>' + 'End pos: ' + params.value[2] + '<br/>' + 'Feature length: ' + (params.value[2] - params.value[1] + 1)
+                        output += 'Feature Name: ' +  params.name + '<br/>' + 'Start pos: ' + params.value[1].toLocaleString() + '<br/>' + 'End pos: ' + params.value[2].toLocaleString() + '<br/>' + 'Feature length: ' + (params.value[2] - params.value[1] + 1).toLocaleString()
                         return output
                     }
                 }
@@ -380,22 +250,22 @@
             var axes = [];
             for (var [i, sample] of samples.entries()) {
                 axes.push({
-                    "type": "value",
-                    "gridIndex": i,
-                    "min": 1,
-                    "max": ref_len,
-                    "axisLabel": {
-                        "interval": "auto"
+                    type: "value",
+                    gridIndex: i,
+                    min: 1,
+                    max: ref_len,
+                    axisLabel: {
+                        interval: "auto"
                     }
                 });
             }
             axes.push({
-                    "type": "value",
-                    "gridIndex": samples.length,
-                    "min": 1,
-                    "max": ref_len,
-                    "axisLabel": {
-                        "interval": "auto"
+                    type: "value",
+                    gridIndex: samples.length,
+                    min: 1,
+                    max: ref_len,
+                    axisLabel: {
+                        interval: "auto"
                     } 
             })
             return axes;
@@ -404,24 +274,25 @@
             var axes = [];
             for (var [i, sample] of samples.entries()) {
                 axes.push({
-                    "type": "log",
-                    "gridIndex": i,
-                    "name": sample,
-                    "nameTextStyle": {
-                        "fontStyle": "normal",
-                        "fontWeight": "bolder"
+                    type: "log",
+                    gridIndex: i,
+                    name: sample,
+                    nameTextStyle: {
+                        fontStyle: "normal",
+                        fontWeight: "bolder"
                     },
-                    "nameLocation": "end",
-                    "min": 1,
-                    "max": 100000,
-                    "minorSplitLine": 
-                    { "show": true}
+                    nameLocation: "end",
+                    min: 1,
+                    max: 100000,
+                    minorSplitLine: { 
+                        show: true
+                    }
                 });
             }
             axes.push({
-                "max": 80,
-                "gridIndex": samples.length,
-                "show": false
+                max: 80,
+                gridIndex: samples.length,
+                show: false
             })
             return axes;
         }
@@ -429,13 +300,13 @@
             var datasets = [];
             for (var [i, depthArray] of depths.entries()) {
                 datasets.push({
-                    "dimensions": [
-                        {"name" : "depth", "type": "int"},
-                        {"name": "position", "type": "int"}
+                    dimensions: [
+                        {name : "depth", type: "int"},
+                        {name: "position", type: "int"}
                     ],
-                    "source": {
-                        "position": positions,
-                        "depth": depthArray
+                    source: {
+                        position: positions,
+                        depth: depthArray
                     }
                 });
             }
@@ -446,23 +317,23 @@
             var series = []
             for (var [i, sample] of samples.entries()) {
                 series.push({
-                    "type": "line",
-                    "xAxisIndex": i,
-                    "yAxisIndex": i,
-                    "areaStyle": {
-                        "color": '#666'
+                    type: "line",
+                    xAxisIndex: i,
+                    yAxisIndex: i,
+                    areaStyle: {
+                        color: '#666'
                     },
-                    "encode": {
-                        "x": "position",
-                        "y": "depth",
+                    encode: {
+                        x: "position",
+                        y: "depth",
                     },
-                    "symbol": "none",
-                    "datasetIndex": i,
-                    "lineStyle": {
-                        "color": '#666',
-                        "opacity": 0
+                    symbol: "none",
+                    datasetIndex: i,
+                    lineStyle: {
+                        color: '#666',
+                        opacity: 0
                     },
-                    "large": true,
+                    large: true,
                 })
             }
             return series
@@ -491,13 +362,13 @@
             for (var [i, varMap] of variants.entries()) {
                 (function(i, varMap) {
                     series.push({
-                        "type": "bar",
-                        "xAxisIndex": i,
-                        "yAxisIndex": i,
-                        "data": Object.keys(varMap).map((x) => [parseInt(x), depths[i][x]]),
-                        "barWidth": 2,
-                        "itemStyle": {
-                            "color": function (params) {
+                        type: "bar",
+                        xAxisIndex: i,
+                        yAxisIndex: i,
+                        data: Object.keys(varMap).map((x) => [parseInt(x), depths[i][x]]),
+                        barWidth: 2,
+                        itemStyle: {
+                            color: function (params) {
                                 var pos = params.data[0];
                                 var nt = variants[i][pos]
                                 if (ntColor.hasOwnProperty(nt[0][0])) {
@@ -532,9 +403,9 @@
                 grid.top = (idx / n * 100) + padTop + "%"
             })
             grids.push({
-                "show": true,
-                "height": "8%",
-                "top": last_height + last_top + 3 + "%"
+                show: true,
+                height: "8%",
+                top: last_height + last_top + 3 + "%"
             })
             return grids
         }
@@ -579,18 +450,18 @@
         }
 
         var options = {
-            "title": {
+            title: {
             },
-            "dataset": getDatasets(depths, positions),
-            "xAxis": getXAxes(samples, ref_len),
-            "yAxis": getYAxes(samples),
-            "series": [...getDepthSeries(samples), ...getVariantsSeries(variants, depths), ...gene_feature_series()],
-            "tooltip": [{
-                "trigger": "axis",
-                "enterable": "true",
-                "appendToBody": "true",
-                "renderMode": "html",
-                "formatter": function (params) {
+            dataset: getDatasets(depths, positions),
+            xAxis: getXAxes(samples, ref_len),
+            yAxis: getYAxes(samples),
+            series: [...getDepthSeries(samples), ...getVariantsSeries(variants, depths), ...gene_feature_series()],
+            tooltip: [{
+                trigger: "axis",
+                enterable: true,
+                appendToBody: true,
+                renderMode: "html",
+                formatter: function (params) {
                     var output = "";
                     var param = params[0];
                     var i = param.axisIndex;
@@ -610,11 +481,11 @@
                         median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
                         var genome_cov;
                         genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
-                        output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos + '<br/>' + 'End pos: ' + end_pos + '<br/>';
+                        output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos.toLocaleString() + '<br/>' + 'End pos: ' + end_pos.toLocaleString() + '<br/>';
                         output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
                         output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
                         output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
-                        output += 'Position: ' + position + '<br/> Coverage Depth: ' + depth + '<br/>';
+                        output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
                         
                         if (variants[i].hasOwnProperty(position)){
                             output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
@@ -634,32 +505,32 @@
                     }
                 }
             }],
-            "toolbox": {
-                "show": "true",
-                "feature": {
-                    "dataView": {
-                        "readOnly": "false"
+            toolbox: {
+                show: "true",
+                feature: {
+                    dataView: {
+                        readOnly: false
                     },
-                    "restore": {},
-                    "saveAsImage": {
-                        "name": "Coverage_Plot"
+                    restore: {},
+                    saveAsImage: {
+                        name: "Coverage_Plot"
                     }
                 }
             },
-            "dataZoom": [
+            dataZoom: [
                 {
-                    "type": "inside",
-                    "filterMode": 'none',
-                    "xAxisIndex": [...zoom_index()]
+                    type: "inside",
+                    filterMode: 'none',
+                    xAxisIndex: [...zoom_index()]
                 },
                 {
-                    "show": "true",
-                    "filterMode": 'none',
-                    "xAxisIndex": [...zoom_index()],
-                    "type": "slider"
+                    show: true,
+                    filterMode: 'none',
+                    xAxisIndex: [...zoom_index()],
+                    type: "slider"
                 }
             ],
-            "grid": getGrids(samples)
+            grid: getGrids(samples)
         };
 
         window.options = options;
