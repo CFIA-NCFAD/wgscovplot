@@ -47,6 +47,14 @@
                     <option value="false">Disable</option>
                 </select>
             </p>
+
+            <form id="dataZoom">
+                <label for="start_pos">Start Pos:</label><br>
+                <input type="number" id="start_pos" value=1><br>
+                <label for="start_pos">End Pos:</label><br>
+                <input type="number" id="end_pos" value=29903><br><br>
+                <input type="button" onclick="setDataZoom()" value="Set DataZoom">
+            </form>
         </div>
     </div>
       
@@ -879,6 +887,21 @@
             });
 
         });
+
+        function setDataZoom(){
+            var start = document.getElementById('start_pos').value
+            var end = document.getElementById('end_pos').value
+            submitDataZoom(end, start)
+
+        }
+
+        function submitDataZoom (start, end) {
+            chart.dispatchAction({
+                type:'dataZoom',
+                startValue: start,
+                endValue: end
+            })
+        }
     </script>
 </body>
 </html>
