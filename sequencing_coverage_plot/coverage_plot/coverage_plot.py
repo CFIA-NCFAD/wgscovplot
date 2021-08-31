@@ -8,6 +8,9 @@ from Bio import SeqIO
 
 class Resources(Enum):
     ECHARTS: str = "https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"
+    SELECT2_CSS: str = "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    SELECT2_JS: str = "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"
+    JQUERY: str = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
     GENE_FEATURE_COLOR =['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#FF33D3', '#b15928', '#0006fc']
 
 
@@ -97,29 +100,33 @@ def write_html_coverage_plot(samples_name: list,
                                         ref_seq=ref_seq,
                                         coverage_stat= coverage_stat,
                                         gene_feature=gene_feature,
-                                        echarts_js=Resources.ECHARTS.value))
+                                        echarts_js=Resources.ECHARTS.value,
+                                        select2_css=Resources.SELECT2_CSS.value,
+                                        select2_js=Resources.SELECT2_JS.value,
+                                        jquery = Resources.JQUERY.value))
 
 
 def prepare_data(samples_name: Path):
     df_samples = pd.read_table(samples_name, names=['coverage_depth_file', 'vcf_file'], index_col=0)
-    depth_data = []
-    variant_data = []
+    depth_data = {}
+    variant_data = {}
     coverage_stat =[]
     low = 10
-    for sample in df_samples.index:
+    samples_dict = {}
+    for i, sample in enumerate(df_samples.index):
+        samples_dict[i] = sample
         logging.info(f'Preparing data for "{sample}"')
         df_coverage_depth = read_depths(df_samples.loc[sample, 'coverage_depth_file'])
         variant_info = {}
         df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'])
-        depth_data.append(df_coverage_depth.loc[:, 'depth'].to_list())
+        depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
         for idx in df_vcf.index:
             variant_info[df_vcf.loc[idx, 'POS']] = [df_vcf.loc[idx, 'REF'], df_vcf.loc[idx, 'ALT']]
-        variant_data.append(variant_info)
+        variant_data[sample] = variant_info
 
         ## Get Coverage Statistic for each samples ##
         low_depth = (df_coverage_depth.depth < 10)
         zero_depth = (df_coverage_depth.depth == 0)
-
         mean_cov = f'{df_coverage_depth.depth.mean():.1f}X'
         median_cov = f'{df_coverage_depth.depth.median():.1f}X'
         genome_cov = "{:.2%}".format((df_coverage_depth.depth >= low).sum() / df_coverage_depth.shape[0])
@@ -129,4 +136,4 @@ def prepare_data(samples_name: Path):
         region_no_cov = get_interval_coords(df_coverage_depth, 0)
 
         coverage_stat.append([sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov])
-    return df_samples.index.to_list(), depth_data, variant_data, coverage_stat
+    return samples_dict, depth_data, variant_data, coverage_stat

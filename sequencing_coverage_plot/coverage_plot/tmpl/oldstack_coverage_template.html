@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Interactive Coverage Plot</title>
-    <script src="{{jquery}}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="{{ echarts_js }}"></script>
-    <link href="{{select2_css}}" rel="stylesheet" />
-    <script src="{{select2_js}}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
 
@@ -14,6 +14,7 @@
         <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
         <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
         <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
+        <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
     </div>
      
     <div id="chart" class="chart-container" style="width:100%; height: 900px;"></div>
@@ -21,9 +22,22 @@
     <div id="mySidepanel" class="sidepanel">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
         <button class="accordion">General</button>
-
         <div class="panel">
+            <p>Scale:     
+                <select id="scale" onchange="setYMax()">
+                    <option value="log" selected>Log</option>
+                </select>
+            </p>
+            <p>Y max:    
+                <select id="ymax" onchange="setYMax()">
+                    <option value="100" >100</option>
+                    <option value="1000" >1,000</option>
+                    <option value="10000" >10,000</option>
+                    <option value="100000" selected>100,000</option>
+                </select>
+            </p>
             <label for="samples">Samples:</label>
+
             <select class="selected-samples" multiple="multiple" style="width: 75%" >
                 {% for id, sample in samples_name.items() %}
                     <option value={{sample}}>{{sample}}</option>
@@ -43,6 +57,15 @@
         <div class="panel">
             <p>Show Slider:  
                 <select id="showslider" onchange="dataZoomOption()">
+                    <option value="true" selected>Enable</option>
+                    <option value="false">Disable</option>
+                </select>
+            </p>
+        </div>
+        <button class="accordion">Variant</button>
+        <div class="panel">
+            <p>Show Variant:  
+                <select id="showvariant" onchange="updateChartOption()">
                     <option value="true" selected>Enable</option>
                     <option value="false">Disable</option>
                 </select>
@@ -605,60 +628,6 @@
             return median(sub_array)
 
         }
-
-
-        function getTooltips(samples, depths, variants){
-            return [{
-                trigger: "axis",
-                enterable: true,
-                appendToBody: true,
-                renderMode: "html",
-                showContent: true,
-                formatter: function (params) {
-                    var output = "";
-                    var param = params[0];
-                    var i = param.axisIndex;
-                    if (i < samples.length){
-                        var sample = samples[i];
-                        var depth = param.data[0];
-                        var position = param.data[1];
-                        var start_pos, end_pos;
-                        //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
-                        start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
-                        //end_pos = Math.floor(chart.getOption().dataZoom[0].end * ref_len / 100);
-                        end_pos = Math.floor(chart.getOption().dataZoom[0].endValue)
-                        var mean_cov;
-                        mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
-                        var median_cov;
-                        median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
-                        var genome_cov;
-                        genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
-                        output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos.toLocaleString() + '<br/>' + 'End pos: ' + end_pos.toLocaleString() + '<br/>';
-                        output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
-                        output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
-                        output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
-                        output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
-                        
-                        if (variants[i].hasOwnProperty(position)){
-                            output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
-                        }
-                        else{
-                            output += 'Ref: ' + ref_seq[position-1] + '<br/>'
-                        }
-                        if (variants[i].hasOwnProperty(position)) {
-                            //console.log(variants[i][position]);
-                            output = output + 'Variant: ' + variants[i][position][1]
-                        }
-                        
-                        return output;
-                    }
-                    else{
-                        return output
-                    }
-                }
-            }] 
-        }  
-
         var gird_index_length;
 
         function getOptions(){   
@@ -690,7 +659,56 @@
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
                 series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...gene_feature_series(gird_index_length)],
-                tooltip: getTooltips(samples, depths, variants),
+                tooltip: [{
+                    trigger: "axis",
+                    enterable: true,
+                    appendToBody: true,
+                    renderMode: "html",
+                    showContent: true,
+                    formatter: function (params) {
+                        var output = "";
+                        var param = params[0];
+                        var i = param.axisIndex;
+                        if (i < samples.length){
+                            var sample = samples[i];
+                            var depth = param.data[0];
+                            var position = param.data[1];
+                            var st = [];
+                            var start_pos, end_pos;
+                            //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
+                            start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
+                            //end_pos = Math.floor(chart.getOption().dataZoom[0].end * ref_len / 100);
+                            end_pos = Math.floor(chart.getOption().dataZoom[0].endValue)
+                            var mean_cov;
+                            mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                            var median_cov;
+                            median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                            var genome_cov;
+                            genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
+                            output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos.toLocaleString() + '<br/>' + 'End pos: ' + end_pos.toLocaleString() + '<br/>';
+                            output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
+                            output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
+                            output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
+                            output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
+                            
+                            if (variants[i].hasOwnProperty(position)){
+                                output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
+                            }
+                            else{
+                                output += 'Ref: ' + ref_seq[position-1] + '<br/>'
+                            }
+                            if (variants[i].hasOwnProperty(position)) {
+                                //console.log(variants[i][position]);
+                                output = output + 'Variant: ' + variants[i][position][1]
+                            }
+                            
+                            return output;
+                        }
+                        else{
+                            return output
+                        }
+                    }
+                }],
                 toolbox: {
                     show: "true",
                     feature: {
@@ -795,6 +813,24 @@
                 end: 100
             })
         })
+        /*
+        function updateChartDivSize() {
+          var BOTTOM_PADDING = 20;
+          var top = $chart.getBoundingClientRect().top;
+          var height = window.innerHeight - top - BOTTOM_PADDING;
+          if (height < 300) {
+            height = 300;
+          }
+          $chart.style.height = height + 'px';
+          chart.resize();
+        }
+
+        window.addEventListener("resize", updateChartDivSize);
+        document.addEventListener("DOMContentLoaded", function(event) {
+            updateChartDivSize();
+            chart.resize();
+        })
+        */
 
         function updateCoveragePlot(samples){   
             
@@ -808,6 +844,7 @@
                 depths.push(origin_depths[selected_samples])
                 variants.push(origin_variants[selected_samples])
             }
+            console.log(samples)
             gird_index_length = samples.length
             var options = {
                 title: {
@@ -816,7 +853,56 @@
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
                 series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...gene_feature_series(gird_index_length)],
-                tooltip: getTooltips(samples, depths, variants),
+                tooltip: [{
+                    trigger: "axis",
+                    enterable: true,
+                    appendToBody: true,
+                    renderMode: "html",
+                    showContent: true,
+                    formatter: function (params) {
+                        var output = "";
+                        var param = params[0];
+                        var i = param.axisIndex;
+                        if (i < samples.length){
+                            var sample = samples[i];
+                            var depth = param.data[0];
+                            var position = param.data[1];
+                            var st = [];
+                            var start_pos, end_pos;
+                            //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
+                            start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
+                            //end_pos = Math.floor(chart.getOption().dataZoom[0].end * ref_len / 100);
+                            end_pos = Math.floor(chart.getOption().dataZoom[0].endValue)
+                            var mean_cov;
+                            mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                            var median_cov;
+                            median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
+                            var genome_cov;
+                            genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
+                            output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos.toLocaleString() + '<br/>' + 'End pos: ' + end_pos.toLocaleString() + '<br/>';
+                            output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
+                            output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
+                            output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
+                            output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
+                            
+                            if (variants[i].hasOwnProperty(position)){
+                                output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
+                            }
+                            else{
+                                output += 'Ref: ' + ref_seq[position-1] + '<br/>'
+                            }
+                            if (variants[i].hasOwnProperty(position)) {
+                                //console.log(variants[i][position]);
+                                output = output + 'Variant: ' + variants[i][position][1]
+                            }
+                            
+                            return output;
+                        }
+                        else{
+                            return output
+                        }
+                    }
+                }],
                 toolbox: {
                     show: "true",
                     feature: {
@@ -848,25 +934,7 @@
 
         }
 
-        function updateChartDivSize() {
-          var BOTTOM_PADDING = 20;
-          var top = $chart.getBoundingClientRect().top;
-          var height = window.innerHeight - top - BOTTOM_PADDING;
-          if (height < 300) {
-            height = 300;
-          }
-          $chart.style.height = height + 'px';
-          chart.resize();
-        }
-
-        window.addEventListener("resize", updateChartDivSize);
-        document.addEventListener("DOMContentLoaded", function(event) {
-            updateChartDivSize();
-            chart.resize();
-        })
-
         chart.setOption(option = getOptions());
-
         $(document).ready(function() {
             $('.selected-samples').select2();
             $(".selected-samples").on("change", function (e) {
