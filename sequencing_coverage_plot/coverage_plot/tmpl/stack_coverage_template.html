@@ -14,6 +14,7 @@
         <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
         <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
         <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
+        <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
     </div>
      
     <div id="chart" class="chart-container" style="width:100%; height: 900px;"></div>
@@ -23,41 +24,115 @@
         <button class="accordion">General</button>
 
         <div class="panel">
+            <p>
             <label for="samples">Samples:</label>
             <select class="selected-samples" multiple="multiple" style="width: 75%" >
                 {% for id, sample in samples_name.items() %}
                     <option value={{sample}}>{{sample}}</option>
                 {% endfor %}
             </select>
+            </p>
         </div>
+        
         <button class="accordion">Tooltip</button>
         <div class="panel">
             <p>Show Tooltip:  
-                <select id="showtooltip" onchange="tooltipOption()">
+                <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
+                    <option value="false" >Disable</option>
                     <option value="true" selected>Enable</option>
-                    <option value="false">Disable</option>
                 </select>
             </p>
         </div>
         <button class="accordion">Data Zoom</button>
         <div class="panel">
             <p>Show Slider:  
-                <select id="showslider" onchange="dataZoomOption()">
+                <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
                     <option value="true" selected>Enable</option>
                     <option value="false">Disable</option>
                 </select>
             </p>
-
             <form id="dataZoom">
                 <label for="start_pos">Start Pos:</label><br>
                 <input type="number" id="start_pos" value=1><br>
                 <label for="start_pos">End Pos:</label><br>
                 <input type="number" id="end_pos" value=29903><br><br>
                 <input type="button" onclick="setDataZoom()" value="Set DataZoom">
+                <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
             </form>
+            <br>
         </div>
     </div>
-      
+    <div id="about_id" class="chart-container">
+        <h2>Standalone HTML Interactive Coverage Plot (SHICP)</h2>
+        <p>The tool generates the HTML Interactive Coverage Plot given coverage depth information, variants and DNA gene features.</p>
+        <h3 class="row-content">Dependencies</h3>
+
+        <h4>Software Version</h4>
+        <ul>
+            <li>The tool is still in the development phases with current version is 1.0.0dev</li>
+        </ul>
+        <h4>Programming Languages</h4>
+        <ul>
+            <li>Python (>= 3.8)</li>
+            <li>HTML/CSS/Javascript</li>
+        </ul>
+        <h4>Tools/Libraries</h4>
+        <ul>
+            <li><a style="text-decoration: none" href="https://echarts.apache.org/en/index.html">Echarts</a></li>
+            <li>Python libraries: Biopython, rich, typer, pandas</li>
+            <li><a style="text-decoration: none" href="https://select2.org/">select2</a></li>
+            <li><a style="text-decoration: none" href="https://jinja.palletsprojects.com/en/2.11.x/templates/">jinja2</a></li>
+        </ul>
+        <h3 class="row-content">Usage</h3>
+        <h4>Prepare Samples Data</h4>
+        <p>The tsv file of samples data (samples.tsv) is as follow</p>
+        <table style="border:solid; border-collapse: collapse;">
+            <tr>
+              <td style="border: solid black;border-collapse: collapse;">Sample-01</td>
+              <td style="border: solid black;border-collapse: collapse;">path/to/sample-01-coverage-depth</td>
+              <td style="border: solid black;border-collapse: collapse;">path/to/sample-01-variant-vcf</td>
+            </tr>
+            <tr>
+              <td style="border: solid black;border-collapse: collapse;">Sample-02</td>
+              <td style="border: solid black;border-collapse: collapse;">path/to/sample-02-coverage-depth</td>
+              <td style="border: solid black;border-collapse: collapse;">path/to/sample-02-variant-vcf</td>
+            </tr>
+            <tr>
+                <td style="border: solid black;border-collapse: collapse;">Sample-03</td>
+                <td style="border: solid black;border-collapse: collapse;">path/to/sample-03-coverage-depth</td>
+                <td style="border: solid black;border-collapse: collapse;">path/to/sample-03-variant-vcf</td>
+            </tr>
+        </table>
+        <p>Others data</p>
+        <ul>
+            <li>Reference Sequences (reference.fasta)</li>
+            <li>Genbank file contains gene features (sequence_genbank.gb)</li>
+        </ul>
+        <h4>Output</h4>
+        <p>The tool will generate the Coverage Plot for samples in HTML file</p>
+        <h4>Command</h4>
+        <p>shicp -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb</p>
+
+        <h3 class="row-content">HTML File Structure</h3>
+        <ul>
+            <li><strong>Chart Options Tab: </strong>allows user to customize chart display such as select which samples to be displayed, set datazoom, tooltips</li>
+            <li><Strong>Coverage Plot Tab:</Strong> displays Coverage Plot for selected samples in which user can do interactive oprerations such as zoom in/out, view for specific regions ect...</li>
+            <li><strong>Summary Information Tab: </strong>displays summary information for all samples included in an analysis</li>
+            <li><strong>About Tab: </strong>Sofware information, user guide</li>
+        </ul>
+
+        <h3 class="row-content">Author</h3>
+        <ul>
+            <li>Development Lead: Peter Kruczkiewicz (<a href="mailto:peter.kruczkiewicz@gmail.com">peter.kruczkiewicz@gmail.com</a>)</li>
+            <li>Software Developer: Hai Nguyen (<a href="mailto:nhhaidee@gmail.com">nhhaidee@gmail.com</a>)</li>
+        </ul>
+        <h3 class="row-content">License</h3>
+        <ul>
+            <p><strong>&copy 2021 Canadian Food Inspection Agency of Canada, Government of Canada.</strong></p>
+            <p><strong>Distributed under the MIT license.</strong></p>
+        </ul>
+        
+    </div>
     <table id="table_id" class="chart-container">
         <tr>
             <th>Sample Name</th>
@@ -218,7 +293,7 @@
 
         }
 
-        .active:after {
+        .accordion.active:after {
             content: "\2212";
 
         }
@@ -229,6 +304,11 @@
             max-height: 0;
             overflow: scroll;
             transition: max-height 0.2s ease-out;
+        }
+        .row-content {
+            margin:0px auto;
+            padding: 10px 0px 10px 0px;
+            border-bottom: 2px ridge;
         }
         
     </style>
@@ -283,8 +363,6 @@
 
         var ref_seq = "{{ ref_seq }}";
         var ref_len = ref_seq.length;
-        
-
         // create array from range 0 to (ref_len + 1)
         var positions = [...Array(ref_len + 1).keys()];
         // remove zero
@@ -362,7 +440,7 @@
             };
         }
 
-        function gene_feature_series(index){
+        function getGeneFeatureSeries(index){
             var feature_series =[]
             feature_series.push({
                 type: "custom",
@@ -447,21 +525,6 @@
             })
             return axes;
         }
-        /*
-        function getSeries(){
-
-            var variantx = document.getElementById('showvariant').value;
-            var series = []
-            if (variantx=="true")
-            {
-                series = [...getDepthSeries(samples), ...getVariantsSeries(), ...gene_feature_series()]
-            }
-            else{
-                series = [...getDepthSeries(samples), ...gene_feature_series()]
-            }
-            return series
-        }
-        */
 
         function getDatasets(depths, positions) {
             var datasets = [];
@@ -513,7 +576,7 @@
             "T": "#0FF",
         }
 
-        function zoom_index(length){
+        function zoomIndex(length){
             var indexes = []
             for (var i = 0; i <= length; i++){
                 indexes.push(i)
@@ -555,7 +618,14 @@
             var last_height;
             var last_top;
             var grids = Object.keys(samples).map(function (sample) {
-                last_height = (1 / n * 100) - 6 
+                last_height = (1 / n * 100) - 6
+                if (n == 2){ // Only 1 sample (1 sample + gene feature plot)
+                    last_height = 70
+                    return {
+                        "show": true,
+                        "height": "70%" // plot display in nearly full scale
+                    };
+                }
                 return {
                     "show": true,
                     "height": (1 / n * 100) - 6 + "%"
@@ -590,7 +660,7 @@
         function genomeCoverage(depths, start, end, gridIndex, low) {
             var total = 0;
             for (var i = start - 1; i <= end - 1; i++){
-                if (depths[gridIndex][i] > low){
+                if (depths[gridIndex][i] >= low){
                     total += 1
                 }
             }
@@ -614,7 +684,6 @@
 
         }
 
-
         function getTooltips(samples, depths, variants){
             return [{
                 trigger: "axis",
@@ -626,10 +695,10 @@
                     var output = "";
                     var param = params[0];
                     var i = param.axisIndex;
-                    if (i < samples.length){
+                    var position = param.data[1];
+                    if (i < samples.length /*&& variants[i].hasOwnProperty(position)*/){
                         var sample = samples[i];
                         var depth = param.data[0];
-                        var position = param.data[1];
                         var start_pos, end_pos;
                         //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
                         start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
@@ -649,29 +718,24 @@
                         
                         if (variants[i].hasOwnProperty(position)){
                             output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
+                            output = output + 'Variant: ' + variants[i][position][1]
                         }
                         else{
                             output += 'Ref: ' + ref_seq[position-1] + '<br/>'
                         }
-                        if (variants[i].hasOwnProperty(position)) {
-                            //console.log(variants[i][position]);
-                            output = output + 'Variant: ' + variants[i][position][1]
-                        }
-                        
                         return output;
                     }
-                    else{
-                        return output
-                    }
+                    return output
                 }
             }] 
         }  
 
+
         var gird_index_length;
 
-        function getOptions(){   
+        function getOption(){   
             
-            var default_num_chart = 3;
+            var default_num_chart = 3; // At the beginning display maximum 3 samples
 
             // Original data
             var origin_samples = {{ samples_name }}
@@ -697,7 +761,7 @@
                 dataset: getDatasets(depths, positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
-                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...gene_feature_series(gird_index_length)],
+                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
                     show: "true",
@@ -715,12 +779,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)]
+                        xAxisIndex: [...zoomIndex(gird_index_length)]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)],
+                        xAxisIndex: [...zoomIndex(gird_index_length)],
                         type: "slider"
                     }
                 ],
@@ -731,15 +795,14 @@
 
         function tooltipOption(){
             var tooltipx = document.getElementById('showtooltip').value;
-            if (tooltipx=="false"){
-                chart.setOption({
-                    tooltip:[{showContent: false}]
-                });
-            }
+            if (tooltipx=='false')
+            chart.setOption({
+                tooltip:{showContent: false}
+            });
             else{
                 chart.setOption({
-                    tooltip:[{showContent: true}]
-                });
+                tooltip:{showContent: true}
+            });
             }
         }
 
@@ -751,7 +814,7 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)]
+                        xAxisIndex: [...zoomIndex(gird_index_length)]
                     },
                     {
                         show: false,
@@ -766,12 +829,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)]
+                        xAxisIndex: [...zoomIndex(gird_index_length)]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)],
+                        xAxisIndex: [...zoomIndex(gird_index_length)],
                         type: "slider"
                     }
                 ]
@@ -789,6 +852,8 @@
         }
         
         chart.on('click', function(params){
+            document.getElementById('start_pos').value = params.value[1]
+            document.getElementById('end_pos').value = params.value[2]
             chart.dispatchAction({
                 type:'dataZoom',
                 startValue: params.value[1],
@@ -797,6 +862,8 @@
         })
         
         chart.on('dblclick', function(params){
+            document.getElementById('start_pos').value = 1
+            document.getElementById('end_pos').value = ref_len
             chart.dispatchAction({
                 type:'dataZoom',
                 start: 0,
@@ -804,7 +871,7 @@
             })
         })
 
-        function updateCoveragePlot(samples){   
+        function updateOption(samples){   
             
             var origin_depths = {{ depth_data }};
             var origin_variants = {{ variant_data }};
@@ -823,7 +890,7 @@
                 dataset: getDatasets(depths, positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
-                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...gene_feature_series(gird_index_length)],
+                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
                     show: "true",
@@ -841,12 +908,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)]
+                        xAxisIndex: [...zoomIndex(gird_index_length)]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...zoom_index(gird_index_length)],
+                        xAxisIndex: [...zoomIndex(gird_index_length)],
                         type: "slider"
                     }
                 ],
@@ -873,7 +940,7 @@
             chart.resize();
         })
 
-        chart.setOption(option = getOptions());
+        chart.setOption(option = getOption());
 
         $(document).ready(function() {
             $('.selected-samples').select2();
@@ -883,25 +950,44 @@
                 for (var [key, entries] of selectData.entries()){
                    samples_list.push(selectData[key].text)
                 }
-                updateCoveragePlot(samples_list)
+                updateOption(samples_list)
             });
 
+        });
+
+        $("select").select2({
+            tags: true
+        });
+
+        $("select").on("select2:select", function (evt) {
+            var element = evt.params.data.element;
+            var $element = $(element);
+            
+            $element.detach();
+            $(this).append($element);
+            $(this).trigger("change");
         });
 
         function setDataZoom(){
             var start = document.getElementById('start_pos').value
             var end = document.getElementById('end_pos').value
-            submitDataZoom(end, start)
-
-        }
-
-        function submitDataZoom (start, end) {
             chart.dispatchAction({
                 type:'dataZoom',
                 startValue: start,
                 endValue: end
             })
         }
+
+        function resetDataZoom(){
+            document.getElementById('start_pos').value = 1 
+            document.getElementById('end_pos').value = ref_len
+            chart.dispatchAction({
+                type:'dataZoom',
+                start: 0,
+                end: 100
+            })
+        }
+
     </script>
 </body>
 </html>
