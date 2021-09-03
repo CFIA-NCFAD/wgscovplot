@@ -77,7 +77,7 @@ def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
                 index = index + 1
                 gene_feature.append(feature_dict)
 
-    if (bed):
+    if bed:
         bed_1, bed_2 = get_bed(bed)
         for i, amplicon in enumerate(bed_1):
             gene_feature.append({

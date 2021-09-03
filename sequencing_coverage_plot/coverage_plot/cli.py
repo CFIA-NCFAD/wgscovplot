@@ -3,7 +3,6 @@
 """Console script."""
 import logging
 from pathlib import Path
-from sys import version_info
 from typing import Optional
 import typer
 from rich.logging import RichHandler
