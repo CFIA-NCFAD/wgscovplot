@@ -15,4 +15,6 @@ Features
 
 *See an example shicp output here:*
 
-.. _`fmdv-5-shiptv.html`: docs/data/sequencing_coverage_plot.html
+- `sequencing_coverage_plot.html`_
+
+.. _`sequencing_coverage_plot.html`: docs/data/sequencing_coverage_plot.html
