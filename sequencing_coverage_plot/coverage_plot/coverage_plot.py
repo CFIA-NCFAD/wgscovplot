@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from enum import Enum
 from Bio import SeqIO
 import numpy as np
+import sys
 
 
 class Resources(Enum):
