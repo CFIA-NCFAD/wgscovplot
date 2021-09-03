@@ -9,7 +9,7 @@ import typer
 from rich.logging import RichHandler
 from sys import version_info
 from Bio.SeqIO.FastaIO import SimpleFastaParser
-from .coverage_plot import (write_html_coverage_plot, prepare_data, get_gene_feature)
+from .coverage_plot import (write_html_coverage_plot, prepare_data, get_gene_feature, get_bed)
 from sequencing_coverage_plot.coverage_plot import __version__
 
 app = typer.Typer()
@@ -33,6 +33,10 @@ def main(
                                                "-r",
                                                "--ref-seq",
                                                help="Reference genome sequences file"),
+        bed: Optional[Path] = typer.Option(None,
+                                               "-b",
+                                               "--bed",
+                                               help="Bed file"),
         genbank: Optional[Path] = typer.Option(None,
                                                "-g",
                                                "--genbank",
