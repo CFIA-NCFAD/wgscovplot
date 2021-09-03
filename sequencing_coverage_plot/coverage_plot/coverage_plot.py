@@ -100,25 +100,24 @@ def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
 
 
 def get_bed(bed_file: Path):
-    ### https://github.com/Psy-Fer/CoVarPlot/blob/f81f20426b26c29425fb265ef94f12020a40e237/covarplot.py#L129
+    # https://github.com/Psy-Fer/CoVarPlot/blob/f81f20426b26c29425fb265ef94f12020a40e237/covarplot.py#L129
     tmp_1 = []
     tmp_2 = []
     bed_1 = []
     bed_2 = []
-    with open(bed_file, 'r') as f:
-        for l in f:
-            l = l.strip('\n')
-            l = l.strip('\t')
-            l = l.split('\t')
-            print(l)
-            if "alt" in l[3]:
+    with open(bed_file, 'r') as infile:
+        for line in infile:
+            line = line.strip('\n')
+            line = line.strip('\t')
+            line = line.split('\t')
+            if "alt" in line[3]:
                 continue
-            if l[4][-1] == '1':
-                tmp_1.append(int(l[1]))
-                tmp_1.append(int(l[2]))
-            elif l[4][-1] == '2':
-                tmp_2.append(int(l[1]))
-                tmp_2.append(int(l[2]))
+            if line[4][-1] == '1':
+                tmp_1.append(int(line[1]))
+                tmp_1.append(int(line[2]))
+            elif line[4][-1] == '2':
+                tmp_2.append(int(line[1]))
+                tmp_2.append(int(line[2]))
             else:
                 sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(l[-1]))
 
