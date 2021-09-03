@@ -29,18 +29,18 @@ def main(
         output_html: Path = typer.Option("coverage_plot.html",
                                          "-o", "--output-html",
                                          help="Output Interactive HTML Coverage Plot"),
-        ref_seq: Optional[Path] = typer.Option(None,
-                                               "-r",
-                                               "--ref-seq",
-                                               help="Reference genome sequences file"),
+        ref_seq: Path = typer.Option(...,
+                                     "-r",
+                                     "--ref-seq",
+                                     help="Reference genome sequences file"),
         bed: Optional[Path] = typer.Option(None,
-                                               "-b",
-                                               "--bed",
-                                               help="Bed file"),
-        genbank: Optional[Path] = typer.Option(None,
-                                               "-g",
-                                               "--genbank",
-                                               help="Genbank file contains features of reference sequence"),
+                                           "-b",
+                                           "--bed",
+                                           help="Bed file"),
+        genbank: Path = typer.Option(...,
+                                     "-g",
+                                     "--genbank",
+                                     help="Genbank file contains features of reference sequence"),
         verbose: bool = typer.Option(False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(
             None,
@@ -66,7 +66,8 @@ def main(
     gene_feature = get_gene_feature(genbank)
     samples_name, depth_data, variant_data, coverage_stat = prepare_data(samples_data)
     write_html_coverage_plot(samples_name=samples_name, depth_data=depth_data, variant_data=variant_data,
-                             ref_seq=ref_seq, coverage_stat=coverage_stat, gene_feature=gene_feature, output_html=output_html)
+                             ref_seq=ref_seq, coverage_stat=coverage_stat, gene_feature=gene_feature,
+                             output_html=output_html)
     logging.info(f'Wrote HTML Coverage Plot to "{output_html}"')
 
 
