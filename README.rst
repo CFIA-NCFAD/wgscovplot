@@ -1,6 +1,6 @@
-=========================================
-Standalone HTML Interactive Coverage Plot
-=========================================
+=================================================
+Standalone HTML Interactive Coverage Plot (SHICP)
+=================================================
 
 
 Generate a standalone HTML file with an interactive coverage plot using Echarts
@@ -8,3 +8,11 @@ Generate a standalone HTML file with an interactive coverage plot using Echarts
 
 * Free software: Apache Software License 2.0
 * Documentation: https://shiptv.readthedocs.io.
+
+
+Features
+--------
+
+*See an example shicp output here:*
+
+.. _`fmdv-5-shiptv.html`: docs/data/sequencing_coverage_plot.html
