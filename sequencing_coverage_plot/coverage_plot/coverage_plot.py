@@ -119,7 +119,7 @@ def get_bed(bed_file: Path):
                 tmp_2.append(int(line[1]))
                 tmp_2.append(int(line[2]))
             else:
-                sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(l[-1]))
+                sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(line[-1]))
 
     tmp_1.sort()
     tmp_2.sort()
