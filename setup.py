@@ -55,6 +55,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/nhhaidee/sequencing_coverage_plot',
-    version='1.0.0',
+    version='1.0.0dev',
     zip_safe=False,
 )

@@ -14,6 +14,7 @@
         <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
         <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
         <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
+        <button class="tablinks" onclick="showChart(event,'fqa_id')">FQA</button>
         <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
     </div>
      
@@ -24,17 +25,6 @@
         <button class="accordion">General</button>
 
         <div class="panel">
-            <!----
-            <p>yMax:  
-                <select id="ymax" onchange="setYMax()" style="width: 25%">
-                    <option value="10" >10</option>
-                    <option value="100" >100</option>
-                    <option value="1000" >1000</option>
-                    <option value="10000" >10000</option>
-                    <option value="100000" >100000</option>
-                </select>
-            </p>
-            -->
             <p>
             <label for="samples">Samples:</label>
             <select class="selected-samples" multiple="multiple" style="width: 75%" >
@@ -44,7 +34,25 @@
             </select>
             </p>
         </div>
-        
+
+        <button class="accordion">Axis</button>
+        <div class="panel">
+            <p>Scale:  
+                <select id="scale" onchange="setScale()" style="width: 25%">
+                    <option value="value" >Linear</option>
+                    <option value="log" selected>Log</option>
+                </select>
+            </p>
+            <p> 
+                <form id="ymaxform">
+                    <label for="ymaxform">yMax: </label>
+                    <input type="number" id="ymax" value=100000 style="width: 30%">
+                    <input type="button" onclick="setYMax()" value="Set yMax">
+                </form>
+            </p>
+
+        </div>
+
         <button class="accordion">Tooltip</button>
         <div class="panel">
             <p>Show Tooltip:  
@@ -144,6 +152,29 @@
             <p style="text-align: center"><strong>Distributed under the MIT license.</strong></p>
         </ul>
         
+    </div>
+
+    <div id="fqa_id" class="chart-container">
+        <h4>What happens when the number of samples shown on the chart changed?</h4>
+        <ul>
+            <li>The entire chart will be re-rendered and you need to set your chart options again. Changing other options will not re-render the entire chart</li>
+        </ul>
+
+        <h4>What happens when browser zoom is set more than 100%?</h4>
+        <ul>
+            <li>Some minor graphic (such as some items get cut off) issues may happen. To fix this type of issue, try to adjust browser zoom and this may allow you to have better view</li>
+        </ul>
+
+        <h4>How many simultaneous samples on the chart for the best view?</h4>
+        <ul>
+            <li>It is recommended that having around 5 simultaneous samples on the chart for the best view</li>
+        </ul>
+
+        <h4>What will you do when the plot is distorted or minimized?</h4>
+        <ul>
+            <li>This issue could happen when you shrink and maximize browser, to restore plot display just simply refresh browser</li>
+        </ul>
+
     </div>
     <table id="table_id" class="chart-container">
         <tr>
@@ -639,8 +670,8 @@
                 };
             });
             grids.forEach(function (grid, idx) {
-                //var padTop = idx === 0 ? 3 : 2
-                var padTop = 3
+                //var padTop = idx === 1 ? 5 : 3
+                var padTop = 4
                 last_top = (idx / n * 100) + padTop
                 grid.top = (idx / n * 100) + padTop + "%"
             })
@@ -651,6 +682,7 @@
             })
             return grids
         }
+
         function meanCoverage(depths, start, end, gridIndex) {
             var total = 0;
             if (start < end){
@@ -805,6 +837,29 @@
             }
         }
 
+        function setScale(){
+            var scaletype = document.getElementById('scale').value;
+            var yaxis_option = chart.getOption().yAxis;
+            if (scaletype == 'value'){
+                for(let i = 0 ; i < gird_index_length; i++){
+                    yaxis_option[i].type = scaletype
+                    yaxis_option[i].min = 0
+                    yaxis_option[i].max = 40000
+                }
+                chart.setOption({yAxis: yaxis_option})
+                document.getElementById('ymax').value = 40000
+            }
+            else{
+                for(let i = 0 ; i < gird_index_length; i++){
+                    yaxis_option[i].type = scaletype
+                    yaxis_option[i].min = 1
+                    yaxis_option[i].max = 100000
+                }
+                document.getElementById('ymax').value = 100000
+                chart.setOption({yAxis: yaxis_option})
+            }
+        }
+
         function dataZoomOption(){
             var sliderx = document.getElementById('showslider').value;
             if (sliderx=="false"){
@@ -840,14 +895,17 @@
                 });
             } 
         }
-        /*
+        
         function setYMax(){
             var ymax = document.getElementById('ymax').value;
-            chart.setOption({
-                yAxis: getYAxes(samples, scalex, ymax),
-            })
+            var yaxis_option = chart.getOption().yAxis;
+            for(let i = 0 ; i < gird_index_length; i++){
+                yaxis_option[i].max = ymax
+            }
+            chart.setOption({yAxis: yaxis_option})
         }
-        */
+
+
         chart.on('click', function(params){
             document.getElementById('start_pos').value = params.value[1]
             document.getElementById('end_pos').value = params.value[2]
@@ -917,8 +975,8 @@
                 grid: getGrids(samples)
             };
             chart.setOption(option = options, notMerge = true);
-
         }
+
 
         function updateChartDivSize() {
           var BOTTOM_PADDING = 20;
