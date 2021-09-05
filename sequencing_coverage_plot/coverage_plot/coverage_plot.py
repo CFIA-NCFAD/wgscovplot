@@ -160,6 +160,7 @@ def write_html_coverage_plot(samples_name: list,
 
 def prepare_data(samples_name: Path):
     df_samples = pd.read_table(samples_name, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
+    df_samples = df_samples.fillna(0)
     depth_data = {}
     variant_data = {}
     coverage_stat = []
@@ -170,11 +171,12 @@ def prepare_data(samples_name: Path):
         logging.info(f'Preparing data for "{sample}"')
         df_coverage_depth = read_depths(df_samples.loc[sample, 'coverage_depth_file'])
         variant_info = {}
-        df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'])
-        depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
-        for idx in df_vcf.index:
-            variant_info[df_vcf.loc[idx, 'POS']] = [df_vcf.loc[idx, 'REF'], df_vcf.loc[idx, 'ALT']]
+        if df_samples.loc[sample, 'vcf_file'] != 0:
+            df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'])
+            for idx in df_vcf.index:
+                variant_info[df_vcf.loc[idx, 'POS']] = [df_vcf.loc[idx, 'REF'], df_vcf.loc[idx, 'ALT']]
         variant_data[sample] = variant_info
+        depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
 
         # Get Coverage Statistic for each samples
         low_depth = (df_coverage_depth.depth < 10)
