@@ -4,4 +4,10 @@
 from pathlib import Path
 import pandas as pd
 
-print ("SHIPCP Test")
+
+def inc(x):
+    return x + 1
+
+
+def test_answer():
+    assert inc(4) == 5
