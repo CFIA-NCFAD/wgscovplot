@@ -61,7 +61,7 @@ def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
                         "color": ''
                     }
                 }
-                start_pos = int(seq_feature.location.start)
+                start_pos = int(seq_feature.location.start) + 1
                 end_pos = int(seq_feature.location.end)
                 strand = seq_feature.strand
                 if seq_feature.type == "5'UTR" or seq_feature.type == "3'UTR":
@@ -76,7 +76,6 @@ def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
                     feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
                 index = index + 1
                 gene_feature.append(feature_dict)
-
     if bed:
         bed_1, bed_2 = get_bed(bed)
         for i, amplicon in enumerate(bed_1):
