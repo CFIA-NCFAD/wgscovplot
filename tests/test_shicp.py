@@ -5,7 +5,7 @@ from pathlib import Path
 from os.path import exists
 from typer.testing import CliRunner
 
-from shicp.cli import app
+from sequencing_coverage_plot.coverage_plot.cli import app
 
 runner = CliRunner()
 
