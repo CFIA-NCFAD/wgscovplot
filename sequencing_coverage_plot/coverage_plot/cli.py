@@ -9,7 +9,7 @@ from rich.logging import RichHandler
 from sys import version_info
 from Bio.SeqIO.FastaIO import SimpleFastaParser
 from .coverage_plot import (write_html_coverage_plot, prepare_data, get_gene_feature)
-from sequencing_coverage_plot.coverage_plot import __version__
+from coverage_plot import __version__
 
 app = typer.Typer()
 

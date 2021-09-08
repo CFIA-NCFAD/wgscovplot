@@ -41,13 +41,15 @@ setup(
     description="Generate a standalone HTML file with an interactive coverage plot",
     entry_points={
         'console_scripts': [
-            'shicp=sequencing_coverage_plot.coverage_plot.cli:app',
+            'shicp=coverage_plot.cli:app',
         ],
     },
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
+    keywords='shicp',
+    name='shicp',
     packages=find_packages(
         where='sequencing_coverage_plot',
         include=['coverage_plot']
