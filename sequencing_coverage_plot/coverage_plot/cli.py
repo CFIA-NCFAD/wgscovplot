@@ -43,8 +43,7 @@ def main(
         verbose: bool = typer.Option(False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(None,
                                                callback=version_callback,
-                                               help=f'Print "shicp version" and exit',
-                                               )
+                                               help=f'Print {"shicp version"} and exit')
 ):
     from rich.traceback import install
 

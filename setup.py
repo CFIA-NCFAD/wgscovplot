@@ -27,7 +27,7 @@ setup(
     developer="Hai Nguyen",
     developer_email='nhhiadee@gmail.com',
     development_lead="Peter Kruczkiewicz",
-    development_lead_email ="peter.kruczkiewicz@gmail.com",
+    development_lead_email="peter.kruczkiewicz@gmail.com",
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
