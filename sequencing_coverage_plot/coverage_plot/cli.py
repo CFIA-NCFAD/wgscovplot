@@ -60,7 +60,7 @@ def main(
             for name, seq in SimpleFastaParser(fh):
                 ref_seq = seq
 
-    gene_feature = get_gene_feature(genbank)
+    gene_feature = get_gene_feature(genbank, bed)
     samples_name, depth_data, variant_data, coverage_stat = prepare_data(samples_data)
     write_html_coverage_plot(samples_name=samples_name, depth_data=depth_data, variant_data=variant_data,
                              ref_seq=ref_seq, coverage_stat=coverage_stat, gene_feature=gene_feature,
