@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
-from os.path import exists
 from typer.testing import CliRunner
 from coverage_plot.cli import app
 

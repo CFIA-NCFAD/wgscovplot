@@ -41,11 +41,10 @@ def main(
                                      "--genbank",
                                      help="Genbank file contains features of reference sequence"),
         verbose: bool = typer.Option(False, help="Verbose logs"),
-        version: Optional[bool] = typer.Option(
-            None,
-            callback=version_callback,
-            help=f'Print "shicp version" and exit',
-        )
+        version: Optional[bool] = typer.Option(None,
+                                               callback=version_callback,
+                                               help=f'Print "shicp version" and exit',
+                                               )
 ):
     from rich.traceback import install
 
