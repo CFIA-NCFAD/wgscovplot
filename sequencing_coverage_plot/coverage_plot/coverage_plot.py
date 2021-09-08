@@ -7,7 +7,6 @@ from enum import Enum
 from Bio import SeqIO
 import numpy as np
 import sys
-import random
 
 
 class Resources(Enum):
@@ -17,16 +16,6 @@ class Resources(Enum):
     JQUERY: str = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
     GENE_FEATURE_COLOR = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00',
                           '#cab2d6', '#6a3d9a', '#FF33D3', '#b15928', '#0006fc']
-
-
-def get_N_HexCol(N=5):
-    HSV_tuples = [(x * 1.0 / N, 0.5, 0.5) for x in range(N)]
-    print(HSV_tuples)
-    hex_out = []
-    for rgb in HSV_tuples:
-        rgb = map(lambda x: int(x * 255), colorsys.hsv_to_rgb(*rgb))
-        hex_out.append('#%02x%02x%02x' % tuple(rgb))
-    return hex_out
 
 
 def read_depths(fpath) -> pd.DataFrame:
@@ -61,10 +50,9 @@ def get_interval_coords(df, threshold=0):
 
 def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
     gene_feature = []
-    number_of_colors = 13
-
-    color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
-                    for i in range(number_of_colors)]
+    # number_of_colors = 13
+    # color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+    # for i in range(number_of_colors)]
     for seq_record in SeqIO.parse(annotation, "genbank"):
         index = 0
         for seq_feature in seq_record.features:
@@ -82,13 +70,12 @@ def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
                 if seq_feature.type == "5'UTR" or seq_feature.type == "3'UTR":
                     feature_dict.update({"name": seq_feature.type})
                     feature_dict.update({"value": [index, start_pos, end_pos, 0, strand]})
-                    feature_dict["itemStyle"].update({"color": color_pallet[index]})
+                    feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
                 else:
-
                     feature_name = seq_feature.qualifiers['gene'][0]
                     feature_dict.update({"name": feature_name})
                     feature_dict.update({"value": [index, start_pos, end_pos, 0, strand]})
-                    feature_dict["itemStyle"].update({"color": color_pallet[index]})
+                    feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
                 index = index + 1
                 gene_feature.append(feature_dict)
     if bed:
@@ -164,9 +151,10 @@ def write_html_coverage_plot(samples_name: list,
         fout.write(template_file.render(samples_name=samples_name,
                                         depth_data=depth_data,
                                         variant_data=variant_data,
-                                        ref_seq=ref_seq,
                                         coverage_stat=coverage_stat,
                                         gene_feature=gene_feature,
+                                        ref_seq=ref_seq,
+                                        ref_seq_length=len(ref_seq),
                                         echarts_js=Resources.ECHARTS.value,
                                         select2_css=Resources.SELECT2_CSS.value,
                                         select2_js=Resources.SELECT2_JS.value,
