@@ -48,9 +48,11 @@ setup(
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='shicp',
-    name='shicp',
-    packages=find_packages(include=['shicp']),
+    packages=find_packages(
+        where='sequencing_coverage_plot',
+        include=['coverage_plot']
+    ),
+    package_dir={"": "sequencing_coverage_plot"},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

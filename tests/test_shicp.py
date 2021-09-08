@@ -4,7 +4,7 @@
 from pathlib import Path
 from os.path import exists
 from typer.testing import CliRunner
-from coverage_plot.cli import app
+from sequencing_coverage_plot.coverage_plot.cli import app
 
 runner = CliRunner()
 
@@ -16,7 +16,6 @@ input_genbank = dirpath/'data/sequence_sars_cov2.gb'
 def test_cli():
     assert input_ref.exists()
     assert input_genbank.exists()
-    result = runner.invoke(app)
     result = runner.invoke(app)
     assert result.exit_code != 0
     assert 'Error: Missing option' in result.output
