@@ -3,7 +3,7 @@
 
 from pathlib import Path
 from typer.testing import CliRunner
-from coverage_plot.cli import app
+from wgscovplot.cli import app
 
 runner = CliRunner()
 
