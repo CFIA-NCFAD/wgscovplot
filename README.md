@@ -12,7 +12,7 @@
 
 ### Programming Languages
 
-- Python (>=3.6))
+- Python (>=3.6)
 - HTML/CSS/Javascript
 
 ### Tools/libraries
@@ -97,7 +97,7 @@ The tool will generate the Coverage Plot for samples in HTML file
 
 ## License
 
-Copyright 2021 Canadian Food Inspection Agency of Canada, Government of Canada.
+Copyright 2021 [Canadian Food Inspection Agency of Canada], Government of Canada.
 
 Distributed under the MIT license.
 
@@ -109,3 +109,4 @@ Distributed under the MIT license.
 [Echarts]: https://echarts.apache.org/en/index.html
 [select2]: https://select2.org/
 [jinja2]: https://jinja.palletsprojects.com/en/3.0.x/
+[Canadian Food Inspection Agency of Canada]: https://inspection.canada.ca/science-and-research/our-laboratories/ncfad-winnipeg/eng/1549576575939/1549576643836

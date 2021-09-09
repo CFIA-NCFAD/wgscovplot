@@ -1,6 +1,4 @@
 import logging
-import numpy as np
-import sys
 import requests
 import pandas as pd
 import os
@@ -103,7 +101,7 @@ def get_gene_feature(annotation: Path) -> list:
     # print (color_pallet)
     colour_cycle = cycle(GENE_FEATURE_COLORS)
     for seq_record in SeqIO.parse(annotation, "genbank"):
-        index = 0
+        index = 0  # the index must be continuous for data handling with Echarts
         for seq_feature in seq_record.features:
             if seq_feature.type in ["CDS", "source"]:
                 continue
@@ -138,7 +136,7 @@ def write_html_coverage_plot(samples_name: list,
     )
     template_file = render_env.get_template("covplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
-        logging.info('Retrieving JS and CSS for Coverage Plot')
+        logging.info('Retrieving JS and CSS resources for Coverage Plot')
         scripts_css = {}
         for k, v in resources.items():
             logging.info(f'Getting HTML resource "{k}" from "{v}"')
