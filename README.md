@@ -27,13 +27,13 @@
 ### Install by pip
 
 ```
-   pip install wgscovplot
+pip install wgscovplot
 ```
 
 ### Install by conda
 
 ```
-   conda install -c bioconda wgscovplot
+conda install -c bioconda wgscovplot
 ```
 
 If the installation was successful, you should be able to type `wgscovplot --help` and get a help message on how to use the tool.
@@ -42,25 +42,25 @@ If the installation was successful, you should be able to type `wgscovplot --hel
 ## Usage
 
 ```
-   Usage: wgscovplot [OPTIONS]
-   
-   Options:
-     -s, --samples-data PATH         List of Sample Names, Coverage, VCF File
-                                     [required]
-     -o, --output-html PATH          Output Interactive HTML Coverage Plot
-                                     [default: coverage_plot.html]
-     -r, --ref-seq PATH              Reference genome sequences file  [required]
-     -b, --bed PATH                  Bed file
-     -g, --genbank PATH              Genbank file contains features of reference
-                                     sequence  [required]
-     --verbose / --no-verbose        Verbose logs  [default: no-verbose]
-     --version / --no-version        Print wgscovplot version and exit
-     --install-completion [bash|zsh|fish|powershell|pwsh]
-                                     Install completion for the specified shell.
-     --show-completion [bash|zsh|fish|powershell|pwsh]
-                                     Show completion for the specified shell, to
-                                     copy it or customize the installation.
-     --help                          Show this message and exit.
+Usage: wgscovplot [OPTIONS]
+
+Options:
+ -s, --samples-data PATH         List of Sample Names, Coverage, VCF File
+                                 [required]
+ -o, --output-html PATH          Output Interactive HTML Coverage Plot
+                                 [default: coverage_plot.html]
+ -r, --ref-seq PATH              Reference genome sequences file  [required]
+ -b, --bed PATH                  Bed file
+ -g, --genbank PATH              Genbank file contains features of reference
+                                 sequence  [required]
+ --verbose / --no-verbose        Verbose logs  [default: no-verbose]
+ --version / --no-version        Print wgscovplot version and exit
+ --install-completion [bash|zsh|fish|powershell|pwsh]
+                                 Install completion for the specified shell.
+ --show-completion [bash|zsh|fish|powershell|pwsh]
+                                 Show completion for the specified shell, to
+                                 copy it or customize the installation.
+ --help                          Show this message and exit.
 ```
 
 ### Prepare Samples Data
@@ -87,7 +87,7 @@ The tool will generate the Coverage Plot for samples in HTML file
 ### Command
 
 ```
-   wgscovplot -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb
+wgscovplot -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb
 ```
 
 ## Authors
