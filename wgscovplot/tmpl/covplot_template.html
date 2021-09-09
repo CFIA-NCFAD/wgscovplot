@@ -434,7 +434,6 @@
         var y_start;
         function renderItem(params, api){
             var categoryIndex = api.value(0);
-            
             var start = api.coord([api.value(1), categoryIndex]);
             if (categoryIndex==0){
                 y_start = start[1]
@@ -479,7 +478,7 @@
                 textContent: {
                     type: 'text',
                     style: {
-                        text: gene_feature[categoryIndex].name, 
+                        text: gene_feature[categoryIndex].name,
                         fill: gene_feature[categoryIndex].itemStyle.color,
                         fontStyle: 'normal',
                         fontSize: 12,

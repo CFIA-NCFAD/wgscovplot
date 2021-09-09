@@ -2,13 +2,15 @@
 
 """Console script."""
 import logging
+import typer
+import pandas as pd
 from pathlib import Path
 from typing import Optional
-import typer
 from rich.logging import RichHandler
 from sys import version_info
 from Bio.SeqIO.FastaIO import SimpleFastaParser
-from .wgscovplot import (write_html_coverage_plot, prepare_data, get_gene_feature)
+from .wgscovplot import (write_html_coverage_plot, get_samples_name,
+                         get_variant_data, get_depth_data, get_gene_feature)
 from wgscovplot import __version__
 
 app = typer.Typer()
@@ -60,8 +62,14 @@ def main(
             for name, seq in SimpleFastaParser(fh):
                 ref_seq = seq
 
-    gene_feature = get_gene_feature(genbank, bed)
-    samples_name, depth_data, variant_data, coverage_stat = prepare_data(samples_data)
+    gene_feature = get_gene_feature(genbank)
+
+    df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
+    df_samples = df_samples.fillna(0)
+
+    samples_name = get_samples_name(df_samples)
+    depth_data, coverage_stat = get_depth_data(df_samples, 10)
+    variant_data = get_variant_data(df_samples)
     write_html_coverage_plot(samples_name=samples_name, depth_data=depth_data, variant_data=variant_data,
                              ref_seq=ref_seq, coverage_stat=coverage_stat, gene_feature=gene_feature,
                              output_html=output_html)

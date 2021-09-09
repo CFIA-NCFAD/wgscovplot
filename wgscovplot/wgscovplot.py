@@ -3,15 +3,37 @@ import numpy as np
 import sys
 import requests
 import pandas as pd
+import os
 
-from typing import Optional
+from typing import Optional, Tuple
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
-from enum import Enum
 from Bio import SeqIO
+from itertools import cycle
 
-GENE_FEATURE_COLOR = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00',
-                      '#cab2d6', '#6a3d9a', '#FF33D3', '#b15928', '#0006fc']
+GENE_FEATURE_COLORS = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
+                       '#CAB2D6',
+                       '#6A3D9A', '#FF33D3', '#B15928', '#0006FC', '#2FB0EC', '#F3D742', '#2E9CE1', '#273D63',
+                       '#980B92',
+                       '#BBB873', '#EEC678', '#47E10B', '#E3139B', '#151179', '#293948', '#5F6005', '#FE24BE',
+                       '#A7C36B',
+                       '#D454DD', '#A68E2D', '#DB5AAC', '#405425', '#A608E4', '#533551', '#367521', '#64B875',
+                       '#6DB011',
+                       '#F5DD11', '#8A8517', '#F8E541', '#2D2A50', '#AAC3CC', '#C5D840', '#B79619', '#BBB2FE',
+                       '#E37B03',
+                       '#AFBB3E', '#74A110', '#E9877E', '#973F28', '#AFCA57', '#6E5EDE', '#B95FC3', '#C10AC8',
+                       '#A59B67',
+                       '#624F98', '#57A6AF', '#2650FB', '#94AAD1', '#5C1662', '#B8A1A1', '#104DB7', '#C6CBEE',
+                       '#AA694D',
+                       '#9B67DA', '#8DE7BC', '#866D49', '#72CEDC', '#574B7C', '#CD4474', '#593A60', '#2A6BB7',
+                       '#286028',
+                       '#6965EB', '#14CB29', '#956709', '#EB6D76', '#7A9A21', '#692C3C', '#AABBB5', '#1989AE',
+                       '#D78DCC',
+                       '#C43AAA', '#BBC863', '#E55F9D', '#741B13', '#6A7675', '#221A53', '#1804EC', '#D61D88',
+                       '#1D50B3',
+                       '#CF0E24', '#D791A9', '#0892FE', '#F5A865', '#91EBC2', '#9F650D', '#1B0A0F', '#1E9E88',
+                       '#B42E38',
+                       '#9710C9']
 
 resources = {
     'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js',
@@ -21,19 +43,41 @@ resources = {
 }
 
 
-def read_depths(fpath) -> pd.DataFrame:
+def read_regular_depths(fpath) -> pd.DataFrame:
     df = pd.read_table(fpath,
                        names=['sample_name', 'reference', 'pos', 'depth'],
                        header=None)
     return df
 
 
-def parse_vcf(vcf_path) -> pd.DataFrame:
-    df = pd.read_table(vcf_path,
-                       comment='#',
-                       header=None,
-                       names=['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT', 'sample'])
+def read_amplicon_depths(fpath) -> pd.DataFrame:
+    df = pd.read_table(fpath,
+                       names=['reference', 'start', 'end', 'amplicon', 'depth'],
+                       header=None)
     return df
+
+
+def parse_vcf(vcf_file) -> Tuple[str, pd.DataFrame]:
+    """Read VCF file into a DataFrame"""
+    # https://github.com/peterk87/xlavir/blob/fbe11b4cef38bc291500c69d62b8599912c45887/xlavir/tools/variants.py#L211
+    gzipped = vcf_file.endswith('.gz')
+    with os.popen(f'zcat < {vcf_file.absolute()}') if gzipped else open(vcf_file) as fh:
+        vcf_cols = []
+        variant_caller = ''
+        for line in fh:
+            if line.startswith('##source='):
+                variant_caller = line.strip().replace('##source=', '')
+            if line.startswith('##nanopolish'):
+                variant_caller = 'nanopolish'
+            if line.startswith('#CHROM'):
+                vcf_cols = line[1:].strip().split('\t')
+                break
+        df = pd.read_table(fh,
+                           comment='#',
+                           header=None,
+                           names=vcf_cols)
+        df = df[~df.duplicated(['CHROM', 'POS', 'ID', 'REF', 'ALT', 'FILTER'], keep='first')]
+    return variant_caller, df
 
 
 def get_interval_coords(df, threshold=0):
@@ -51,89 +95,32 @@ def get_interval_coords(df, threshold=0):
     return '; '.join([f'{xs[0]}-{xs[-1]}' for xs in coords])
 
 
-def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
+def get_gene_feature(annotation: Path) -> list:
     gene_feature = []
-    # number_of_colors = 13
+    # number_of_colors = 100
     # color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
     # for i in range(number_of_colors)]
+    # print (color_pallet)
+    colour_cycle = cycle(GENE_FEATURE_COLORS)
     for seq_record in SeqIO.parse(annotation, "genbank"):
         index = 0
         for seq_feature in seq_record.features:
-            if seq_feature.type != "CDS" and seq_feature.type != "source":
-                feature_dict = {
-                    "name": "",
-                    "value": [],
-                    "itemStyle": {
-                        "color": ''
-                    }
-                }
-                start_pos = int(seq_feature.location.start) + 1
-                end_pos = int(seq_feature.location.end)
-                strand = seq_feature.strand
-                if seq_feature.type == "5'UTR" or seq_feature.type == "3'UTR":
-                    feature_dict.update({"name": seq_feature.type})
-                    feature_dict.update({"value": [index, start_pos, end_pos, 0, strand]})
-                    feature_dict["itemStyle"].update({"color": GENE_FEATURE_COLOR[index]})
-                else:
-                    feature_name = seq_feature.qualifiers['gene'][0]
-                    feature_dict.update({"name": feature_name})
-                    feature_dict.update({"value": [index, start_pos, end_pos, 0, strand]})
-                    feature_dict["itemStyle"].update({"color": GENE_FEATURE_COLOR[index]})
-                index = index + 1
-                gene_feature.append(feature_dict)
-    if bed:
-        bed_1, bed_2 = get_bed(bed)
-        for i, amplicon in enumerate(bed_1):
-            gene_feature.append({
-                "name": "Amplicon nCoV-2019_odd",
-                "value": [i + 1 + index, amplicon[0], amplicon[1], 90, 1],
-                "itemStyle": {
-                    "color": '#666'
-                }
-            })
-        for j, amplicon in enumerate(bed_2):
-            gene_feature.append({
-                "name": "Amplicon nCoV-2019_even",
-                "value": [j + 1 + index, amplicon[0], amplicon[1], 80, 1],
-                "itemStyle": {
-                    "color": '#666'
-                }
-            })
-
-    return gene_feature
-
-
-def get_bed(bed_file: Path):
-    # https://github.com/Psy-Fer/CoVarPlot/blob/f81f20426b26c29425fb265ef94f12020a40e237/covarplot.py#L129
-    tmp_1 = []
-    tmp_2 = []
-    bed_1 = []
-    bed_2 = []
-    with open(bed_file, 'r') as infile:
-        for line in infile:
-            line = line.strip('\n')
-            line = line.strip('\t')
-            line = line.split('\t')
-            if "alt" in line[3]:
+            if seq_feature.type in ["CDS", "source"]:
                 continue
-            if line[4][-1] == '1':
-                tmp_1.append(int(line[1]))
-                tmp_1.append(int(line[2]))
-            elif line[4][-1] == '2':
-                tmp_2.append(int(line[1]))
-                tmp_2.append(int(line[2]))
+            if seq_feature.type in ["5'UTR", "3'UTR"]:
+                feature_name = seq_feature.type
             else:
-                sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(line[-1]))
-
-    tmp_1.sort()
-    tmp_2.sort()
-
-    for i in range(0, len(tmp_1) - 3 + 1, 4):
-        bed_1.append((tmp_1[i], tmp_1[i + 3]))
-    for i in range(0, len(tmp_2) - 3 + 1, 4):
-        bed_2.append((tmp_2[i], tmp_2[i + 3]))
-
-    return np.array(bed_1), np.array(bed_2)
+                feature_name = seq_feature.qualifiers['gene'][0]
+            start_pos = int(seq_feature.location.start) + 1
+            end_pos = int(seq_feature.location.end)
+            strand = seq_feature.strand
+            gene_feature.append(
+                dict(name=feature_name,
+                     value=[index, start_pos, end_pos, 0, strand],
+                     itemStyle={"color": next(colour_cycle)})
+            )
+            index = index + 1
+    return gene_feature
 
 
 def write_html_coverage_plot(samples_name: list,
@@ -151,7 +138,7 @@ def write_html_coverage_plot(samples_name: list,
     )
     template_file = render_env.get_template("covplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
-        logging.info('Retrieving JS and CSS for Interactive Coverage Plot')
+        logging.info('Retrieving JS and CSS for Coverage Plot')
         scripts_css = {}
         for k, v in resources.items():
             logging.info(f'Getting HTML resource "{k}" from "{v}"')
@@ -166,26 +153,20 @@ def write_html_coverage_plot(samples_name: list,
                                         **scripts_css))
 
 
-def prepare_data(samples_name: Path):
-    df_samples = pd.read_table(samples_name, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
-    df_samples = df_samples.fillna(0)
-    depth_data = {}
-    variant_data = {}
-    coverage_stat = []
-    low = 10
+def get_samples_name(df_samples) -> dict():
     samples_dict = {}
     for i, sample in enumerate(df_samples.index):
-        samples_dict[i] = sample
         logging.info(f'Preparing data for "{sample}"')
-        df_coverage_depth = read_depths(df_samples.loc[sample, 'coverage_depth_file'])
-        variant_info = {}
-        if df_samples.loc[sample, 'vcf_file'] != 0:
-            df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'])
-            for idx in df_vcf.index:
-                variant_info[df_vcf.loc[idx, 'POS']] = [df_vcf.loc[idx, 'REF'], df_vcf.loc[idx, 'ALT']]
-        variant_data[sample] = variant_info
-        depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
+        samples_dict[i] = sample
+    return samples_dict
 
+
+def get_depth_data(df_samples, low=10):
+    depth_data = {}
+    coverage_stat = []
+    for i, sample in enumerate(df_samples.index):
+        df_coverage_depth = read_regular_depths(df_samples.loc[sample, 'coverage_depth_file'])
+        depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
         # Get Coverage Statistic for each samples
         low_depth = (df_coverage_depth.depth < 10)
         zero_depth = (df_coverage_depth.depth == 0)
@@ -196,7 +177,17 @@ def prepare_data(samples_name: Path):
         pos_no_cov = zero_depth.sum()
         region_low_cov = get_interval_coords(df_coverage_depth, low - 1)
         region_no_cov = get_interval_coords(df_coverage_depth, 0)
-
         coverage_stat.append(
             [sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov])
-    return samples_dict, depth_data, variant_data, coverage_stat
+    return depth_data, coverage_stat
+
+
+def get_variant_data(df_samples) -> dict():
+    variants_data = {}
+    for i, sample in enumerate(df_samples.index):
+        variant_info = {}
+        if df_samples.loc[sample, 'vcf_file'] != 0:
+            df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'])[1]
+            variant_info = {row.POS: (row.REF, row.ALT) for row in df_vcf.itertuples()}
+        variants_data[sample] = variant_info
+    return variants_data
