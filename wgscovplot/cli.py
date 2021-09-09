@@ -8,20 +8,20 @@ import typer
 from rich.logging import RichHandler
 from sys import version_info
 from Bio.SeqIO.FastaIO import SimpleFastaParser
-from .coverage_plot import (write_html_coverage_plot, prepare_data, get_gene_feature)
-from coverage_plot import __version__
+from .wgscovplot import (write_html_coverage_plot, prepare_data, get_gene_feature)
+from wgscovplot import __version__
 
 app = typer.Typer()
 
 
 def version_callback(value: bool):
     if value:
-        typer.echo(f"shicp version {__version__}")
+        typer.echo(f"wgscovplot version {__version__}")
         raise typer.Exit()
 
 
 @app.command(
-    epilog=f"shicp version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
+    epilog=f"wgscovplot version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
 )
 def main(
         samples_data: Path = typer.Option(..., "-s", "--samples-data", help="List of Sample Names, Coverage, VCF File"),
@@ -43,7 +43,7 @@ def main(
         verbose: bool = typer.Option(False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(None,
                                                callback=version_callback,
-                                               help=f'Print {"shicp version"} and exit')
+                                               help=f'Print {"wgscovplot version"} and exit')
 ):
     from rich.traceback import install
 

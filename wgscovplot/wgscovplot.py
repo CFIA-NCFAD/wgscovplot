@@ -1,21 +1,24 @@
 import logging
-from typing import Optional
+import numpy as np
+import sys
+import requests
 import pandas as pd
+
+from typing import Optional
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from enum import Enum
 from Bio import SeqIO
-import numpy as np
-import sys
 
+GENE_FEATURE_COLOR = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00',
+                      '#cab2d6', '#6a3d9a', '#FF33D3', '#b15928', '#0006fc']
 
-class Resources(Enum):
-    ECHARTS: str = "https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"
-    SELECT2_CSS: str = "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-    SELECT2_JS: str = "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"
-    JQUERY: str = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-    GENE_FEATURE_COLOR = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00',
-                          '#cab2d6', '#6a3d9a', '#FF33D3', '#b15928', '#0006fc']
+resources = {
+    'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js',
+    'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+    'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+}
 
 
 def read_depths(fpath) -> pd.DataFrame:
@@ -70,12 +73,12 @@ def get_gene_feature(annotation: Path, bed: Optional[Path] = '') -> list:
                 if seq_feature.type == "5'UTR" or seq_feature.type == "3'UTR":
                     feature_dict.update({"name": seq_feature.type})
                     feature_dict.update({"value": [index, start_pos, end_pos, 0, strand]})
-                    feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
+                    feature_dict["itemStyle"].update({"color": GENE_FEATURE_COLOR[index]})
                 else:
                     feature_name = seq_feature.qualifiers['gene'][0]
                     feature_dict.update({"name": feature_name})
                     feature_dict.update({"value": [index, start_pos, end_pos, 0, strand]})
-                    feature_dict["itemStyle"].update({"color": Resources.GENE_FEATURE_COLOR.value[index]})
+                    feature_dict["itemStyle"].update({"color": GENE_FEATURE_COLOR[index]})
                 index = index + 1
                 gene_feature.append(feature_dict)
     if bed:
@@ -146,8 +149,13 @@ def write_html_coverage_plot(samples_name: list,
         lstrip_blocks=True,
         loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
     )
-    template_file = render_env.get_template("stack_coverage_template.html")
+    template_file = render_env.get_template("covplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
+        logging.info('Retrieving JS and CSS for Interactive Coverage Plot')
+        scripts_css = {}
+        for k, v in resources.items():
+            logging.info(f'Getting HTML resource "{k}" from "{v}"')
+            scripts_css[k] = requests.get(v).text
         fout.write(template_file.render(samples_name=samples_name,
                                         depth_data=depth_data,
                                         variant_data=variant_data,
@@ -155,10 +163,7 @@ def write_html_coverage_plot(samples_name: list,
                                         gene_feature=gene_feature,
                                         ref_seq=ref_seq,
                                         ref_seq_length=len(ref_seq),
-                                        echarts_js=Resources.ECHARTS.value,
-                                        select2_css=Resources.SELECT2_CSS.value,
-                                        select2_js=Resources.SELECT2_JS.value,
-                                        jquery=Resources.JQUERY.value))
+                                        **scripts_css))
 
 
 def prepare_data(samples_name: Path):

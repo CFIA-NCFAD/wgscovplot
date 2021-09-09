@@ -17,6 +17,7 @@ requirements = [
     'jinja2',
     'pandas',
     'biopython',
+    'requests'
 ]
 
 setup_requirements = ['pytest-runner', ]
@@ -37,20 +38,16 @@ setup(
     description="Generate a standalone HTML file with an interactive coverage plot",
     entry_points={
         'console_scripts': [
-            'shicp=coverage_plot.cli:app',
+            'wgscovplot=wgscovplot.cli:app',
         ],
     },
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='shicp',
-    name='shicp',
-    packages=find_packages(
-        where='sequencing_coverage_plot',
-        include=['coverage_plot']
-    ),
-    package_dir={"": "sequencing_coverage_plot"},
+    keywords='wgscovplot',
+    name='wgscovplot',
+    packages=find_packages(include=['wgscovplot']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

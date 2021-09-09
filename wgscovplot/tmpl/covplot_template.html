@@ -2,11 +2,170 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Interactive Coverage Plot</title>
-    <script src="{{jquery}}"></script>
-    <script type="text/javascript" src="{{ echarts_js }}"></script>
-    <link href="{{select2_css}}" rel="stylesheet" />
-    <script src="{{select2_js}}"></script>
+    <title>WGS Coverage Plot</title>
+    <script>{{ jquery_js }}</script>
+    <script>{{ echarts_js }}</script>
+    <style>{{ select2_css }}</style>
+    <script>{{ select2_js }}</script>
+    <style>
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 16px;
+            transition: 0.3s;
+        }
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        .chart-container {
+            display: none;
+            padding: 6px 12px;
+        }
+
+        #table_id {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            padding-top: 1%;
+            width: 100%;
+        }
+
+        #table_id td, #table_id th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #table_id tr:nth-child(even){
+            background-color: #f2f2f2;
+        }
+
+        #table_id tr:hover {
+            background-color: #ddd;
+        }
+
+        #table_id tr {
+            justify-content: space-between;
+        }
+
+        #table_id th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+            justify-content: space-between;
+        }
+        .sidepanel  {
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #ffff;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidepanel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidepanel a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidepanel .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+        }
+
+        .openbtn {
+            font-size: 15px;
+            cursor: pointer;
+            background-color: #666;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            display: none
+        }
+
+        .openbtn:hover {
+            background-color:#444;
+        }
+
+        .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        .active, .accordion:hover {
+            background-color: #ccc;
+        }
+
+        .accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+
+        }
+
+        .accordion.active:after {
+            content: "\2212";
+
+        }
+
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: scroll;
+            transition: max-height 0.2s ease-out;
+        }
+        .row-content {
+            margin:0px auto;
+            padding: 10px 0px 10px 0px;
+            border-bottom: 2px ridge;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -201,166 +360,6 @@
             </tr>
         {% endfor %}
     </table>
-
-    <style>
-        img {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-        }
-
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 5px 16px;
-            transition: 0.3s;
-        }
-
-        .tab button:hover {
-            background-color: #ddd;
-        }
-
-        .tab button.active {
-            background-color: #ccc;
-        } 
-        
-        .chart-container {
-            display: none;
-            padding: 6px 12px;
-        }
-
-        #table_id {
-            font-family: Arial, Helvetica, sans-serif;
-            border-collapse: collapse;
-            padding-top: 1%;
-            width: 100%;
-        }
-
-        #table_id td, #table_id th {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        #table_id tr:nth-child(even){
-            background-color: #f2f2f2;
-        }
-
-        #table_id tr:hover {
-            background-color: #ddd;
-        }
-
-        #table_id tr {
-            justify-content: space-between;
-        }
-
-        #table_id th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            text-align: left;
-            background-color: #04AA6D;
-            color: white;
-            justify-content: space-between;
-        }
-        .sidepanel  {
-            width: 0;
-            position: fixed;
-            z-index: 1;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-color: #ffff;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-
-        .sidepanel a {
-            padding: 8px 8px 8px 32px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #818181;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .sidepanel a:hover {
-            color: #f1f1f1;
-        }
-
-        .sidepanel .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-        }
-
-        .openbtn {
-            font-size: 15px;
-            cursor: pointer;
-            background-color: #666;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            display: none
-        }
-
-        .openbtn:hover {
-            background-color:#444;
-        }
-
-        .accordion {
-            background-color: #eee;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-            transition: 0.4s;
-        }
-
-        .active, .accordion:hover {
-            background-color: #ccc;
-        }
-
-        .accordion:after {
-            content: '\002B';
-            color: #777;
-            font-weight: bold;
-            float: right;
-            margin-left: 5px;
-
-        }
-
-        .accordion.active:after {
-            content: "\2212";
-
-        }
-
-        .panel {
-            padding: 0 18px;
-            background-color: white;
-            max-height: 0;
-            overflow: scroll;
-            transition: max-height 0.2s ease-out;
-        }
-        .row-content {
-            margin:0px auto;
-            padding: 10px 0px 10px 0px;
-            border-bottom: 2px ridge;
-        }
-        
-    </style>
 
     <script>
         (function() {

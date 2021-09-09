@@ -3,8 +3,8 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-include sequencing_coverage_plot/coverage_plot/tmpl/stack_amplicon_coverage_template.html
-include sequencing_coverage_plot/coverage_plot/tmpl/stack_coverage_template.html
+include wgscovplot/tmpl/amplicon_covplot_template.html
+include wgscovplot/tmpl/covplot_template.html
 
 recursive-include tests *
 recursive-exclude * __pycache__
