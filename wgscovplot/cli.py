@@ -12,6 +12,7 @@ from Bio.SeqIO.FastaIO import SimpleFastaParser
 from .wgscovplot import (write_html_coverage_plot, get_samples_name,
                          get_variant_data, get_depth_data, get_gene_feature)
 from wgscovplot import __version__
+import markdown
 
 app = typer.Typer()
 
@@ -34,10 +35,6 @@ def main(
                                      "-r",
                                      "--ref-seq",
                                      help="Reference genome sequences file"),
-        bed: Optional[Path] = typer.Option(None,
-                                           "-b",
-                                           "--bed",
-                                           help="Bed file"),
         genbank: Path = typer.Option(...,
                                      "-g",
                                      "--genbank",
@@ -66,6 +63,9 @@ def main(
 
     df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
     df_samples = df_samples.fillna(0)
+
+    dirpath = Path(__file__).parent.parent
+    print(dirpath)
 
     samples_name = get_samples_name(df_samples)
     depth_data, coverage_stat = get_depth_data(df_samples, 10)

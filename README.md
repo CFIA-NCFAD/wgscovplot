@@ -8,7 +8,7 @@
 
 ### Software Version
 
-- The tool is still in the development phases with current version is ```dev1.0.0```
+- The tool is still in the development phases with current version is ```1.0.0.dev0```
 
 ### Programming Languages
 
@@ -63,11 +63,13 @@ Options:
  --help                          Show this message and exit.
 ```
 
+
+
 ### Prepare Samples Data
 
 #### The tool currently requires users to prepare samples data file (tsv file) is as the format below. We are updating the tool so that user just simply provide directory and file's identifiers
 
-| Sample Name | Depth file                              | Variant vcf  
+| Sample Name | Depth file                              | Variant vcf                  
 |-------------|-----------------------------------------|-------------------------------|
 | Sample-01	  | path/to/sample-01-coverage-depth        | path/to/sample-01-variant-vcf | 
 | Sample-02	  | path/to/sample-02-coverage-depth        | path/to/sample-02-variant-vcf | 

@@ -1,13 +1,13 @@
-include AUTHORS.rst
-include CONTRIBUTING.rst
-include HISTORY.rst
+include CONTRIBUTING.md
+include HISTORY.md
 include LICENSE
 include README.md
 include wgscovplot/tmpl/amplicon_covplot_template.html
 include wgscovplot/tmpl/covplot_template.html
 
 recursive-include tests *
+recursive-include docs *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
-recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
+recursive-include *.md conf.py Makefile make.bat *.jpg *.png *.gif

@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 requirements = [
@@ -17,7 +17,8 @@ requirements = [
     'jinja2',
     'pandas',
     'biopython',
-    'requests'
+    'requests',
+    'markdown'
 ]
 
 setup_requirements = ['pytest-runner', ]
@@ -52,6 +53,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/nhhaidee/sequencing_coverage_plot',
-    version='dev1.0.0',
+    version='1.0.0.dev0',
     zip_safe=False,
 )
