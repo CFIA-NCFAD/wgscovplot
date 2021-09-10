@@ -37,7 +37,9 @@ resources = {
     'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js',
     'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
     'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
-    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+    'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js',
+    'boostrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'
 }
 
 
@@ -127,6 +129,7 @@ def write_html_coverage_plot(samples_name: list,
                              ref_seq: str,
                              coverage_stat: list,
                              gene_feature: list,
+                             about_html,
                              output_html: Path) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -148,6 +151,7 @@ def write_html_coverage_plot(samples_name: list,
                                         gene_feature=gene_feature,
                                         ref_seq=ref_seq,
                                         ref_seq_length=len(ref_seq),
+                                        about_html=about_html,
                                         **scripts_css))
 
 

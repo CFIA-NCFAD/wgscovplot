@@ -69,11 +69,11 @@ Options:
 
 #### The tool currently requires users to prepare samples data file (tsv file) is as the format below. We are updating the tool so that user just simply provide directory and file's identifiers
 
-| Sample Name | Depth file                              | Variant vcf                  
-|-------------|-----------------------------------------|-------------------------------|
-| Sample-01	  | path/to/sample-01-coverage-depth        | path/to/sample-01-variant-vcf | 
-| Sample-02	  | path/to/sample-02-coverage-depth        | path/to/sample-02-variant-vcf | 
-| Sample-03	  | path/to/sample-03-coverage-depth        | path/to/sample-03-variant-vcf |
+| Sample Name | Depth file                         | Variant vcf                   /                
+|:---         |:---                                |:---                           |
+| Sample-01	  | path/to/sample-01-coverage-depth   | path/to/sample-01-variant-vcf | 
+| Sample-02	  | path/to/sample-02-coverage-depth   | path/to/sample-02-variant-vcf | 
+| Sample-03	  | path/to/sample-03-coverage-depth   | path/to/sample-03-variant-vcf |
 
 #### Note that no header is needed
 
@@ -94,7 +94,7 @@ wgscovplot -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g
 
 ## Authors
 
-* Development lead: [Peter Kruczkiewicz]
+* Development Lead: [Peter Kruczkiewicz]
 * Software Developer: [Hai Nguyen]
 
 ## License

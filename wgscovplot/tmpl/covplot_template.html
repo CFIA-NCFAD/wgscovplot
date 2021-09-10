@@ -7,6 +7,8 @@
     <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
+    <style>{{ bootstrap_css }}</style>
+    <script>{{ bootstrap_js }}</script>
     <style>
         img {
             display: block;
@@ -159,10 +161,16 @@
             overflow: scroll;
             transition: max-height 0.2s ease-out;
         }
-        .row-content {
+        h2 {
             margin:0px auto;
             padding: 10px 0px 10px 0px;
             border-bottom: 2px ridge;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+           border: 1px solid black;
         }
 
     </style>
@@ -181,6 +189,7 @@
 
     <div id="sidepanel_id" class="sidepanel">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+
         <button class="accordion">General</button>
 
         <div class="panel">
@@ -241,76 +250,7 @@
         </div>
     </div>
     <div id="about_id" class="chart-container">
-        <h2>Standalone HTML Interactive Coverage Plot (SHICP)</h2>
-        <p>The tool generates the HTML Interactive Coverage Plot given coverage depth information, variants and DNA gene features.</p>
-        <h3 class="row-content">Dependencies</h3>
-
-        <h4>Software Version</h4>
-        <ul>
-            <li>The tool is still in the development phases with current version is 1.0.0dev</li>
-        </ul>
-        <h4>Programming Languages</h4>
-        <ul>
-            <li>Python (>= 3.6)</li>
-            <li>HTML/CSS/Javascript</li>
-        </ul>
-        <h4>Tools/Libraries</h4>
-        <ul>
-            <li><a style="text-decoration: none" href="https://echarts.apache.org/en/index.html">Echarts</a></li>
-            <li>Python libraries: Biopython, rich, typer, pandas</li>
-            <li><a style="text-decoration: none" href="https://select2.org/">select2</a></li>
-            <li><a style="text-decoration: none" href="https://jinja.palletsprojects.com/en/2.11.x/templates/">jinja2</a></li>
-        </ul>
-        <h3 class="row-content">Usage</h3>
-        <h4>Prepare Samples Data</h4>
-        <p>The tsv file of samples data (samples.tsv) is as follow. Note that no header is needed</p>
-        <table style="border:solid; border-collapse: collapse;">
-            <tr>
-              <td style="border: solid black;border-collapse: collapse;">Sample-01</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-01-coverage-depth</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-01-variant-vcf</td>
-            </tr>
-            <tr>
-              <td style="border: solid black;border-collapse: collapse;">Sample-02</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-02-coverage-depth</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-02-variant-vcf</td>
-            </tr>
-            <tr>
-                <td style="border: solid black;border-collapse: collapse;">Sample-03</td>
-                <td style="border: solid black;border-collapse: collapse;">path/to/sample-03-coverage-depth</td>
-                <td style="border: solid black;border-collapse: collapse;">path/to/sample-03-variant-vcf</td>
-            </tr>
-        </table>
-        <p>Others data</p>
-        <ul>
-            <li>Reference Sequences (reference.fasta)</li>
-            <li>Genbank file contains gene features (sequence_genbank.gb)</li>
-        </ul>
-        <h4>Output</h4>
-        <p>The tool will generate the Coverage Plot for samples in HTML file</p>
-        <h4>Command</h4>
-        <p>shicp -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb</p>
-
-        <h3 class="row-content">HTML File Structure</h3>
-        <ul>
-            <li><strong>Chart Options Tab: </strong>allows user to customize chart display such as select which samples to be displayed, set datazoom, tooltips</li>
-            <li><Strong>Coverage Plot Tab:</Strong> displays Coverage Plot for selected samples in which user can do interactive oprerations such as zoom in/out, view for specific regions ect...</li>
-            <li><strong>Summary Information Tab: </strong>displays summary information for all samples included in an analysis</li>
-            <li><strong>About Tab: </strong>Sofware information, user guide</li>
-        </ul>
-
-        <h3 class="row-content">Author</h3>
-        <ul>
-            <li>Development Lead: Peter Kruczkiewicz (<a href="mailto:peter.kruczkiewicz@gmail.com">peter.kruczkiewicz@gmail.com</a>)</li>
-            <li>Software Developer: Hai Nguyen (<a href="mailto:nhhaidee@gmail.com">nhhaidee@gmail.com</a>)</li>
-        </ul>
-        <h3 class="row-content">License</h3>
-        <ul>
-            <a href="https://inspection.canada.ca/science-and-research/our-laboratories/ncfad-winnipeg/eng/1549576575939/1549576643836"><img src="https://avatars.githubusercontent.com/u/83306868?s=200&v=4" width="50" height="50"></a>
-            <p style="text-align: center"><strong>&copy 2021 Canadian Food Inspection Agency of Canada, Government of Canada.</strong></p>
-            <p style="text-align: center"><strong>Distributed under the MIT license.</strong></p>
-        </ul>
-        
+        {{ about_html }}
     </div>
 
     <div id="fqa_id" class="chart-container">
