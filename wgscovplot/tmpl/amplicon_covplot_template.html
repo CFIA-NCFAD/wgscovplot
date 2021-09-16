@@ -3,173 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>WGS Coverage Plot</title>
+    <!---<style>{{ bootstrap_css }}</style>--->
     <script>{{ jquery_js }}</script>
+    <!---<script>{{ bootstrap_js }}</script>--->
     <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
-</head>
-<body>
-
-    <div class="tab">
-        <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
-        <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
-        <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
-        <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
-    </div>
-     
-    <div id="chart" class="chart-container" style="width:100%; height: 900px;"></div>
-
-    <div id="mySidepanel" class="sidepanel">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <button class="accordion">General</button>
-
-        <div class="panel">
-            <!----
-            <p>yMax:  
-                <select id="ymax" onchange="setYMax()" style="width: 25%">
-                    <option value="10" >10</option>
-                    <option value="100" >100</option>
-                    <option value="1000" >1000</option>
-                    <option value="10000" >10000</option>
-                    <option value="100000" >100000</option>
-                </select>
-            </p>
-            -->
-            <p>
-            <label for="samples">Samples:</label>
-            <select class="selected-samples" multiple="multiple" style="width: 75%" >
-                {% for id, sample in samples_name.items() %}
-                    <option value={{sample}}>{{sample}}</option>
-                {% endfor %}
-            </select>
-            </p>
-        </div>
-        
-        <button class="accordion">Tooltip</button>
-        <div class="panel">
-            <p>Show Tooltip:  
-                <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
-                    <option value="false" >Disable</option>
-                    <option value="true" selected>Enable</option>
-                </select>
-            </p>
-        </div>
-        <button class="accordion">Data Zoom</button>
-        <div class="panel">
-            <p>Show Slider:  
-                <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
-                    <option value="true" selected>Enable</option>
-                    <option value="false">Disable</option>
-                </select>
-            </p>
-            <form id="dataZoom">
-                <label for="start_pos">Start Pos:</label><br>
-                <input type="number" id="start_pos" value=1><br>
-                <label for="start_pos">End Pos:</label><br>
-                <input type="number" id="end_pos" value=29903><br><br>
-                <input type="button" onclick="setDataZoom()" value="Set DataZoom">
-                <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
-            </form>
-            <br>
-        </div>
-    </div>
-    <div id="about_id" class="chart-container">
-        <h2>Standalone HTML Interactive Coverage Plot (SHICP)</h2>
-        <p>The tool generates the HTML Interactive Coverage Plot given coverage depth information, variants and DNA gene features.</p>
-        <h3 class="row-content">Dependencies</h3>
-
-        <h4>Software Version</h4>
-        <ul>
-            <li>The tool is still in the development phases with current version is 1.0.0dev</li>
-        </ul>
-        <h4>Programming Languages</h4>
-        <ul>
-            <li>Python (>= 3.8)</li>
-            <li>HTML/CSS/Javascript</li>
-        </ul>
-        <h4>Tools/Libraries</h4>
-        <ul>
-            <li><a style="text-decoration: none" href="https://echarts.apache.org/en/index.html">Echarts</a></li>
-            <li>Python libraries: Biopython, rich, typer, pandas</li>
-            <li><a style="text-decoration: none" href="https://select2.org/">select2</a></li>
-            <li><a style="text-decoration: none" href="https://jinja.palletsprojects.com/en/2.11.x/templates/">jinja2</a></li>
-        </ul>
-        <h3 class="row-content">Usage</h3>
-        <h4>Prepare Samples Data</h4>
-        <p>The tsv file of samples data (samples.tsv) is as follow. Note that no header is needed</p>
-        <table style="border:solid; border-collapse: collapse;">
-            <tr>
-              <td style="border: solid black;border-collapse: collapse;">Sample-01</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-01-coverage-depth</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-01-variant-vcf</td>
-            </tr>
-            <tr>
-              <td style="border: solid black;border-collapse: collapse;">Sample-02</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-02-coverage-depth</td>
-              <td style="border: solid black;border-collapse: collapse;">path/to/sample-02-variant-vcf</td>
-            </tr>
-            <tr>
-                <td style="border: solid black;border-collapse: collapse;">Sample-03</td>
-                <td style="border: solid black;border-collapse: collapse;">path/to/sample-03-coverage-depth</td>
-                <td style="border: solid black;border-collapse: collapse;">path/to/sample-03-variant-vcf</td>
-            </tr>
-        </table>
-        <p>Others data</p>
-        <ul>
-            <li>Reference Sequences (reference.fasta)</li>
-            <li>Genbank file contains gene features (sequence_genbank.gb)</li>
-        </ul>
-        <h4>Output</h4>
-        <p>The tool will generate the Coverage Plot for samples in HTML file</p>
-        <h4>Command</h4>
-        <p>shicp -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb</p>
-
-        <h3 class="row-content">HTML File Structure</h3>
-        <ul>
-            <li><strong>Chart Options Tab: </strong>allows user to customize chart display such as select which samples to be displayed, set datazoom, tooltips</li>
-            <li><Strong>Coverage Plot Tab:</Strong> displays Coverage Plot for selected samples in which user can do interactive oprerations such as zoom in/out, view for specific regions ect...</li>
-            <li><strong>Summary Information Tab: </strong>displays summary information for all samples included in an analysis</li>
-            <li><strong>About Tab: </strong>Sofware information, user guide</li>
-        </ul>
-
-        <h3 class="row-content">Author</h3>
-        <ul>
-            <li>Development Lead: Peter Kruczkiewicz (<a href="mailto:peter.kruczkiewicz@gmail.com">peter.kruczkiewicz@gmail.com</a>)</li>
-            <li>Software Developer: Hai Nguyen (<a href="mailto:nhhaidee@gmail.com">nhhaidee@gmail.com</a>)</li>
-        </ul>
-        <h3 class="row-content">License</h3>
-        <ul>
-            <p><strong>&copy 2021 Canadian Food Inspection Agency of Canada, Government of Canada.</strong></p>
-            <p><strong>Distributed under the MIT license.</strong></p>
-        </ul>
-        
-    </div>
-    <table id="table_id" class="chart-container">
-        <tr>
-            <th>Sample Name</th>
-            <th>Mean Coverage</th>
-            <th>Median Coverage</th>
-            <th>Genome Coverage(>= 10x)</th>
-            <th>Low Coverage Positions (< 10X) </th>
-            <th>No Coverage Positions (0X)</th>
-            <th>Low Coverage Regions (< 10X)</th>
-            <th>No Coverage Regions (0X)</th>
-        </tr>
-        {% for data_info in coverage_stat %}
-            <tr>
-                <td>{{ data_info[0] }}</td>
-                <td>{{ data_info[1] }}</td>
-                <td>{{ data_info[2] }}</td>
-                <td>{{ data_info[3] }}</td>
-                <td>{{ data_info[4] }}</td>
-                <td>{{ data_info[5] }}</td>
-                <td>{{ data_info[6] }}</td>
-                <td>{{ data_info[7] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
     <style>
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
         .tab {
             overflow: hidden;
             border: 1px solid #ccc;
@@ -192,8 +37,8 @@
 
         .tab button.active {
             background-color: #ccc;
-        } 
-        
+        }
+
         .chart-container {
             display: none;
             padding: 6px 12px;
@@ -316,13 +161,144 @@
             overflow: scroll;
             transition: max-height 0.2s ease-out;
         }
-        .row-content {
+        h2 {
             margin:0px auto;
             padding: 10px 0px 10px 0px;
             border-bottom: 2px ridge;
         }
-        
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+           border: 1px solid black;
+        }
+
     </style>
+</head>
+<body>
+    <div class="tab">
+        <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
+        <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
+        <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
+        <button class="tablinks" onclick="showChart(event,'fqa_id')">FQA</button>
+        <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
+    </div>
+     
+    <div id="chart" class="chart-container" style="width:100%; height: 900px;"></div>
+
+    <div id="sidepanel_id" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+
+        <button class="accordion">General</button>
+
+        <div class="panel">
+            <p>
+            <label for="samples">Samples:</label>
+            <select class="selected-samples" multiple="multiple" style="width: 75%" >
+                {% for id, sample in samples_name.items() %}
+                    <option value={{sample}}>{{sample}}</option>
+                {% endfor %}
+            </select>
+            </p>
+        </div>
+
+        <button class="accordion">Axis</button>
+        <div class="panel">
+            <p>Scale:  
+                <select id="scale" onchange="setScale()" style="width: 25%">
+                    <option value="value" >Linear</option>
+                    <option value="log" selected>Log</option>
+                </select>
+            </p>
+            <p> 
+                <form id="ymaxform">
+                    <label for="ymaxform">yMax: </label>
+                    <input type="number" id="ymax" value=100000 style="width: 30%">
+                    <input type="button" onclick="setYMax()" value="Set yMax">
+                </form>
+            </p>
+
+        </div>
+
+        <button class="accordion">Tooltip</button>
+        <div class="panel">
+            <p>Show Tooltip:  
+                <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
+                    <option value="false" >Disable</option>
+                    <option value="true" selected>Enable</option>
+                </select>
+            </p>
+        </div>
+        <button class="accordion">Data Zoom</button>
+        <div class="panel">
+            <p>Show Slider:  
+                <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
+                    <option value="true" selected>Enable</option>
+                    <option value="false">Disable</option>
+                </select>
+            </p>
+            <form id="dataZoom">
+                <label for="start_pos">Start Pos:</label><br>
+                <input type="number" id="start_pos" value=1><br>
+                <label for="start_pos">End Pos:</label><br>
+                <input type="number" id="end_pos" value={{ref_seq_length}}><br><br>
+                <input type="button" onclick="setDataZoom()" value="Set DataZoom">
+                <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
+            </form>
+            <br>
+        </div>
+    </div>
+    <div id="about_id" class="chart-container">
+        {{ about_html }}
+    </div>
+
+    <div id="fqa_id" class="chart-container">
+        <h4>What happens when the number of samples shown on the chart changed?</h4>
+        <ul>
+            <li>By the default, at first up to 3 first samples are selected for displaying on the charts</li>
+            <li>The entire chart will be re-rendered if you select/change samples to be displayed and you need to set your chart options again, changing other options will not re-render the entire chart</li>
+        </ul>
+
+        <h4>What happens when browser zoom is set more than 100%?</h4>
+        <ul>
+            <li>Some minor graphic (such as some items get cut off) issues may happen. To fix this type of issue, try to adjust browser zoom and this may allow you to have better view</li>
+        </ul>
+
+        <h4>How many simultaneous samples are on the chart for the best view?</h4>
+        <ul>
+            <li>It is recommended that having around 5 simultaneous samples on the chart for the best view</li>
+        </ul>
+
+        <h4>What will you do when the plot is distorted or minimized?</h4>
+        <ul>
+            <li>This issue could happen when you shrink and maximize browser, to restore plot display just simply refresh browser</li>
+        </ul>
+
+    </div>
+    <table id="table_id" class="chart-container">
+        <tr>
+            <th>Sample Name</th>
+            <th>Mean Coverage</th>
+            <th>Median Coverage</th>
+            <th>Genome Coverage(>= 10x)</th>
+            <th>Low Coverage Positions (< 10X) </th>
+            <th>No Coverage Positions (0X)</th>
+            <th>Low Coverage Regions (< 10X)</th>
+            <th>No Coverage Regions (0X)</th>
+        </tr>
+        {% for data_info in coverage_stat %}
+            <tr>
+                <td>{{ data_info[0] }}</td>
+                <td>{{ data_info[1] }}</td>
+                <td>{{ data_info[2] }}</td>
+                <td>{{ data_info[3] }}</td>
+                <td>{{ data_info[4] }}</td>
+                <td>{{ data_info[5] }}</td>
+                <td>{{ data_info[6] }}</td>
+                <td>{{ data_info[7] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 
     <script>
         (function() {
@@ -348,11 +324,11 @@
         }
 
         function openNav() {
-            document.getElementById("mySidepanel").style.width = "20%";
+            document.getElementById("sidepanel_id").style.width = "20%";
         }
 
         function closeNav() {
-            document.getElementById("mySidepanel").style.width = "0";
+            document.getElementById("sidepanel_id").style.width = "0";
         }
         var acc = document.getElementsByClassName("accordion");
 
@@ -361,24 +337,34 @@
                 this.classList.toggle("active");
                 var panel = this.nextElementSibling;
                 if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
+                    panel.style.maxHeight = null;
                 } else {
-                panel.style.maxHeight = panel.scrollHeight + 200 + "px";
+                    panel.style.maxHeight = panel.scrollHeight + 200 + "px";
                 } 
             });
         }
     </script>
 
-
+    <script>
+        window.ref_seq = "{{ ref_seq }}";
+        window.samples = {{ samples_name }}
+        window.depths = {{ depth_data }};
+        window.variants = {{ variant_data }};
+    </script>
+    
     <script>
 
-        var ref_seq = "{{ ref_seq }}";
-        var ref_len = ref_seq.length;
-        var gene_feature_height = 10; // 10%
-        // create array from range 0 to (ref_len + 1)
-        var positions = [...Array(ref_len + 1).keys()];
-        // remove zero
-        positions.shift();
+        var ref_len = window.ref_seq.length;
+        var gird_index_length;
+        var positions = [...Array(ref_len + 1).keys()];  // create array from range 0 to (ref_len + 1)
+        positions.shift(); // remove zero
+
+        var ntColor = {
+            "A": "#F00",
+            "C": "#0F0",
+            "G": "#00F",
+            "T": "#0FF",
+        }
 
         //window.depths = depths;
         var $chart = document.getElementById('chart');
@@ -390,11 +376,11 @@
         /////////////// Define Gene Feature /////////////////////
         var gene_feature  = {{ gene_feature }}
         var y_start;
-        function renderItem(params, api){
+        function renderGeneFeatures(params, api){
             var categoryIndex = api.value(0);
             var points;
             var shape;
-            if (categoryIndex < 12){                
+            if (categoryIndex < 12){
                 var start = api.coord([api.value(1), categoryIndex]);
                 if (categoryIndex==0){
                     y_start = start[1]
@@ -410,8 +396,8 @@
                 |                      \
                 |                      /
                 |                     /
-                --------------------                
-                */                     
+                --------------------
+                */
                 points = [
                     [x, y],
                     [x + width - 5 , y],
@@ -419,7 +405,7 @@
                     [x + width - 5 , y - height ],
                     [x, y - height ]
                 ]
-                shape = echarts.graphic.clipPointsByRect(points, 
+                shape = echarts.graphic.clipPointsByRect(points,
                     {
                         x: params.coordSys.x,
                         y: params.coordSys.y,
@@ -432,14 +418,14 @@
                         points: shape
                     },
                     style : api.style(
-                        {   
+                        {
                             stroke: 'black'
                         }
                     ),
                     textContent: {
                         type: 'text',
                         style: {
-                            text: gene_feature[categoryIndex].name, 
+                            text: gene_feature[categoryIndex].name,
                             fill: gene_feature[categoryIndex].itemStyle.color,
                             fontStyle: 'normal',
                             fontSize: 12,
@@ -448,7 +434,7 @@
                     },
                     textConfig:{
                         position: 'top',
-                        distance: 15, 
+                        distance: 15,
                         rotation: 0.7
                     }
                 };
@@ -459,14 +445,14 @@
                 var height = api.size([0,1])[1] * 5;
                 var width = end[0] - start[0] ;
                 var x = start[0];
-                var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])*gene_feature_height/1000;                    
+                var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])/100;
                 points = [
                     [x, y],
                     [x + width , y],
                     [x + width , y - height],
                     [x, y - height ]
                 ]
-                shape = echarts.graphic.clipPointsByRect(points, 
+                shape = echarts.graphic.clipPointsByRect(points,
                     {
                         x: params.coordSys.x,
                         y: params.coordSys.y,
@@ -478,15 +464,10 @@
                     shape: {
                         points: shape
                     },
-                    style : api.style(
-                        {   
-                            stroke: '#666'
-                        }
-                    ),
+                    style : api.style(),
                 };
 
             }
-
         }
 
         function getGeneFeatureSeries(index){
@@ -498,7 +479,7 @@
                 labelLayout:{
                     //hideOverlap: true,
                 },
-                renderItem:renderItem,
+                renderItem:renderGeneFeatures,
                 data: gene_feature,
                 tooltip:{
                     trigger: "item",
@@ -522,7 +503,6 @@
             return feature_series
         }
         ///////////////////// End of Gene Feature/////////////////////
-
 
         function getXAxes(samples, ref_len) {
             var axes = [];
@@ -548,6 +528,7 @@
             })
             return axes;
         }
+
         function getYAxes(samples, scaletype, ymax) {
             var axes = [];
             for (var [i, sample] of samples.entries()) {
@@ -575,17 +556,21 @@
             return axes;
         }
 
-        function getDatasets(depths, positions) {
+        function getDatasets(depths, depths_pool1, depths_pool2, positions) {
             var datasets = [];
             for (var [i, depthArray] of depths.entries()) {
                 datasets.push({
                     dimensions: [
-                        {name : "depth", type: "int"},
+                        {name : "depth", type: "float"},
+                        {name : "depth_pool1", type: "float"},
+                        {name : "depth_pool2", type: "float"},
                         {name: "position", type: "int"}
                     ],
                     source: {
                         position: positions,
-                        depth: depthArray
+                        depth: depthArray,
+                        depth_pool1: depths_pool1[i],
+                        depth_pool2: depths_pool2[i]
                     }
                 });
             }
@@ -613,24 +598,53 @@
                         opacity: 0
                     },
                     large: true,
+                },
+                {
+                    type: "bar",
+                    xAxisIndex: i,
+                    yAxisIndex: i,
+                    itemStyle: {
+                        color: 'violet'
+                    },
+                    encode: {
+                        x: "position",
+                        y: "depth_pool1",
+                    },
+                    barWidth: "100%",
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    z: 1,
+                    blur:{
+
+                    },
+                    datasetIndex: i,
+                    large: true,
+                },
+                {
+                    type: "bar",
+                    xAxisIndex: i,
+                    yAxisIndex: i,
+                    itemStyle: {
+                        color: 'skyblue'
+                    },
+                    encode: {
+                        x: "position",
+                        y: "depth_pool2",
+                    },
+                    barWidth:"100%",
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    z: 2,
+                    blur:{
+
+                    },
+                    datasetIndex: i,
+                    large: true,
                 })
             }
             return series
-        }
-
-        var ntColor = {
-            "A": "#F00",
-            "C": "#0F0",
-            "G": "#00F",
-            "T": "#0FF",
-        }
-
-        function zoomIndex(length){
-            var indexes = []
-            for (var i = 0; i <= length; i++){
-                indexes.push(i)
-            }
-            return indexes
         }
 
         function getVariantsSeries(variants, depths) {
@@ -659,7 +673,6 @@
                 })(i, varMap);
             }
             return series
-            
         }
 
         function getGrids(samples) {
@@ -681,19 +694,19 @@
                 };
             });
             grids.forEach(function (grid, idx) {
-                //var padTop = idx === 0 ? 3 : 2
-                var padTop = 3
+                //var padTop = idx === 1 ? 5 : 3
+                var padTop = 4
                 last_top = (idx / n * 100) + padTop
                 grid.top = (idx / n * 100) + padTop + "%"
             })
             grids.push({
                 show: true,
-                height: gene_feature_height+ "%",
+                height: "10%",
                 top: last_height + last_top + 3 + "%"
             })
-            console.log(grids)
             return grids
         }
+
         function meanCoverage(depths, start, end, gridIndex) {
             var total = 0;
             if (start < end){
@@ -715,8 +728,6 @@
                 }
             }
             return total/(end-start+1) * 100
-
-
         }
 
         function median(arr) {
@@ -731,7 +742,6 @@
         function medianCoverage(depths, start, end, gridIndex) {
             var sub_array = depths[gridIndex].slice(start-1, end)
             return median(sub_array)
-
         }
 
         function getTooltips(samples, depths, variants){
@@ -745,14 +755,14 @@
                     var output = "";
                     var param = params[0];
                     var i = param.axisIndex;
-                    var position = param.data[1];
+                    var position = param.data[3];
                     if (i < samples.length /*&& variants[i].hasOwnProperty(position)*/){
                         var sample = samples[i];
                         var depth = param.data[0];
+                        var amplicon_depth_pool1 = param.data[1];
+                        var amplicon_depth_pool2 = param.data[2];
                         var start_pos, end_pos;
-                        //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
                         start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
-                        //end_pos = Math.floor(chart.getOption().dataZoom[0].end * ref_len / 100);
                         end_pos = Math.floor(chart.getOption().dataZoom[0].endValue)
                         var mean_cov;
                         mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
@@ -761,54 +771,48 @@
                         var genome_cov;
                         genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
                         output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos.toLocaleString() + '<br/>' + 'End pos: ' + end_pos.toLocaleString() + '<br/>';
-                        output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
-                        output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
+                        output += 'Genome Mean Coverage: ' + mean_cov + 'X' + '<br/>';
+                        output += 'Genome Median Coverage: ' + median_cov + 'X' + '<br/>';
                         output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
-                        output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
-                        
+                        output += 'Genome Position: ' + position.toLocaleString() + '<br/> Genome Coverage Depth: ' + depth.toLocaleString() + '<br/>';
+                        output += 'Pool1 Coverage Depth: ' + amplicon_depth_pool1.toLocaleString() + '<br/>';
+                        output += 'Pool2 Coverage Depth: ' + amplicon_depth_pool2.toLocaleString() + '<br/>'
                         if (variants[i].hasOwnProperty(position)){
-                            output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
-                            output = output + 'Variant: ' + variants[i][position][1]
+                            output += 'Ref: ' + window.ref_seq.substring(position-1, position-1 + variants[i][position].length) + '<br/>'
+                            output = output + 'Variant: ' + variants[i][position]
                         }
                         else{
-                            output += 'Ref: ' + ref_seq[position-1] + '<br/>'
+                            output += 'Ref: ' + window.ref_seq[position-1] + '<br/>'
                         }
                         return output;
                     }
                     return output
                 }
             }] 
-        }  
+        }
 
-
-        var gird_index_length;
-
-        function getOption(){   
-            
+        function getOption(){
             var default_num_chart = 3; // At the beginning display maximum 3 samples
-
-            // Original data
-            var origin_samples = {{ samples_name }}
-            var origin_depths = {{ depth_data }};
-            var origin_variants = {{ variant_data }};
-
-                        
             var samples = [];
-            var depths = []
-            var variants = []
+            var depths = [];
+            var depths_pool1 = [];
+            var depths_pool2 = [];
+            var variants = [];
 
-            for (const [key, entries] of Object.entries(origin_samples)){
+            for (const [key, entries] of Object.entries(window.samples)){
                 if (key < default_num_chart){
                     samples.push(entries)
-                    depths.push(origin_depths[entries])
-                    variants.push(origin_variants[entries])
+                    depths.push(window.depths[entries][0])
+                    depths_pool1.push(window.depths[entries][1])
+                    depths_pool2.push(window.depths[entries][2])
+                    variants.push(window.variants[entries])
                 }
             }
             gird_index_length = samples.length
             var options = {
                 title: {
                 },
-                dataset: getDatasets(depths, positions),
+                dataset: getDatasets(depths, depths_pool1, depths_pool2 , positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
                 series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
@@ -829,12 +833,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)],
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()],
                         type: "slider"
                     }
                 ],
@@ -845,14 +849,38 @@
 
         function tooltipOption(){
             var tooltipx = document.getElementById('showtooltip').value;
-            if (tooltipx=='false')
-            chart.setOption({
-                tooltip:{showContent: false}
-            });
+            if (tooltipx=='false'){
+                chart.setOption({
+                    tooltip:{showContent: false}
+                });
+            }
             else{
                 chart.setOption({
-                tooltip:{showContent: true}
-            });
+                    tooltip:{showContent: true}
+                });
+            }
+        }
+
+        function setScale(){
+            var scaletype = document.getElementById('scale').value;
+            var yaxis_option = chart.getOption().yAxis;
+            if (scaletype == 'value'){
+                for(let i = 0 ; i < gird_index_length; i++){
+                    yaxis_option[i].type = scaletype
+                    yaxis_option[i].min = 0
+                    yaxis_option[i].max = 40000
+                }
+                chart.setOption({yAxis: yaxis_option})
+                document.getElementById('ymax').value = 40000
+            }
+            else{
+                for(let i = 0 ; i < gird_index_length; i++){
+                    yaxis_option[i].type = scaletype
+                    yaxis_option[i].min = 1
+                    yaxis_option[i].max = 100000
+                }
+                chart.setOption({yAxis: yaxis_option})
+                document.getElementById('ymax').value = 100000
             }
         }
 
@@ -864,7 +892,7 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: false,
@@ -879,28 +907,28 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)],
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()],
                         type: "slider"
                     }
                 ]
                 });
             } 
         }
-        /*
-        function setYMax(){
-
-            var ymax = document.getElementById('ymax').value;
-            chart.setOption({
-                yAxis: getYAxes(samples, scalex, ymax),
-            })
         
+        function setYMax(){
+            var ymax = document.getElementById('ymax').value;
+            var yaxis_option = chart.getOption().yAxis;
+            for(let i = 0 ; i < gird_index_length; i++){
+                yaxis_option[i].max = ymax
+            }
+            chart.setOption({yAxis: yaxis_option})
         }
-        */
+
         chart.on('click', function(params){
             document.getElementById('start_pos').value = params.value[1]
             document.getElementById('end_pos').value = params.value[2]
@@ -922,22 +950,22 @@
         })
 
         function updateOption(samples){   
-            
-            var origin_depths = {{ depth_data }};
-            var origin_variants = {{ variant_data }};
-
             var depths = []
+            var depths_pool1 = []
+            var depths_pool2 = []
             var variants = []
 
             for (const selected_samples of samples){
-                depths.push(origin_depths[selected_samples])
-                variants.push(origin_variants[selected_samples])
+                depths.push(window.depths[selected_samples][0])
+                depths_pool1.push(window.depths[selected_samples][1])
+                depths_pool2.push(window.depths[selected_samples][2])
+                variants.push(window.variants[selected_samples])
             }
             gird_index_length = samples.length
             var options = {
                 title: {
                 },
-                dataset: getDatasets(depths, positions),
+                dataset: getDatasets(depths, depths_pool1, depths_pool2, positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
                 series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
@@ -958,20 +986,20 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...zoomIndex(gird_index_length)],
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()],
                         type: "slider"
                     }
                 ],
                 grid: getGrids(samples)
             };
             chart.setOption(option = options, notMerge = true);
-
         }
+
 
         function updateChartDivSize() {
           var BOTTOM_PADDING = 20;
@@ -1002,7 +1030,6 @@
                 }
                 updateOption(samples_list)
             });
-
         });
 
         $("select").select2({

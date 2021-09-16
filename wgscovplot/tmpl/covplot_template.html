@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>WGS Coverage Plot</title>
+    <!---<style>{{ bootstrap_css }}</style>--->
     <script>{{ jquery_js }}</script>
+    <!---<script>{{ bootstrap_js }}</script>--->
     <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
-    <style>{{ bootstrap_css }}</style>
-    <script>{{ bootstrap_js }}</script>
     <style>
         img {
             display: block;
@@ -176,7 +176,6 @@
     </style>
 </head>
 <body>
-
     <div class="tab">
         <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
         <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
@@ -587,6 +586,7 @@
                     })
                 })(i, varMap);
             }
+            //console.log(series)
             return series
         }
 
@@ -692,8 +692,9 @@
                         output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
                         
                         if (variants[i].hasOwnProperty(position)){
-                            output += 'Ref: ' + ref_seq.substring(position-1, position-1 + variants[i][position][0].length) + '<br/>'
-                            output = output + 'Variant: ' + variants[i][position][1]
+                            //console.log(variants[i])
+                            output += 'Ref: ' + ref_seq.substring(position - 1, position - 1 + variants[i][position].length) + '<br/>'
+                            output = output + 'Variant: ' + variants[i][position]
                         }
                         else{
                             output += 'Ref: ' + ref_seq[position-1] + '<br/>'

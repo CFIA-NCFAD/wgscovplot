@@ -2,6 +2,8 @@ import logging
 import requests
 import pandas as pd
 import os
+import numpy as np
+import gzip
 
 from typing import Optional, Tuple
 from pathlib import Path
@@ -38,21 +40,83 @@ resources = {
     'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
     'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
     'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
-    'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js',
-    'boostrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'
+    'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
+    'bootstrap_js': 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js',
+    'bootstrap_css': 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css',
 }
+
+
+def get_amplicon_regions(bedfile) -> pd.DataFrame:
+    df_amplicon = pd.read_table(bedfile,
+                                names=['reference', 'start', 'end', 'amplicon', 'depth'],
+                                header=None)
+    amplicon_dict = {row.amplicon: [row.start, row.end, row.depth] for row in df_amplicon.itertuples()}
+    return amplicon_dict
+
+
+def get_amplicon_depths(ref_len, df_samples_amplicon):
+    depth_data_dict = {}
+    coverage_stat = []
+    depth_perbase_data = np.zeros(ref_len)
+    depth_pool1_data = np.zeros(ref_len)
+    depth_pool2_data = np.zeros(ref_len)
+    for sample in df_samples_amplicon.index:
+        # get regular depth
+        depth_file = df_samples_amplicon.loc[sample, 'amplicon_perbase_file']
+        depth_file_gzipped = depth_file.strip().endswith('.gz')
+        with os.popen(f'zcat < {depth_file}') if depth_file_gzipped else open(depth_file) as fh:
+            df_perbase_depth = pd.read_table(fh, names=['reference', 'start', 'end', 'depth'])
+            for row in df_perbase_depth.itertuples():
+                depth_perbase_data[row.start:row.end] = row.depth
+        # get amplicon depth
+        amplicon_depth_file = df_samples_amplicon.loc[sample, 'amplicon_region_file']
+        amplicon_depth_file_gzipped = amplicon_depth_file.strip().endswith('.gz')
+        with os.popen(f'zcat < {amplicon_depth_file}') if amplicon_depth_file_gzipped else open(
+                amplicon_depth_file) as fh:
+            df_amplicon_depth = pd.read_table(fh, names=['reference', 'start', 'end', 'amplicon', 'depth'])
+            for row in df_amplicon_depth.itertuples():
+                pool_id = int(row.amplicon.split('_')[-1])
+                if pool_id % 2 != 0:
+                    depth_pool1_data[row.start:row.end + 1] = row.depth
+                else:
+                    depth_pool2_data[row.start:row.end + 1] = row.depth
+        depth_data_dict[sample] = [depth_perbase_data.tolist(), depth_pool1_data.tolist(), depth_pool2_data.tolist()]
+    return depth_data_dict, coverage_stat
+
+
+def get_amplicon_feature(df_samples_amplicon):
+    amplicon_feature_dict = {}
+    for sample in df_samples_amplicon.index:
+        amplicon_file = df_samples_amplicon.loc[sample, 'amplicon_region_file']
+        amplicon_file_gzipped = amplicon_file.strip().endswith('.gz')
+        with os.popen(f'zcat < {amplicon_file}') if amplicon_file_gzipped else open(amplicon_file) as fh:
+            amplicon_feature = []
+            df_amplicon = pd.read_table(fh,
+                                        names=['reference', 'start', 'end', 'amplicon', 'depth'],
+                                        header=None)
+            index = 0
+            for row in df_amplicon.itertuples():
+                amplicon_index = int(row.amplicon.split('_')[-1])
+                if amplicon_index % 2:
+                    amplicon_feature.append(
+                        dict(name=row.amplicon,
+                             value=[index, row.start, row.end, row.depth, 1],
+                             itemStyle={"color": "violet"})
+                    )
+                else:
+                    amplicon_feature.append(
+                        dict(name=row.amplicon,
+                             value=[index, row.start, row.end, row.depth, 1],
+                             itemStyle={"color": "skyblue"})
+                    )
+                index = index + 1
+            amplicon_feature_dict[sample] = amplicon_feature
+    return amplicon_feature_dict
 
 
 def read_regular_depths(fpath) -> pd.DataFrame:
     df = pd.read_table(fpath,
                        names=['sample_name', 'reference', 'pos', 'depth'],
-                       header=None)
-    return df
-
-
-def read_amplicon_depths(fpath) -> pd.DataFrame:
-    df = pd.read_table(fpath,
-                       names=['reference', 'start', 'end', 'amplicon', 'depth'],
                        header=None)
     return df
 
@@ -130,14 +194,19 @@ def write_html_coverage_plot(samples_name: list,
                              coverage_stat: list,
                              gene_feature: list,
                              about_html,
-                             output_html: Path) -> None:
+                             output_html: Path,
+                             amplicon: bool = False,
+                             ) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
         loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
     )
-    template_file = render_env.get_template("covplot_template.html")
+    if amplicon:
+        template_file = render_env.get_template("amplicon_covplot_template.html")
+    else:
+        template_file = render_env.get_template("covplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
         logging.info('Retrieving JS and CSS resources for Coverage Plot')
         scripts_css = {}
@@ -166,7 +235,7 @@ def get_samples_name(df_samples) -> dict():
 def get_depth_data(df_samples, low=10):
     depth_data = {}
     coverage_stat = []
-    for i, sample in enumerate(df_samples.index):
+    for sample in df_samples.index:
         df_coverage_depth = read_regular_depths(df_samples.loc[sample, 'coverage_depth_file'])
         depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
         # Get Coverage Statistic for each samples

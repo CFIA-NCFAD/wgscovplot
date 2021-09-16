@@ -45,22 +45,23 @@ If the installation was successful, you should be able to type `wgscovplot --hel
 Usage: wgscovplot [OPTIONS]
 
 Options:
- -s, --samples-data PATH         List of Sample Names, Coverage, VCF File
-                                 [required]
- -o, --output-html PATH          Output Interactive HTML Coverage Plot
-                                 [default: coverage_plot.html]
- -r, --ref-seq PATH              Reference genome sequences file  [required]
- -b, --bed PATH                  Bed file
- -g, --genbank PATH              Genbank file contains features of reference
-                                 sequence  [required]
- --verbose / --no-verbose        Verbose logs  [default: no-verbose]
- --version / --no-version        Print wgscovplot version and exit
- --install-completion [bash|zsh|fish|powershell|pwsh]
-                                 Install completion for the specified shell.
- --show-completion [bash|zsh|fish|powershell|pwsh]
-                                 Show completion for the specified shell, to
-                                 copy it or customize the installation.
- --help                          Show this message and exit.
+  -s, --samples-data PATH         List of Sample Names, Coverage, VCF File
+                                  [required]
+  -o, --output-html PATH          Output Interactive HTML Coverage Plot
+                                  [default: coverage_plot.html]
+  -r, --ref-seq PATH              Reference genome sequences file  [required]
+  -g, --genbank PATH              Genbank file contains features of reference
+                                  sequence  [required]
+  --amplicon / --no-amplicon      Amplicon Coverage Plot  [default: no-
+                                  amplicon]
+  --verbose / --no-verbose        Verbose logs  [default: no-verbose]
+  --version / --no-version        Print wgscovplot version and exit
+  --install-completion [bash|zsh|fish|powershell|pwsh]
+                                  Install completion for the specified shell.
+  --show-completion [bash|zsh|fish|powershell|pwsh]
+                                  Show completion for the specified shell, to
+                                  copy it or customize the installation.
+  --help                          Show this message and exit.
 ```
 
 
@@ -69,7 +70,7 @@ Options:
 
 #### The tool currently requires users to prepare samples data file (tsv file) is as the format below. We are updating the tool so that user just simply provide directory and file's identifiers
 
-| Sample Name | Depth file                         | Variant vcf                   /                
+| Sample Name | Depth file                         | Variant vcf                                  
 |:---         |:---                                |:---                           |
 | Sample-01	  | path/to/sample-01-coverage-depth   | path/to/sample-01-variant-vcf | 
 | Sample-02	  | path/to/sample-02-coverage-depth   | path/to/sample-02-variant-vcf | 
@@ -99,7 +100,7 @@ wgscovplot -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g
 
 ## License
 
-Copyright 2021 [Canadian Food Inspection Agency of Canada], Government of Canada.
+Copyright 2021 Canadian Food Inspection Agency of Canada, Government of Canada.
 
 Distributed under the MIT license.
 
