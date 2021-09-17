@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import os
 import numpy as np
-from typing import Optional, Tuple
+from typing import Tuple
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
@@ -52,7 +52,7 @@ def get_region_amplicon(bedfile: Path) -> pd.DataFrame:
     return amplicon_dict
 
 
-def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame, low=10) -> dict():
+def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame) -> dict():
     depth_data_dict = {}
     depth_perbase_data = np.zeros(ref_len)
     depth_pool1_data = np.zeros(ref_len)
