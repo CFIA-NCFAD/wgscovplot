@@ -3,8 +3,6 @@ import requests
 import pandas as pd
 import os
 import numpy as np
-import gzip
-
 from typing import Optional, Tuple
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
@@ -46,86 +44,63 @@ resources = {
 }
 
 
-def get_amplicon_regions(bedfile) -> pd.DataFrame:
+def get_region_amplicon(bedfile: Path) -> pd.DataFrame:
     df_amplicon = pd.read_table(bedfile,
                                 names=['reference', 'start', 'end', 'amplicon', 'depth'],
                                 header=None)
-    amplicon_dict = {row.amplicon: [row.start, row.end, row.depth] for row in df_amplicon.itertuples()}
+    amplicon_dict = {row.amplicon: [row.start, row.end] for row in df_amplicon.itertuples()}
     return amplicon_dict
 
 
-def get_amplicon_depths(ref_len, df_samples_amplicon):
+def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame, low=10) -> dict():
     depth_data_dict = {}
-    coverage_stat = []
     depth_perbase_data = np.zeros(ref_len)
     depth_pool1_data = np.zeros(ref_len)
     depth_pool2_data = np.zeros(ref_len)
     for sample in df_samples_amplicon.index:
         # get regular depth
-        depth_file = df_samples_amplicon.loc[sample, 'amplicon_perbase_file']
-        depth_file_gzipped = depth_file.strip().endswith('.gz')
-        with os.popen(f'zcat < {depth_file}') if depth_file_gzipped else open(depth_file) as fh:
-            df_perbase_depth = pd.read_table(fh, names=['reference', 'start', 'end', 'depth'])
-            for row in df_perbase_depth.itertuples():
-                depth_perbase_data[row.start:row.end] = row.depth
+        depth_file = df_samples_amplicon.loc[sample, 'amplicon_perbase_file'].strip()
+        df_perbase_depth = pd.read_table(depth_file, names=['reference', 'start', 'end', 'depth'], header=None)
+        for row in df_perbase_depth.itertuples():
+            depth_perbase_data[row.start:row.end] = row.depth
         # get amplicon depth
-        amplicon_depth_file = df_samples_amplicon.loc[sample, 'amplicon_region_file']
-        amplicon_depth_file_gzipped = amplicon_depth_file.strip().endswith('.gz')
-        with os.popen(f'zcat < {amplicon_depth_file}') if amplicon_depth_file_gzipped else open(
-                amplicon_depth_file) as fh:
-            df_amplicon_depth = pd.read_table(fh, names=['reference', 'start', 'end', 'amplicon', 'depth'])
-            for row in df_amplicon_depth.itertuples():
-                pool_id = int(row.amplicon.split('_')[-1])
-                if pool_id % 2 != 0:
-                    depth_pool1_data[row.start:row.end + 1] = row.depth
-                else:
-                    depth_pool2_data[row.start:row.end + 1] = row.depth
+        amplicon_depth_file = df_samples_amplicon.loc[sample, 'amplicon_region_file'].strip()
+        df_amplicon_depth = pd.read_table(amplicon_depth_file, names=['reference', 'start', 'end', 'amplicon', 'depth'])
+        for row in df_amplicon_depth.itertuples():
+            pool_id = int(row.amplicon.split('_')[-1])
+            if pool_id % 2:
+                depth_pool1_data[row.start:row.end + 1] = row.depth
+            else:
+                depth_pool2_data[row.start:row.end + 1] = row.depth
         depth_data_dict[sample] = [depth_perbase_data.tolist(), depth_pool1_data.tolist(), depth_pool2_data.tolist()]
-    return depth_data_dict, coverage_stat
+    return depth_data_dict
 
 
-def get_amplicon_feature(df_samples_amplicon):
-    amplicon_feature_dict = {}
-    for sample in df_samples_amplicon.index:
-        amplicon_file = df_samples_amplicon.loc[sample, 'amplicon_region_file']
-        amplicon_file_gzipped = amplicon_file.strip().endswith('.gz')
-        with os.popen(f'zcat < {amplicon_file}') if amplicon_file_gzipped else open(amplicon_file) as fh:
-            amplicon_feature = []
-            df_amplicon = pd.read_table(fh,
-                                        names=['reference', 'start', 'end', 'amplicon', 'depth'],
-                                        header=None)
-            index = 0
-            for row in df_amplicon.itertuples():
-                amplicon_index = int(row.amplicon.split('_')[-1])
-                if amplicon_index % 2:
-                    amplicon_feature.append(
-                        dict(name=row.amplicon,
-                             value=[index, row.start, row.end, row.depth, 1],
-                             itemStyle={"color": "violet"})
-                    )
-                else:
-                    amplicon_feature.append(
-                        dict(name=row.amplicon,
-                             value=[index, row.start, row.end, row.depth, 1],
-                             itemStyle={"color": "skyblue"})
-                    )
-                index = index + 1
-            amplicon_feature_dict[sample] = amplicon_feature
-    return amplicon_feature_dict
+def get_coverage_stat(sample: str, df: pd.DataFrame, low=10) -> list():
+    low_depth = (df.depth < 10)
+    zero_depth = (df.depth == 0)
+    mean_cov = f'{df.depth.mean():.1f}X'
+    median_cov = f'{df.depth.median():.1f}X'
+    genome_cov = "{:.2%}".format((df.depth >= low).sum() / df.shape[0])
+    pos_low_cov = low_depth.sum()
+    pos_no_cov = zero_depth.sum()
+    region_low_cov = get_interval_coords(df, low - 1)
+    region_no_cov = get_interval_coords(df, 0)
+    return [sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov]
 
 
-def read_regular_depths(fpath) -> pd.DataFrame:
+def read_regular_depths(fpath: Path) -> pd.DataFrame:
     df = pd.read_table(fpath,
                        names=['sample_name', 'reference', 'pos', 'depth'],
                        header=None)
     return df
 
 
-def parse_vcf(vcf_file) -> Tuple[str, pd.DataFrame]:
+def parse_vcf(vcf_file: Path) -> Tuple[str, pd.DataFrame]:
     """Read VCF file into a DataFrame"""
     # https://github.com/peterk87/xlavir/blob/fbe11b4cef38bc291500c69d62b8599912c45887/xlavir/tools/variants.py#L211
     gzipped = vcf_file.endswith('.gz')
-    with os.popen(f'zcat < {vcf_file.absolute()}') if gzipped else open(vcf_file) as fh:
+    with os.popen(f'zcat < {vcf_file}') if gzipped else open(vcf_file) as fh:
         vcf_cols = []
         variant_caller = ''
         for line in fh:
@@ -144,7 +119,7 @@ def parse_vcf(vcf_file) -> Tuple[str, pd.DataFrame]:
     return variant_caller, df
 
 
-def get_interval_coords(df, threshold=0):
+def get_interval_coords(df: pd.DataFrame, threshold=0):
     pos = df[df.depth <= threshold].pos
     coords = []
     for i, x in enumerate(pos):
@@ -180,7 +155,7 @@ def get_gene_feature(annotation: Path) -> list:
             strand = seq_feature.strand
             gene_feature.append(
                 dict(name=feature_name,
-                     value=[index, start_pos, end_pos, 0, strand],
+                     value=[index, start_pos, end_pos, 0, strand, 'gene_feature'],
                      itemStyle={"color": next(colour_cycle)})
             )
             index = index + 1
@@ -193,7 +168,7 @@ def write_html_coverage_plot(samples_name: list,
                              ref_seq: str,
                              coverage_stat: list,
                              gene_feature: list,
-                             about_html,
+                             about_html: str,
                              output_html: Path,
                              amplicon: bool = False,
                              ) -> None:
@@ -224,41 +199,28 @@ def write_html_coverage_plot(samples_name: list,
                                         **scripts_css))
 
 
-def get_samples_name(df_samples) -> dict():
+def get_samples_name(df_samples: pd.DataFrame) -> dict():
     samples_dict = {}
     for i, sample in enumerate(df_samples.index):
-        logging.info(f'Preparing data for "{sample}"')
+        logging.info(f'Preparing data for sample "{sample}"')
         samples_dict[i] = sample
     return samples_dict
 
 
-def get_depth_data(df_samples, low=10):
+def get_depth_data(df_samples: pd.DataFrame) -> dict():
     depth_data = {}
-    coverage_stat = []
     for sample in df_samples.index:
-        df_coverage_depth = read_regular_depths(df_samples.loc[sample, 'coverage_depth_file'])
+        df_coverage_depth = read_regular_depths(df_samples.loc[sample, 'coverage_depth_file'].strip())
         depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
-        # Get Coverage Statistic for each samples
-        low_depth = (df_coverage_depth.depth < 10)
-        zero_depth = (df_coverage_depth.depth == 0)
-        mean_cov = f'{df_coverage_depth.depth.mean():.1f}X'
-        median_cov = f'{df_coverage_depth.depth.median():.1f}X'
-        genome_cov = "{:.2%}".format((df_coverage_depth.depth >= low).sum() / df_coverage_depth.shape[0])
-        pos_low_cov = low_depth.sum()
-        pos_no_cov = zero_depth.sum()
-        region_low_cov = get_interval_coords(df_coverage_depth, low - 1)
-        region_no_cov = get_interval_coords(df_coverage_depth, 0)
-        coverage_stat.append(
-            [sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov])
-    return depth_data, coverage_stat
+    return depth_data
 
 
-def get_variant_data(df_samples) -> dict():
+def get_variant_data(df_samples: pd.DataFrame) -> dict():
     variants_data = {}
-    for i, sample in enumerate(df_samples.index):
+    for sample in df_samples.index:
         variant_info = {}
-        if df_samples.loc[sample, 'vcf_file'] != 0:
-            df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'])[1]
+        if df_samples.loc[sample, 'vcf_file']:
+            df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'].strip())[1]
             variant_info = {row.POS: (row.REF, row.ALT) for row in df_vcf.itertuples()}
         variants_data[sample] = variant_info
     return variants_data

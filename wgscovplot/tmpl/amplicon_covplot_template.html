@@ -380,7 +380,7 @@
             var categoryIndex = api.value(0);
             var points;
             var shape;
-            if (categoryIndex < 12){
+            if (api.value(5) == 'gene_feature'){
                 var start = api.coord([api.value(1), categoryIndex]);
                 if (categoryIndex==0){
                     y_start = start[1]
@@ -616,7 +616,6 @@
                         focus: 'self'
                     },
                     blur:{
-
                     },
                     datasetIndex: i,
                     large: true,
@@ -638,7 +637,6 @@
                         focus: 'self'
                     },
                     blur:{
-
                     },
                     datasetIndex: i,
                     large: true,
@@ -823,9 +821,6 @@
                 toolbox: {
                     show: "true",
                     feature: {
-                        dataView: {
-                            readOnly: false
-                        },
                         restore: {},
                         saveAsImage: {
                             name: "Coverage_Plot"
@@ -979,9 +974,6 @@
                 toolbox: {
                     show: "true",
                     feature: {
-                        dataView: {
-                            readOnly: false
-                        },
                         restore: {},
                         saveAsImage: {
                             name: "Coverage_Plot"
