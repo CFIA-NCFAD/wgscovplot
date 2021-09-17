@@ -601,6 +601,7 @@
                 },
                 {
                     type: "bar",
+                    name: "Pool1",
                     xAxisIndex: i,
                     yAxisIndex: i,
                     itemStyle: {
@@ -612,9 +613,8 @@
                     },
                     barWidth: "100%",
                     emphasis: {
-                        focus: 'series'
+                        focus: 'self'
                     },
-                    z: 1,
                     blur:{
 
                     },
@@ -623,6 +623,7 @@
                 },
                 {
                     type: "bar",
+                    name: "Pool2",
                     xAxisIndex: i,
                     yAxisIndex: i,
                     itemStyle: {
@@ -634,9 +635,8 @@
                     },
                     barWidth:"100%",
                     emphasis: {
-                        focus: 'series'
+                        focus: 'self'
                     },
-                    z: 2,
                     blur:{
 
                     },
@@ -815,6 +815,9 @@
                 dataset: getDatasets(depths, depths_pool1, depths_pool2 , positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
+                legend: {
+                    data: ['Pool1', 'Pool2']
+                },
                 series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
@@ -968,6 +971,9 @@
                 dataset: getDatasets(depths, depths_pool1, depths_pool2, positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
+                legend: {
+                    data: ['Pool1', 'Pool2']
+                },
                 series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {

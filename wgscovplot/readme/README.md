@@ -10,6 +10,10 @@
 
 - The tool is still in the development phases with current version is ```1.0.0.dev0```
 
+### Limitation
+
+- In the development phase, the tool is designed for SARS-COV2 virus. The supports for other virus such as Avian Influenza, African Swine Fever Virus (ASFV), Foot and Mouth Disease (FMD) will be added soon.
+
 ### Programming Languages
 
 - Python (>=3.6)
@@ -64,15 +68,24 @@ Options:
   --help                          Show this message and exit.
 ```
 
+
+
 ### Prepare Samples Data
 
 #### The tool currently requires users to prepare samples data file (tsv file) is as the format below. We are updating the tool so that user just simply provide directory and file's identifiers
 
-| Sample Name | Depth file                         | Variant vcf                  
-|:---         |:---                                |:---|
+| Sample Name | Depth file                         | Variant vcf                                  
+|:---         |:---                                |:---                           |
 | Sample-01	  | path/to/sample-01-coverage-depth   | path/to/sample-01-variant-vcf | 
 | Sample-02	  | path/to/sample-02-coverage-depth   | path/to/sample-02-variant-vcf | 
 | Sample-03	  | path/to/sample-03-coverage-depth   | path/to/sample-03-variant-vcf |
+
+##### Samples data for Amplicon Coverage plot
+| Sample Name | Amplicon region bed file           | Depth per-base file               |Variant vcf                                              
+|:---         |:---                                |:---                               |:---
+| Sample-01	  | path/to/sample-01.regions.bed.gz   | path/to/sample-01.per-base.bed.gz | path/to/sample-01-variant-vcf
+| Sample-02	  | path/to/sample-02-regions.bed.gz   | path/to/sample-01.per-base.bed.gz | path/to/sample-02-variant-vcf
+| Sample-03	  | path/to/sample-03-regions.bed.gz   | path/to/sample-01.per-base.bed.gz | path/to/sample-03-variant-vcf
 
 #### Note that no header is needed
 
@@ -89,6 +102,10 @@ The tool will generate the Coverage Plot for samples in HTML file
 
 ```
 wgscovplot -s samples.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb
+```
+#### For amplicon coverage plot
+```
+wgscovplot -s samples_amplicon.tsv -r reference.fasta -o sequencing_coverage_plot.html -g sequence_genbank.gb --amplicon
 ```
 
 ## Authors
