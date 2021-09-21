@@ -435,7 +435,7 @@
                     textConfig:{
                         position: 'top',
                         distance: 15,
-                        rotation: 0.7
+                        rotation: 0.6
                     }
                 };
             }
@@ -813,6 +813,8 @@
                 dataset: getDatasets(depths, depths_pool1, depths_pool2 , positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
+                //responsive: "true",
+                //maintainAspectRatio: "false",
                 legend: {
                     data: ['Pool1', 'Pool2']
                 },

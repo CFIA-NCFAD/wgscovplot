@@ -162,12 +162,12 @@ def get_gene_feature(annotation: Path) -> list:
     return gene_feature
 
 
-def write_html_coverage_plot(samples_name: list,
-                             depth_data: list,
-                             variant_data: list,
+def write_html_coverage_plot(samples_name: dict,
+                             depth_data: dict,
+                             variant_data: dict,
                              ref_seq: str,
                              coverage_stat: list,
-                             gene_feature: list,
+                             gene_feature: dict,
                              about_html: str,
                              output_html: Path,
                              amplicon: bool = False,
