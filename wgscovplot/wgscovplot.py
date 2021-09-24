@@ -9,7 +9,24 @@ from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
 from itertools import cycle
 
-GENE_FEATURE_COLORS = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
+
+resources = {
+    'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js',
+    'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+    'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+    'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
+    'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js',
+    'bootstrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css',
+}
+
+gene_features_properties = {
+    'max_grid_height': 80,
+    'rec_items_height': 12,
+    'plus_strand_offset': 0,
+    'minus_strand_offset': 55,
+    'grid_height': "15%",
+    'color': ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
                        '#CAB2D6',
                        '#6A3D9A', '#FF33D3', '#B15928', '#0006FC', '#2FB0EC', '#F3D742', '#2E9CE1', '#273D63',
                        '#980B92',
@@ -32,15 +49,6 @@ GENE_FEATURE_COLORS = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#
                        '#CF0E24', '#D791A9', '#0892FE', '#F5A865', '#91EBC2', '#9F650D', '#1B0A0F', '#1E9E88',
                        '#B42E38',
                        '#9710C9']
-
-resources = {
-    'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js',
-    'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-    'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
-    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
-    'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
-    'bootstrap_js': 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js',
-    'bootstrap_css': 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css',
 }
 
 
@@ -134,13 +142,20 @@ def get_interval_coords(df: pd.DataFrame, threshold=0):
     return '; '.join([f'{xs[0]}-{xs[-1]}' for xs in coords])
 
 
+def overlap(start1, end1, start2, end2):
+
+    return (start1 <= start2 <= end1 or start1 <= end2 <= end1)
+
+
 def get_gene_feature(annotation: Path) -> list:
     gene_feature = []
     # number_of_colors = 100
     # color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
     # for i in range(number_of_colors)]
     # print (color_pallet)
-    colour_cycle = cycle(GENE_FEATURE_COLORS)
+    colour_cycle = cycle(gene_features_properties['color'])
+    minus_strains_list = [0, 0,  0]
+    plus_strains_list = [0, 0, 0]
     for seq_record in SeqIO.parse(annotation, "genbank"):
         index = 0  # the index must be continuous for data handling with Echarts
         for seq_feature in seq_record.features:
@@ -149,15 +164,62 @@ def get_gene_feature(annotation: Path) -> list:
             if seq_feature.type in ["5'UTR", "3'UTR"]:
                 feature_name = seq_feature.type
             else:
-                feature_name = seq_feature.qualifiers['gene'][0]
-            start_pos = int(seq_feature.location.start) + 1
+                if seq_feature.qualifiers.get('gene'):
+                    feature_name = seq_feature.qualifiers['gene'][0]
+                elif seq_feature.qualifiers.get('locus_tag'):
+                    feature_name = seq_feature.qualifiers['locus_tag'][0]
+            start_pos = int(seq_feature.location.start) + 1 
             end_pos = int(seq_feature.location.end)
             strand = seq_feature.strand
-            gene_feature.append(
-                dict(name=feature_name,
-                     value=[index, start_pos, end_pos, 0, strand, 'gene_feature'],
-                     itemStyle={"color": next(colour_cycle)})
-            )
+            if strand == 1:
+                if overlap(plus_strains_list[0], plus_strains_list[1], start_pos, end_pos):
+                    offset = gene_features_properties['plus_strand_offset'] + gene_features_properties['rec_items_height'] + 3
+                    if minus_strains_list[2] == gene_features_properties['plus_strand_offset'] + gene_features_properties['rec_items_height'] + 3:
+                        offset = gene_features_properties['plus_strand_offset']
+                        gene_feature.append(
+                                dict(name=feature_name,
+                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    itemStyle={"color": next(colour_cycle)})
+                        )
+                    else:
+                        gene_feature.append(
+                                dict(name=feature_name,
+                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    itemStyle={"color": next(colour_cycle)})
+                        )
+
+                else:
+                    offset = gene_features_properties['plus_strand_offset']
+                    gene_feature.append(
+                            dict(name=feature_name,
+                                value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                itemStyle={"color": next(colour_cycle)})
+                        )
+                plus_strains_list = [start_pos, end_pos, offset]
+            else:
+                if overlap(minus_strains_list[0], minus_strains_list[1], start_pos, end_pos):
+                    offset = gene_features_properties['minus_strand_offset'] + gene_features_properties['rec_items_height'] + 3
+                    if minus_strains_list[2] == gene_features_properties['minus_strand_offset'] + gene_features_properties['rec_items_height'] + 3:
+                        offset = gene_features_properties['minus_strand_offset']
+                        gene_feature.append(
+                                dict(name=feature_name,
+                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    itemStyle={"color": next(colour_cycle)})
+                        )
+                    else:
+                        gene_feature.append(
+                                dict(name=feature_name,
+                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    itemStyle={"color": next(colour_cycle)})
+                        )
+                else:
+                    offset = gene_features_properties['minus_strand_offset']
+                    gene_feature.append(
+                            dict(name=feature_name,
+                                value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                itemStyle={"color": next(colour_cycle)})
+                        )
+                minus_strains_list = [start_pos, end_pos, offset]
             index = index + 1
     return gene_feature
 

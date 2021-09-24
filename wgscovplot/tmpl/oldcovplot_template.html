@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>WGS Coverage Plot</title>
-    <style>{{ bootstrap_css }}</style>
+    <!---<style>{{ bootstrap_css }}</style>--->
     <script>{{ jquery_js }}</script>
-    <script>{{ bootstrap_js }}</script>
+    <!---<script>{{ bootstrap_js }}</script>--->
     <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
     <style>
-       .tab {
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tab {
             overflow: hidden;
             border: 1px solid #ccc;
             background-color: #f1f1f1;
@@ -71,132 +76,178 @@
             color: white;
             justify-content: space-between;
         }
+        .sidepanel  {
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #ffff;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
 
+        .sidepanel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidepanel a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidepanel .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+        }
+
+        .openbtn {
+            font-size: 15px;
+            cursor: pointer;
+            background-color: #666;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            display: none
+        }
+
+        .openbtn:hover {
+            background-color:#444;
+        }
+
+        .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        .active, .accordion:hover {
+            background-color: #ccc;
+        }
+
+        .accordion:after {
+            content: '\002B';
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+
+        }
+
+        .accordion.active:after {
+            content: "\2212";
+
+        }
+
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: scroll;
+            transition: max-height 0.2s ease-out;
+        }
         h2 {
             margin:0px auto;
             padding: 10px 0px 10px 0px;
             border-bottom: 2px ridge;
         }
-
         table {
             border-collapse: collapse;
         }
-
         th, td {
            border: 1px solid black;
         }
-
 
     </style>
 </head>
 <body>
     <div class="tab">
-        <button class="tablinks" data-bs-toggle="offcanvas" data-bs-target="#controlmenu">☰ Chart Options</button>
+        <button class="tablinks" onclick="openNav()">☰ Chart Options</button>
         <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
         <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
         <button class="tablinks" onclick="showChart(event,'fqa_id')">FQA</button>
         <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
     </div>
-
+     
     <div id="chart" class="chart-container" style="width:100%; height: 900px;"></div>
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="controlmenu">
+    <div id="sidepanel_id" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 
-        <div class="offcanvas-header">
-            <h5>Chart Options</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" aria-labelledby="controlmenu"></button>
+        <button class="accordion">General</button>
+
+        <div class="panel">
+            <p>
+            <label for="samples">Samples:</label>
+            <select class="selected-samples" multiple="multiple" style="width: 75%" >
+                {% for id, sample in samples_name.items() %}
+                    <option value={{sample}}>{{sample}}</option>
+                {% endfor %}
+            </select>
+            </p>
         </div>
 
-        <div class="offcanvas-body">
-            <div class="accordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#general" aria-expanded="true" aria-controls="general">
-                            General   
-                        </button>
-                    </h2>
-                <div id="general" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        <label for="samples">Samples:</label>
-                        <select class="selected-samples" multiple="multiple" style="width: 75%" >
-                            {% for id, sample in samples_name.items() %}
-                                <option value={{sample}}>{{sample}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#axis" aria-expanded="false" aria-controls="axis">
-                            Axis
-                        </button>
-                    </h2>
-                    <div id="axis" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <p>Scale:  
-                                <select id="scale" onchange="setScale()" style="width: 25%">
-                                    <option value="value" >Linear</option>
-                                    <option value="log" selected>Log</option>
-                                </select>
-                            </p>
-                            <p> 
-                                <form id="ymaxform">
-                                    <label for="ymaxform">yMax: </label>
-                                    <input type="number" id="ymax" value=100000 style="width: 30%">
-                                    <input type="button" onclick="setYMax()" value="Set yMax">
-                                </form>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tooltip" aria-expanded="false" aria-controls="tooltip">
-                            Tooltip
-                        </button>
-                    </h2>
-                    <div id="tooltip" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <p>Show Tooltip:  
-                                <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
-                                    <option value="false" >Disable</option>
-                                    <option value="true" selected>Enable</option>
-                                </select>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#datazoom" aria-expanded="false" aria-controls="datazoom">
-                            Data Zoom
-                        </button>
-                    </h2>
-                    <div id="datazoom" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <p>Show Slider:  
-                                <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
-                                    <option value="true" selected>Enable</option>
-                                    <option value="false">Disable</option>
-                                </select>
-                            </p>
-                            <form id="dataZoom">
-                                <label for="start_pos">Start Pos:</label><br>
-                                <input type="number" id="start_pos" value=1><br>
-                                <label for="start_pos">End Pos:</label><br>
-                                <input type="number" id="end_pos" value={{ref_seq_length}}><br><br>
-                                <input type="button" onclick="setDataZoom()" value="Set DataZoom">
-                                <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <button class="accordion">Axis</button>
+        <div class="panel">
+            <p>Scale:  
+                <select id="scale" onchange="setScale()" style="width: 25%">
+                    <option value="value" >Linear</option>
+                    <option value="log" selected>Log</option>
+                </select>
+            </p>
+            <p> 
+                <form id="ymaxform">
+                    <label for="ymaxform">yMax: </label>
+                    <input type="number" id="ymax" value=100000 style="width: 30%">
+                    <input type="button" onclick="setYMax()" value="Set yMax">
+                </form>
+            </p>
+
+        </div>
+
+        <button class="accordion">Tooltip</button>
+        <div class="panel">
+            <p>Show Tooltip:  
+                <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
+                    <option value="false" >Disable</option>
+                    <option value="true" selected>Enable</option>
+                </select>
+            </p>
+        </div>
+        <button class="accordion">Data Zoom</button>
+        <div class="panel">
+            <p>Show Slider:  
+                <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
+                    <option value="true" selected>Enable</option>
+                    <option value="false">Disable</option>
+                </select>
+            </p>
+            <form id="dataZoom">
+                <label for="start_pos">Start Pos:</label><br>
+                <input type="number" id="start_pos" value=1><br>
+                <label for="start_pos">End Pos:</label><br>
+                <input type="number" id="end_pos" value={{ref_seq_length}}><br><br>
+                <input type="button" onclick="setDataZoom()" value="Set DataZoom">
+                <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
+            </form>
+            <br>
         </div>
     </div>
-
-
     <div id="about_id" class="chart-container">
         {{ about_html }}
     </div>
@@ -272,21 +323,36 @@
             evt.currentTarget.className += " active";
         }
 
+        function openNav() {
+            document.getElementById("sidepanel_id").style.width = "20%";
+        }
+
+        function closeNav() {
+            document.getElementById("sidepanel_id").style.width = "0";
+        }
+        var acc = document.getElementsByClassName("accordion");
+
+        for (var i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + 200 + "px";
+                } 
+            });
+        }
     </script>
 
-    <script>
-        window.ref_seq = "{{ ref_seq }}";
-        window.samples = {{ samples_name }}
-        window.depths = {{ depth_data }};
-        window.variants = {{ variant_data }};
-    </script>
-    
+
     <script>
 
-        var ref_len = window.ref_seq.length;
-        var gird_length;
-        var positions = [...Array(ref_len + 1).keys()];
-        positions.shift();
+        var ref_seq = "{{ ref_seq }}";
+        var ref_len = ref_seq.length;
+        var gird_index_length;
+        var positions = [...Array(ref_len + 1).keys()];  // create array from range 0 to (ref_len + 1)
+        positions.shift(); // remove zero
 
         var ntColor = {
             "A": "#F00",
@@ -294,6 +360,8 @@
             "G": "#00F",
             "T": "#0FF",
         }
+
+        //window.depths = depths;
         var $chart = document.getElementById('chart');
         window.$chart = $chart;
         var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
@@ -303,94 +371,66 @@
         /////////////// Define Gene Feature /////////////////////
         var gene_feature  = {{ gene_feature }}
         var y_start;
-        function renderGeneFeatures(params, api){
+        function renderItem(params, api){
             var categoryIndex = api.value(0);
-            var points;
-            var shape;
-            if (api.value(5) == 'gene_feature'){
-                var start = api.coord([api.value(1), categoryIndex]);
-                if (categoryIndex==0){
-                    y_start = start[1]
-                }
-                var end = api.coord([api.value(2), categoryIndex]);
-                var height = api.size([0,1])[1] * 10;
-                var width = end[0] - start[0] ;
-                var x = start[0];
-                var y = y_start - height/2  - api.value(3);
-                /* 5 Points of shape
-                --------------------
-                |                     \
-                |                      \
-                |                      /
-                |                     /
-                --------------------
-                */
-                points = [
-                    [x, y],
-                    [x + width - width/100 , y],
-                    [x + width , y - height / 2 ],
-                    [x + width - width/100 , y - height ],
-                    [x, y - height ]
-                ]
-                shape = echarts.graphic.clipPointsByRect(points,
-                    {
-                        x: params.coordSys.x,
-                        y: params.coordSys.y,
-                        width: params.coordSys.width,
-                        height: params.coordSys.height
-                });
-                return shape && {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        style: {
-                            text: gene_feature[categoryIndex].name,
-                            fill: gene_feature[categoryIndex].itemStyle.color,
-                            fontStyle: 'normal',
-                            fontSize: 10,
-                            fontWeight: 'bolder'
-                        }
-                    },
-                    textConfig:{
-                        position: 'top',
-                        distance: 15,
-                        rotation: 0.7
+            var start = api.coord([api.value(1), categoryIndex]);
+            if (categoryIndex==0){
+                y_start = start[1]
+            }
+            var end = api.coord([api.value(2), categoryIndex]);
+            //var height = api.size([0,1])[1] * 15;
+            var height = 12;
+            var width = end[0] - start[0] ;
+            var x = start[0];
+            var y = y_start - height/2  - api.value(3);
+            /* 5 Points of shape
+            --------------------
+            |                     \
+            |                      \
+            |                      /
+            |                     /
+            --------------------                
+            */                     
+            var points = [
+                [x, y],
+                [x + width - 5 , y],
+                [x + width , y - height / 2 ],
+                [x + width - 5 , y - height ],
+                [x, y - height ]
+            ]
+            var shape = echarts.graphic.clipPointsByRect(points, 
+                {
+                    x: params.coordSys.x,
+                    y: params.coordSys.y,
+                    width: params.coordSys.width,
+                    height: params.coordSys.height
+            });
+            return shape && {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : api.style(
+                    {   
+                        stroke: 'black'
                     }
-                };
-            }
-            else{
-                var start = api.coord([api.value(1), categoryIndex]);
-                var end = api.coord([api.value(2), categoryIndex]);
-                var height = api.size([0,1])[1] * 5;
-                var width = end[0] - start[0] ;
-                var x = start[0];
-                var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])/100;
-                points = [
-                    [x, y],
-                    [x + width , y],
-                    [x + width , y - height],
-                    [x, y - height ]
-                ]
-                shape = echarts.graphic.clipPointsByRect(points,
-                    {
-                        x: params.coordSys.x,
-                        y: params.coordSys.y,
-                        width: params.coordSys.width,
-                        height: params.coordSys.height
-                });
-                return shape && {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style(),
-                };
-
-            }
+                ),
+                textContent: {
+                    type: 'text',
+                    style: {
+                        text: gene_feature[categoryIndex].name,
+                        fill: gene_feature[categoryIndex].itemStyle.color,
+                        fontStyle: 'normal',
+                        fontSize: 12,
+                        fontWeight: 'bolder'
+                    }
+                },
+                textConfig:{
+                    position: 'top',
+                    distance: 20, 
+                    rotation: 0.7
+                }
+            };
         }
 
         function getGeneFeatureSeries(index){
@@ -400,9 +440,9 @@
                 xAxisIndex: index,
                 yAxisIndex: index,
                 labelLayout:{
-                    hideOverlap: false,
+                    //hideOverlap: true,
                 },
-                renderItem:renderGeneFeatures,
+                renderItem:renderItem,
                 data: gene_feature,
                 tooltip:{
                     trigger: "item",
@@ -418,7 +458,7 @@
                     },
                     formatter: function (params){
                         var output = ''
-                        output += params.name + '<br/>' + 'Start pos: ' + params.value[1].toLocaleString() + '<br/>' + 'End pos: ' + params.value[2].toLocaleString() + '<br/>' + 'Length: ' + (params.value[2] - params.value[1] + 1).toLocaleString()
+                        output += 'Feature Name: ' +  params.name + '<br/>' + 'Start pos: ' + params.value[1].toLocaleString() + '<br/>' + 'End pos: ' + params.value[2].toLocaleString() + '<br/>' + 'Feature length: ' + (params.value[2] - params.value[1] + 1).toLocaleString()
                         return output
                     }
                 }
@@ -479,21 +519,17 @@
             return axes;
         }
 
-        function getDatasets(depths, depths_pool1, depths_pool2, positions) {
+        function getDatasets(depths, positions) {
             var datasets = [];
             for (var [i, depthArray] of depths.entries()) {
                 datasets.push({
                     dimensions: [
-                        {name : "depth", type: "float"},
-                        {name : "depth_pool1", type: "float"},
-                        {name : "depth_pool2", type: "float"},
+                        {name : "depth", type: "int"},
                         {name: "position", type: "int"}
                     ],
                     source: {
                         position: positions,
-                        depth: depthArray,
-                        depth_pool1: depths_pool1[i],
-                        depth_pool2: depths_pool2[i]
+                        depth: depthArray
                     }
                 });
             }
@@ -520,48 +556,6 @@
                         color: '#666',
                         opacity: 0
                     },
-                    large: true,
-                },
-                {
-                    type: "bar",
-                    name: "Pool1",
-                    xAxisIndex: i,
-                    yAxisIndex: i,
-                    itemStyle: {
-                        color: 'violet'
-                    },
-                    encode: {
-                        x: "position",
-                        y: "depth_pool1",
-                    },
-                    barWidth: "100%",
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    blur:{
-                    },
-                    datasetIndex: i,
-                    large: true,
-                },
-                {
-                    type: "bar",
-                    name: "Pool2",
-                    xAxisIndex: i,
-                    yAxisIndex: i,
-                    itemStyle: {
-                        color: 'skyblue'
-                    },
-                    encode: {
-                        x: "position",
-                        y: "depth_pool2",
-                    },
-                    barWidth:"100%",
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    blur:{
-                    },
-                    datasetIndex: i,
                     large: true,
                 })
             }
@@ -593,6 +587,7 @@
                     })
                 })(i, varMap);
             }
+            //console.log(series)
             return series
         }
 
@@ -622,7 +617,7 @@
             })
             grids.push({
                 show: true,
-                height: "10%",
+                height: "8%",
                 top: last_height + last_top + 3 + "%"
             })
             return grids
@@ -676,14 +671,14 @@
                     var output = "";
                     var param = params[0];
                     var i = param.axisIndex;
-                    var position = param.data[3];
-                    if (i < samples.length){
+                    var position = param.data[1];
+                    if (i < samples.length /*&& variants[i].hasOwnProperty(position)*/){
                         var sample = samples[i];
                         var depth = param.data[0];
-                        var amplicon_depth_pool1 = param.data[1];
-                        var amplicon_depth_pool2 = param.data[2];
                         var start_pos, end_pos;
+                        //start_pos = Math.floor(chart.getOption().dataZoom[0].start * ref_len / 100);
                         start_pos = Math.floor(chart.getOption().dataZoom[0].startValue)
+                        //end_pos = Math.floor(chart.getOption().dataZoom[0].end * ref_len / 100);
                         end_pos = Math.floor(chart.getOption().dataZoom[0].endValue)
                         var mean_cov;
                         mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
@@ -692,18 +687,18 @@
                         var genome_cov;
                         genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2)
                         output += "<b>" + sample + "</b><br/>" + 'Start pos: ' + start_pos.toLocaleString() + '<br/>' + 'End pos: ' + end_pos.toLocaleString() + '<br/>';
-                        output += 'Genome Mean Coverage: ' + mean_cov + 'X' + '<br/>';
-                        output += 'Genome Median Coverage: ' + median_cov + 'X' + '<br/>';
+                        output += 'Mean Coverage: ' + mean_cov + 'X' + '<br/>';
+                        output += 'Median Coverage: ' + median_cov + 'X' + '<br/>';
                         output += 'Genome Coverage ( >= 10x): ' + genome_cov + '%' + '<br/>';
-                        output += 'Genome Position: ' + position.toLocaleString() + '<br/> Genome Coverage Depth: ' + depth.toLocaleString() + '<br/>';
-                        output += 'Pool1 Coverage Depth: ' + amplicon_depth_pool1.toLocaleString() + '<br/>';
-                        output += 'Pool2 Coverage Depth: ' + amplicon_depth_pool2.toLocaleString() + '<br/>'
+                        output += 'Position: ' + position.toLocaleString() + '<br/> Coverage Depth: ' + depth.toLocaleString() + '<br/>';
+                        
                         if (variants[i].hasOwnProperty(position)){
-                            output += 'Ref: ' + window.ref_seq.substring(position-1, position-1 + variants[i][position].length) + '<br/>'
+                            //console.log(variants[i])
+                            output += 'Ref: ' + ref_seq.substring(position - 1, position - 1 + variants[i][position].length) + '<br/>'
                             output = output + 'Variant: ' + variants[i][position]
                         }
                         else{
-                            output += 'Ref: ' + window.ref_seq[position-1] + '<br/>'
+                            output += 'Ref: ' + ref_seq[position-1] + '<br/>'
                         }
                         return output;
                     }
@@ -714,36 +709,37 @@
 
         function getOption(){
             var default_num_chart = 3; // At the beginning display maximum 3 samples
-            var samples = [];
-            var depths = [];
-            var depths_pool1 = [];
-            var depths_pool2 = [];
-            var variants = [];
+            // Original data
+            var origin_samples = {{ samples_name }}
+            var origin_depths = {{ depth_data }};
+            var origin_variants = {{ variant_data }};
 
-            for (const [key, entries] of Object.entries(window.samples)){
+            var samples = [];
+            var depths = []
+            var variants = []
+
+            for (const [key, entries] of Object.entries(origin_samples)){
                 if (key < default_num_chart){
                     samples.push(entries)
-                    depths.push(window.depths[entries][0])
-                    depths_pool1.push(window.depths[entries][1])
-                    depths_pool2.push(window.depths[entries][2])
-                    variants.push(window.variants[entries])
+                    depths.push(origin_depths[entries])
+                    variants.push(origin_variants[entries])
                 }
             }
-            gird_length = samples.length
+            gird_index_length = samples.length
             var options = {
                 title: {
                 },
-                dataset: getDatasets(depths, depths_pool1, depths_pool2 , positions),
+                dataset: getDatasets(depths, positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
-                legend: {
-                    data: ['Pool1', 'Pool2']
-                },
-                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_length)],
+                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
                     show: "true",
                     feature: {
+                        dataView: {
+                            readOnly: false
+                        },
                         restore: {},
                         saveAsImage: {
                             name: "Coverage_Plot"
@@ -754,12 +750,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()],
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()],
                         type: "slider"
                     }
                 ],
@@ -786,7 +782,7 @@
             var scaletype = document.getElementById('scale').value;
             var yaxis_option = chart.getOption().yAxis;
             if (scaletype == 'value'){
-                for(let i = 0 ; i < gird_length; i++){
+                for(let i = 0 ; i < gird_index_length; i++){
                     yaxis_option[i].type = scaletype
                     yaxis_option[i].min = 0
                     yaxis_option[i].max = 40000
@@ -795,7 +791,7 @@
                 document.getElementById('ymax').value = 40000
             }
             else{
-                for(let i = 0 ; i < gird_length; i++){
+                for(let i = 0 ; i < gird_index_length; i++){
                     yaxis_option[i].type = scaletype
                     yaxis_option[i].min = 1
                     yaxis_option[i].max = 100000
@@ -813,7 +809,7 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: false,
@@ -828,12 +824,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()],
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()],
                         type: "slider"
                     }
                 ]
@@ -844,11 +840,12 @@
         function setYMax(){
             var ymax = document.getElementById('ymax').value;
             var yaxis_option = chart.getOption().yAxis;
-            for(let i = 0 ; i < gird_length; i++){
+            for(let i = 0 ; i < gird_index_length; i++){
                 yaxis_option[i].max = ymax
             }
             chart.setOption({yAxis: yaxis_option})
         }
+
 
         chart.on('click', function(params){
             document.getElementById('start_pos').value = params.value[1]
@@ -871,32 +868,32 @@
         })
 
         function updateOption(samples){   
+            
+            var origin_depths = {{ depth_data }};
+            var origin_variants = {{ variant_data }};
+
             var depths = []
-            var depths_pool1 = []
-            var depths_pool2 = []
             var variants = []
 
             for (const selected_samples of samples){
-                depths.push(window.depths[selected_samples][0])
-                depths_pool1.push(window.depths[selected_samples][1])
-                depths_pool2.push(window.depths[selected_samples][2])
-                variants.push(window.variants[selected_samples])
+                depths.push(origin_depths[selected_samples])
+                variants.push(origin_variants[selected_samples])
             }
-            gird_length = samples.length
+            gird_index_length = samples.length
             var options = {
                 title: {
                 },
-                dataset: getDatasets(depths, depths_pool1, depths_pool2, positions),
+                dataset: getDatasets(depths, positions),
                 xAxis: getXAxes(samples, ref_len),
                 yAxis: getYAxes(samples, "log", 100000),
-                legend: {
-                    data: ['Pool1', 'Pool2']
-                },
-                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_length)],
+                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_index_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
                     show: "true",
                     feature: {
+                        dataView: {
+                            readOnly: false
+                        },
                         restore: {},
                         saveAsImage: {
                             name: "Coverage_Plot"
@@ -907,12 +904,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()],
+                        xAxisIndex: [...Array(gird_index_length + 1).keys()],
                         type: "slider"
                     }
                 ],
