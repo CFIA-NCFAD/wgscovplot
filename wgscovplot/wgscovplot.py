@@ -9,24 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
 from itertools import cycle
 
-
-resources = {
-    'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js',
-    'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-    'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
-    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
-    'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
-    'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js',
-    'bootstrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css',
-}
-
-gene_features_properties = {
-    'max_grid_height': 80,
-    'rec_items_height': 12,
-    'plus_strand_offset': 0,
-    'minus_strand_offset': 55,
-    'grid_height': "15%",
-    'color': ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
+color_pallete = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
                        '#CAB2D6',
                        '#6A3D9A', '#FF33D3', '#B15928', '#0006FC', '#2FB0EC', '#F3D742', '#2E9CE1', '#273D63',
                        '#980B92',
@@ -49,6 +32,24 @@ gene_features_properties = {
                        '#CF0E24', '#D791A9', '#0892FE', '#F5A865', '#91EBC2', '#9F650D', '#1B0A0F', '#1E9E88',
                        '#B42E38',
                        '#9710C9']
+
+
+resources = {
+    'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js',
+    'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+    'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+    'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
+    'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js',
+    'bootstrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css',
+}
+
+gene_features_properties = {
+    'max_grid_height': 80,
+    'rec_items_height': 12,
+    'plus_strand_offset': 0,
+    'minus_strand_offset': 55,
+    'grid_height': "15%"
 }
 
 
@@ -153,7 +154,7 @@ def get_gene_feature(annotation: Path) -> list:
     # color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
     # for i in range(number_of_colors)]
     # print (color_pallet)
-    colour_cycle = cycle(gene_features_properties['color'])
+    colour_cycle = cycle(color_pallete)
     minus_strains_list = [0, 0,  0]
     plus_strains_list = [0, 0, 0]
     for seq_record in SeqIO.parse(annotation, "genbank"):
@@ -250,7 +251,8 @@ def write_html_coverage_plot(samples_name: dict,
         for k, v in resources.items():
             logging.info(f'Getting HTML resource "{k}" from "{v}"')
             scripts_css[k] = requests.get(v).text
-        fout.write(template_file.render(samples_name=samples_name,
+        fout.write(template_file.render(gene_features_properties= gene_features_properties,
+                                        samples_name=samples_name,
                                         depth_data=depth_data,
                                         variant_data=variant_data,
                                         coverage_stat=coverage_stat,

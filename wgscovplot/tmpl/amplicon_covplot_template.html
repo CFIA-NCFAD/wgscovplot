@@ -192,6 +192,23 @@
                         </div>
                     </div>
                 </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
+                            Gene Features
+                        </button>
+                    </h2>
+                    <div id="genefeatures" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <p>Show Gene Label:  
+                                <select id="genelabel" onchange="geneLabel()" style="width: 25%">
+                                    <option value="true" selected>True</option>
+                                    <option value="false" >False</option>
+                                </select>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -284,7 +301,8 @@
     <script>
 
         var ref_len = window.ref_seq.length;
-        var gird_length;
+        var gene_features_properties = {{ gene_features_properties }}
+        var grid_length;
         var positions = [...Array(ref_len + 1).keys()];
         positions.shift();
 
@@ -307,13 +325,14 @@
             var categoryIndex = api.value(0);
             var points;
             var shape;
+            var height = gene_features_properties['rec_items_height']
             if (api.value(5) == 'gene_feature'){
                 var start = api.coord([api.value(1), categoryIndex]);
                 if (categoryIndex==0){
                     y_start = start[1]
                 }
                 var end = api.coord([api.value(2), categoryIndex]);
-                var height = api.size([0,1])[1] * 10;
+                //var height = api.size([0,1])[1] * 10;
                 var width = end[0] - start[0] ;
                 var x = start[0];
                 var y = y_start - height/2  - api.value(3);
@@ -347,6 +366,7 @@
                     style : api.style({}),
                     textContent: {
                         type: 'text',
+                        invisible: false,
                         style: {
                             text: gene_feature[categoryIndex].name,
                             fill: gene_feature[categoryIndex].itemStyle.color,
@@ -365,7 +385,7 @@
             else{
                 var start = api.coord([api.value(1), categoryIndex]);
                 var end = api.coord([api.value(2), categoryIndex]);
-                var height = api.size([0,1])[1] * 5;
+                //var height = api.size([0,1])[1] * 5;
                 var width = end[0] - start[0] ;
                 var x = start[0];
                 var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])/100;
@@ -399,9 +419,6 @@
                 type: "custom",
                 xAxisIndex: index,
                 yAxisIndex: index,
-                labelLayout:{
-                    hideOverlap: false,
-                },
                 renderItem:renderGeneFeatures,
                 data: gene_feature,
                 tooltip:{
@@ -472,7 +489,7 @@
                 });
             }
             axes.push({
-                max: 80,
+                max: gene_features_properties['max_grid_height'],
                 gridIndex: samples.length,
                 show: false
             })
@@ -622,7 +639,7 @@
             })
             grids.push({
                 show: true,
-                height: "10%",
+                height: gene_features_properties['grid_height'],
                 top: last_height + last_top + 3 + "%"
             })
             return grids
@@ -729,7 +746,7 @@
                     variants.push(window.variants[entries])
                 }
             }
-            gird_length = samples.length
+            grid_length = samples.length
             var options = {
                 title: {
                 },
@@ -739,7 +756,7 @@
                 legend: {
                     data: ['Pool1', 'Pool2']
                 },
-                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_length)],
+                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(grid_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
                     show: "true",
@@ -754,12 +771,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(grid_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()],
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
                         type: "slider"
                     }
                 ],
@@ -786,7 +803,7 @@
             var scaletype = document.getElementById('scale').value;
             var yaxis_option = chart.getOption().yAxis;
             if (scaletype == 'value'){
-                for(let i = 0 ; i < gird_length; i++){
+                for(let i = 0 ; i < grid_length; i++){
                     yaxis_option[i].type = scaletype
                     yaxis_option[i].min = 0
                     yaxis_option[i].max = 40000
@@ -795,13 +812,107 @@
                 document.getElementById('ymax').value = 40000
             }
             else{
-                for(let i = 0 ; i < gird_length; i++){
+                for(let i = 0 ; i < grid_length; i++){
                     yaxis_option[i].type = scaletype
                     yaxis_option[i].min = 1
                     yaxis_option[i].max = 100000
                 }
                 chart.setOption({yAxis: yaxis_option})
                 document.getElementById('ymax').value = 100000
+            }
+        }
+
+        function updateGeneFeatures(params, api){
+            var categoryIndex = api.value(0);
+            var points;
+            var shape;
+            var height = gene_features_properties['rec_items_height']
+            if (api.value(5) == 'gene_feature'){
+                var start = api.coord([api.value(1), categoryIndex]);
+                if (categoryIndex==0){
+                    y_start = start[1]
+                }
+                var end = api.coord([api.value(2), categoryIndex]);
+                //var height = api.size([0,1])[1] * 10;
+                var width = end[0] - start[0] ;
+                var x = start[0];
+                var y = y_start - height/2  - api.value(3);
+                /* 5 Points of shape
+                --------------------
+                |                     \
+                |                      \
+                |                      /
+                |                     /
+                --------------------
+                */
+                points = [
+                    [x, y],
+                    [x + width - width/100 , y],
+                    [x + width , y - height / 2 ],
+                    [x + width - width/100 , y - height ],
+                    [x, y - height ]
+                ]
+                shape = echarts.graphic.clipPointsByRect(points,
+                    {
+                        x: params.coordSys.x,
+                        y: params.coordSys.y,
+                        width: params.coordSys.width,
+                        height: params.coordSys.height
+                });
+                return shape && {
+                    type: 'polygon',
+                    shape: {
+                        points: shape
+                    },
+                    style : api.style({}),
+                    textContent: {
+                        type: 'text',
+                        invisible: true
+                    },
+                };
+            }
+            else{
+                var start = api.coord([api.value(1), categoryIndex]);
+                var end = api.coord([api.value(2), categoryIndex]);
+                //var height = api.size([0,1])[1] * 5;
+                var width = end[0] - start[0] ;
+                var x = start[0];
+                var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])/100;
+                points = [
+                    [x, y],
+                    [x + width , y],
+                    [x + width , y - height],
+                    [x, y - height ]
+                ]
+                shape = echarts.graphic.clipPointsByRect(points,
+                    {
+                        x: params.coordSys.x,
+                        y: params.coordSys.y,
+                        width: params.coordSys.width,
+                        height: params.coordSys.height
+                });
+                return shape && {
+                    type: 'polygon',
+                    shape: {
+                        points: shape
+                    },
+                    style : api.style(),
+                };
+
+            }
+        }
+
+        function geneLabel(){
+            var hideoverlap = document.getElementById('genelabel').value;
+            var series_option = chart.getOption().series;
+            gene_features_grid_index = series_option.length - 1
+            if (hideoverlap=='false'){
+                series_option[gene_features_grid_index]['renderItem'] = updateGeneFeatures
+                chart.setOption({series: [...series_option]})
+            }
+            else{
+                series_option[gene_features_grid_index]['renderItem'] = renderGeneFeatures
+                chart.setOption({series: [...series_option]})
             }
         }
 
@@ -813,7 +924,7 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(grid_length + 1).keys()]
                     },
                     {
                         show: false,
@@ -828,12 +939,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(grid_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()],
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
                         type: "slider"
                     }
                 ]
@@ -844,7 +955,7 @@
         function setYMax(){
             var ymax = document.getElementById('ymax').value;
             var yaxis_option = chart.getOption().yAxis;
-            for(let i = 0 ; i < gird_length; i++){
+            for(let i = 0 ; i < grid_length; i++){
                 yaxis_option[i].max = ymax
             }
             chart.setOption({yAxis: yaxis_option})
@@ -882,7 +993,7 @@
                 depths_pool2.push(window.depths[selected_samples][2])
                 variants.push(window.variants[selected_samples])
             }
-            gird_length = samples.length
+            grid_length = samples.length
             var options = {
                 title: {
                 },
@@ -892,7 +1003,7 @@
                 legend: {
                     data: ['Pool1', 'Pool2']
                 },
-                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(gird_length)],
+                series: [...getDepthSeries(samples),...getVariantsSeries(variants, depths), ...getGeneFeatureSeries(grid_length)],
                 tooltip: getTooltips(samples, depths, variants),
                 toolbox: {
                     show: "true",
@@ -907,12 +1018,12 @@
                     {
                         type: "inside",
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()]
+                        xAxisIndex: [...Array(grid_length + 1).keys()]
                     },
                     {
                         show: true,
                         filterMode: 'none',
-                        xAxisIndex: [...Array(gird_length + 1).keys()],
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
                         type: "slider"
                     }
                 ],

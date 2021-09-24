@@ -96,13 +96,13 @@ def main(
             if index % 2:
                 gene_feature.append(
                     dict(name=amplicon_name,
-                         value=[gene_feature_len + index - 1, region[0], region[1], 80, 1, 'amplicon_feature'],
+                         value=[gene_feature_len + index - 1, region[0], region[1], 95, 1, 'amplicon_feature'],
                          itemStyle={"color": 'violet'})
                 )
             else:
                 gene_feature.append(
                     dict(name=amplicon_name,
-                         value=[gene_feature_len + index - 1, region[0], region[1], 70, 1, 'amplicon_feature'],
+                         value=[gene_feature_len + index - 1, region[0], region[1], 80, 1, 'amplicon_feature'],
                          itemStyle={"color": 'skyblue'})
                 )
     else:
@@ -129,8 +129,7 @@ def main(
         depth_data={}
         variant_data={}
         coverage_stat=[]
-        '''
-        
+        '''  
 
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent
