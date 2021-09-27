@@ -325,25 +325,21 @@
             var categoryIndex = api.value(0);
             var points;
             var shape;
+            var style;
+            var textConfig;
+            var textContent;
             var height = gene_features_properties['rec_items_height']
+            var start = api.coord([api.value(1), categoryIndex]);
+            if (categoryIndex==0){
+                y_start = start[1]
+            }
+            var end = api.coord([api.value(2), categoryIndex]);
+            var width = end[0] - start[0] ;
+            var x = start[0];
+            var y;
             if (api.value(5) == 'gene_feature'){
-                var start = api.coord([api.value(1), categoryIndex]);
-                if (categoryIndex==0){
-                    y_start = start[1]
-                }
-                var end = api.coord([api.value(2), categoryIndex]);
-                //var height = api.size([0,1])[1] * 10;
-                var width = end[0] - start[0] ;
-                var x = start[0];
-                var y = y_start - height/2  - api.value(3);
-                /* 5 Points of shape
-                --------------------
-                |                     \
-                |                      \
-                |                      /
-                |                     /
-                --------------------
-                */
+
+                y = y_start - height/2  - api.value(3);
                 points = [
                     [x, y],
                     [x + width - width/100 , y],
@@ -358,37 +354,26 @@
                         width: params.coordSys.width,
                         height: params.coordSys.height
                 });
-                return shape && {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        invisible: false,
-                        style: {
-                            text: gene_feature[categoryIndex].name,
-                            fill: gene_feature[categoryIndex].itemStyle.color,
-                            fontStyle: 'normal',
-                            fontSize: 10,
-                            fontWeight: 'bolder'
-                        }
-                    },
-                    textConfig:{
-                        position: 'top',
-                        distance: 15,
-                        rotation: 0.7
+                style = api.style()
+                textContent = {
+                    type: 'text',
+                    invisible: false,
+                    style: {
+                        text: gene_feature[categoryIndex].name,
+                        fill: gene_feature[categoryIndex].itemStyle.color,
+                        fontStyle: 'normal',
+                        fontSize: 10,
+                        fontWeight: 'bolder'
                     }
-                };
+                }
+                textConfig = {
+                    position: 'top',
+                    distance: 15,
+                    rotation: 0.7
+                }
             }
-            else{
-                var start = api.coord([api.value(1), categoryIndex]);
-                var end = api.coord([api.value(2), categoryIndex]);
-                //var height = api.size([0,1])[1] * 5;
-                var width = end[0] - start[0] ;
-                var x = start[0];
-                var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])/100;
+            else if (api.value(5) == 'amplicon_feature'){
+                y = y_start + height/2  - api.value(3);
                 points = [
                     [x, y],
                     [x + width , y],
@@ -402,15 +387,19 @@
                         width: params.coordSys.width,
                         height: params.coordSys.height
                 });
-                return shape && {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style(),
-                };
-
+                style = api.style()
+                textContent = {}
+                textConfig = {}
             }
+            return {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : style,
+                textContent: textContent,
+                textConfig:textConfig
+            };
         }
 
         function getGeneFeatureSeries(index){
@@ -826,25 +815,21 @@
             var categoryIndex = api.value(0);
             var points;
             var shape;
+            var style;
+            var textConfig;
+            var textContent;
             var height = gene_features_properties['rec_items_height']
+            var start = api.coord([api.value(1), categoryIndex]);
+            if (categoryIndex==0){
+                y_start = start[1]
+            }
+            var end = api.coord([api.value(2), categoryIndex]);
+            var width = end[0] - start[0] ;
+            var x = start[0];
+            var y;
             if (api.value(5) == 'gene_feature'){
-                var start = api.coord([api.value(1), categoryIndex]);
-                if (categoryIndex==0){
-                    y_start = start[1]
-                }
-                var end = api.coord([api.value(2), categoryIndex]);
-                //var height = api.size([0,1])[1] * 10;
-                var width = end[0] - start[0] ;
-                var x = start[0];
-                var y = y_start - height/2  - api.value(3);
-                /* 5 Points of shape
-                --------------------
-                |                     \
-                |                      \
-                |                      /
-                |                     /
-                --------------------
-                */
+
+                y = y_start - height/2  - api.value(3);
                 points = [
                     [x, y],
                     [x + width - width/100 , y],
@@ -859,25 +844,15 @@
                         width: params.coordSys.width,
                         height: params.coordSys.height
                 });
-                return shape && {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        invisible: true
-                    },
-                };
+                style = api.style()
+                textContent = {
+                    type: 'text',
+                    invisible: true,
+                }
+                textConfig = {}
             }
-            else{
-                var start = api.coord([api.value(1), categoryIndex]);
-                var end = api.coord([api.value(2), categoryIndex]);
-                //var height = api.size([0,1])[1] * 5;
-                var width = end[0] - start[0] ;
-                var x = start[0];
-                var y = y_start - height/2  - api.value(3) + api.getHeight([0,1])/100;
+            else if (api.value(5) == 'amplicon_feature'){
+                y = y_start + height/2  - api.value(3);
                 points = [
                     [x, y],
                     [x + width , y],
@@ -891,15 +866,19 @@
                         width: params.coordSys.width,
                         height: params.coordSys.height
                 });
-                return shape && {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style(),
-                };
-
+                style = api.style()
+                textContent = {}
+                textConfig = {}
             }
+            return {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : style,
+                textContent: textContent,
+                textConfig:textConfig
+            };
         }
 
         function geneLabel(){

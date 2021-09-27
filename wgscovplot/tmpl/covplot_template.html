@@ -327,24 +327,23 @@
             var start = api.coord([api.value(1), categoryIndex]);
             var points;
             var shape;
+            var rotate_angle;
             if (categoryIndex==0){
                 y_start = start[1]
             }
             var end = api.coord([api.value(2), categoryIndex]);
-            //var height = api.size([0,1])[1]*15000;
             var height = gene_features_properties['rec_items_height'];
             var width = end[0] - start[0] ;
             var x = start[0];
             var y = y_start - height/2  - api.value(3);
-            /* 5 Points of shape
-            --------------------
-            |                     \
-            |                      \
-            |                      /
-            |                     /
-            --------------------                
-            */
-            if (api.value(4) == 1){ // Plus strain
+
+            if (api.value(4) == 1){ 
+                /* 5 Points of shape of + strand
+                ----------------------
+                |                      \
+                |                      /
+                ----------------------                
+                */
                 points = [
                     [x, y],
                     [x + width - width/100 , y],
@@ -352,79 +351,55 @@
                     [x + width - width/100 , y - height ],
                     [x, y - height ]
                 ]
-                shape = echarts.graphic.clipPointsByRect(points,
-                    {
-                        x: params.coordSys.x,
-                        y: params.coordSys.y,
-                        width: params.coordSys.width,
-                        height: params.coordSys.height
-                });
-                return {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        invisible: false,
-                        style: {
-                            text: gene_feature[categoryIndex].name,
-                            fill: gene_feature[categoryIndex].itemStyle.color,
-                            fontStyle: 'normal',
-                            fontSize: 10,
-                            fontWeight: 'bolder'
-                        }
-                    },
-                    textConfig:{
-                        position: 'top',
-                        distance: 20,
-                        rotation: 0.7,
-                        local: true
-                    }
-                };
+                rotate_angle = 0.7;
             }
-            else{ // Minus Strand, reverse point order
-                 points = [
+            else {
+                /* 5 Points of shape - strand
+                  -----------------------
+                /                       |                    
+                \                       |
+                  -----------------------                
+                */
+                points = [
                     [x, y - height/2],
                     [x + width/100, y],
                     [x + width, y],
                     [x + width, y - height],
                     [x + width/100, y - height]
-
                 ]
-                shape = echarts.graphic.clipPointsByRect(points,
-                    {
-                        x: params.coordSys.x,
-                        y: params.coordSys.y,
-                        width: params.coordSys.width,
-                        height: params.coordSys.height
-                });
-                return {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        invisible: false,
-                        style: {
-                            text: gene_feature[categoryIndex].name,
-                            fill: gene_feature[categoryIndex].itemStyle.color,
-                            fontStyle: 'normal',
-                            fontSize: 10,
-                            fontWeight: 'bolder'
-                        }
-                    },
-                    textConfig:{
-                        position: 'top',
-                        distance: 20,
-                        rotation: -0.7,
-                        local: true
-                    }
-                };
+                rotate_angle = -0.7;
             }
+            shape = echarts.graphic.clipPointsByRect(points,
+                {
+                    x: params.coordSys.x,
+                    y: params.coordSys.y,
+                    width: params.coordSys.width,
+                    height: params.coordSys.height
+            });
+            return {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : api.style({}),
+                textContent: {
+                    type: 'text',
+                    invisible: false,
+                    style: {
+                        text: gene_feature[categoryIndex].name,
+                        fill: gene_feature[categoryIndex].itemStyle.color,
+                        fontStyle: 'normal',
+                        fontSize: 10,
+                        fontWeight: 'bolder'
+                    }
+                },
+                textConfig:{
+                    position: 'top',
+                    distance: 20,
+                    rotation: rotate_angle,
+                    local: true
+                }
+            };
         }
 
         function getGeneFeatureSeries(index){
@@ -791,24 +766,23 @@
             var start = api.coord([api.value(1), categoryIndex]);
             var points;
             var shape;
+            var rotate_angle;
             if (categoryIndex==0){
                 y_start = start[1]
             }
             var end = api.coord([api.value(2), categoryIndex]);
-            //var height = api.size([0,1])[1]*15000;
             var height = gene_features_properties['rec_items_height'];
             var width = end[0] - start[0] ;
             var x = start[0];
             var y = y_start - height/2  - api.value(3);
-            /* 5 Points of shape
-            --------------------
-            |                     \
-            |                      \
-            |                      /
-            |                     /
-            --------------------                
-            */
-            if (api.value(4) == 1){ // Plus strain
+
+            if (api.value(4) == 1){ 
+                /* 5 Points of shape of + strand
+                ----------------------
+                |                      \
+                |                      /
+                ----------------------                
+                */
                 points = [
                     [x, y],
                     [x + width - width/100 , y],
@@ -816,53 +790,42 @@
                     [x + width - width/100 , y - height ],
                     [x, y - height ]
                 ]
-                shape = echarts.graphic.clipPointsByRect(points,
-                    {
-                        x: params.coordSys.x,
-                        y: params.coordSys.y,
-                        width: params.coordSys.width,
-                        height: params.coordSys.height
-                });
-                return {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        invisible: true,
-                    }
-                };
+                rotate_angle = 0.7;
             }
-            else{ // Minus Strand, reverse point order
-                 points = [
+            else {
+                /* 5 Points of shape - strand
+                  -----------------------
+                /                       |                    
+                \                       |
+                  -----------------------                
+                */
+                points = [
                     [x, y - height/2],
                     [x + width/100, y],
                     [x + width, y],
                     [x + width, y - height],
                     [x + width/100, y - height]
-
                 ]
-                shape = echarts.graphic.clipPointsByRect(points,
-                    {
-                        x: params.coordSys.x,
-                        y: params.coordSys.y,
-                        width: params.coordSys.width,
-                        height: params.coordSys.height
-                });
-                return {
-                    type: 'polygon',
-                    shape: {
-                        points: shape
-                    },
-                    style : api.style({}),
-                    textContent: {
-                        type: 'text',
-                        invisible: true,
-                    }
-                };
+                rotate_angle = -0.7;
             }
+            shape = echarts.graphic.clipPointsByRect(points,
+                {
+                    x: params.coordSys.x,
+                    y: params.coordSys.y,
+                    width: params.coordSys.width,
+                    height: params.coordSys.height
+            });
+            return {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : api.style({}),
+                textContent: {
+                    type: 'text',
+                    invisible: true,
+                },
+            };
         }
 
         function geneLabel(){
