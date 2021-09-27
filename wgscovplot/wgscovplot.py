@@ -47,8 +47,8 @@ resources = {
 gene_features_properties = {
     'max_grid_height': 80,
     'rec_items_height': 12,
-    'plus_strand_offset': 0,
-    'minus_strand_offset': 55,
+    'plus_strand_level': 0,
+    'minus_strand_level': 55,
     'grid_height': "15%"
 }
 
@@ -174,53 +174,53 @@ def get_gene_feature(annotation: Path) -> list:
             strand = seq_feature.strand
             if strand == 1:
                 if overlap(plus_strains_list[0], plus_strains_list[1], start_pos, end_pos):
-                    offset = gene_features_properties['plus_strand_offset'] + gene_features_properties['rec_items_height'] + 3
-                    if minus_strains_list[2] == gene_features_properties['plus_strand_offset'] + gene_features_properties['rec_items_height'] + 3:
-                        offset = gene_features_properties['plus_strand_offset']
+                    level = gene_features_properties['plus_strand_level'] + gene_features_properties['rec_items_height'] + 3
+                    if plus_strains_list[2] == gene_features_properties['plus_strand_level'] + gene_features_properties['rec_items_height'] + 3:
+                        level = gene_features_properties['plus_strand_level']
                         gene_feature.append(
                                 dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
                                     itemStyle={"color": next(colour_cycle)})
                         )
                     else:
                         gene_feature.append(
                                 dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
                                     itemStyle={"color": next(colour_cycle)})
                         )
 
                 else:
-                    offset = gene_features_properties['plus_strand_offset']
+                    level = gene_features_properties['plus_strand_level']
                     gene_feature.append(
                             dict(name=feature_name,
-                                value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
                                 itemStyle={"color": next(colour_cycle)})
                         )
-                plus_strains_list = [start_pos, end_pos, offset]
+                plus_strains_list = [start_pos, end_pos, level]
             else:
                 if overlap(minus_strains_list[0], minus_strains_list[1], start_pos, end_pos):
-                    offset = gene_features_properties['minus_strand_offset'] + gene_features_properties['rec_items_height'] + 3
-                    if minus_strains_list[2] == gene_features_properties['minus_strand_offset'] + gene_features_properties['rec_items_height'] + 3:
-                        offset = gene_features_properties['minus_strand_offset']
+                    level = gene_features_properties['minus_strand_level'] + gene_features_properties['rec_items_height'] + 3
+                    if minus_strains_list[2] == gene_features_properties['minus_strand_level'] + gene_features_properties['rec_items_height'] + 3:
+                        level = gene_features_properties['minus_strand_level']
                         gene_feature.append(
                                 dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
                                     itemStyle={"color": next(colour_cycle)})
                         )
                     else:
                         gene_feature.append(
                                 dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
                                     itemStyle={"color": next(colour_cycle)})
                         )
                 else:
-                    offset = gene_features_properties['minus_strand_offset']
+                    level = gene_features_properties['minus_strand_level']
                     gene_feature.append(
                             dict(name=feature_name,
-                                value=[index, start_pos, end_pos, offset, strand, 'gene_feature'],
+                                value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
                                 itemStyle={"color": next(colour_cycle)})
                         )
-                minus_strains_list = [start_pos, end_pos, offset]
+                minus_strains_list = [start_pos, end_pos, level]
             index = index + 1
     return gene_feature
 

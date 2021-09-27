@@ -206,13 +206,17 @@
                                     <option value="false" >False</option>
                                 </select>
                             </p>
+                            <p>Grid Height:  
+                                <input type="range" value="15" min="1" max="50"  onchange="updateTextInput(this.value);">
+                                <output type="text" id="textInput">15</output>
+                                <output>%</output>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 
 
     <div id="about_id" class="chart-container">
@@ -840,6 +844,14 @@
                 series_option[gene_features_grid_index]['renderItem'] = renderGeneFeatures
                 chart.setOption({series: [...series_option]})
             }
+        }
+
+        function updateTextInput(val) {
+            document.getElementById('textInput').value=val; 
+            var grid_option = chart.getOption().grid;
+            gene_features_grid_index = grid_option.length - 1
+            grid_option[gene_features_grid_index]['height'] = val +'%'
+            chart.setOption({grid:grid_option})
         }
 
         function dataZoomOption(){
