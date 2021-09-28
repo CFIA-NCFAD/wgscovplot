@@ -123,6 +123,17 @@
                                 <option value={{sample}}>{{sample}}</option>
                             {% endfor %}
                         </select>
+                        <p></p>
+                        <p>Chart Height:  
+                            <input type="range" value="19" min="1" max="70"  onchange="updateChartHeight(this.value);">
+                            <output type="text" id="chartheight">19</output>
+                            <output>%</output>
+                        </p>
+                        <p>Chart Left/Right:  
+                            <input type="range" value="10" min="1" max="50"  onchange="updateChartLeftRight(this.value);">
+                            <output type="text" id="chartleftright">10</output>
+                            <output>%</output>
+                        </p>
                     </div>
                   </div>
                 </div>
@@ -206,9 +217,9 @@
                                     <option value="false" >False</option>
                                 </select>
                             </p>
-                            <p>Grid Height:  
-                                <input type="range" value="15" min="1" max="50"  onchange="updateTextInput(this.value);">
-                                <output type="text" id="textInput">15</output>
+                            <p>Chart Height:  
+                                <input type="range" value="15" min="1" max="50"  onchange="updateGeneFeatureHeight(this.value);">
+                                <output type="text" id="genefeatureheight">15</output>
                                 <output>%</output>
                             </p>
                         </div>
@@ -583,11 +594,15 @@
                 var padTop = 4
                 last_top = (idx / n * 100) + padTop
                 grid.top = (idx / n * 100) + padTop + "%"
+                grid.left = "5%"
+                grid.right = "5%"
             })
             grids.push({
                 show: true,
                 height: gene_features_properties['grid_height'],
-                top: last_height + last_top + 3 + "%"
+                top: last_height + last_top + 3 + "%",
+                left: "5%",
+                right: "5%"
             })
             return grids
         }
@@ -846,14 +861,41 @@
             }
         }
 
-        function updateTextInput(val) {
-            document.getElementById('textInput').value=val; 
+        function updateGeneFeatureHeight(val) {
+            document.getElementById('genefeatureheight').value=val; 
             var grid_option = chart.getOption().grid;
+            console.log(grid_option)
             gene_features_grid_index = grid_option.length - 1
             grid_option[gene_features_grid_index]['height'] = val +'%'
             chart.setOption({grid:grid_option})
         }
 
+        function updateChartHeight(val) {
+            document.getElementById('chartheight').value=val; 
+            var grid_option = chart.getOption().grid;
+            for (var i = 0; i < grid_option.length; i++){
+                if (i < grid_option.length - 1) // don't change height of DNA feature charts
+                    grid_option[i]['height'] = val +'%'
+                if (i > 0){
+                    grid_option[i]['top'] = parseInt(grid_option[i -1 ]['top'].replace('%','')) + parseInt(grid_option[i - 1]['height'].replace('%','')) + 4 + '%'
+                }
+            }
+            chart.setOption({grid:grid_option})
+            
+        }
+
+        function updateChartLeftRight(val) {
+            document.getElementById('chartleftright').value=val; 
+            var grid_option = chart.getOption().grid;
+
+            for (var i = 0; i < grid_option.length; i++){
+                grid_option[i]['left'] = val +'%'
+                grid_option[i]['right'] = val +'%'
+            }
+            chart.setOption({grid:grid_option})
+            
+        }
+                
         function dataZoomOption(){
             var sliderx = document.getElementById('showslider').value;
             if (sliderx=="false"){
