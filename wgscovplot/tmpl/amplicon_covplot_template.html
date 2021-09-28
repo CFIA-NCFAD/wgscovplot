@@ -124,14 +124,19 @@
                             {% endfor %}
                         </select>
                         <p></p>
-                        <p>Chart Height:  
+                        <p>Height:  
                             <input type="range" value="19" min="1" max="70"  onchange="updateChartHeight(this.value);">
                             <output type="text" id="chartheight">19</output>
                             <output>%</output>
                         </p>
-                        <p>Chart Left/Right:  
+                        <p>Left/Right:  
                             <input type="range" value="10" min="1" max="50"  onchange="updateChartLeftRight(this.value);">
                             <output type="text" id="chartleftright">10</output>
+                            <output>%</output>
+                        </p>
+                        <p>Top:  
+                            <input type="range" value="4" min="1" max="10"  onchange="updateChartTop(this.value);">
+                            <output type="text" id="charttop">4</output>
                             <output>%</output>
                         </p>
                     </div>
@@ -169,7 +174,7 @@
                     </h2>
                     <div id="tooltip" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <p>Show Tooltip:  
+                            <p>Tooltip:  
                                 <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
                                     <option value="false" >Disable</option>
                                     <option value="true" selected>Enable</option>
@@ -186,7 +191,7 @@
                     </h2>
                     <div id="datazoom" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <p>Show Slider:  
+                            <p>Slider:  
                                 <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
                                     <option value="true" selected>Enable</option>
                                     <option value="false">Disable</option>
@@ -914,7 +919,6 @@
         function updateGeneFeatureHeight(val) {
             document.getElementById('genefeatureheight').value=val; 
             var grid_option = chart.getOption().grid;
-            console.log(grid_option)
             gene_features_grid_index = grid_option.length - 1
             grid_option[gene_features_grid_index]['height'] = val +'%'
             chart.setOption({grid:grid_option})
@@ -930,17 +934,24 @@
                     grid_option[i]['top'] = parseInt(grid_option[i -1 ]['top'].replace('%','')) + parseInt(grid_option[i - 1]['height'].replace('%','')) + 4 + '%'
                 }
             }
-            chart.setOption({grid:grid_option})
-            
+            chart.setOption({grid:grid_option})  
         }
 
         function updateChartLeftRight(val) {
             document.getElementById('chartleftright').value=val; 
             var grid_option = chart.getOption().grid;
-
             for (var i = 0; i < grid_option.length; i++){
                 grid_option[i]['left'] = val +'%'
                 grid_option[i]['right'] = val +'%'
+            }
+            chart.setOption({grid:grid_option}) 
+        }
+
+        function updateChartTop(val) {
+            document.getElementById('charttop').value=val; 
+            var grid_option = chart.getOption().grid;
+            for (var i = 1; i < grid_option.length; i++){
+                grid_option[i]['top'] = parseInt(grid_option[i-1]['top'].replace('%','')) + parseInt(grid_option[i-1]['height'].replace('%','')) + parseInt(val) + '%'
             }
             chart.setOption({grid:grid_option})
             
