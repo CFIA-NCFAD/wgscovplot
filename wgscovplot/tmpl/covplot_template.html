@@ -40,53 +40,6 @@
             padding: 6px 12px;
         }
 
-        #table_id {
-            font-family: Arial, Helvetica, sans-serif;
-            border-collapse: collapse;
-            padding-top: 1%;
-            width: 100%;
-        }
-
-        #table_id td, #table_id th {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        #table_id tr:nth-child(even){
-            background-color: #f2f2f2;
-        }
-
-        #table_id tr:hover {
-            background-color: #ddd;
-        }
-
-        #table_id tr {
-            justify-content: space-between;
-        }
-
-        #table_id th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            text-align: left;
-            background-color: #04AA6D;
-            color: white;
-            justify-content: space-between;
-        }
-
-        h2 {
-            margin:0px auto;
-            padding: 10px 0px 10px 0px;
-            border-bottom: 2px ridge;
-        }
-
-        table {
-            border-collapse: collapse;
-        }
-
-        th, td {
-           border: 1px solid black;
-        }
-
     </style>
 </head>
 <body>
@@ -94,7 +47,6 @@
         <button class="tablinks" data-bs-toggle="offcanvas" data-bs-target="#controlmenu">☰ Chart Options</button>
         <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
         <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
-        <button class="tablinks" onclick="showChart(event,'fqa_id')">FQA</button>
         <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
     </div>
 
@@ -123,25 +75,76 @@
                                 <option value={{sample}}>{{sample}}</option>
                             {% endfor %}
                         </select>
-                        <p></p>
-                        <p>Height:  
-                            <input type="range" value="19" min="1" max="70"  onchange="updateChartHeight(this.value);">
-                            <output type="text" id="chartheight">19</output>
-                            <output>%</output>
-                        </p>
-                        <p>Left/Right:  
-                            <input type="range" value="10" min="1" max="50"  onchange="updateChartLeftRight(this.value);">
-                            <output type="text" id="chartleftright">10</output>
-                            <output>%</output>
-                        </p>
-                        <p>Top:  
-                            <input type="range" value="4" min="1" max="10"  onchange="updateChartTop(this.value);">
-                            <output type="text" id="charttop">4</output>
-                            <output>%</output>
-                        </p>
                     </div>
                   </div>
                 </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chartproperties" aria-expanded="false" aria-controls="chartproperties">
+                            Chart Properties
+                        </button>
+                    </h2>
+                <div id="chartproperties" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                        <!--
+                        <div>Renderer:  
+                            <select id="renderenv" onchange="renderenv()" style="width: 40%">
+                                <option value="svg" >svg</option>
+                                <option value="canvas" selected>canvas</option>
+                            </select>
+                        </div>
+                        -->
+                        <p></p>
+                        <div class="form-check form-switch">
+                            <label class="form-check-label" for="toggledarkmode">Dark Mode</label>
+                            <input class="form-check-input" type="checkbox" id="toggledarkmode" unchecked>
+                        </div>
+                        <p></p>
+                        <div>
+                            <label class="form-label">Height</label> 
+                            <input type="range" class="form-range" value="15" min="1" max="70" step="1" onchange="updateChartHeight(this.value);">
+                            <output style="display: block; text-align:center;" type="text" id="chartheight">19<span>%</span></output>
+                        </div>
+                        <div>
+                            <label class="form-label">Left</label> 
+                            <input type="range" class="form-range" value="10" min="1" max="50" step="1" onchange="updateChartLeft(this.value);">
+                            <output style="display: block; text-align:center;" type="text" id="chartleft">10<span>%</span></output>
+                        </div>
+                        <div>
+                            <label class="form-label">Right</label> 
+                            <input type="range" class="form-range" value="10" min="1" max="50" step="1" onchange="updateChartRight(this.value);">
+                            <output style="display: block; text-align:center;" type="text" id="chartright">10<span>%</span></output>
+                        </div>
+                        <div>
+                            <label class="form-label">Top</label> 
+                            <input type="range" class="form-range" value="4" min="1" max="10" step="1" onchange="updateChartTop(this.value);">
+                            <output style="display: block; text-align:center;" type="text" id="charttop">4<span>%</span></output>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
+                            Gene Features
+                        </button>
+                    </h2>
+                    <div id="genefeatures" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="togglegenelabel">Show Gene Label</label>
+                                <input class="form-check-input" type="checkbox" id="togglegenelabel" checked>
+                            </div>
+                            <div>
+                                <label class="form-label">Height</label> 
+                                <input type="range" class="form-range" value="15" min="1" max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
+                                <output style="display: block; text-align:center;" type="text" id="genefeatureheight">15<span>%</span></output>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#axis" aria-expanded="false" aria-controls="axis">
@@ -174,12 +177,10 @@
                     </h2>
                     <div id="tooltip" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <p>Tooltip:  
-                                <select id="showtooltip" onchange="tooltipOption()" style="width: 25%">
-                                    <option value="false" >Disable</option>
-                                    <option value="true" selected>Enable</option>
-                                </select>
-                            </p>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="toggletooltip">Show Tooltip</label>
+                                <input class="form-check-input" type="checkbox" id="toggletooltip" checked>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -191,12 +192,10 @@
                     </h2>
                     <div id="datazoom" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <p>Slider:  
-                                <select id="showslider" onchange="dataZoomOption()" style="width: 25%">
-                                    <option value="true" selected>Enable</option>
-                                    <option value="false">Disable</option>
-                                </select>
-                            </p>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="toggleslider">Slider</label>
+                                <input class="form-check-input" type="checkbox" id="toggleslider" checked>
+                            </div>
                             <form id="dataZoom">
                                 <label for="start_pos">Start Pos:</label><br>
                                 <input type="number" id="start_pos" value=1><br>
@@ -205,28 +204,6 @@
                                 <input type="button" onclick="setDataZoom()" value="Set DataZoom">
                                 <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
                             </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
-                            Gene Features
-                        </button>
-                    </h2>
-                    <div id="genefeatures" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <p>Show Gene Label:  
-                                <select id="genelabel" onchange="geneLabel()" style="width: 25%">
-                                    <option value="true" selected>True</option>
-                                    <option value="false" >False</option>
-                                </select>
-                            </p>
-                            <p>Height:  
-                                <input type="range" value="15" min="1" max="50"  onchange="updateGeneFeatureHeight(this.value);">
-                                <output type="text" id="genefeatureheight">15</output>
-                                <output>%</output>
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -239,30 +216,8 @@
         {{ about_html }}
     </div>
 
-    <div id="fqa_id" class="chart-container">
-        <h4>What happens when the number of samples shown on the chart changed?</h4>
-        <ul>
-            <li>By the default, at first up to 3 first samples are selected for displaying on the charts</li>
-            <li>The entire chart will be re-rendered if you select/change samples to be displayed and you need to set your chart options again, changing other options will not re-render the entire chart</li>
-        </ul>
-
-        <h4>What happens when browser zoom is set more than 100%?</h4>
-        <ul>
-            <li>Some minor graphic (such as some items get cut off) issues may happen. To fix this type of issue, try to adjust browser zoom and this may allow you to have better view</li>
-        </ul>
-
-        <h4>How many simultaneous samples are on the chart for the best view?</h4>
-        <ul>
-            <li>It is recommended that having around 5 simultaneous samples on the chart for the best view</li>
-        </ul>
-
-        <h4>What will you do when the plot is distorted or minimized?</h4>
-        <ul>
-            <li>This issue could happen when you shrink and maximize browser, to restore plot display just simply refresh browser</li>
-        </ul>
-    </div>
-    <table id="table_id" class="chart-container">
-        <tr>
+    <table id="table_id" class="chart-container table table-striped table-hover table-bordered table-responsive-md">
+        <tr class="table-dark">
             <th>Sample Name</th>
             <th>Mean Coverage</th>
             <th>Median Coverage</th>
@@ -332,11 +287,10 @@
             "T": "#0FF",
         }
 
-        //window.depths = depths;
         var $chart = document.getElementById('chart');
-        window.$chart = $chart;
+        //window.$chart = $chart;
         var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
-        window.chart = chart;
+        //window.chart = chart;
 
 
         /////////////// Define Gene Feature /////////////////////
@@ -419,6 +373,73 @@
                     rotation: rotate_angle,
                     local: true
                 }
+            };
+        }
+
+        function updateGeneFeatures(params, api){
+            var categoryIndex = api.value(0);
+            var start = api.coord([api.value(1), categoryIndex]);
+            var points;
+            var shape;
+            var rotate_angle;
+            if (categoryIndex==0){
+                y_start = start[1]
+            }
+            var end = api.coord([api.value(2), categoryIndex]);
+            var height = gene_features_properties['rec_items_height'];
+            var width = end[0] - start[0] ;
+            var x = start[0];
+            var y = y_start - height/2  - api.value(3);
+
+            if (api.value(4) == 1){ 
+                /* 5 Points of shape of + strand
+                ----------------------
+                |                      \
+                |                      /
+                ----------------------                
+                */
+                points = [
+                    [x, y],
+                    [x + width - width/100 , y],
+                    [x + width , y - height / 2 ],
+                    [x + width - width/100 , y - height ],
+                    [x, y - height ]
+                ]
+                rotate_angle = 0.7;
+            }
+            else {
+                /* 5 Points of shape - strand
+                  -----------------------
+                /                       |                    
+                \                       |
+                  -----------------------                
+                */
+                points = [
+                    [x, y - height/2],
+                    [x + width/100, y],
+                    [x + width, y],
+                    [x + width, y - height],
+                    [x + width/100, y - height]
+                ]
+                rotate_angle = -0.7;
+            }
+            shape = echarts.graphic.clipPointsByRect(points,
+                {
+                    x: params.coordSys.x,
+                    y: params.coordSys.y,
+                    width: params.coordSys.width,
+                    height: params.coordSys.height
+            });
+            return {
+                type: 'polygon',
+                shape: {
+                    points: shape
+                },
+                style : api.style({}),
+                textContent: {
+                    type: 'text',
+                    invisible: true,
+                },
             };
         }
 
@@ -748,233 +769,6 @@
             return options
         }
 
-        function tooltipOption(){
-            var tooltipx = document.getElementById('showtooltip').value;
-            if (tooltipx=='false'){
-                chart.setOption({
-                    tooltip:{showContent: false}
-                });
-            }
-            else{
-                chart.setOption({
-                    tooltip:{showContent: true}
-                });
-            }
-        }
-
-        function setScale(){
-            var scaletype = document.getElementById('scale').value;
-            var yaxis_option = chart.getOption().yAxis;
-            if (scaletype == 'value'){
-                for(let i = 0 ; i < grid_length; i++){
-                    yaxis_option[i].type = scaletype
-                    yaxis_option[i].min = 0
-                    yaxis_option[i].max = 40000
-                }
-                chart.setOption({yAxis: yaxis_option})
-                document.getElementById('ymax').value = 40000
-            }
-            else{
-                for(let i = 0 ; i < grid_length; i++){
-                    yaxis_option[i].type = scaletype
-                    yaxis_option[i].min = 1
-                    yaxis_option[i].max = 100000
-                }
-                chart.setOption({yAxis: yaxis_option})
-                document.getElementById('ymax').value = 100000
-            }
-        }
-
-        function updateGeneFeatures(params, api){
-            var categoryIndex = api.value(0);
-            var start = api.coord([api.value(1), categoryIndex]);
-            var points;
-            var shape;
-            var rotate_angle;
-            if (categoryIndex==0){
-                y_start = start[1]
-            }
-            var end = api.coord([api.value(2), categoryIndex]);
-            var height = gene_features_properties['rec_items_height'];
-            var width = end[0] - start[0] ;
-            var x = start[0];
-            var y = y_start - height/2  - api.value(3);
-
-            if (api.value(4) == 1){ 
-                /* 5 Points of shape of + strand
-                ----------------------
-                |                      \
-                |                      /
-                ----------------------                
-                */
-                points = [
-                    [x, y],
-                    [x + width - width/100 , y],
-                    [x + width , y - height / 2 ],
-                    [x + width - width/100 , y - height ],
-                    [x, y - height ]
-                ]
-                rotate_angle = 0.7;
-            }
-            else {
-                /* 5 Points of shape - strand
-                  -----------------------
-                /                       |                    
-                \                       |
-                  -----------------------                
-                */
-                points = [
-                    [x, y - height/2],
-                    [x + width/100, y],
-                    [x + width, y],
-                    [x + width, y - height],
-                    [x + width/100, y - height]
-                ]
-                rotate_angle = -0.7;
-            }
-            shape = echarts.graphic.clipPointsByRect(points,
-                {
-                    x: params.coordSys.x,
-                    y: params.coordSys.y,
-                    width: params.coordSys.width,
-                    height: params.coordSys.height
-            });
-            return {
-                type: 'polygon',
-                shape: {
-                    points: shape
-                },
-                style : api.style({}),
-                textContent: {
-                    type: 'text',
-                    invisible: true,
-                },
-            };
-        }
-
-        function geneLabel(){
-            var hideoverlap = document.getElementById('genelabel').value;
-            var series_option = chart.getOption().series;
-            gene_features_grid_index = series_option.length - 1
-            if (hideoverlap=='false'){
-                series_option[gene_features_grid_index]['renderItem'] = updateGeneFeatures
-                chart.setOption({series: [...series_option]})
-            }
-            else{
-                series_option[gene_features_grid_index]['renderItem'] = renderGeneFeatures
-                chart.setOption({series: [...series_option]})
-            }
-        }
-
-        function updateGeneFeatureHeight(val) {
-            document.getElementById('genefeatureheight').value=val; 
-            var grid_option = chart.getOption().grid;
-            gene_features_grid_index = grid_option.length - 1
-            grid_option[gene_features_grid_index]['height'] = val +'%'
-            chart.setOption({grid:grid_option})
-        }
-
-        function updateChartHeight(val) {
-            document.getElementById('chartheight').value=val; 
-            var grid_option = chart.getOption().grid;
-            for (var i = 0; i < grid_option.length; i++){
-                if (i < grid_option.length - 1) // don't change height of DNA feature charts
-                    grid_option[i]['height'] = val +'%'
-                if (i > 0){
-                    grid_option[i]['top'] = parseInt(grid_option[i -1 ]['top'].replace('%','')) + parseInt(grid_option[i - 1]['height'].replace('%','')) + 4 + '%'
-                }
-            }
-            chart.setOption({grid:grid_option})
-            
-        }
-
-        function updateChartLeftRight(val) {
-            document.getElementById('chartleftright').value=val; 
-            var grid_option = chart.getOption().grid;
-            for (var i = 0; i < grid_option.length; i++){
-                grid_option[i]['left'] = val +'%'
-                grid_option[i]['right'] = val +'%'
-            }
-            chart.setOption({grid:grid_option})
-            
-        }
-
-        function updateChartTop(val) {
-            document.getElementById('charttop').value=val; 
-            var grid_option = chart.getOption().grid;
-            for (var i = 1; i < grid_option.length; i++){
-                grid_option[i]['top'] = parseInt(grid_option[i-1]['top'].replace('%','')) + parseInt(grid_option[i-1]['height'].replace('%','')) + parseInt(val) + '%'
-            }
-            chart.setOption({grid:grid_option})
-            
-        }
-                
-        function dataZoomOption(){
-            var sliderx = document.getElementById('showslider').value;
-            if (sliderx=="false"){
-                chart.setOption({
-                    dataZoom: [
-                    {
-                        type: "inside",
-                        filterMode: 'none',
-                        xAxisIndex: [...Array(grid_length + 1).keys()]
-                    },
-                    {
-                        show: false,
-                        type: "slider"
-                    }
-                ]
-                });
-            }
-            else{
-                chart.setOption({
-                    dataZoom: [
-                    {
-                        type: "inside",
-                        filterMode: 'none',
-                        xAxisIndex: [...Array(grid_length + 1).keys()]
-                    },
-                    {
-                        show: true,
-                        filterMode: 'none',
-                        xAxisIndex: [...Array(grid_length + 1).keys()],
-                        type: "slider"
-                    }
-                ]
-                });
-            } 
-        }
-        
-        function setYMax(){
-            var ymax = document.getElementById('ymax').value;
-            var yaxis_option = chart.getOption().yAxis;
-            for(let i = 0 ; i < grid_length; i++){
-                yaxis_option[i].max = ymax
-            }
-            chart.setOption({yAxis: yaxis_option})
-        }
-
-
-        chart.on('click', function(params){
-            document.getElementById('start_pos').value = params.value[1]
-            document.getElementById('end_pos').value = params.value[2]
-            chart.dispatchAction({
-                type:'dataZoom',
-                startValue: params.value[1],
-                endValue: params.value[2]
-            })
-        })
-        
-        chart.on('dblclick', function(params){
-            document.getElementById('start_pos').value = 1
-            document.getElementById('end_pos').value = ref_len
-            chart.dispatchAction({
-                type:'dataZoom',
-                start: 0,
-                end: 100
-            })
-        })
-
         function updateOption(samples){   
             
             var depths = []
@@ -1021,7 +815,258 @@
                 grid: getGrids(samples)
             };
             chart.setOption(option = options, notMerge = true);
+            // Reset data zoom
+            document.getElementById('start_pos').value = 1 
+            document.getElementById('end_pos').value = ref_len
         }
+
+        $('#toggletooltip').change(function() {
+            if ($(this).prop('checked')){
+                chart.setOption({
+                    tooltip:{showContent: true}
+                });
+            }
+            else{
+                chart.setOption({
+                    tooltip:{showContent: false}
+                });
+            }
+        })
+
+        $('#toggleslider').change(function() {
+            if ($(this).prop('checked')){
+                chart.setOption({
+                    dataZoom: [
+                    {
+                        type: "inside",
+                        filterMode: 'none',
+                        xAxisIndex: [...Array(grid_length + 1).keys()]
+                    },
+                    {
+                        show: true,
+                        filterMode: 'none',
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
+                        type: "slider"
+                    }
+                ]
+                });
+            }
+            else{
+                chart.setOption({
+                    dataZoom: [
+                    {
+                        type: "inside",
+                        filterMode: 'none',
+                        xAxisIndex: [...Array(grid_length + 1).keys()]
+                    },
+                    {
+                        show: false,
+                        type: "slider"
+                    }
+                ]
+                });
+            } 
+        })
+
+        function setScale(){
+            var scaletype = document.getElementById('scale').value;
+            var yaxis_option = chart.getOption().yAxis;
+            if (scaletype == 'value'){
+                for(let i = 0 ; i < grid_length; i++){
+                    yaxis_option[i].type = scaletype
+                    yaxis_option[i].min = 0
+                    yaxis_option[i].max = 40000
+                }
+                chart.setOption({yAxis: yaxis_option})
+                document.getElementById('ymax').value = 40000
+            }
+            else{
+                for(let i = 0 ; i < grid_length; i++){
+                    yaxis_option[i].type = scaletype
+                    yaxis_option[i].min = 1
+                    yaxis_option[i].max = 100000
+                }
+                chart.setOption({yAxis: yaxis_option})
+                document.getElementById('ymax').value = 100000
+            }
+        }
+
+        /*
+        function renderenv(){
+            var render_env = document.getElementById('renderenv').value;
+            var isChecked=document.getElementById("toggledarkmode").checked;
+            var mode =  'white';
+            if (isChecked)
+                mode = 'dark'
+            else
+                mode = 'white'
+            if (render_env==='canvas'){
+                echarts.dispose(chart) // destroy chart instance and re-init chart
+                $chart = document.getElementById('chart');
+                chart = echarts.init($chart, mode , {renderer: 'canvas'});
+                chart.setOption(option = getOption())
+            }
+            else{
+                echarts.dispose(chart)
+                $chart = document.getElementById('chart');
+                chart = echarts.init($chart, mode , {renderer: 'canvas'});
+                chart.setOption(option = getOption())
+            }
+        }
+        */
+
+
+        $('#togglegenelabel').change(function() {
+            var series_option = chart.getOption().series;
+            gene_features_grid_index = series_option.length - 1
+            if ($(this).prop('checked')){
+                series_option[gene_features_grid_index]['renderItem'] = renderGeneFeatures
+                chart.setOption({series: [...series_option]})
+            }
+            else{
+                series_option[gene_features_grid_index]['renderItem'] = updateGeneFeatures
+                chart.setOption({series: [...series_option]})
+            } 
+        })
+
+        $('#toggledarkmode').change(function() {
+            if ($(this).prop('checked')){
+                echarts.dispose(chart) // destroy chart instance and re-init chart
+                chart = echarts.init($chart, 'dark', {renderer: 'canvas'});
+                chart.setOption(option = getOption())
+
+                chart.on('click', function(params){
+                    document.getElementById('start_pos').value = params.value[1]
+                    document.getElementById('end_pos').value = params.value[2]
+                    chart.dispatchAction({
+                        type:'dataZoom',
+                        startValue: params.value[1],
+                        endValue: params.value[2]
+                    })
+                })
+                
+                chart.on('dblclick', function(params){
+                    document.getElementById('start_pos').value = 1
+                    document.getElementById('end_pos').value = ref_len
+                    chart.dispatchAction({
+                        type:'dataZoom',
+                        start: 0,
+                        end: 100
+                    })
+                })
+            }
+            else{
+
+                echarts.dispose(chart) // destroy chart instance and re-init chart
+                chart = echarts.init($chart, 'white', {renderer: 'canvas'});
+                chart.setOption(option = getOption())
+
+                chart.on('click', function(params){
+                    document.getElementById('start_pos').value = params.value[1]
+                    document.getElementById('end_pos').value = params.value[2]
+                    chart.dispatchAction({
+                        type:'dataZoom',
+                        startValue: params.value[1],
+                        endValue: params.value[2]
+                    })
+                })
+                
+                chart.on('dblclick', function(params){
+                    document.getElementById('start_pos').value = 1
+                    document.getElementById('end_pos').value = ref_len
+                    chart.dispatchAction({
+                        type:'dataZoom',
+                        start: 0,
+                        end: 100
+                    })
+                })
+                
+            } 
+        })
+
+        function updateGeneFeatureHeight(val) {
+            document.getElementById('genefeatureheight').value=val +'%'; 
+            var grid_option = chart.getOption().grid;
+            gene_features_grid_index = grid_option.length - 1
+            grid_option[gene_features_grid_index]['height'] = val +'%'
+            chart.setOption({grid:grid_option})
+        }
+
+        function updateChartHeight(val) {
+            document.getElementById('chartheight').value=val +'%'; 
+            var grid_option = chart.getOption().grid;
+            for (var i = 0; i < grid_option.length; i++){
+                if (i < grid_option.length - 1) // don't change height of DNA feature charts
+                    grid_option[i]['height'] = val +'%'
+                if (i > 0){
+                    grid_option[i]['top'] = parseInt(grid_option[i -1 ]['top'].replace('%','')) + parseInt(grid_option[i - 1]['height'].replace('%','')) + 4 + '%'
+                }
+            }
+            chart.setOption({grid:grid_option})
+            
+        }
+
+        function updateChartLeft(val) {
+            document.getElementById('chartleft').value=val+'%'; 
+            var grid_option = chart.getOption().grid;
+            for (var i = 0; i < grid_option.length; i++){
+                grid_option[i]['left'] = val +'%'
+            }
+            chart.setOption({grid:grid_option})
+            
+        }
+
+
+        function updateChartRight(val) {
+            document.getElementById('chartright').value=val+'%'; 
+            var grid_option = chart.getOption().grid;
+            for (var i = 0; i < grid_option.length; i++){
+                grid_option[i]['right'] = val +'%'
+            }
+            chart.setOption({grid:grid_option})
+            
+        }
+
+        function updateChartTop(val) {
+            document.getElementById('charttop').value=val+'%'; 
+            var grid_option = chart.getOption().grid;
+            for (var i = 1; i < grid_option.length; i++){
+                grid_option[i]['top'] = parseInt(grid_option[i-1]['top'].replace('%','')) + parseInt(grid_option[i-1]['height'].replace('%','')) + parseInt(val) + '%'
+            }
+            chart.setOption({grid:grid_option})
+            
+        }
+        
+        function setYMax(){
+            var ymax = document.getElementById('ymax').value;
+            var yaxis_option = chart.getOption().yAxis;
+            for(let i = 0 ; i < grid_length; i++){
+                yaxis_option[i].max = ymax
+            }
+            chart.setOption({yAxis: yaxis_option})
+        }
+
+
+        chart.on('click', function(params){
+            document.getElementById('start_pos').value = params.value[1]
+            document.getElementById('end_pos').value = params.value[2]
+            chart.dispatchAction({
+                type:'dataZoom',
+                startValue: params.value[1],
+                endValue: params.value[2]
+            })
+        })
+        
+        chart.on('dblclick', function(params){
+            document.getElementById('start_pos').value = 1
+            document.getElementById('end_pos').value = ref_len
+            chart.dispatchAction({
+                type:'dataZoom',
+                start: 0,
+                end: 100
+            })
+        })
+
 
 
         function updateChartDivSize() {
