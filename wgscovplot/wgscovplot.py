@@ -42,6 +42,7 @@ resources = {
     'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
     'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js',
     'bootstrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css',
+    'lodash_js': 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js'
 }
 
 gene_features_properties = {
@@ -51,6 +52,8 @@ gene_features_properties = {
     'minus_strand_level': 55,
     'grid_height': "15%"
 }
+
+depth_zero_workaround = 1E-6
 
 
 def get_region_amplicon(bedfile: Path) -> pd.DataFrame:
@@ -87,14 +90,14 @@ def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame) -> dict():
 
 def get_coverage_stat(sample: str, df: pd.DataFrame, low=10) -> list():
     low_depth = (df.depth < 10)
-    zero_depth = (df.depth == 0)
+    zero_depth = (df.depth == depth_zero_workaround)
     mean_cov = f'{df.depth.mean():.1f}X'
     median_cov = f'{df.depth.median():.1f}X'
     genome_cov = "{:.2%}".format((df.depth >= low).sum() / df.shape[0])
     pos_low_cov = low_depth.sum()
     pos_no_cov = zero_depth.sum()
     region_low_cov = get_interval_coords(df, low - 1)
-    region_no_cov = get_interval_coords(df, 0)
+    region_no_cov = get_interval_coords(df, depth_zero_workaround)
     return [sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov]
 
 
@@ -275,6 +278,7 @@ def get_depth_data(df_samples: pd.DataFrame) -> dict():
     depth_data = {}
     for sample in df_samples.index:
         df_coverage_depth = read_regular_depths(df_samples.loc[sample, 'coverage_depth_file'].strip())
+        df_coverage_depth.loc[df_coverage_depth.depth == 0, 'depth'] = depth_zero_workaround
         depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
     return depth_data
 

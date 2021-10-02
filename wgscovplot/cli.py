@@ -130,11 +130,6 @@ def main(
         variant_data={}
         coverage_stat=[]
         '''
-        
-        
-
-          
-
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent
     readme = dirpath / 'readme/README.md'
