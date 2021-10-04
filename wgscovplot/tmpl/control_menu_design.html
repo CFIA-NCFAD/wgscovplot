@@ -43,7 +43,7 @@
             <div id="chartproperties" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     <div>Renderer  
-                        <select id="renderenv" onchange="renderenv()" style="width: 40%">
+                        <select id="renderenv" onchange="renderEnv()" style="width: 40%">
                             <option value="svg" >svg</option>
                             <option value="canvas" selected>canvas</option>
                         </select>
@@ -56,23 +56,23 @@
                     <p></p>
                     <div>
                         <label class="form-label">Height</label> 
-                        <input type="range" class="form-range" value="15" min="1" max="70" step="1" onchange="updateChartHeight(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="chartheight">19<span>%</span></output>
+                        <input type="range" id="chartheightinput" class="form-range" value="15" min="1" max="70" step="1" onchange="updateChartHeight(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chartheightoutput">19<span>%</span></output>
                     </div>
                     <div>
                         <label class="form-label">Left</label> 
-                        <input type="range" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartLeft(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="chartleft">5<span>%</span></output>
+                        <input type="range" id="chartleftinput" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartLeft(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chartleftoutput">5<span>%</span></output>
                     </div>
                     <div>
                         <label class="form-label">Right</label> 
-                        <input type="range" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartRight(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="chartright">5<span>%</span></output>
+                        <input type="range" id="chartrightinput" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartRight(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chartrightoutput">5<span>%</span></output>
                     </div>
                     <div>
                         <label class="form-label">Top</label> 
-                        <input type="range" class="form-range" value="4" min="1" max="10" step="1" onchange="updateChartTop(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="charttop">4<span>%</span></output>
+                        <input type="range" id="charttopinput" class="form-range" value="4" min="1" max="10" step="1" onchange="updateChartTop(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="charttopoutput">4<span>%</span></output>
                     </div>
                 </div>
               </div>
@@ -91,8 +91,8 @@
                         </div>
                         <div>
                             <label class="form-label">Height</label> 
-                            <input type="range" class="form-range" value="15" min="1" max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
-                            <output style="display: block; text-align:center;" type="text" id="genefeatureheight">15<span>%</span></output>
+                            <input type="range" id="genefeatureheightinput" class="form-range" value="15" min="1" max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
+                            <output style="display: block; text-align:center;" type="text" id="genefeatureheightoutput">15<span>%</span></output>
                         </div>
                     </div>
                 </div>

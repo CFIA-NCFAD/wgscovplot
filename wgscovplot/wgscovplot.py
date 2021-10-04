@@ -53,7 +53,7 @@ gene_features_properties = {
     'grid_height': "15%"
 }
 
-depth_zero_workaround = 1E-6
+depth_zero_workaround = 1E-10
 
 
 def get_region_amplicon(bedfile: Path) -> pd.DataFrame:

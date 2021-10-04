@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>WGS Coverage Plot</title>
-    <style>{{ lodash_js }}</style>
+    <script>{{ lodash_js }}</script>
     <style>{{ bootstrap_css }}</style>
     <script>{{ jquery_js }}</script>
     <script>{{ bootstrap_js }}</script>
@@ -72,6 +72,7 @@
 
     <script>
         const ref_len = window.ref_seq.length;
+        const depth_zero_workaround = 1E-10
         var gene_features_properties = {{ gene_features_properties }}
         var gene_feature  = {{ gene_feature }}
         var grid_length;
@@ -115,6 +116,7 @@
             {% include "controlmenu/axis.js" %}
             {% include "controlmenu/tooltip.js" %}
             {% include "controlmenu/data_zoom.js" %}
+            {% include "controlmenu/common.js" %}
         </script>
     {% endblock %}
 </body>
