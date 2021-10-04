@@ -73,8 +73,12 @@ def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame) -> dict():
         # get regular depth
         depth_file = df_samples_amplicon.loc[sample, 'amplicon_perbase_file'].strip()
         df_perbase_depth = pd.read_table(depth_file, names=['reference', 'start', 'end', 'depth'], header=None)
+        df_perbase_depth.loc[df_perbase_depth.depth == 0, 'depth'] = depth_zero_workaround
         for row in df_perbase_depth.itertuples():
-            depth_perbase_data[row.start:row.end] = row.depth
+            if row.depth == 0:
+                depth_perbase_data[row.start:row.end] = depth_zero_workaround
+            else:
+                depth_perbase_data[row.start:row.end] = row.depth
         # get amplicon depth
         amplicon_depth_file = df_samples_amplicon.loc[sample, 'amplicon_region_file'].strip()
         df_amplicon_depth = pd.read_table(amplicon_depth_file, names=['reference', 'start', 'end', 'amplicon', 'depth'])
@@ -84,6 +88,8 @@ def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame) -> dict():
                 depth_pool1_data[row.start:row.end + 1] = row.depth
             else:
                 depth_pool2_data[row.start:row.end + 1] = row.depth
+        depth_pool1_data[depth_pool1_data == 0] = depth_zero_workaround
+        depth_pool2_data[depth_pool2_data == 0] = depth_zero_workaround
         depth_data_dict[sample] = [depth_perbase_data.tolist(), depth_pool1_data.tolist(), depth_pool2_data.tolist()]
     return depth_data_dict
 

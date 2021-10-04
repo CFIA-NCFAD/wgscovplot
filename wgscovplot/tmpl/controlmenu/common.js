@@ -14,8 +14,8 @@ function updateChartOptionsMenu() {
   document.getElementById("chartrightoutput").value = _.toInteger(right) + "%";
   document.getElementById("charttopinput").value = _.toInteger(top);
   document.getElementById("charttopoutput").value = _.toInteger(top) + "%";
-  document.getElementById("genefeatureheightinput").value = _.toInteger(height2);;
-  document.getElementById("genefeatureheightoutput").value = _.toInteger(height2); + "%";
+  document.getElementById("genefeatureheightinput").value = _.toInteger(height2);
+  document.getElementById("genefeatureheightoutput").value = _.toInteger(height2) + "%";
   // Set Axis to Log scale
   document.getElementById("scale").value = "log"
   document.getElementById("ymax").value = 100000

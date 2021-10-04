@@ -1,14 +1,12 @@
-
-
 function renderEnv() {
   var render_env = document.getElementById("renderenv").value;
   var isChecked = document.getElementById("toggledarkmode").checked;
   var samples = [];
-  _.forEach(window.samples, function(value, key){
+  _.forEach(window.samples, function (value, key) {
     if (key < default_num_chart) {
       samples.push(value);
     }
-  })
+  });
   var mode = "white";
   if (isChecked) mode = "dark";
   else mode = "white";
@@ -19,7 +17,7 @@ function renderEnv() {
     chart.setOption((option = getOption()));
     selectDefaultSamples(samples);
     chartDispatchAction();
-    updateChartOptionsMenu()
+    updateChartOptionsMenu();
   } else {
     echarts.dispose(chart);
     $chart = document.getElementById("chart");
@@ -27,7 +25,7 @@ function renderEnv() {
     chart.setOption((option = getOption()));
     selectDefaultSamples(samples);
     chartDispatchAction();
-    updateChartOptionsMenu()
+    updateChartOptionsMenu();
   }
 }
 
@@ -36,25 +34,25 @@ $("#toggledarkmode").change(function () {
   if (document.getElementById("renderenv"))
     render_env = document.getElementById("renderenv").value;
   var samples = [];
-  _.forEach(window.samples, function(value, key){
+  _.forEach(window.samples, function (value, key) {
     if (key < default_num_chart) {
       samples.push(value);
     }
-  })
+  });
   if ($(this).prop("checked")) {
     echarts.dispose(chart); // destroy chart instance and re-init chart
     chart = echarts.init($chart, "dark", { renderer: render_env });
     chart.setOption((option = getOption()));
     selectDefaultSamples(samples);
     chartDispatchAction();
-    updateChartOptionsMenu()
+    updateChartOptionsMenu();
   } else {
     echarts.dispose(chart); // destroy chart instance and re-init chart
     chart = echarts.init($chart, "white", { renderer: render_env });
     chart.setOption((option = getOption()));
     selectDefaultSamples(samples);
     chartDispatchAction();
-    updateChartOptionsMenu()
+    updateChartOptionsMenu();
   }
 });
 
@@ -68,7 +66,9 @@ function updateChartHeight(val) {
     if (i > 0) {
       grid_option[i]["top"] =
         _.toInteger(grid_option[i - 1]["top"].replace("%", "")) +
-        _.toInteger(grid_option[i - 1]["height"].replace("%", "")) + 4 + "%";
+        _.toInteger(grid_option[i - 1]["height"].replace("%", "")) +
+        4 +
+        "%";
     }
   }
   chart.setOption({ grid: grid_option });
@@ -77,18 +77,18 @@ function updateChartHeight(val) {
 function updateChartLeft(val) {
   document.getElementById("chartleftoutput").value = val + "%";
   var grid_option = chart.getOption().grid;
-  _.forEach(grid_option, function(element){
+  _.forEach(grid_option, function (element) {
     element.left = val + "%";
-  })
+  });
   chart.setOption({ grid: grid_option });
 }
 
 function updateChartRight(val) {
   document.getElementById("chartrightoutput").value = val + "%";
   var grid_option = chart.getOption().grid;
-  _.forEach(grid_option, function(element){
+  _.forEach(grid_option, function (element) {
     element.right = val + "%";
-  })
+  });
   chart.setOption({ grid: grid_option });
 }
 
@@ -96,18 +96,15 @@ function updateChartTop(val) {
   document.getElementById("charttopoutput").value = val + "%";
   var grid_option = chart.getOption().grid;
   for (var i = 0; i < grid_option.length; i++) {
-    if (i == 0){
-      grid_option[i]["top"] = val + "%"
-    }
-    else{
+    if (i == 0) {
+      grid_option[i]["top"] = val + "%";
+    } else {
       grid_option[i]["top"] =
-      _.toInteger(grid_option[i - 1]["top"].replace("%", "")) +
-      _.toInteger(grid_option[i - 1]["height"].replace("%", "")) +
-      _.toInteger(val) +
-      "%";
+        _.toInteger(grid_option[i - 1]["top"].replace("%", "")) +
+        _.toInteger(grid_option[i - 1]["height"].replace("%", "")) +
+        _.toInteger(val) +
+        "%";
     }
   }
   chart.setOption({ grid: grid_option });
 }
-
-
