@@ -28,6 +28,20 @@
 
 ## Installation
 
+### Install from source
+Clone the `wgscovplot` repository.
+
+```
+git clone https://github.com/nhhaidee/wgscovplot.git
+```
+
+Then change directory to `wgscovplot` and install.
+
+```
+cd wgscovplot
+python setup.py install
+```
+
 ### Install by pip
 
 ```
@@ -84,8 +98,8 @@ Options:
 | Sample Name | Amplicon region bed file           | Depth per-base file               |Variant vcf                                              
 |:---         |:---                                |:---                               |:---
 | Sample-01	  | path/to/sample-01.regions.bed.gz   | path/to/sample-01.per-base.bed.gz | path/to/sample-01-variant-vcf
-| Sample-02	  | path/to/sample-02-regions.bed.gz   | path/to/sample-01.per-base.bed.gz | path/to/sample-02-variant-vcf
-| Sample-03	  | path/to/sample-03-regions.bed.gz   | path/to/sample-01.per-base.bed.gz | path/to/sample-03-variant-vcf
+| Sample-02	  | path/to/sample-02-regions.bed.gz   | path/to/sample-02.per-base.bed.gz | path/to/sample-02-variant-vcf
+| Sample-03	  | path/to/sample-03-regions.bed.gz   | path/to/sample-03.per-base.bed.gz | path/to/sample-03-variant-vcf
 
 #### Note that no header is needed
 

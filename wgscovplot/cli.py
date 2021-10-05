@@ -62,7 +62,6 @@ def main(
         with open(ref_seq) as fh:
             for name, seq in SimpleFastaParser(fh):
                 ref_seq = seq
-
     # Get DNA Gene features
     gene_feature = get_gene_feature(genbank)
 
@@ -97,7 +96,7 @@ def main(
             if index % 2:
                 gene_feature.append(
                     dict(name=amplicon_name,
-                         value=[gene_feature_len + index - 1, region[0], region[1], 90, 1, 'amplicon_feature'],
+                         value=[gene_feature_len + index - 1, region[0], region[1], 95, 1, 'amplicon_feature'],
                          itemStyle={"color": 'violet'})
                 )
             else:
@@ -107,6 +106,7 @@ def main(
                          itemStyle={"color": 'skyblue'})
                 )
     else:
+        
         # Get Amplicon Samples Data file
         df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
         df_samples = df_samples.fillna(0)
@@ -124,7 +124,13 @@ def main(
             df_coverage_depth = pd.DataFrame(depths, columns=['depth'])
             df_coverage_depth['pos'] = np.arange(1, len(ref_seq) + 1)
             coverage_stat.append(get_coverage_stat(sample, df_coverage_depth, low=10))
-
+        '''
+        samples_name ={}
+        depth_data={}
+        variant_data={}
+        coverage_stat=[]
+        '''
+        
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent
     readme = dirpath / 'readme/README.md'
