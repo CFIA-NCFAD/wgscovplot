@@ -28,6 +28,20 @@
 
 ## Installation
 
+### Install from source
+Clone the `wgscovplot` repository.
+
+```
+git clone https://github.com/nhhaidee/wgscovplot.git
+```
+
+Then change directory to `wgscovplot` and install.
+
+```
+cd wgscovplot
+python setup.py install
+```
+
 ### Install by pip
 
 ```

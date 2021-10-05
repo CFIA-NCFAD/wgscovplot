@@ -88,8 +88,8 @@ def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame) -> dict():
                 depth_pool1_data[row.start:row.end + 1] = row.depth
             else:
                 depth_pool2_data[row.start:row.end + 1] = row.depth
-        depth_pool1_data[depth_pool1_data == 0] = depth_zero_workaround
-        depth_pool2_data[depth_pool2_data == 0] = depth_zero_workaround
+        depth_pool1_data[depth_pool1_data == 0] = (1 + depth_zero_workaround)
+        depth_pool2_data[depth_pool2_data == 0] = (1 + depth_zero_workaround)
         depth_data_dict[sample] = [depth_perbase_data.tolist(), depth_pool1_data.tolist(), depth_pool2_data.tolist()]
     return depth_data_dict
 

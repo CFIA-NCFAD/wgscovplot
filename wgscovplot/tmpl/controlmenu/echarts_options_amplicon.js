@@ -387,63 +387,6 @@ function getGrids(samples) {
   });
   return grids;
 }
-
-function meanCoverage(depths, start, end, gridIndex) {
-  var total = 0;
-  if (start < end) {
-    for (var i = start - 1; i <= end - 1; i++) {
-      if (depths[gridIndex][i] === 1e-6) {
-        continue;
-      }
-      total += depths[gridIndex][i];
-    }
-    return total / (end - start + 1);
-  } else if (start == end) {
-    if (depths[gridIndex][start] === 1e-6) {
-      return 0;
-    } else {
-      return depths[gridIndex][start];
-    }
-  }
-}
-
-function genomeCoverage(depths, start, end, gridIndex, low) {
-  var total = 0;
-  for (var i = start - 1; i <= end - 1; i++) {
-    if (depths[gridIndex][i] >= low) {
-      total += 1;
-    }
-  }
-  return (total / (end - start + 1)) * 100;
-}
-
-function median(arr) {
-  arr.sort(function (a, b) {
-    return a - b;
-  });
-  var half = Math.floor(arr.length / 2);
-  if (arr.length % 2) {
-    if (arr[half] === 1e-6) {
-      return 0;
-    } else {
-      return arr[half];
-    }
-  } else if (arr[half - 1] != 1e-6 && arr[half] != 1e-6)
-    return (arr[half - 1] + arr[half]) / 2.0;
-  else {
-    if (arr[half - 1] === 1e-6) {
-      return arr[half] / 2.0;
-    } else if (arr[half] === 1e-6) {
-      return arr[half - 1] / 2.0;
-    }
-  }
-}
-
-function medianCoverage(depths, start, end, gridIndex) {
-  var sub_array = depths[gridIndex].slice(start - 1, end);
-  return median(sub_array);
-}
-
 function getTooltips(samples, depths, variants) {
   return [
     {
@@ -456,68 +399,58 @@ function getTooltips(samples, depths, variants) {
         var output = "";
         var param = params[0];
         var i = param.axisIndex;
-        var position = param.data[3];
-        if (i < samples.length) {
-          var sample = samples[i];
-          var depth = param.data[0];
-          var amplicon_depth_pool1 = param.data[1];
-          var amplicon_depth_pool2 = param.data[2];
-          var start_pos, end_pos;
-          start_pos = Math.floor(chart.getOption().dataZoom[0].startValue);
-          end_pos = Math.floor(chart.getOption().dataZoom[0].endValue);
-          var mean_cov;
-          mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
-          var median_cov;
-          median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
-          var genome_cov;
-          genome_cov = genomeCoverage(
-            depths,
-            start_pos,
-            end_pos,
-            i,
-            10
-          ).toFixed(2);
-          output +=
-            "<b>" +
-            sample +
-            "</b><br/>" +
-            "Start pos: " +
-            start_pos.toLocaleString() +
-            "<br/>" +
-            "End pos: " +
-            end_pos.toLocaleString() +
-            "<br/>";
-          output += "Genome Mean Coverage: " + mean_cov + "X" + "<br/>";
-          output += "Genome Median Coverage: " + median_cov + "X" + "<br/>";
-          output += "Genome Coverage ( >= 10x): " + genome_cov + "%" + "<br/>";
-          output +=
-            "Genome Position: " +
-            position.toLocaleString() +
-            "<br/> Genome Coverage Depth: " +
-            depth.toLocaleString() +
-            "<br/>";
-          output +=
-            "Pool1 Coverage Depth: " +
-            amplicon_depth_pool1.toLocaleString() +
-            "<br/>";
-          output +=
-            "Pool2 Coverage Depth: " +
-            amplicon_depth_pool2.toLocaleString() +
-            "<br/>";
-          if (variants[i].hasOwnProperty(position)) {
-            output +=
-              "Ref: " +
-              window.ref_seq.substring(
-                position - 1,
-                position - 1 + variants[i][position].length
-              ) +
-              "<br/>";
-            output = output + "Variant: " + variants[i][position];
-          } else {
-            output += "Ref: " + window.ref_seq[position - 1] + "<br/>";
-          }
+        if (i > samples.length) {
           return output;
         }
+        var sample = samples[i];
+        var position = param.data[3];
+        var depth = param.data[0];
+        var amplicon_depth_pool1 = param.data[1];
+        var amplicon_depth_pool2 = param.data[2];
+        if (amplicon_depth_pool1 === depth_zero_workaround + 1)
+          amplicon_depth_pool1 = 0
+        if (amplicon_depth_pool2 === depth_zero_workaround + 1)
+          amplicon_depth_pool2 = 0
+        var start_pos = Math.floor(chart.getOption().dataZoom[0].startValue);
+        var end_pos = Math.floor(chart.getOption().dataZoom[0].endValue);
+        var mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
+        var median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
+        var genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2);
+
+        output += "<h5>" + sample + "</h5>";
+        var rows = [
+          ["Position", position.toLocaleString()],
+          ["Depth", depth.toLocaleString()],
+        ];
+        if (variants[i].hasOwnProperty(position)) {
+          rows.push(
+            ...[
+              [
+                "Ref",
+                ref_seq.substring(
+                  position - 1,
+                  position - 1 + variants[i][position].length
+                ),
+              ],
+              ["Variant", variants[i][position]],
+            ]
+          );
+        } else {
+          rows.push(["Sequence", ref_seq[position - 1]]);
+        }
+        output += toTableHtml(["Position Info", ""], rows, "table small");
+        rows = [
+          [
+            "Range",
+            start_pos.toLocaleString() + " - " + end_pos.toLocaleString(),
+          ],
+          ["Mean Coverage", mean_cov + "X"],
+          ["Median Coverage", median_cov + "X"],
+          ["Genome Coverage ( >= 10x)", genome_cov + "%"],
+          ["Pool1 Coverage Depth:", amplicon_depth_pool1],
+          ["Pool2 Coverage Depth:", amplicon_depth_pool2],
+        ];
+        output += toTableHtml(["Coverage View Stats", ""], rows, "table small");
         return output;
       },
     },

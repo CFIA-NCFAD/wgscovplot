@@ -79,6 +79,7 @@
         var gene_feature  = {{ gene_feature }}
         var y_start;
         const default_num_chart = 3;
+        const depth_zero_workaround = 1E-10
         var positions = [...Array(ref_len + 1).keys()];
         positions.shift();
         var ntColor = {
@@ -118,6 +119,7 @@
             {% include "controlmenu/tooltip.js" %}
             {% include "controlmenu/data_zoom.js" %}
             {% include "controlmenu/common.js" %}
+            {% include "controlmenu/coverage_stat.js" %}
         </script>
     {% endblock %}
 </body>

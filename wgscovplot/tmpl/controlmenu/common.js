@@ -44,3 +44,33 @@ function chartDispatchAction() {
     });
   });
 }
+
+function toTableHtml(headers, rows, classes) {
+  classes = _.defaultTo(classes, "table");
+  var out = '<table class="' + classes + '"><thead>';
+  out += _.join(
+    _.map(headers, function (x) {
+      return '<th scope="col">' + x + "</th>";
+    }),
+    ""
+  );
+  out += "</thead><tbody>";
+  out += _.join(
+    _.map(rows, function (xs) {
+      return (
+        "<tr>" +
+        _.join(
+          _.map(xs, function (x, i) {
+            return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + x + "</td>";
+          }),
+          ""
+        ) +
+        "</tr>"
+      );
+    }),
+    ""
+  );
+  out += "</tbody></table>";
+  return out;
+}
+window.toTableHtml = toTableHtml;

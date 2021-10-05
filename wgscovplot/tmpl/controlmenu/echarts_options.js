@@ -346,63 +346,6 @@ function getGrids(samples) {
   return grids;
 }
 
-function meanCoverage(depths, start, end, gridIndex) {
-  var sub_array = _.slice(depths[gridIndex], start - 1, end);
-  return _.mean(sub_array);
-}
-
-function genomeCoverage(depths, start, end, gridIndex, low) {
-  var sub_array = _.slice(depths[gridIndex], start - 1, end);
-  var fileted_array = _.filter(sub_array, function (x) {
-    return x >= low;
-  });
-  return (fileted_array.length / (end - start + 1)) * 100;
-}
-
-function median(arr) {
-  arr.sort(function (a, b) {
-    return a - b;
-  });
-  var half = Math.floor(arr.length / 2);
-  if (arr.length % 2) return arr[half];
-  else return (arr[half - 1] + arr[half]) / 2.0;
-}
-
-function medianCoverage(depths, start, end, gridIndex) {
-  var sub_array = _.slice(depths[gridIndex], start - 1, end);
-  return median(sub_array);
-}
-
-function toTableHtml(headers, rows, classes) {
-  classes = _.defaultTo(classes, "table");
-  var out = '<table class="' + classes + '"><thead>';
-  out += _.join(
-    _.map(headers, function (x) {
-      return '<th scope="col">' + x + "</th>";
-    }),
-    ""
-  );
-  out += "</thead><tbody>";
-  out += _.join(
-    _.map(rows, function (xs) {
-      return (
-        "<tr>" +
-        _.join(
-          _.map(xs, function (x, i) {
-            return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + x + "</td>";
-          }),
-          ""
-        ) +
-        "</tr>"
-      );
-    }),
-    ""
-  );
-  out += "</tbody></table>";
-  return out;
-}
-window.toTableHtml = toTableHtml;
-
 function getTooltips(samples, depths, variants) {
   return [
     {
@@ -425,7 +368,7 @@ function getTooltips(samples, depths, variants) {
         var end_pos = Math.floor(chart.getOption().dataZoom[0].endValue);
         var mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
         var median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
-        var genome_cov = genomeCoverage(depths,start_pos,end_pos,i,10).toFixed(2);
+        var genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2);
 
         output += "<h5>" + sample + "</h5>";
         var rows = [
