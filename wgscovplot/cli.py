@@ -64,10 +64,9 @@ def main(
                 ref_seq = seq
     # Get DNA Gene features
     gene_feature = get_gene_feature(genbank)
-
+    amplicon_data = {}
     # Main Script
     if amplicon:
-        # Get Amplicon Samples Data file
         df_samples_amplicon = pd.read_table(samples_data,
                                             names=['amplicon_region_file', 'amplicon_perbase_file', 'vcf_file'],
                                             index_col=0, header=None)
@@ -77,16 +76,16 @@ def main(
         samples_name = get_samples_name(df_samples_amplicon)
 
         # Get depths and variant data
-        depth_data = get_depth_amplicon(len(ref_seq), df_samples_amplicon)
+        depth_data = get_depth_data(df_samples_amplicon, amplicon, len(ref_seq))
         variant_data = get_variant_data(df_samples_amplicon)
-
+        amplicon_data = get_depth_amplicon(df_samples_amplicon)
         # Get Coverage Statistics
         coverage_stat = []
+
         for sample, depths in depth_data.items():
-            df_coverage_depth = pd.DataFrame(depths[0], columns=['depth'])
+            df_coverage_depth = pd.DataFrame(depths, columns=['depth'])
             df_coverage_depth['pos'] = np.arange(1, len(ref_seq) + 1)
             coverage_stat.append(get_coverage_stat(sample, df_coverage_depth, low=10))
-
         # Get Amplicon feature to plot them with DNA gene feature
         bedfile = df_samples_amplicon['amplicon_region_file'][0].strip()
         amplicon_feature = get_region_amplicon(bedfile)
@@ -106,8 +105,6 @@ def main(
                          itemStyle={"color": 'skyblue'})
                 )
     else:
-        
-        # Get Amplicon Samples Data file
         df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
         df_samples = df_samples.fillna(0)
 
@@ -115,7 +112,7 @@ def main(
         samples_name = get_samples_name(df_samples)
 
         # Get depths and variant data
-        depth_data = get_depth_data(df_samples)
+        depth_data = get_depth_data(df_samples, amplicon, len(ref_seq))
         variant_data = get_variant_data(df_samples)
 
         # Get Coverage Statistics
@@ -130,7 +127,6 @@ def main(
         variant_data={}
         coverage_stat=[]
         '''
-        
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent
     readme = dirpath / 'readme/README.md'
@@ -139,10 +135,16 @@ def main(
     about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra'])
 
     # Save Coverage plot to HTML file
-    write_html_coverage_plot(amplicon=amplicon, samples_name=samples_name, depth_data=depth_data,
+    write_html_coverage_plot(samples_name=samples_name,
+                             depth_data=depth_data,
                              variant_data=variant_data,
-                             ref_seq=ref_seq, coverage_stat=coverage_stat, gene_feature=gene_feature,
-                             about_html=about_html, output_html=output_html)
+                             ref_seq=ref_seq,
+                             coverage_stat=coverage_stat,
+                             gene_feature=gene_feature,
+                             about_html=about_html,
+                             output_html=output_html,
+                             amplicon_data=amplicon_data,
+                             amplicon=amplicon)
     logging.info(f'Wrote HTML Coverage Plot to "{output_html}"')
 
 

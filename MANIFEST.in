@@ -7,7 +7,8 @@ include wgscovplot/tmpl/covplot_template.html
 include wgscovplot/tmpl/control_menu_design.html
 include wgscovplot/readme/README.md
 
-recursive-include wgscovplot/tmpl/controlmenu *.js
+recursive-include wgscovplot/tmpl/js *.js
+recursive-include wgscovplot/tmpl/styles *.css
 recursive-include tests *
 recursive-include docs *
 recursive-exclude * __pycache__
