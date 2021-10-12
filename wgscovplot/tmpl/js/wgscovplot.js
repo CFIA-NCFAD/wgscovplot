@@ -43,7 +43,6 @@ var amplicon_data = {{ amplicon_data }}
  * Global variables
  */
 const ref_len = window.ref_seq.length;
-const depth_zero_workaround = 1E-10
 var grid_length;
 var y_start;
 const default_num_chart = 3;
@@ -349,20 +348,31 @@ function getAmpliconDepthSeries(samples) {
             renderItem: function (params, api) {
                 var start = api.coord([api.value(0), api.value(2)]);
                 var end = api.coord([api.value(1), 1]);
-                return {
-                    type: "rect",
-                    shape: {
+                var rectShape = echarts.graphic.clipRectByRect(
+                    {
                         x: start[0],
                         y: start[1],
                         width: end[0] - start[0],
                         height: end[1] - start[1]
                     },
-                    style: api.style()
+                    {
+                        x: params.coordSys.x,
+                        y: params.coordSys.y,
+                        width: params.coordSys.width,
+                        height: params.coordSys.height
+                    }
+                );
+                return {
+                    type: "rect",
+                    shape: rectShape,
+                    style: api.style({})
                 }
             },
             label: {
                 show: true,
                 position: "top",
+                distance: 25,
+                rotate:60
             },
             encode: {
                 x: [0, 1],
@@ -520,6 +530,7 @@ function getCoverageChartOption() {
     var samples = [];
     var depths = [];
     var variants = [];
+
     for (const [key, entries] of Object.entries(window.samples)) {
         if (key < default_num_chart) {
             samples.push(entries);

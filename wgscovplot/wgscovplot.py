@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import os
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Dict, List
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
@@ -63,7 +63,7 @@ def get_region_amplicon(bedfile: Path) -> pd.DataFrame:
     return amplicon_dict
 
 
-def get_depth_amplicon(df_samples_amplicon: pd.DataFrame) -> dict():
+def get_depth_amplicon(df_samples_amplicon: pd.DataFrame) -> Dict[str, List]:
     depth_amplicon_data = {}
     for sample in df_samples_amplicon.index:
         amplicon_depth_file = df_samples_amplicon.loc[sample, 'amplicon_region_file'].strip()
@@ -82,7 +82,7 @@ def get_depth_amplicon(df_samples_amplicon: pd.DataFrame) -> dict():
     return depth_amplicon_data
 
 
-def get_coverage_stat(sample: str, df: pd.DataFrame, low=10) -> list():
+def get_coverage_stat(sample: str, df: pd.DataFrame, low=10) -> List:
     low_depth = (df.depth < 10)
     zero_depth = (df.depth == depth_zero_workaround)
     mean_cov = f'{df.depth.mean():.1f}X'
@@ -144,12 +144,8 @@ def overlap(start1, end1, start2, end2):
     return start1 <= start2 <= end1 or start1 <= end2 <= end1
 
 
-def get_gene_feature(annotation: Path) -> list:
+def get_gene_feature(annotation: Path) -> List:
     gene_feature = []
-    # number_of_colors = 100
-    # color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
-    # for i in range(number_of_colors)]
-    # print (color_pallet)
     colour_cycle = cycle(color_pallete)
     minus_strains_list = [0, 0, 0]
     plus_strains_list = [0, 0, 0]
@@ -264,7 +260,7 @@ def write_html_coverage_plot(samples_name: dict,
                                         **scripts_css))
 
 
-def get_samples_name(df_samples: pd.DataFrame) -> dict():
+def get_samples_name(df_samples: pd.DataFrame) -> Dict[int, str]:
     samples_dict = {}
     for i, sample in enumerate(df_samples.index):
         logging.info(f'Preparing data for sample "{sample}"')
@@ -272,7 +268,7 @@ def get_samples_name(df_samples: pd.DataFrame) -> dict():
     return samples_dict
 
 
-def get_depth_data(df_samples: pd.DataFrame, amplicon: bool = False, ref_len: int = 29903) -> dict():
+def get_depth_data(df_samples: pd.DataFrame, amplicon: bool = False, ref_len: int = 29903) -> Dict[str, List]:
     depth_data = {}
     if amplicon:
         for sample in df_samples.index:
@@ -296,7 +292,7 @@ def get_depth_data(df_samples: pd.DataFrame, amplicon: bool = False, ref_len: in
     return depth_data
 
 
-def get_variant_data(df_samples: pd.DataFrame) -> dict():
+def get_variant_data(df_samples: pd.DataFrame) -> Dict[str, List]:
     variants_data = {}
     for sample in df_samples.index:
         variant_info = {}
