@@ -1,26 +1,22 @@
 /**
  * Reference Sequence
- * @type {string}
  */
 window.ref_seq = "{{ ref_seq }}";
 
 /**
- * List of samples name
- * @type []
+ * Dict of samples name
  */
 window.samples = {{ samples_name }}
 
 /**
  * Dict of depth data
  * {samples_name: depth_data}
- * @type {}
  */
 window.depths = {{ depth_data }};
 
 /**
  * Dict of variant data
  * {samples_name: variant_data}
- * @type {}
  */
 window.variants = {{ variant_data }};
 
@@ -33,15 +29,11 @@ window.variants = {{ variant_data }};
  *          'color': 'color'
  *     }
  * }]
- * @type {}
  */
 var gene_feature = {{ gene_feature }}
 var gene_feature_properties = {{ gene_feature_properties }}
 var amplicon = "{{amplicon}}"
 var amplicon_data = {{ amplicon_data }}
-/**
- * Global variables
- */
 const ref_len = window.ref_seq.length;
 var grid_length;
 var y_start;
@@ -124,7 +116,7 @@ function renderGeneFeatures(params, api) {
             width: params.coordSys.width,
             height: params.coordSys.height,
         });
-        return {
+        return shape && {
             type: "polygon",
             shape: {
                 points: shape,
@@ -156,7 +148,7 @@ function renderGeneFeatures(params, api) {
             width: params.coordSys.width,
             height: params.coordSys.height,
         });
-        return {
+        return shape && {
             type: "polygon",
             shape: {
                 points: shape,
@@ -362,7 +354,7 @@ function getAmpliconDepthSeries(samples) {
                         height: params.coordSys.height
                     }
                 );
-                return {
+                return rectShape && {
                     type: "rect",
                     shape: rectShape,
                     style: api.style({})
@@ -416,7 +408,7 @@ function getVariantsSeries(variants, depths) {
 }
 
 /**
- *  The function define grid for whole charts
+ *  The function defines grid for whole charts
  * @param samples
  * @returns []
  */
@@ -457,7 +449,7 @@ function getGrids(samples) {
 }
 
 /**
- * The function define options for tooltips
+ * The function defines options for tooltips
  * @param samples, depths, variants
  * @returns [{renderMode: string, formatter: ((function(*): (string))|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}]
  */
@@ -586,7 +578,7 @@ function getCoverageChartOption() {
 
 /**
  * The function updates options for coverage charts.
- * Whenever the selected samples changed, the whole chart needed to be updated
+ * Whenever the selected samples changed, the whole chart will be re-rendered
  * @param samples
  */
 function updateCoverageChartOption(samples) {
@@ -683,7 +675,7 @@ $("#selectedsamples").on("select2:#selectedsamples", function (evt) {
 });
 
 /**
- * Select svg or canvas as rendered environment, the entire chart/env is rendered
+ * Select svg or canvas as rendered environment, the entire chart/env will be re-rendered
  */
 function renderEnv() {
     var render_env = document.getElementById("renderenv").value;
@@ -717,7 +709,7 @@ function renderEnv() {
 }
 
 /**
- * Toggle dark mode, the entire chart/env is rendered
+ * Toggle dark mode, the entire chart/env will be re-rendered
  */
 $("#toggledarkmode").change(function () {
     var render_env = "canvas";
@@ -1082,7 +1074,7 @@ window.toTableHtml = toTableHtml;
 /**
  * Calculate mean coverage for specific range
  * @param depths, start, end, gridIndex
- * @returns mean coverage
+ * @returns {number}
  */
 function meanCoverage(depths, start, end, gridIndex) {
     var sub_array = _.slice(depths[gridIndex], start - 1, end);
@@ -1105,7 +1097,7 @@ function genomeCoverage(depths, start, end, gridIndex, low) {
 /**
  * Calculate median of an array
  * @param arr
- * @returns median of an array
+ * @returns {number}
  */
 function median(arr) {
     arr.sort(function (a, b) {
@@ -1119,7 +1111,7 @@ function median(arr) {
 /**
  * Calculate median coverage for specific range
  * @param depths, start, end, gridIndex
- * @returns median coverage
+ * @returns {number}
  */
 function medianCoverage(depths, start, end, gridIndex) {
     var sub_array = _.slice(depths[gridIndex], start - 1, end);

@@ -221,16 +221,16 @@ def get_gene_feature(annotation: Path) -> List:
     return gene_feature
 
 
-def write_html_coverage_plot(samples_name: dict,
-                             depth_data: dict,
-                             variant_data: dict,
+def write_html_coverage_plot(samples_name: Dict,
+                             depth_data: Dict,
+                             variant_data: Dict,
                              ref_seq: str,
-                             coverage_stat: list,
-                             gene_feature: dict,
+                             coverage_stat: List,
+                             gene_feature: Dict,
                              about_html: str,
                              output_html: Path,
                              amplicon: bool = False,
-                             amplicon_data: dict = {},
+                             amplicon_data: Dict = {},
                              ) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -238,7 +238,6 @@ def write_html_coverage_plot(samples_name: dict,
         lstrip_blocks=True,
         loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
     )
-
     template_file = render_env.get_template("covplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
         logging.info('Retrieving JS and CSS resources for Coverage Plot')
@@ -260,7 +259,7 @@ def write_html_coverage_plot(samples_name: dict,
                                         **scripts_css))
 
 
-def get_samples_name(df_samples: pd.DataFrame) -> Dict[int, str]:
+def get_samples_name(df_samples: pd.DataFrame) -> List:
     samples_dict = {}
     for i, sample in enumerate(df_samples.index):
         logging.info(f'Preparing data for sample "{sample}"')
