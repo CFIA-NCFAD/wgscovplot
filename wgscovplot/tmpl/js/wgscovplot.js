@@ -31,16 +31,67 @@ window.variants = {{ variant_data }};
  * }]
  */
 var gene_feature = {{ gene_feature }}
+
+/**
+ * Default properties for gene features chart, to have best view for the whole, user can adjust high, right/left/top margin
+ *  'max_grid_height': 80,
+ *  'rec_items_height': 12,
+ *  'minus_strand_level': 55,
+ *  'grid_height': "15%"
+ *
+ */
 var gene_feature_properties = {{ gene_feature_properties }}
+
+/**
+ * Whether amplicon plot or normal coverage plot
+ * @type {boolean}
+ */
 var amplicon = "{{amplicon}}"
+
+/**
+ * Dict of Amplicon Depth Coverage
+ * { sample_name: [
+ *      {   value : [start, end, depth, amplicon_name],
+ *          itemStyle: { color: 'color'
+ *      }
+ *    ]
+ * }
+ *
+ */
 var amplicon_data = {{ amplicon_data }}
 const ref_len = window.ref_seq.length;
+
+/**
+ * Variable is used keep track the current number samples in the chart and is used for toggling slider
+ * @type {number}
+ */
 var grid_length;
+
+/**
+ * Variable is used for initial y_start for rendering gene features
+ * @type {number}
+ */
 var y_start;
+
 const default_num_chart = 3;
+
+/**
+ * An array of positions of reference sequence which represent in X-Axis
+ * @type {number[]}
+ */
 var positions = [...Array(ref_len + 1).keys()];
 positions.shift();
+
+/**
+ * Variable is used to toggle gene label name
+ * @type {boolean}
+ */
 var invisible_gene_label = false;
+
+/**
+ * Dict of color for coloring variant position in the chart
+ * @type {A: string, C: string, T: string, G: string}
+ */
 var ntColor = {
     "A": "#F00",
     "C": "#0F0",
@@ -116,7 +167,7 @@ function renderGeneFeatures(params, api) {
             width: params.coordSys.width,
             height: params.coordSys.height,
         });
-        return shape && {
+        return {
             type: "polygon",
             shape: {
                 points: shape,
@@ -148,7 +199,7 @@ function renderGeneFeatures(params, api) {
             width: params.coordSys.width,
             height: params.coordSys.height,
         });
-        return shape && {
+        return {
             type: "polygon",
             shape: {
                 points: shape,
@@ -365,6 +416,9 @@ function getAmpliconDepthSeries(samples) {
                 position: "top",
                 distance: 25,
                 rotate:60
+            },
+            labelLayout: {
+                hideOverlap: true
             },
             encode: {
                 x: [0, 1],
@@ -662,13 +716,13 @@ $(document).ready(function () {
 });
 
 /**
- * Jquery function to make the list of samples is forced in alphabetical order
+ * Jquery function to make the list of samples is not forced in alphabetical order
  */
 $("#selectedsamples").select2({
     tags: true,
 });
 
-$("#selectedsamples").on("select2:#selectedsamples", function (evt) {
+$("#selectedsamples").on("select2:select", function (evt) {
     var element = evt.params.data.element;
     var $element = $(element);
     $element.detach();
