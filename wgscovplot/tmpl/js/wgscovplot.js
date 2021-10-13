@@ -536,11 +536,12 @@ function getCoverageChartOption() {
         dataset: getDatasets(depths, positions),
         xAxis: getXAxes(samples, ref_len),
         yAxis: getYAxes(samples, "log", 100000),
+        // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples),
             ...getVariantsSeries(variants, depths),
-            ...getGeneFeatureSeries(grid_length),
-            ...getAmpliconDepthSeries(samples)
+            ...getAmpliconDepthSeries(samples),
+            ...getGeneFeatureSeries(grid_length)
         ],
         tooltip: getTooltips(samples, depths, variants),
         toolbox: {
@@ -594,11 +595,12 @@ function updateCoverageChartOption(samples) {
         dataset: getDatasets(depths, positions),
         xAxis: getXAxes(samples, ref_len),
         yAxis: getYAxes(samples, "log", 100000),
+        // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples),
             ...getVariantsSeries(variants, depths),
+            ...getAmpliconDepthSeries(samples),
             ...getGeneFeatureSeries(grid_length),
-            ...getAmpliconDepthSeries(samples)
         ],
         tooltip: getTooltips(samples, depths, variants),
         toolbox: {
@@ -812,6 +814,7 @@ function updateChartTop(val) {
  */
 $("#togglegenelabel").change(function () {
     var series_option = chart.getOption().series;
+    console.log(series_option)
     if ($(this).prop("checked")) {
         invisible_gene_label = false
         series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
