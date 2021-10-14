@@ -8,7 +8,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install modules
-      run: yarn
+      run: |
+        yarn
+        yarn add --dev jest
     - name: Run Jest
       uses: stefanoeb/jest-action@1.0.3
       with:
