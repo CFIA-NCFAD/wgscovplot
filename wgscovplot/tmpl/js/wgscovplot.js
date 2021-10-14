@@ -412,13 +412,13 @@ function getAmpliconDepthSeries(samples) {
                 }
             },
             label: {
-                show: true,
+                show: false,
                 position: "top",
                 distance: 25,
                 rotate:60
             },
             labelLayout: {
-                hideOverlap: true
+                hideOverlap: false
             },
             encode: {
                 x: [0, 1],
@@ -745,23 +745,17 @@ function renderEnv() {
     var mode = "white";
     if (isChecked) mode = "dark";
     else mode = "white";
+    echarts.dispose(chart); // destroy chart instance and re-init chart
+    $chart = document.getElementById("chart");
     if (render_env === "canvas") {
-        echarts.dispose(chart); // destroy chart instance and re-init chart
-        $chart = document.getElementById("chart");
         chart = echarts.init($chart, mode, {renderer: "canvas"});
-        chart.setOption((option = getCoverageChartOption()));
-        selectDefaultSamples(samples);
-        chartDispatchAction();
-        updateControlMenu();
     } else {
-        echarts.dispose(chart);
-        $chart = document.getElementById("chart");
         chart = echarts.init($chart, mode, {renderer: "svg"});
-        chart.setOption((option = getCoverageChartOption()));
-        selectDefaultSamples(samples);
-        chartDispatchAction();
-        updateControlMenu();
     }
+    chart.setOption(option = getCoverageChartOption());
+    selectDefaultSamples(samples);
+    chartDispatchAction();
+    updateControlMenu();
 }
 
 /**
@@ -777,21 +771,17 @@ $("#toggledarkmode").change(function () {
             samples.push(value);
         }
     });
+    echarts.dispose(chart); // destroy chart instance and re-init chart
+    $chart = document.getElementById("chart");
     if ($(this).prop("checked")) {
-        echarts.dispose(chart); // destroy chart instance and re-init chart
         chart = echarts.init($chart, "dark", {renderer: render_env});
-        chart.setOption((option = getCoverageChartOption()));
-        selectDefaultSamples(samples);
-        chartDispatchAction();
-        updateControlMenu();
     } else {
-        echarts.dispose(chart); // destroy chart instance and re-init chart
         chart = echarts.init($chart, "white", {renderer: render_env});
-        chart.setOption((option = getCoverageChartOption()));
-        selectDefaultSamples(samples);
-        chartDispatchAction();
-        updateControlMenu();
     }
+    chart.setOption(option = getCoverageChartOption());
+    selectDefaultSamples(samples);
+    chartDispatchAction();
+    updateControlMenu();
 });
 
 /**
@@ -850,7 +840,7 @@ function updateChartTop(val) {
     document.getElementById("charttopoutput").value = val + "%";
     var grid_option = chart.getOption().grid;
     for (var i = 0; i < grid_option.length; i++) {
-        if (i == 0) {
+        if (i === 0) {
             grid_option[i]["top"] = val + "%";
         } else {
             grid_option[i]["top"] =
@@ -864,20 +854,38 @@ function updateChartTop(val) {
 }
 
 /**
+ * Toggle to Amplicon Depth Label
+ */
+$("#toggleamplicondepthlabel").change(function () {
+    var series_option = chart.getOption().series;
+    if ($(this).prop("checked")) {
+        _.forEach(series_option, function (element) {
+            if (element.type === 'custom') {
+                element.label.show = true
+            }
+        })
+    } else {
+        _.forEach(series_option, function (element) {
+            if (element.type === 'custom') {
+                element.label.show = false
+            }
+        })
+    }
+    chart.setOption({series: [...series_option]});
+});
+
+/**
  * Toggle to show gene label or not
  */
 $("#togglegenelabel").change(function () {
     var series_option = chart.getOption().series;
-    console.log(series_option)
     if ($(this).prop("checked")) {
         invisible_gene_label = false
-        series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
-        chart.setOption({series: [...series_option]});
     } else {
         invisible_gene_label = true
-        series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
-        chart.setOption({series: [...series_option]});
     }
+    series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
+    chart.setOption({series: [...series_option]});
 });
 
 /**
@@ -898,7 +906,7 @@ function updateGeneFeatureHeight(val) {
 function setScale() {
     var scale_type = document.getElementById("scale").value;
     var yaxis_option = chart.getOption().yAxis;
-    if (scale_type == "value") {
+    if (scale_type === "value") {
         _.forEach(yaxis_option, function (element) {
             if (element.gridIndex < yaxis_option.length - 1) {
                 element.type = scale_type;
