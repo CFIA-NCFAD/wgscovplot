@@ -36,5 +36,3 @@ jobs:
         pwd
         ls
         pytest
-    -name: Run jest
-      with: test/data/test_wgscovplot.js
