@@ -1,4 +1,4 @@
-name: Jest
+name: CI_Jest
 
 on: [push]
 
