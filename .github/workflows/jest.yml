@@ -8,5 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run Jest
+      run: jest
       with:
         jestArgs: test/test_wgscovplot.js
