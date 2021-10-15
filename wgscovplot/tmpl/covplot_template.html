@@ -30,9 +30,9 @@
             for (let i = 0; i < containers.length; i++) {
                     containers[i].style.display = "none";
             }
-            let tablinks =document.getElementsByClassName("tablinks");
-            for (let i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = "tablinks";
+            let nav_links =document.getElementsByClassName("nav-link");
+            for (let i = 0; i < nav_links.length; i++) {
+                nav_links[i].className = "nav-link";
             }
             document.getElementById(chartID).style.display = "block";
             evt.currentTarget.className += " active";
@@ -43,9 +43,9 @@
     </script>
     <script>
         function updateChartDivSize() {
-            var BOTTOM_PADDING = 20;
-            var top = $chart.getBoundingClientRect().top;
-            var height = window.innerHeight - top - BOTTOM_PADDING;
+            let BOTTOM_PADDING = 20;
+            let top = $chart.getBoundingClientRect().top;
+            let height = window.innerHeight - top - BOTTOM_PADDING;
             if (height < 300) {
                 height = 300;
             }
@@ -54,8 +54,21 @@
         }
         window.addEventListener("resize", updateChartDivSize);
         document.addEventListener("DOMContentLoaded", function(event) {
+            var $chart = document.getElementById('chart');
+            window.$chart = $chart;
+            var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
+            window.chart = chart;
             updateChartDivSize();
-            chart.resize();
+            var initial_samples = _.slice(window.samples, 0, default_num_chart)
+            var initial_depths =[]
+            var initial_variants = []
+            initial_samples.forEach(sample => {
+                initial_depths.push(window.depths[sample]);
+                initial_variants.push(window.variants[sample]);
+            })
+            selectDefaultSamples(initial_samples)
+            chart.setOption(option = getCoverageChartOption(initial_samples, initial_depths, initial_variants));
+            chartDispatchDataZoomAction()
         })
     </script>
 </body>

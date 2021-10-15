@@ -10,7 +10,7 @@ from typing import Optional
 from rich.logging import RichHandler
 from sys import version_info
 from Bio.SeqIO.FastaIO import SimpleFastaParser
-from .wgscovplot import (write_html_coverage_plot, get_samples_name,
+from .wgscovplot import (write_html_coverage_plot,
                          get_variant_data, get_depth_data, get_gene_feature, get_region_amplicon,
                          get_depth_amplicon, get_coverage_stat)
 from wgscovplot import __version__
@@ -64,7 +64,7 @@ def main(
                 ref_seq = seq
     # Get DNA Gene features
     gene_feature = get_gene_feature(genbank)
-    amplicon_data = {}
+
     # Main Script
     if amplicon:
         df_samples_amplicon = pd.read_table(samples_data,
@@ -73,19 +73,14 @@ def main(
         df_samples_amplicon = df_samples_amplicon.fillna(0)
 
         # Get list of samples name
-        samples_name = get_samples_name(df_samples_amplicon)
+        samples_name = df_samples_amplicon.index.to_list()
 
         # Get depths and variant data
-        depth_data = get_depth_data(df_samples_amplicon, amplicon, len(ref_seq))
+        depth_data = get_depth_data(df_samples_amplicon, len(ref_seq), amplicon)
         variant_data = get_variant_data(df_samples_amplicon)
         amplicon_data = get_depth_amplicon(df_samples_amplicon)
         # Get Coverage Statistics
-        coverage_stat = []
-
-        for sample, depths in depth_data.items():
-            df_coverage_depth = pd.DataFrame(depths, columns=['depth'])
-            df_coverage_depth['pos'] = np.arange(1, len(ref_seq) + 1)
-            coverage_stat.append(get_coverage_stat(sample, df_coverage_depth, low=10))
+        coverage_stat = get_coverage_stat(depth_data, len(ref_seq), 10)
         # Get Amplicon feature to plot them with DNA gene feature
         bedfile = df_samples_amplicon['amplicon_region_file'][0].strip()
         amplicon_feature = get_region_amplicon(bedfile)
@@ -110,18 +105,15 @@ def main(
         df_samples = df_samples.fillna(0)
 
         # Get list of samples name
-        samples_name = get_samples_name(df_samples)
+        samples_name = df_samples.index.to_list()
 
         # Get depths and variant data
-        depth_data = get_depth_data(df_samples, amplicon, len(ref_seq))
+        depth_data = get_depth_data(df_samples, len(ref_seq), amplicon)
         variant_data = get_variant_data(df_samples)
+        amplicon_data = {}
 
         # Get Coverage Statistics
-        coverage_stat = []
-        for sample, depths in depth_data.items():
-            df_coverage_depth = pd.DataFrame(depths, columns=['depth'])
-            df_coverage_depth['pos'] = np.arange(1, len(ref_seq) + 1)
-            coverage_stat.append(get_coverage_stat(sample, df_coverage_depth, low=10))
+        coverage_stat = get_coverage_stat(depth_data, len(ref_seq), 10)
         '''
         samples_name ={}
         depth_data={}

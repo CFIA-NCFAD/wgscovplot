@@ -1,9 +1,25 @@
-<div class="tab">
-    <button class="tablinks" data-bs-toggle="offcanvas" data-bs-target="#controlmenu">☰ Chart Options</button>
-    <button class="tablinks" onclick="showChart(event,'chart')">Coverage Plot</button>
-    <button class="tablinks" onclick="showChart(event,'table_id')">Summary Information</button>
-    <button class="tablinks" onclick="showChart(event,'about_id')">About</button>
-</div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="offcanvas" data-bs-target="#controlmenu" href="#">☰ Chart
+                        Options</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" onclick="showChart(event,'chart')">Coverage
+                        Plot</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showChart(event,'summary_table')" href="#">Summary Information</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showChart(event,'about')" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 <div id="chart" class="chart-container" style="width:100%; height: 900px;"></div>
 
@@ -26,7 +42,7 @@
                 <div class="accordion-body">
                     <label for="samples">Samples:</label>
                     <select id="selectedsamples" class="selected-samples" multiple="multiple" style="width: 75%" >
-                        {% for id, sample in samples_name.items() %}
+                        {% for sample in samples_name %}
                             <option value={{sample}}>{{sample}}</option>
                         {% endfor %}
                     </select>
@@ -43,7 +59,7 @@
             <div id="chartproperties" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     <div>Renderer  
-                        <select id="renderenv" onchange="renderEnv()" style="width: 40%">
+                        <select id="renderenv" onchange="selectRenderEnv()" style="width: 40%">
                             <option value="svg" >svg</option>
                             <option value="canvas" selected>canvas</option>
                         </select>
@@ -182,31 +198,7 @@
 </div>
 
 
-<div id="about_id" class="chart-container">
+<div id="about" class="chart-container">
     {{ about_html }}
 </div>
-
-<table id="table_id" class="chart-container table table-striped table-hover table-bordered table-responsive-md">
-    <tr class="table-dark">
-        <th>Sample Name</th>
-        <th>Mean Coverage</th>
-        <th>Median Coverage</th>
-        <th>Genome Coverage(>= 10x)</th>
-        <th>Low Coverage Positions (< 10X) </th>
-        <th>No Coverage Positions (0X)</th>
-        <th>Low Coverage Regions (< 10X)</th>
-        <th>No Coverage Regions (0X)</th>
-    </tr>
-    {% for data_info in coverage_stat %}
-        <tr>
-            <td>{{ data_info[0] }}</td>
-            <td>{{ data_info[1] }}</td>
-            <td>{{ data_info[2] }}</td>
-            <td>{{ data_info[3] }}</td>
-            <td>{{ data_info[4] }}</td>
-            <td>{{ data_info[5] }}</td>
-            <td>{{ data_info[6] }}</td>
-            <td>{{ data_info[7] }}</td>
-        </tr>
-    {% endfor %}
-</table>
+{{ coverage_stat }}

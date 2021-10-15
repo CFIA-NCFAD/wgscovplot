@@ -4,7 +4,7 @@
 window.ref_seq = "{{ ref_seq }}";
 
 /**
- * Dict of samples name
+ * List of samples name
  */
 window.samples = {{ samples_name }}
 
@@ -33,7 +33,7 @@ window.variants = {{ variant_data }};
 var gene_feature = {{ gene_feature }}
 
 /**
- * Default properties for gene features chart, to have best view for the whole, user can adjust high, right/left/top margin
+ * Default properties for gene features chart, to have best view for the whole chart, user can adjust high, right/left/top margin
  *  'max_grid_height': 80,
  *  'rec_items_height': 12,
  *  'minus_strand_level': 55,
@@ -93,22 +93,18 @@ var invisible_gene_label = false;
  * @type {A: string, C: string, T: string, G: string}
  */
 var ntColor = {
-    "A": "#F00",
-    "C": "#0F0",
-    "G": "#00F",
-    "T": "#0FF",
+    "A": "#ea5e48",
+    "C": "#eaca48",
+    "G": "#6ad82b",
+    "T": "#2b87d8",
 }
-var $chart = document.getElementById('chart');
-window.$chart = $chart;
-var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
-window.chart = chart;
 
 /**
  * The function returns the points of gene features shape
  * @param x, y, width, height, strand, feature
  * @returns ((*|number)[]|(*)[]|(*|number)[])[]|(*[]|(number|*)[]|(*|number)[]|number[]|(*|number)[])[]
  */
-function renderPoints(x, y, width, height, strand, feature = "gene_feature") {
+function renderPoints(x, y, width, height, strand, feature) {
     if (feature === 'gene_feature') {
         if (strand === 1) {
             return [
@@ -134,6 +130,9 @@ function renderPoints(x, y, width, height, strand, feature = "gene_feature") {
             [x + width, y - height],
             [x, y - height],
         ]
+    }
+    else {
+        return null
     }
 }
 /**
@@ -572,18 +571,7 @@ function getTooltips(samples, depths, variants) {
  * The function builds all options for coverage chart
  * @returns {yAxis: [], xAxis: [], series: *[], grid: [], tooltip: {renderMode: string, formatter: ((function(*): string)|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}[], toolbox: {feature: {saveAsImage: {name: string}, restore: {}, dataView: {readOnly: boolean}}, show: string}, dataZoom: [{filterMode: string, xAxisIndex: number[], type: string, zoomLock: boolean}, {filterMode: string, xAxisIndex: number[], show: boolean, type: string, zoomLock: boolean}], title: {}, dataset: []}
  */
-function getCoverageChartOption() {
-    var samples = [];
-    var depths = [];
-    var variants = [];
-
-    for (const [key, entries] of Object.entries(window.samples)) {
-        if (key < default_num_chart) {
-            samples.push(entries);
-            depths.push(window.depths[entries]);
-            variants.push(window.variants[entries]);
-        }
-    }
+function getCoverageChartOption(samples, depths, variants) {
     grid_length = samples.length;
     var options = {
         title: {},
@@ -626,8 +614,8 @@ function getCoverageChartOption() {
             },
         ],
         grid: getGrids(samples),
+
     };
-    selectDefaultSamples(samples);
     return options;
 }
 
@@ -639,109 +627,185 @@ function getCoverageChartOption() {
 function updateCoverageChartOption(samples) {
     var depths = [];
     var variants = [];
-    for (const selected_samples of samples) {
-        depths.push(window.depths[selected_samples]);
-        variants.push(window.variants[selected_samples]);
-    }
-    grid_length = samples.length;
-    var options = {
-        title: {},
-        dataset: getDatasets(depths, positions),
-        xAxis: getXAxes(samples, ref_len),
-        yAxis: getYAxes(samples, "log", 100000),
-        // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
-        series: [
-            ...getDepthSeries(samples),
-            ...getVariantsSeries(variants, depths),
-            ...getAmpliconDepthSeries(samples),
-            ...getGeneFeatureSeries(grid_length),
-        ],
-        tooltip: getTooltips(samples, depths, variants),
-        toolbox: {
-            show: "true",
-            feature: {
-                dataView: {
-                    readOnly: false,
-                },
-                restore: {},
-                saveAsImage: {
-                    name: "Coverage_Plot",
-                },
-            },
-        },
-        dataZoom: [
-            {
-                type: "inside",
-                filterMode: "none",
-                xAxisIndex: [...Array(grid_length + 1).keys()],
-            },
-            {
-                show: true,
-                filterMode: "none",
-                xAxisIndex: [...Array(grid_length + 1).keys()],
-                type: "slider",
-            },
-        ],
-        grid: getGrids(samples),
-    };
-    chart.setOption((option = options), (notMerge = true));
+    samples.forEach(sample => {
+        depths.push(window.depths[sample]);
+        variants.push(window.variants[sample]);
+    })
+    chart.setOption(option = getCoverageChartOption(samples, depths, variants), notMerge = true);
     updateControlMenu();
 }
-
-chart.setOption((option = getCoverageChartOption()));
 
 /**
  * The function returns the list of first 'default_num_chart = 3' samples when the first first initialized
  * @param samples
  */
-function selectDefaultSamples(samples) {
+function selectDefaultSamples(updated_samples) {
     // Set default samples display
     $("#selectedsamples").select2();
-    $("#selectedsamples").val(samples);
+    $("#selectedsamples").val(updated_samples).trigger('change');
 }
 
 /**
- * Jquery function update chart options when number of selected samples changes
+ * A document is ready for fire action with Jquery
  */
 $(document).ready(function () {
-    $("#selectedsamples").select2();
-    $("#selectedsamples").on("change", function (e) {
-        var selectData = $("#selectedsamples").select2("data");
-        var samples_list = [];
-        for (var [key, entries] of selectData.entries()) {
-            samples_list.push(selectData[key].text);
-        }
-        updateCoverageChartOption(samples_list);
+
+    $("#selectedsamples").select2({
+        tags: true,
     });
-});
 
-/**
- * Jquery function to make the list of samples is not forced in alphabetical order
- */
-$("#selectedsamples").select2({
-    tags: true,
-});
+    /**
+     * Jquery function update chart options when number of selected samples changes
+     */
+    $("#selectedsamples").on("change", function () {
+        var selectData = $("#selectedsamples").select2("data");
+        var updated_samples = [];
+        for (var [key, entries] of selectData.entries()) {
+            updated_samples.push(selectData[key].text);
+        }
+        updateCoverageChartOption(updated_samples);
+    });
 
-$("#selectedsamples").on("select2:select", function (evt) {
-    var element = evt.params.data.element;
-    var $element = $(element);
-    $element.detach();
-    $(this).append($element);
-    $(this).trigger("change");
+    /**
+     * Jquery function to make the list of samples is not forced in alphabetical order
+     */
+
+    $("#selectedsamples").on("select2:select", function (evt) {
+        var element = evt.params.data.element;
+        var $element = $(element);
+        $element.detach();
+        $(this).append($element);
+        $(this).trigger("change");
+    });
+
+    /**
+     * Toggle dark mode, the entire chart/env will be re-rendered
+     */
+    $("#toggledarkmode").change(function () {
+        var render_env = "canvas";
+        if (document.getElementById("renderenv"))
+            render_env = document.getElementById("renderenv").value;
+        var initial_samples = _.slice(window.samples, 0, default_num_chart)
+        var initial_depths = []
+        var initial_variants = []
+        initial_samples.forEach(sample => {
+            initial_depths.push(window.depths[sample]);
+            initial_variants.push(window.variants[sample]);
+        })
+        echarts.dispose(chart); // destroy chart instance and re-init chart
+        $chart = document.getElementById("chart");
+        if ($(this).prop("checked")) {
+            chart = echarts.init($chart, "dark", {renderer: render_env});
+        } else {
+            chart = echarts.init($chart, "white", {renderer: render_env});
+        }
+        selectDefaultSamples(initial_samples);
+        chart.setOption(option = getCoverageChartOption(initial_samples, initial_depths, initial_variants));
+        chartDispatchDataZoomAction();
+        updateControlMenu();
+    });
+
+    /**
+     * Toggle to Amplicon Depth Label
+     */
+    $("#toggleamplicondepthlabel").change(function () {
+        var series_option = chart.getOption().series;
+        if ($(this).prop("checked")) {
+            _.forEach(series_option, function (element) {
+                if (element.type === 'custom') {
+                    element.label.show = true
+                }
+            })
+        } else {
+            _.forEach(series_option, function (element) {
+                if (element.type === 'custom') {
+                    element.label.show = false
+                }
+            })
+        }
+        chart.setOption({series: [...series_option]});
+    });
+
+    /**
+     * Toggle to show gene label or not
+     */
+    $("#togglegenelabel").change(function () {
+        var series_option = chart.getOption().series;
+        if ($(this).prop("checked")) {
+            invisible_gene_label = false
+        } else {
+            invisible_gene_label = true
+        }
+        series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
+        chart.setOption({series: [...series_option]});
+    });
+
+    /**
+     * Toggle tooltip for coverage chart, this action does not affect gene feature chart
+     */
+    $("#toggletooltip").change(function () {
+        if ($(this).prop("checked")) {
+            chart.setOption({
+                tooltip: {showContent: true},
+            });
+        } else {
+            chart.setOption({
+                tooltip: {showContent: false},
+            });
+        }
+    });
+
+    /**
+     * Toggle slider zoom
+     */
+    $("#toggleslider").change(function () {
+        if ($(this).prop("checked")) {
+            chart.setOption({
+                dataZoom: [
+                    {
+                        type: "inside",
+                        filterMode: "none",
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
+                    },
+                    {
+                        show: true,
+                        filterMode: "none",
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
+                        type: "slider",
+                    },
+                ],
+            });
+        } else {
+            chart.setOption({
+                dataZoom: [
+                    {
+                        type: "inside",
+                        filterMode: "none",
+                        xAxisIndex: [...Array(grid_length + 1).keys()],
+                    },
+                    {
+                        show: false,
+                        type: "slider",
+                    },
+                ],
+            });
+        }
+    });
 });
 
 /**
  * Select svg or canvas as rendered environment, the entire chart/env will be re-rendered
  */
-function renderEnv() {
+function selectRenderEnv() {
     var render_env = document.getElementById("renderenv").value;
     var isChecked = document.getElementById("toggledarkmode").checked;
-    var samples = [];
-    _.forEach(window.samples, function (value, key) {
-        if (key < default_num_chart) {
-            samples.push(value);
-        }
-    });
+    var initial_samples = _.slice(window.samples, 0, default_num_chart)
+    var initial_depths = []
+    var initial_variants = []
+    initial_samples.forEach(sample => {
+        initial_depths.push(window.depths[sample]);
+        initial_variants.push(window.variants[sample]);
+    })
     var mode = "white";
     if (isChecked) mode = "dark";
     else mode = "white";
@@ -752,37 +816,11 @@ function renderEnv() {
     } else {
         chart = echarts.init($chart, mode, {renderer: "svg"});
     }
-    chart.setOption(option = getCoverageChartOption());
-    selectDefaultSamples(samples);
-    chartDispatchAction();
+    selectDefaultSamples(initial_samples);
+    chart.setOption(option = getCoverageChartOption(initial_samples, initial_depths, initial_variants));
+    chartDispatchDataZoomAction();
     updateControlMenu();
 }
-
-/**
- * Toggle dark mode, the entire chart/env will be re-rendered
- */
-$("#toggledarkmode").change(function () {
-    var render_env = "canvas";
-    if (document.getElementById("renderenv"))
-        render_env = document.getElementById("renderenv").value;
-    var samples = [];
-    _.forEach(window.samples, function (value, key) {
-        if (key < default_num_chart) {
-            samples.push(value);
-        }
-    });
-    echarts.dispose(chart); // destroy chart instance and re-init chart
-    $chart = document.getElementById("chart");
-    if ($(this).prop("checked")) {
-        chart = echarts.init($chart, "dark", {renderer: render_env});
-    } else {
-        chart = echarts.init($chart, "white", {renderer: render_env});
-    }
-    chart.setOption(option = getCoverageChartOption());
-    selectDefaultSamples(samples);
-    chartDispatchAction();
-    updateControlMenu();
-});
 
 /**
  * Adjust chart height
@@ -853,40 +891,7 @@ function updateChartTop(val) {
     chart.setOption({grid: grid_option});
 }
 
-/**
- * Toggle to Amplicon Depth Label
- */
-$("#toggleamplicondepthlabel").change(function () {
-    var series_option = chart.getOption().series;
-    if ($(this).prop("checked")) {
-        _.forEach(series_option, function (element) {
-            if (element.type === 'custom') {
-                element.label.show = true
-            }
-        })
-    } else {
-        _.forEach(series_option, function (element) {
-            if (element.type === 'custom') {
-                element.label.show = false
-            }
-        })
-    }
-    chart.setOption({series: [...series_option]});
-});
 
-/**
- * Toggle to show gene label or not
- */
-$("#togglegenelabel").change(function () {
-    var series_option = chart.getOption().series;
-    if ($(this).prop("checked")) {
-        invisible_gene_label = false
-    } else {
-        invisible_gene_label = true
-    }
-    series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
-    chart.setOption({series: [...series_option]});
-});
 
 /**
  * Adjust the height of gene feature charts
@@ -944,58 +949,6 @@ function setYMax() {
 }
 
 /**
- * Toggle tooltip for coverage chart, this action does not affect gene feature chart
- */
-$("#toggletooltip").change(function () {
-    if ($(this).prop("checked")) {
-        chart.setOption({
-            tooltip: {showContent: true},
-        });
-    } else {
-        chart.setOption({
-            tooltip: {showContent: false},
-        });
-    }
-});
-
-/**
- * Toggle slider zoom
- */
-$("#toggleslider").change(function () {
-    if ($(this).prop("checked")) {
-        chart.setOption({
-            dataZoom: [
-                {
-                    type: "inside",
-                    filterMode: "none",
-                    xAxisIndex: [...Array(grid_length + 1).keys()],
-                },
-                {
-                    show: true,
-                    filterMode: "none",
-                    xAxisIndex: [...Array(grid_length + 1).keys()],
-                    type: "slider",
-                },
-            ],
-        });
-    } else {
-        chart.setOption({
-            dataZoom: [
-                {
-                    type: "inside",
-                    filterMode: "none",
-                    xAxisIndex: [...Array(grid_length + 1).keys()],
-                },
-                {
-                    show: false,
-                    type: "slider",
-                },
-            ],
-        });
-    }
-});
-
-/**
  * Set range of gene feature to zoom in
  */
 function setDataZoom() {
@@ -1021,31 +974,6 @@ function resetDataZoom() {
     });
 }
 
-/**
- * Click gene feature to zoom in the view for this gene feature
- */
-chart.on("click", function (params) {
-    document.getElementById("start_pos").value = params.value[1];
-    document.getElementById("end_pos").value = params.value[2];
-    chart.dispatchAction({
-        type: "dataZoom",
-        startValue: params.value[1],
-        endValue: params.value[2],
-    });
-});
-
-/**
- * Double click to reset zoom to default
- */
-chart.on("dblclick", function (params) {
-    document.getElementById("start_pos").value = 1;
-    document.getElementById("end_pos").value = ref_len;
-    chart.dispatchAction({
-        type: "dataZoom",
-        start: 0,
-        end: 100,
-    });
-});
 
 /**
  * The Control Menu is updated when render env, toggle dark mode or the selected samples changed
@@ -1076,28 +1004,28 @@ function updateControlMenu() {
 }
 
 /**
- * Dispatch click, double click action on gene feature chart when render env changed or dark mode toggled
+ * Event click, dbclick then dispatch Action to DataZoom
  */
-function chartDispatchAction() {
-  chart.on("click", function (params) {
-    document.getElementById("start_pos").value = params.value[1];
-    document.getElementById("end_pos").value = params.value[2];
-    chart.dispatchAction({
-      type: "dataZoom",
-      startValue: params.value[1],
-      endValue: params.value[2],
+function chartDispatchDataZoomAction() {
+    chart.on("click", function (params) {
+        document.getElementById("start_pos").value = params.value[1];
+        document.getElementById("end_pos").value = params.value[2];
+        chart.dispatchAction({
+            type: "dataZoom",
+            startValue: params.value[1],
+            endValue: params.value[2],
+        });
     });
-  });
 
-  chart.on("dblclick", function (params) {
-    document.getElementById("start_pos").value = 1;
-    document.getElementById("end_pos").value = ref_len;
-    chart.dispatchAction({
-      type: "dataZoom",
-      start: 0,
-      end: 100,
+    chart.on("dblclick", function (params) {
+        document.getElementById("start_pos").value = 1;
+        document.getElementById("end_pos").value = ref_len;
+        chart.dispatchAction({
+            type: "dataZoom",
+            start: 0,
+            end: 100,
+        });
     });
-  });
 }
 
 /**
@@ -1133,8 +1061,6 @@ function toTableHtml(headers, rows, classes) {
     out += "</tbody></table>";
     return out;
 }
-
-window.toTableHtml = toTableHtml;
 
 /**
  * Calculate mean coverage for specific range
