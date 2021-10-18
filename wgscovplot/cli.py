@@ -100,7 +100,7 @@ def main(
                          itemStyle={"color": 'skyblue'})
                 )
     else:
-
+        '''
         df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
         df_samples = df_samples.fillna(0)
 
@@ -119,7 +119,9 @@ def main(
         depth_data={}
         variant_data={}
         coverage_stat=[]
-        '''
+        amplicon_data = {}
+
+
 
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent

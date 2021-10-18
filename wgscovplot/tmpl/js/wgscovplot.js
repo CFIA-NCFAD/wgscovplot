@@ -540,7 +540,6 @@ function selectDefaultSamples(updated_samples) {
     $("#selectedsamples").select2();
     $("#selectedsamples").val(updated_samples);
     $("#selectedsamples").trigger('change')
-    //console.log($("#selectedsamples").select2("data").sort())
 }
 
 /**
