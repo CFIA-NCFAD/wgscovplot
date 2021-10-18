@@ -1,105 +1,4 @@
 /**
- * Reference Sequence
- */
-window.ref_seq = "{{ ref_seq }}";
-
-/**
- * List of samples name
- */
-window.samples = {{ samples_name }}
-
-/**
- * Dict of depth data
- * {samples_name: depth_data}
- */
-window.depths = {{ depth_data }};
-
-/**
- * Dict of variant data
- * {samples_name: variant_data}
- */
-window.variants = {{ variant_data }};
-
-/**
- * Dict of gene features
- * [{
- *     'name': 'feature_name'
- *     'value: [index, start_pos, end_pos, level, strand, 'gene_features' or 'amplicon_features']
- *     'itemStyle': {
- *          'color': 'color'
- *     }
- * }]
- */
-var gene_feature = {{ gene_feature }}
-
-/**
- * Default properties for gene features chart, to have best view for the whole chart, user can adjust high, right/left/top margin
- *  'max_grid_height': 80,
- *  'rec_items_height': 12,
- *  'minus_strand_level': 55,
- *  'grid_height': "15%"
- *
- */
-var gene_feature_properties = {{ gene_feature_properties }}
-
-/**
- * Whether amplicon plot or normal coverage plot
- * @type {boolean}
- */
-var amplicon = "{{amplicon}}"
-
-/**
- * Dict of Amplicon Depth Coverage
- * { sample_name: [
- *      {   value : [start, end, depth, amplicon_name],
- *          itemStyle: { color: 'color'
- *      }
- *    ]
- * }
- *
- */
-var amplicon_data = {{ amplicon_data }}
-const ref_len = window.ref_seq.length;
-
-/**
- * Variable is used keep track the current number samples in the chart and is used for toggling slider
- * @type {number}
- */
-var grid_length;
-
-/**
- * Variable is used for initial y_start for rendering gene features
- * @type {number}
- */
-var y_start;
-
-const default_num_chart = 3;
-
-/**
- * An array of positions of reference sequence which represent in X-Axis
- * @type {number[]}
- */
-var positions = [...Array(ref_len + 1).keys()];
-positions.shift();
-
-/**
- * Variable is used to toggle gene label name
- * @type {boolean}
- */
-var invisible_gene_label = false;
-
-/**
- * Dict of color for coloring variant position in the chart
- * @type {A: string, C: string, T: string, G: string}
- */
-var ntColor = {
-    "A": "#ea5e48",
-    "C": "#eaca48",
-    "G": "#6ad82b",
-    "T": "#2b87d8",
-}
-
-/**
  * The function returns the points of gene features shape
  * @param x, y, width, height, strand, feature
  * @returns ((*|number)[]|(*)[]|(*|number)[])[]|(*[]|(number|*)[]|(*|number)[]|number[]|(*|number)[])[]
@@ -240,20 +139,15 @@ function getGeneFeatureSeries(index) {
             },
             formatter: function (params) {
                 var output = "";
-                output +=
-                    params.name +
-                    "<br/>" +
-                    "Start pos: " +
-                    params.value[1].toLocaleString() +
-                    "<br/>" +
-                    "End pos: " +
-                    params.value[2].toLocaleString() +
-                    "<br/>" +
-                    "Length: " +
-                    (params.value[2] - params.value[1] + 1).toLocaleString() +
-                    "<br/>" +
-                    "Strand: " +
-                    params.value[4].toLocaleString();
+                rows = [
+                    [
+                        "Range",
+                        params.value[1].toLocaleString() + " - " + params.value[2].toLocaleString(),
+                    ],
+                    ["Length", (params.value[2] - params.value[1] + 1).toLocaleString()],
+                    ["Strand", params.value[4].toLocaleString()],
+                ];
+                output += toTableHtml([params.name, ""], rows, "table small");
                 return output;
             },
         },
@@ -644,7 +538,7 @@ function selectDefaultSamples(updated_samples) {
     $("#selectedsamples").select2();
     $("#selectedsamples").val(updated_samples);
     $("#selectedsamples").trigger('change')
-    console.log($("#selectedsamples").select2("data").sort())
+    //console.log($("#selectedsamples").select2("data").sort())
 }
 
 /**
@@ -712,19 +606,12 @@ $(document).ready(function () {
      */
     $("#toggle-amplicon-depthlabel").change(function () {
         var series_option = chart.getOption().series;
-        if ($(this).prop("checked")) {
-            _.forEach(series_option, function (element) {
-                if (element.type === 'custom') {
-                    element.label.show = true
-                }
-            })
-        } else {
-            _.forEach(series_option, function (element) {
-                if (element.type === 'custom') {
-                    element.label.show = false
-                }
-            })
-        }
+        var isChecked = $(this).prop("checked")
+        _.forEach(series_option, function (element) {
+            if (element.type === 'custom') {
+                element.label.show = isChecked
+            }
+        })
         chart.setOption({series: [...series_option]});
     });
 
@@ -733,11 +620,7 @@ $(document).ready(function () {
      */
     $("#toggle-genelabel").change(function () {
         var series_option = chart.getOption().series;
-        if ($(this).prop("checked")) {
-            invisible_gene_label = false
-        } else {
-            invisible_gene_label = true
-        }
+        invisible_gene_label = !($(this).prop("checked"))
         series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
         chart.setOption({series: [...series_option]});
     });
@@ -746,52 +629,32 @@ $(document).ready(function () {
      * Toggle tooltip for coverage chart, this action does not affect gene feature chart
      */
     $("#toggle-tooltip").change(function () {
-        if ($(this).prop("checked")) {
-            chart.setOption({
-                tooltip: {showContent: true},
-            });
-        } else {
-            chart.setOption({
-                tooltip: {showContent: false},
-            });
-        }
+        var isChecked = $(this).prop("checked")
+        chart.setOption({
+            tooltip: {showContent: isChecked},
+        });
     });
 
     /**
      * Toggle slider zoom
      */
     $("#toggle-slider").change(function () {
-        if ($(this).prop("checked")) {
-            chart.setOption({
-                dataZoom: [
-                    {
-                        type: "inside",
-                        filterMode: "none",
-                        xAxisIndex: [...Array(grid_length + 1).keys()],
-                    },
-                    {
-                        show: true,
-                        filterMode: "none",
-                        xAxisIndex: [...Array(grid_length + 1).keys()],
-                        type: "slider",
-                    },
-                ],
-            });
-        } else {
-            chart.setOption({
-                dataZoom: [
-                    {
-                        type: "inside",
-                        filterMode: "none",
-                        xAxisIndex: [...Array(grid_length + 1).keys()],
-                    },
-                    {
-                        show: false,
-                        type: "slider",
-                    },
-                ],
-            });
-        }
+        var isChecked = $(this).prop("checked")
+        chart.setOption({
+            dataZoom: [
+                {
+                    type: "inside",
+                    filterMode: "none",
+                    xAxisIndex: [...Array(grid_length + 1).keys()],
+                },
+                {
+                    show: isChecked,
+                    filterMode: "none",
+                    xAxisIndex: isChecked ? [...Array(grid_length + 1).keys()] : null,
+                    type: "slider",
+                },
+            ],
+        })
     });
 });
 
