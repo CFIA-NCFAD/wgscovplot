@@ -157,7 +157,7 @@ function getGeneFeatureSeries(index) {
 
 /**
  * The functions returns options for X axis
- * @param samples, ref_len
+ * @param samples (the list samples name), ref_len (the length of reference sequence)
  * @returns []
  */
 function getXAxes(samples, ref_len) {
@@ -187,7 +187,7 @@ function getXAxes(samples, ref_len) {
 
 /**
  * The functions returns options for Y axis
- * @param samples, scaletype, ymax
+ * @param samples (the list of samples name), scaletype (scale for Y Axis: either linear or log scale), ymax
  * @returns []
  */
 function getYAxes(samples, scaletype, ymax) {
@@ -219,7 +219,7 @@ function getYAxes(samples, scaletype, ymax) {
 
 /**
  * The function returns dataset information
- * @param depths, positions
+ * @param depths (the dict of depth data), positions (an array of genome positions which represent in X Axis)
  * @returns []
  */
 function getDatasets(depths, positions) {
@@ -241,7 +241,7 @@ function getDatasets(depths, positions) {
 
 /**
  * The function returns options for depth coverage charts
- * @param samples
+ * @param samples (the list of samples name)
  * @returns []
  */
 function getDepthSeries(samples) {
@@ -272,7 +272,8 @@ function getDepthSeries(samples) {
 
 /**
  * The function returns options for  amplicon depth coverage bars
- * @param samples
+ * @param samples (the list of samples name)
+ * @returns []
  */
 function getAmpliconDepthSeries(samples) {
     var series = []
@@ -325,7 +326,7 @@ function getAmpliconDepthSeries(samples) {
 
 /**
  * The function returns options for variant charts
- * @param variants, depths
+ * @param variants (the dict of variants data), depths (the dict of depths data)
  * @returns {*[]}
  */
 function getVariantsSeries(variants, depths) {
@@ -356,7 +357,7 @@ function getVariantsSeries(variants, depths) {
 
 /**
  *  The function defines grid for whole charts
- * @param samples
+ * @param samples (the list of samples name)
  * @returns []
  */
 function getGrids(samples) {
@@ -397,7 +398,7 @@ function getGrids(samples) {
 
 /**
  * The function defines options for tooltips
- * @param samples, depths, variants
+ * @param samples (the list of sample names), depths (the dict of depths data), variants (the dict of variants data)
  * @returns [{renderMode: string, formatter: ((function(*): (string))|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}]
  */
 function getTooltips(samples, depths, variants) {
@@ -463,6 +464,7 @@ function getTooltips(samples, depths, variants) {
 
 /**
  * The function builds all options for coverage chart
+ * param samples (the list of sample names), depths (the dict of depths data), variants (the dict of variants data)
  * @returns {yAxis: [], xAxis: [], series: *[], grid: [], tooltip: {renderMode: string, formatter: ((function(*): string)|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}[], toolbox: {feature: {saveAsImage: {name: string}, restore: {}, dataView: {readOnly: boolean}}, show: string}, dataZoom: [{filterMode: string, xAxisIndex: number[], type: string, zoomLock: boolean}, {filterMode: string, xAxisIndex: number[], show: boolean, type: string, zoomLock: boolean}], title: {}, dataset: []}
  */
 function getCoverageChartOption(samples, depths, variants) {
@@ -516,7 +518,7 @@ function getCoverageChartOption(samples, depths, variants) {
 /**
  * The function updates options for coverage charts.
  * Whenever the selected samples changed, the whole chart will be re-rendered
- * @param samples
+ * @param samples (the list samples name)
  */
 function updateCoverageChartOption(samples) {
     var depths = [];
@@ -531,7 +533,7 @@ function updateCoverageChartOption(samples) {
 
 /**
  * The function returns the list of first 'default_num_chart = 3' samples when the first first initialized
- * @param samples
+ * @param samples (the list samples name)
  */
 function selectDefaultSamples(updated_samples) {
     // Set default samples display
@@ -689,7 +691,7 @@ function selectRenderEnv() {
 
 /**
  * Adjust chart height
- * @param val
+ * @param val (Subplots height percent value)
  */
 function updateChartHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
@@ -711,7 +713,7 @@ function updateChartHeight(val) {
 
 /**
  * Adjust left margin of chart
- * @param val
+ * @param val (Subplots left margin percent value)
  */
 function updateChartLeft(val) {
     document.getElementById("chart-left-output").value = val + "%";
@@ -724,7 +726,7 @@ function updateChartLeft(val) {
 
 /**
  * Adjust right margin of chart
- * @param val
+ * @param val (Subplots right margin percent value)
  */
 function updateChartRight(val) {
     document.getElementById("chart-right-output").value = val + "%";
@@ -737,7 +739,7 @@ function updateChartRight(val) {
 
 /**
  * Adjust top margin of chart
- * @param val
+ * @param val (Subplots top margin percent value)
  */
 function updateChartTop(val) {
     document.getElementById("chart-top-output").value = val + "%";
@@ -760,7 +762,7 @@ function updateChartTop(val) {
 
 /**
  * Adjust the height of gene feature charts
- * @param val
+ * @param val (Subplots gene feature height percent value)
  */
 function updateGeneFeatureHeight(val) {
     document.getElementById("genefeature-height-output").value = val + "%";
