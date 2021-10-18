@@ -642,7 +642,9 @@ function updateCoverageChartOption(samples) {
 function selectDefaultSamples(updated_samples) {
     // Set default samples display
     $("#selectedsamples").select2();
-    $("#selectedsamples").val(updated_samples).trigger('change');
+    $("#selectedsamples").val(updated_samples);
+    $("#selectedsamples").trigger('change')
+    console.log($("#selectedsamples").select2("data").sort())
 }
 
 /**
@@ -652,18 +654,6 @@ $(document).ready(function () {
 
     $("#selectedsamples").select2({
         tags: true,
-    });
-
-    /**
-     * Jquery function update chart options when number of selected samples changes
-     */
-    $("#selectedsamples").on("change", function () {
-        var selectData = $("#selectedsamples").select2("data");
-        var updated_samples = [];
-        for (var [key, entries] of selectData.entries()) {
-            updated_samples.push(selectData[key].text);
-        }
-        updateCoverageChartOption(updated_samples);
     });
 
     /**
@@ -679,12 +669,24 @@ $(document).ready(function () {
     });
 
     /**
+     * Jquery function update chart options when number of selected samples changes
+     */
+    $("#selectedsamples").on("change", function () {
+        var selectData = $("#selectedsamples").select2("data");
+        var updated_samples = [];
+        for (var [key, entries] of selectData.entries()) {
+            updated_samples.push(selectData[key].text);
+        }
+        updateCoverageChartOption(updated_samples);
+    });
+
+    /**
      * Toggle dark mode, the entire chart/env will be re-rendered
      */
-    $("#toggledarkmode").change(function () {
+    $("#toggle-darkmode").change(function () {
         var render_env = "canvas";
-        if (document.getElementById("renderenv"))
-            render_env = document.getElementById("renderenv").value;
+        if (document.getElementById("render-env"))
+            render_env = document.getElementById("render-env").value;
         var initial_samples = _.slice(window.samples, 0, default_num_chart)
         var initial_depths = []
         var initial_variants = []
@@ -708,7 +710,7 @@ $(document).ready(function () {
     /**
      * Toggle to Amplicon Depth Label
      */
-    $("#toggleamplicondepthlabel").change(function () {
+    $("#toggle-amplicon-depthlabel").change(function () {
         var series_option = chart.getOption().series;
         if ($(this).prop("checked")) {
             _.forEach(series_option, function (element) {
@@ -729,7 +731,7 @@ $(document).ready(function () {
     /**
      * Toggle to show gene label or not
      */
-    $("#togglegenelabel").change(function () {
+    $("#toggle-genelabel").change(function () {
         var series_option = chart.getOption().series;
         if ($(this).prop("checked")) {
             invisible_gene_label = false
@@ -743,7 +745,7 @@ $(document).ready(function () {
     /**
      * Toggle tooltip for coverage chart, this action does not affect gene feature chart
      */
-    $("#toggletooltip").change(function () {
+    $("#toggle-tooltip").change(function () {
         if ($(this).prop("checked")) {
             chart.setOption({
                 tooltip: {showContent: true},
@@ -758,7 +760,7 @@ $(document).ready(function () {
     /**
      * Toggle slider zoom
      */
-    $("#toggleslider").change(function () {
+    $("#toggle-slider").change(function () {
         if ($(this).prop("checked")) {
             chart.setOption({
                 dataZoom: [
@@ -797,8 +799,8 @@ $(document).ready(function () {
  * Select svg or canvas as rendered environment, the entire chart/env will be re-rendered
  */
 function selectRenderEnv() {
-    var render_env = document.getElementById("renderenv").value;
-    var isChecked = document.getElementById("toggledarkmode").checked;
+    var render_env = document.getElementById("render-env").value;
+    var isChecked = document.getElementById("toggle-darkmode").checked;
     var initial_samples = _.slice(window.samples, 0, default_num_chart)
     var initial_depths = []
     var initial_variants = []
@@ -827,7 +829,7 @@ function selectRenderEnv() {
  * @param val
  */
 function updateChartHeight(val) {
-    document.getElementById("chartheightoutput").value = val + "%";
+    document.getElementById("chart-height-output").value = val + "%";
     var grid_option = chart.getOption().grid;
     for (var i = 0; i < grid_option.length; i++) {
         if (i < grid_option.length - 1)
@@ -849,7 +851,7 @@ function updateChartHeight(val) {
  * @param val
  */
 function updateChartLeft(val) {
-    document.getElementById("chartleftoutput").value = val + "%";
+    document.getElementById("chart-left-output").value = val + "%";
     var grid_option = chart.getOption().grid;
     _.forEach(grid_option, function (element) {
         element.left = val + "%";
@@ -862,7 +864,7 @@ function updateChartLeft(val) {
  * @param val
  */
 function updateChartRight(val) {
-    document.getElementById("chartrightoutput").value = val + "%";
+    document.getElementById("chart-right-output").value = val + "%";
     var grid_option = chart.getOption().grid;
     _.forEach(grid_option, function (element) {
         element.right = val + "%";
@@ -875,7 +877,7 @@ function updateChartRight(val) {
  * @param val
  */
 function updateChartTop(val) {
-    document.getElementById("charttopoutput").value = val + "%";
+    document.getElementById("chart-top-output").value = val + "%";
     var grid_option = chart.getOption().grid;
     for (var i = 0; i < grid_option.length; i++) {
         if (i === 0) {
@@ -898,7 +900,7 @@ function updateChartTop(val) {
  * @param val
  */
 function updateGeneFeatureHeight(val) {
-    document.getElementById("genefeatureheightoutput").value = val + "%";
+    document.getElementById("genefeature-height-output").value = val + "%";
     var grid_option = chart.getOption().grid;
     gene_features_grid_index = grid_option.length - 1;
     grid_option[gene_features_grid_index]["height"] = val + "%";
@@ -952,8 +954,8 @@ function setYMax() {
  * Set range of gene feature to zoom in
  */
 function setDataZoom() {
-    var start = document.getElementById("start_pos").value;
-    var end = document.getElementById("end_pos").value;
+    var start = document.getElementById("start-pos").value;
+    var end = document.getElementById("end-pos").value;
     chart.dispatchAction({
         type: "dataZoom",
         startValue: start,
@@ -965,8 +967,8 @@ function setDataZoom() {
  * Reset range of gene feature to default [1, ref_len]
  */
 function resetDataZoom() {
-    document.getElementById("start_pos").value = 1;
-    document.getElementById("end_pos").value = ref_len;
+    document.getElementById("start-pos").value = 1;
+    document.getElementById("end-pos").value = ref_len;
     chart.dispatchAction({
         type: "dataZoom",
         start: 0,
@@ -986,16 +988,16 @@ function updateControlMenu() {
     var right = _.replace(grid_option[0].right, "%", "");
     var top = _.replace(grid_option[0].top, "%", "");
     // Reset Chart Properties and Gene Features Menu
-    document.getElementById("chartheightinput").value = _.toInteger(height1);
-    document.getElementById("chartheightoutput").value = _.toInteger(height1) + "%";
-    document.getElementById("chartleftinput").value = _.toInteger(left);
-    document.getElementById("chartleftoutput").value = _.toInteger(left) + "%";
-    document.getElementById("chartrightinput").value = _.toInteger(right);
-    document.getElementById("chartrightoutput").value = _.toInteger(right) + "%";
-    document.getElementById("charttopinput").value = _.toInteger(top);
-    document.getElementById("charttopoutput").value = _.toInteger(top) + "%";
-    document.getElementById("genefeatureheightinput").value = _.toInteger(height2);
-    document.getElementById("genefeatureheightoutput").value = _.toInteger(height2) + "%";
+    document.getElementById("chart-height-input").value = _.toInteger(height1);
+    document.getElementById("chart-height-output").value = _.toInteger(height1) + "%";
+    document.getElementById("chart-left-input").value = _.toInteger(left);
+    document.getElementById("chart-left-output").value = _.toInteger(left) + "%";
+    document.getElementById("chart-right-input").value = _.toInteger(right);
+    document.getElementById("chart-right-output").value = _.toInteger(right) + "%";
+    document.getElementById("chart-top-input").value = _.toInteger(top);
+    document.getElementById("chart-top-output").value = _.toInteger(top) + "%";
+    document.getElementById("genefeature-height-input").value = _.toInteger(height2);
+    document.getElementById("genefeature-height-output").value = _.toInteger(height2) + "%";
     // Set Axis to Log scale
     document.getElementById("scale").value = "log"
     document.getElementById("ymax").value = 100000
@@ -1008,8 +1010,8 @@ function updateControlMenu() {
  */
 function chartDispatchDataZoomAction() {
     chart.on("click", function (params) {
-        document.getElementById("start_pos").value = params.value[1];
-        document.getElementById("end_pos").value = params.value[2];
+        document.getElementById("start-pos").value = params.value[1];
+        document.getElementById("end-pos").value = params.value[2];
         chart.dispatchAction({
             type: "dataZoom",
             startValue: params.value[1],
@@ -1018,8 +1020,8 @@ function chartDispatchDataZoomAction() {
     });
 
     chart.on("dblclick", function (params) {
-        document.getElementById("start_pos").value = 1;
-        document.getElementById("end_pos").value = ref_len;
+        document.getElementById("start-pos").value = 1;
+        document.getElementById("end-pos").value = ref_len;
         chart.dispatchAction({
             type: "dataZoom",
             start: 0,

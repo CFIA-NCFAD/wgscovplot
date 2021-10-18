@@ -59,36 +59,36 @@
             <div id="chartproperties" class="accordion-collapse collapse">
                 <div class="accordion-body">
                     <div>Renderer  
-                        <select id="renderenv" onchange="selectRenderEnv()" style="width: 40%">
+                        <select id="render-env" onchange="selectRenderEnv()" style="width: 40%">
                             <option value="svg" >svg</option>
                             <option value="canvas" selected>canvas</option>
                         </select>
                     </div>
                     <p></p>
                     <div class="form-check form-switch">
-                        <label class="form-check-label" for="toggledarkmode">Dark Mode</label>
-                        <input class="form-check-input" type="checkbox" id="toggledarkmode" unchecked>
+                        <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
+                        <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
                     </div>
                     <p></p>
                     <div>
                         <label class="form-label">Height</label> 
-                        <input type="range" id="chartheightinput" class="form-range" value="15" min="1" max="70" step="1" onchange="updateChartHeight(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="chartheightoutput">19<span>%</span></output>
+                        <input type="range" id="chart-height-input" class="form-range" value="15" min="1" max="70" step="1" onchange="updateChartHeight(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chart-height-output">19<span>%</span></output>
                     </div>
                     <div>
                         <label class="form-label">Left</label> 
-                        <input type="range" id="chartleftinput" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartLeft(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="chartleftoutput">5<span>%</span></output>
+                        <input type="range" id="chart-left-input" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartLeft(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chart-left-output">5<span>%</span></output>
                     </div>
                     <div>
                         <label class="form-label">Right</label> 
-                        <input type="range" id="chartrightinput" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartRight(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="chartrightoutput">5<span>%</span></output>
+                        <input type="range" id="chart-right-input" class="form-range" value="5" min="1" max="50" step="1" onchange="updateChartRight(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chart-right-output">5<span>%</span></output>
                     </div>
                     <div>
                         <label class="form-label">Top</label> 
-                        <input type="range" id="charttopinput" class="form-range" value="4" min="0" max="10" step="1" onchange="updateChartTop(this.value);">
-                        <output style="display: block; text-align:center;" type="text" id="charttopoutput">4<span>%</span></output>
+                        <input type="range" id="chart-top-input" class="form-range" value="4" min="0" max="10" step="1" onchange="updateChartTop(this.value);">
+                        <output style="display: block; text-align:center;" type="text" id="chart-top-output">4<span>%</span></output>
                     </div>
                 </div>
               </div>
@@ -102,13 +102,13 @@
                 <div id="genefeatures" class="accordion-collapse collapse">
                     <div class="accordion-body">
                         <div class="form-check form-switch">
-                            <label class="form-check-label" for="togglegenelabel">Show Gene Label</label>
-                            <input class="form-check-input" type="checkbox" id="togglegenelabel" checked>
+                            <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                            <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
                         </div>
                         <div>
                             <label class="form-label">Height</label> 
-                            <input type="range" id="genefeatureheightinput" class="form-range" value="15" min="1" max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
-                            <output style="display: block; text-align:center;" type="text" id="genefeatureheightoutput">15<span>%</span></output>
+                            <input type="range" id="genefeature-height-input" class="form-range" value="15" min="1" max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
+                            <output style="display: block; text-align:center;" type="text" id="genefeature-height-output">15<span>%</span></output>
                         </div>
                     </div>
                 </div>
@@ -147,8 +147,8 @@
                 <div id="tooltip" class="accordion-collapse collapse">
                     <div class="accordion-body">
                         <div class="form-check form-switch">
-                            <label class="form-check-label" for="toggletooltip">Show Tooltip</label>
-                            <input class="form-check-input" type="checkbox" id="toggletooltip" checked>
+                            <label class="form-check-label" for="toggle-tooltip">Show Tooltip</label>
+                            <input class="form-check-input" type="checkbox" id="toggle-tooltip" checked>
                         </div>
                     </div>
                 </div>
@@ -162,14 +162,14 @@
                 <div id="datazoom" class="accordion-collapse collapse">
                     <div class="accordion-body">
                         <div class="form-check form-switch">
-                            <label class="form-check-label" for="toggleslider">Slider</label>
-                            <input class="form-check-input" type="checkbox" id="toggleslider" checked>
+                            <label class="form-check-label" for="toggle-slider">Slider</label>
+                            <input class="form-check-input" type="checkbox" id="toggle-slider" checked>
                         </div>
                         <form id="dataZoom">
-                            <label for="start_pos">Start Pos</label><br>
-                            <input type="number" id="start_pos" value=1><br>
-                            <label for="start_pos">End Pos</label><br>
-                            <input type="number" id="end_pos" value={{ref_seq_length}}><br><br>
+                            <label for="start-pos">Start Pos</label><br>
+                            <input type="number" id="start-pos" value=1><br>
+                            <label for="end-pos">End Pos</label><br>
+                            <input type="number" id="end-pos" value={{ref_seq_length}}><br><br>
                             <input type="button" onclick="setDataZoom()" value="Set DataZoom">
                             <input type="button" onclick="resetDataZoom()" value="Reset DataZoom">
                         </form>
@@ -186,8 +186,8 @@
                 <div id="amplicon" class="accordion-collapse collapse">
                     <div class="accordion-body">
                         <div class="form-check form-switch">
-                            <label class="form-check-label" for="toggleamplicondepthlabel">Amplicon Depth</label>
-                            <input class="form-check-input" type="checkbox" id="toggleamplicondepthlabel" unchecked>
+                            <label class="form-check-label" for="toggle-amplicon-depthlabel">Amplicon Depth</label>
+                            <input class="form-check-input" type="checkbox" id="toggle-amplicon-depthlabel" unchecked>
                         </div>
                     </div>
                 </div>
