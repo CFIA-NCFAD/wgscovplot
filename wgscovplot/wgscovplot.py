@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import os
 import numpy as np
+import math
 from typing import Tuple, Dict, List, Any
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
@@ -113,6 +114,14 @@ def overlap(start1, end1, start2, end2):
     return start1 <= start2 <= end1 or start1 <= end2 <= end1
 
 
+def max_depth(depth_data: Dict[str, List]) -> int:
+    max_value = 0
+    for key, values in depth_data.items():
+        if max_value <= max(values):
+            max_value = max(values)
+    return math.ceil(max_value * 1.5)
+
+
 def get_gene_feature(annotation: Path) -> List[Dict[str, Any]]:
     gene_feature = []
     colour_cycle = cycle(color_pallete)
@@ -142,13 +151,27 @@ def get_gene_feature(annotation: Path) -> List[Dict[str, Any]]:
                         level = gene_feature_properties['plus_strand_level']
                         gene_feature.append(
                             dict(name=feature_name,
-                                 value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
+                                 value={
+                                     "idx": index,
+                                     "start": start_pos,
+                                     "end": end_pos,
+                                     "level":level,
+                                     "strand": strand,
+                                     "type": "gene_feature"
+                                 },
                                  itemStyle={"color": next(colour_cycle)})
                         )
                     else:
                         gene_feature.append(
                             dict(name=feature_name,
-                                 value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
+                                 value={
+                                     "idx": index,
+                                     "start": start_pos,
+                                     "end": end_pos,
+                                     "level": level,
+                                     "strand": strand,
+                                     "type": "gene_feature"
+                                 },
                                  itemStyle={"color": next(colour_cycle)})
                         )
 
@@ -156,7 +179,14 @@ def get_gene_feature(annotation: Path) -> List[Dict[str, Any]]:
                     level = gene_feature_properties['plus_strand_level']
                     gene_feature.append(
                         dict(name=feature_name,
-                             value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
+                             value={
+                                 "idx": index,
+                                 "start": start_pos,
+                                 "end": end_pos,
+                                 "level": level,
+                                 "strand": strand,
+                                 "type": "gene_feature"
+                             },
                              itemStyle={"color": next(colour_cycle)})
                     )
                 plus_strains_list = [start_pos, end_pos, level]
@@ -169,20 +199,41 @@ def get_gene_feature(annotation: Path) -> List[Dict[str, Any]]:
                         level = gene_feature_properties['minus_strand_level']
                         gene_feature.append(
                             dict(name=feature_name,
-                                 value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
+                                 value={
+                                     "idx": index,
+                                     "start": start_pos,
+                                     "end": end_pos,
+                                     "level": level,
+                                     "strand": strand,
+                                     "type": "gene_feature"
+                                 },
                                  itemStyle={"color": next(colour_cycle)})
                         )
                     else:
                         gene_feature.append(
                             dict(name=feature_name,
-                                 value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
+                                 value={
+                                     "idx": index,
+                                     "start": start_pos,
+                                     "end": end_pos,
+                                     "level": level,
+                                     "strand": strand,
+                                     "type": "gene_feature"
+                                 },
                                  itemStyle={"color": next(colour_cycle)})
                         )
                 else:
                     level = gene_feature_properties['minus_strand_level']
                     gene_feature.append(
                         dict(name=feature_name,
-                             value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
+                             value={
+                                 "idx": index,
+                                 "start": start_pos,
+                                 "end": end_pos,
+                                 "level": level,
+                                 "strand": strand,
+                                 "type": "gene_feature"
+                             },
                              itemStyle={"color": next(colour_cycle)})
                     )
                 minus_strains_list = [start_pos, end_pos, level]
@@ -225,7 +276,8 @@ def write_html_coverage_plot(samples_name: List,
                                         ref_seq=ref_seq,
                                         ref_seq_length=len(ref_seq),
                                         about_html=about_html,
-                                        **scripts_css))
+                                        max_depth=max_depth(depth_data),
+                                        ** scripts_css))
 
 
 def get_depth_data(df_samples: pd.DataFrame, ref_len: int, amplicon: bool = False) -> Dict[str, List]:

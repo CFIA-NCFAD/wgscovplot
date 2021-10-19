@@ -1,12 +1,12 @@
 /**
  * The function returns the points of gene features shape
- * @param x
- * @param y
- * @param width
- * @param height
- * @param strand
- * @param feature
- * @returns {(*[]|(*)[]|(*|number)[]|(*|number)[])[]|null|((*|number)[]|(*)[]|(*|number)[])[]|(*[]|(number|*)[]|(*|number)[]|number[]|(*|number)[])[]}
+ * @param x - x-axis coordinate
+ * @param y  - x-axis coordinate
+ * @param width - width of shape
+ * @param height - height of shape
+ * @param strand - strand of feature
+ * @param feature - gene feature or amplicon feature
+ * @returns { Coordinate of 5 points for gene feature or 4 points for amplicon feature }
  */
 function renderPoints(x, y, width, height, strand, feature) {
     if (feature === 'gene_feature') {
@@ -42,26 +42,28 @@ function renderPoints(x, y, width, height, strand, feature) {
 
 /**
  * The function renders the gene features shape based on below information of gene_feature
- * @param params
- * @param api
- * @returns {shape: {points}, textConfig: {distance: number, rotation: number, position: string, local: boolean}, style: *, textContent: {invisible: boolean, style: {fontSize: number, text, fill: ((function(*): (*|string))|*), fontStyle: string, fontWeight: string}, type: string}, type: string}|{shape: {points}, textConfig: {}, style: *, textContent: {}, type: string}
+ * @param params - Echarts arg
+ * @param api - Echarts arg
+ * @returns { shape of gene feature or amplicon feature based on points returned from renderPoints function }
  */
 function renderGeneFeatures(params, api) {
     var points, shape, rotate_angle;
     var start, end, height, width, x, y;
-    var categoryIndex = api.value(0);
-    start = api.coord([api.value(1), categoryIndex]);
+    //var categoryIndex = api.value(0);
+    var categoryIndex = params.dataIndex;
+    var feature = gene_feature[categoryIndex]
+    start = api.coord([feature.value.start, categoryIndex]);
     if (categoryIndex === 0) {
         y_start = start[1];
     }
-    end = api.coord([api.value(2), categoryIndex]);
+    end = api.coord([feature.value.end, categoryIndex]);
     height = gene_feature_properties["rec_items_height"];
     width = end[0] - start[0];
     x = start[0];
-    y = y_start - height / 2 - api.value(3);
-    if (api.value(5) === 'gene_feature') {
-        points = renderPoints(x, y, width, height, api.value(4), 'gene_feature');
-        if (api.value(4) === 1) { // Plus Strand
+    y = y_start - height / 2 - feature.value.level;
+    if (feature.value.type === 'gene_feature') {
+        points = renderPoints(x, y, width, height, feature.value.strand, 'gene_feature');
+        if (feature.value.strand === 1) { // Plus Strand
             rotate_angle = 0.7;
         } else { // Minus Strand
             rotate_angle = -0.7;
@@ -96,8 +98,8 @@ function renderGeneFeatures(params, api) {
                 local: true,
             },
         };
-    } else if (api.value(5) === 'amplicon_feature') {
-        points = renderPoints(x, y, width, height, api.value(4), 'amplicon_feature');
+    } else if (feature.value.type === 'amplicon_feature') {
+        points = renderPoints(x, y, width, height, feature.value.strand, 'amplicon_feature');
         shape = echarts.graphic.clipPointsByRect(points, {
             x: params.coordSys.x,
             y: params.coordSys.y,
@@ -122,7 +124,7 @@ function renderGeneFeatures(params, api) {
 /**
  * The function returns options for gene features charts
  * @param index - gene feature is displayed in the last index of grid
- * @returns []
+ * @returns {*[]}
  */
 function getGeneFeatureSeries(index) {
     var feature_series = [];
@@ -132,7 +134,7 @@ function getGeneFeatureSeries(index) {
         yAxisIndex: index,
         renderItem: renderGeneFeatures,
         labelLayout: {
-            hideOverlap: true,
+            hideOverlap: false,
         },
         data: gene_feature,
         tooltip: {
@@ -152,10 +154,10 @@ function getGeneFeatureSeries(index) {
                 rows = [
                     [
                         "Range",
-                        params.value[1].toLocaleString() + " - " + params.value[2].toLocaleString(),
+                        params.value.start.toLocaleString() + " - " + params.value.end.toLocaleString(),
                     ],
-                    ["Length", (params.value[2] - params.value[1] + 1).toLocaleString()],
-                    ["Strand", params.value[4].toLocaleString()],
+                    ["Length", (params.value.end - params.value.start + 1).toLocaleString()],
+                    ["Strand", params.value.strand],
                 ];
                 output += toTableHtml([params.name, ""], rows, "table small");
                 return output;
@@ -492,7 +494,7 @@ function getCoverageChartOption(samples, depths, variants) {
         title: {},
         dataset: getDatasets(depths, positions),
         xAxis: getXAxes(samples, ref_len),
-        yAxis: getYAxes(samples, "log", 100000), // log scale with ymax = 100,000 is set by default
+        yAxis: getYAxes(samples, "log", max_depth),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples),
@@ -587,7 +589,6 @@ $(document).ready(function () {
     /**
      * Jquery function to make the list of samples is not forced in alphabetical order
      */
-
     $("#selectedsamples").on("select2:select", function (evt) {
         var element = evt.params.data.element;
         var $element = $(element);
@@ -810,24 +811,22 @@ function setScale() {
         _.forEach(yaxis_option, function (element) {
             if (element.gridIndex < yaxis_option.length - 1) {
                 element.type = scale_type;
-                // min, max = 0 , 40000 are set by default with linear scale, user change ymax via control menu
                 element.min = 0;
-                element.max = 40000;
+                element.max = max_depth;
             }
         });
         chart.setOption({yAxis: yaxis_option});
-        document.getElementById("ymax").value = 40000; // update control menu
+        document.getElementById("ymax").value = max_depth; // update control menu
     } else {
         _.forEach(yaxis_option, function (element) {
             if (element.gridIndex < yaxis_option.length - 1) {
                 element.type = scale_type;
-                // min, max = 1 , 10000 are set by default with log scale, user change ymax via control menu
                 element.min = 1;
-                element.max = 100000;
+                element.max = max_depth;
             }
         });
         chart.setOption({yAxis: yaxis_option});
-        document.getElementById("ymax").value = 100000; // update control menu
+        document.getElementById("ymax").value = max_depth; // update control menu
     }
 }
 
@@ -895,7 +894,7 @@ function updateControlMenu() {
     document.getElementById("genefeature-height-output").value = _.toInteger(height2) + "%";
     // Set Axis to Log scale
     document.getElementById("scale").value = "log"
-    document.getElementById("ymax").value = 100000
+    document.getElementById("ymax").value = max_depth
     // Reset Data Zoom
     resetDataZoom()
 }
@@ -906,12 +905,12 @@ function updateControlMenu() {
  */
 function chartDispatchDataZoomAction() {
     chart.on("click", function (params) {
-        document.getElementById("start-pos").value = params.value[1];
-        document.getElementById("end-pos").value = params.value[2];
+        document.getElementById("start-pos").value = params.value.start;
+        document.getElementById("end-pos").value = params.value.end;
         chart.dispatchAction({
             type: "dataZoom",
-            startValue: params.value[1],
-            endValue: params.value[2],
+            startValue: params.value.start,
+            endValue: params.value.end,
         });
     });
 

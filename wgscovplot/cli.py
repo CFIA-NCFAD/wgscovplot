@@ -88,17 +88,31 @@ def main(
             if index % 2:
                 gene_feature.append(
                     dict(name=amplicon_name,
-                         value=[gene_feature_len + index - 1, region[0], region[1], 95, 1, 'amplicon_feature'],
+                         value={
+                             "idx": gene_feature_len + index - 1,
+                             "start": region[0],
+                             "end": region[1],
+                             "level": 95,
+                             "strand": 1,
+                             "type": "amplicon_feature"
+                         },
                          itemStyle={"color": 'violet'})
                 )
             else:
                 gene_feature.append(
                     dict(name=amplicon_name,
-                         value=[gene_feature_len + index - 1, region[0], region[1], 80, 1, 'amplicon_feature'],
+                         value={
+                             "idx": gene_feature_len + index - 1,
+                             "start": region[0],
+                             "end": region[1],
+                             "level": 80,
+                             "strand": 1,
+                             "type": "amplicon_feature"
+                         },
                          itemStyle={"color": 'skyblue'})
                 )
     else:
-        '''
+
         df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
         df_samples = df_samples.fillna(0)
         # Get list of samples name
@@ -115,6 +129,7 @@ def main(
         variant_data={}
         coverage_stat=[]
         amplicon_data = {}
+        '''
 
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent

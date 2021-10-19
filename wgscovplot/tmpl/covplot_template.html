@@ -10,34 +10,11 @@
     <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
-    {% block style %}
-        {% include "styles/styles.css" %}
-    {% endblock %}
 </head>
 <body>
     {% block content%}
         {% include "control_menu_design.html" %}
     {% endblock %}
-    <script>
-        (function() {
-            containers = document.getElementsByClassName("chart-container");
-            if(containers.length > 0) {
-                containers[0].style.display = "block";
-            }
-        })()
-        function showChart(evt, chartID) {
-            let containers = document.getElementsByClassName("chart-container");
-            for (let i = 0; i < containers.length; i++) {
-                    containers[i].style.display = "none";
-            }
-            let nav_links =document.getElementsByClassName("nav-link");
-            for (let i = 0; i < nav_links.length; i++) {
-                nav_links[i].className = "nav-link";
-            }
-            document.getElementById(chartID).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-    </script>
 
     <script type="text/javascript">
         {% include "js/wgscovplot.js" %}
@@ -120,6 +97,12 @@
         var y_start;
 
         const default_num_chart = 3;
+
+        /**
+         * The max value is set for y-Axis
+         * @type {number}
+         */
+        var max_depth = {{ max_depth }}
 
         /**
          * An array of positions of reference sequence which represent in X-Axis
