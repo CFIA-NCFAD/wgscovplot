@@ -1,7 +1,12 @@
 /**
  * The function returns the points of gene features shape
- * @param x, y, width, height, strand, feature
- * @returns ((*|number)[]|(*)[]|(*|number)[])[]|(*[]|(number|*)[]|(*|number)[]|number[]|(*|number)[])[]
+ * @param x
+ * @param y
+ * @param width
+ * @param height
+ * @param strand
+ * @param feature
+ * @returns {(*[]|(*)[]|(*|number)[]|(*|number)[])[]|null|((*|number)[]|(*)[]|(*|number)[])[]|(*[]|(number|*)[]|(*|number)[]|number[]|(*|number)[])[]}
  */
 function renderPoints(x, y, width, height, strand, feature) {
     if (feature === 'gene_feature') {
@@ -34,10 +39,12 @@ function renderPoints(x, y, width, height, strand, feature) {
         return null
     }
 }
+
 /**
  * The function renders the gene features shape based on below information of gene_feature
- * @param params, api
- * @returns Shape of gene features {shape: {points}, textConfig: {distance: number, rotation: number, position: string, local: boolean}, style, textContent: {invisible: boolean, style: {fontSize: number, text, fill: ((function(*): (*|string))|*), fontStyle: string, fontWeight: string}, type: string}, type: string}
+ * @param params
+ * @param api
+ * @returns {shape: {points}, textConfig: {distance: number, rotation: number, position: string, local: boolean}, style: *, textContent: {invisible: boolean, style: {fontSize: number, text, fill: ((function(*): (*|string))|*), fontStyle: string, fontWeight: string}, type: string}, type: string}|{shape: {points}, textConfig: {}, style: *, textContent: {}, type: string}
  */
 function renderGeneFeatures(params, api) {
     var points, shape, rotate_angle;
@@ -107,11 +114,14 @@ function renderGeneFeatures(params, api) {
             textConfig: {},
         };
     }
+    else {
+        return null
+    }
 }
 
 /**
  * The function returns options for gene features charts
- * @param index (the last index grid index array)
+ * @param index - gene feature is displayed in the last index of grid
  * @returns []
  */
 function getGeneFeatureSeries(index) {
@@ -122,7 +132,7 @@ function getGeneFeatureSeries(index) {
         yAxisIndex: index,
         renderItem: renderGeneFeatures,
         labelLayout: {
-            hideOverlap: false,
+            hideOverlap: true,
         },
         data: gene_feature,
         tooltip: {
@@ -157,8 +167,9 @@ function getGeneFeatureSeries(index) {
 
 /**
  * The functions returns options for X axis
- * @param samples (the list samples name), ref_len (the length of reference sequence)
- * @returns []
+ * @param samples - the list samples name
+ * @param ref_len -the length of reference sequence
+ * @returns {*[]}
  */
 function getXAxes(samples, ref_len) {
     var axes = [];
@@ -187,8 +198,10 @@ function getXAxes(samples, ref_len) {
 
 /**
  * The functions returns options for Y axis
- * @param samples (the list of samples name), scaletype (scale for Y Axis: either linear or log scale), ymax
- * @returns []
+ * @param samples - the list of samples name
+ * @param scaletype - scale for Y Axis: either linear or log scale
+ * @param ymax - max value of y Axis
+ * @returns {*[]}
  */
 function getYAxes(samples, scaletype, ymax) {
     var axes = [];
@@ -219,8 +232,9 @@ function getYAxes(samples, scaletype, ymax) {
 
 /**
  * The function returns dataset information
- * @param depths (the dict of depth data), positions (an array of genome positions which represent in X Axis)
- * @returns []
+ * @param depths - the dict of depth data
+ * @param positions - an array of genome positions which represent in X Axis
+ * @returns {*[]}
  */
 function getDatasets(depths, positions) {
     var datasets = [];
@@ -241,7 +255,7 @@ function getDatasets(depths, positions) {
 
 /**
  * The function returns options for depth coverage charts
- * @param samples (the list of samples name)
+ * @param samples - the list of samples name
  * @returns []
  */
 function getDepthSeries(samples) {
@@ -272,7 +286,7 @@ function getDepthSeries(samples) {
 
 /**
  * The function returns options for  amplicon depth coverage bars
- * @param samples (the list of samples name)
+ * @param samples - the list of samples name
  * @returns []
  */
 function getAmpliconDepthSeries(samples) {
@@ -326,7 +340,8 @@ function getAmpliconDepthSeries(samples) {
 
 /**
  * The function returns options for variant charts
- * @param variants (the dict of variants data), depths (the dict of depths data)
+ * @param variants - the dict of variants data
+ * @param depths - the dict of depths data
  * @returns {*[]}
  */
 function getVariantsSeries(variants, depths) {
@@ -357,7 +372,7 @@ function getVariantsSeries(variants, depths) {
 
 /**
  *  The function defines grid for whole charts
- * @param samples (the list of samples name)
+ * @param samples - the list of samples name
  * @returns []
  */
 function getGrids(samples) {
@@ -398,8 +413,10 @@ function getGrids(samples) {
 
 /**
  * The function defines options for tooltips
- * @param samples (the list of sample names), depths (the dict of depths data), variants (the dict of variants data)
- * @returns [{renderMode: string, formatter: ((function(*): (string))|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}]
+ * @param samples - the list of sample names
+ * @param depths - the dict of depths data
+ * @param variants - the dict of variants data
+ * @returns {[{renderMode: string, formatter: ((function(*): (string))|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}]}
  */
 function getTooltips(samples, depths, variants) {
     return [
@@ -464,8 +481,10 @@ function getTooltips(samples, depths, variants) {
 
 /**
  * The function builds all options for coverage chart
- * param samples (the list of sample names), depths (the dict of depths data), variants (the dict of variants data)
- * @returns {yAxis: [], xAxis: [], series: *[], grid: [], tooltip: {renderMode: string, formatter: ((function(*): string)|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}[], toolbox: {feature: {saveAsImage: {name: string}, restore: {}, dataView: {readOnly: boolean}}, show: string}, dataZoom: [{filterMode: string, xAxisIndex: number[], type: string, zoomLock: boolean}, {filterMode: string, xAxisIndex: number[], show: boolean, type: string, zoomLock: boolean}], title: {}, dataset: []}
+ * @param samples - the list of sample names
+ * @param depths - the dict of depths data
+ * @param variants - the dict of variants data
+ * @returns {yAxis: *[], xAxis: *[], series: *[], grid: [], tooltip: {renderMode: string, formatter: ((function(*): string)|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}[], toolbox: {feature: {saveAsImage: {name: string}, restore: {}, dataView: {readOnly: boolean}}, show: string}, dataZoom: [{filterMode: string, xAxisIndex: number[], type: string, zoomLock: boolean}, {filterMode: string, xAxisIndex: number[], show: boolean, type: string, zoomLock: boolean}], title: {}, dataset: *[]}
  */
 function getCoverageChartOption(samples, depths, variants) {
     grid_length = samples.length;
@@ -473,7 +492,7 @@ function getCoverageChartOption(samples, depths, variants) {
         title: {},
         dataset: getDatasets(depths, positions),
         xAxis: getXAxes(samples, ref_len),
-        yAxis: getYAxes(samples, "log", 100000),
+        yAxis: getYAxes(samples, "log", 100000), // log scale with ymax = 100,000 is set by default
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples),
@@ -517,8 +536,8 @@ function getCoverageChartOption(samples, depths, variants) {
 
 /**
  * The function updates options for coverage charts.
- * Whenever the selected samples changed, the whole chart will be re-rendered
- * @param samples (the list samples name)
+ * Whenever the selected samples changed, the whole chart will be re-rendered but not dispose the chart
+ * @param samples -the list samples name
  */
 function updateCoverageChartOption(samples) {
     var depths = [];
@@ -527,19 +546,33 @@ function updateCoverageChartOption(samples) {
         depths.push(window.depths[sample]);
         variants.push(window.variants[sample]);
     })
+    // The current chart is not disposed so norMerge must be set true
     chart.setOption(option = getCoverageChartOption(samples, depths, variants), notMerge = true);
     updateControlMenu();
 }
 
 /**
- * The function returns the list of first 'default_num_chart = 3' samples when the first first initialized
- * @param samples (the list samples name)
+ * The function returns the list of first 'default_num_chart = 3' samples when the chart is initialized
+ * @param samples - the list samples name
  */
 function selectDefaultSamples(updated_samples) {
     // Set default samples display
     $("#selectedsamples").select2();
     $("#selectedsamples").val(updated_samples);
     $("#selectedsamples").trigger('change')
+}
+
+/**
+ * The function to get the current samples of multiple select of select2
+ * @returns {*[]}
+ */
+function selectCurrentSamples() {
+    var selectData = $("#selectedsamples").select2("data");
+    var current_samples = [];
+    for (var [key, entries] of selectData.entries()) {
+        current_samples.push(selectData[key].text);
+    }
+    return current_samples
 }
 
 /**
@@ -567,28 +600,25 @@ $(document).ready(function () {
      * Jquery function update chart options when number of selected samples changes
      */
     $("#selectedsamples").on("change", function () {
-        var selectData = $("#selectedsamples").select2("data");
-        var updated_samples = [];
-        for (var [key, entries] of selectData.entries()) {
-            updated_samples.push(selectData[key].text);
-        }
-        updateCoverageChartOption(updated_samples);
+        updateCoverageChartOption(selectCurrentSamples());
     });
 
     /**
-     * Toggle dark mode, the entire chart/env will be re-rendered
+     * Toggle dark mode, the entire chart will be disposed and re-initialized
+     * And the current selected samples of select2 will re-rendered
      */
     $("#toggle-darkmode").change(function () {
         var render_env = "canvas";
         if (document.getElementById("render-env"))
             render_env = document.getElementById("render-env").value;
-        var initial_samples = _.slice(window.samples, 0, default_num_chart)
-        var initial_depths = []
-        var initial_variants = []
-        initial_samples.forEach(sample => {
-            initial_depths.push(window.depths[sample]);
-            initial_variants.push(window.variants[sample]);
+        var current_samples = selectCurrentSamples();
+        var current_depths = []
+        var current_variants = []
+        current_samples.forEach(sample => {
+            current_depths.push(window.depths[sample]);
+            current_variants.push(window.variants[sample]);
         })
+
         echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         if ($(this).prop("checked")) {
@@ -596,8 +626,7 @@ $(document).ready(function () {
         } else {
             chart = echarts.init($chart, "white", {renderer: render_env});
         }
-        selectDefaultSamples(initial_samples);
-        chart.setOption(option = getCoverageChartOption(initial_samples, initial_depths, initial_variants));
+        chart.setOption(option = getCoverageChartOption(current_samples, current_depths, current_variants));
         chartDispatchDataZoomAction();
         updateControlMenu();
     });
@@ -660,17 +689,18 @@ $(document).ready(function () {
 });
 
 /**
- * Select svg or canvas as rendered environment, the entire chart/env will be re-rendered
+ * Select svg or canvas as rendered environment, the entire chart will be disposed and re-initialized
+ * And the current selected samples of select2 will re-rendered
  */
 function selectRenderEnv() {
     var render_env = document.getElementById("render-env").value;
     var isChecked = document.getElementById("toggle-darkmode").checked;
-    var initial_samples = _.slice(window.samples, 0, default_num_chart)
-    var initial_depths = []
-    var initial_variants = []
-    initial_samples.forEach(sample => {
-        initial_depths.push(window.depths[sample]);
-        initial_variants.push(window.variants[sample]);
+    var current_samples = selectCurrentSamples();
+    var current_depths = []
+    var current_variants = []
+    current_samples.forEach(sample => {
+        current_depths.push(window.depths[sample]);
+        current_variants.push(window.variants[sample]);
     })
     var mode = "white";
     if (isChecked) mode = "dark";
@@ -682,15 +712,14 @@ function selectRenderEnv() {
     } else {
         chart = echarts.init($chart, mode, {renderer: "svg"});
     }
-    selectDefaultSamples(initial_samples);
-    chart.setOption(option = getCoverageChartOption(initial_samples, initial_depths, initial_variants));
+    chart.setOption(option = getCoverageChartOption(current_samples, current_depths, current_variants));
     chartDispatchDataZoomAction();
     updateControlMenu();
 }
 
 /**
  * Adjust chart height
- * @param val (Subplots height percent value)
+ * @param val - Subplots height percent value
  */
 function updateChartHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
@@ -712,7 +741,7 @@ function updateChartHeight(val) {
 
 /**
  * Adjust left margin of chart
- * @param val (Subplots left margin percent value)
+ * @param val - Subplots left margin percent value
  */
 function updateChartLeft(val) {
     document.getElementById("chart-left-output").value = val + "%";
@@ -725,7 +754,7 @@ function updateChartLeft(val) {
 
 /**
  * Adjust right margin of chart
- * @param val (Subplots right margin percent value)
+ * @param val - Subplots right margin percent value
  */
 function updateChartRight(val) {
     document.getElementById("chart-right-output").value = val + "%";
@@ -738,7 +767,7 @@ function updateChartRight(val) {
 
 /**
  * Adjust top margin of chart
- * @param val (Subplots top margin percent value)
+ * @param val - Subplots top margin percent value
  */
 function updateChartTop(val) {
     document.getElementById("chart-top-output").value = val + "%";
@@ -761,7 +790,7 @@ function updateChartTop(val) {
 
 /**
  * Adjust the height of gene feature charts
- * @param val (Subplots gene feature height percent value)
+ * @param val - Subplots gene feature height percent value
  */
 function updateGeneFeatureHeight(val) {
     document.getElementById("genefeature-height-output").value = val + "%";
@@ -781,22 +810,24 @@ function setScale() {
         _.forEach(yaxis_option, function (element) {
             if (element.gridIndex < yaxis_option.length - 1) {
                 element.type = scale_type;
+                // min, max = 0 , 40000 are set by default with linear scale, user change ymax via control menu
                 element.min = 0;
                 element.max = 40000;
             }
         });
         chart.setOption({yAxis: yaxis_option});
-        document.getElementById("ymax").value = 40000;
+        document.getElementById("ymax").value = 40000; // update control menu
     } else {
         _.forEach(yaxis_option, function (element) {
             if (element.gridIndex < yaxis_option.length - 1) {
                 element.type = scale_type;
+                // min, max = 1 , 10000 are set by default with log scale, user change ymax via control menu
                 element.min = 1;
                 element.max = 100000;
             }
         });
         chart.setOption({yAxis: yaxis_option});
-        document.getElementById("ymax").value = 100000;
+        document.getElementById("ymax").value = 100000; // update control menu
     }
 }
 
@@ -870,7 +901,8 @@ function updateControlMenu() {
 }
 
 /**
- * Event click, dbclick then dispatch Action to DataZoom
+ * Dispacth click, dbclick event to DataZoom
+ * The function will be called when the chart is intialized, toggle dark mode and change render env
  */
 function chartDispatchDataZoomAction() {
     chart.on("click", function (params) {
@@ -896,7 +928,9 @@ function chartDispatchDataZoomAction() {
 
 /**
  * Write tooltip information to HTML table
- * @param headers, rows, classes
+ * @param headers - Header of table
+ * @param rows - Rows of table
+ * @param classes - Classes defined for table
  * @returns {string}
  */
 function toTableHtml(headers, rows, classes) {
@@ -930,7 +964,10 @@ function toTableHtml(headers, rows, classes) {
 
 /**
  * Calculate mean coverage for specific range
- * @param depths, start, end, gridIndex
+ * @param depths - depth array
+ * @param start - start position
+ * @param end - end position
+ * @param gridIndex - grid index of sample
  * @returns {number}
  */
 function meanCoverage(depths, start, end, gridIndex) {
@@ -940,7 +977,11 @@ function meanCoverage(depths, start, end, gridIndex) {
 
 /**
  *  Calculate genome coverage depth which is >= low (10)
- * @param depths, start, end, gridIndex, low
+ * @param depths - depth array
+ * @param start - start position
+ * @param end - end position
+ * @param gridIndex - grid index of sample
+ * @param low
  * @returns {number}
  */
 function genomeCoverage(depths, start, end, gridIndex, low) {
@@ -967,7 +1008,10 @@ function median(arr) {
 
 /**
  * Calculate median coverage for specific range
- * @param depths, start, end, gridIndex
+ * @param depths - depth array
+ * @param start - start pos
+ * @param end - end pos
+ * @param gridIndex - grid index of sample
  * @returns {number}
  */
 function medianCoverage(depths, start, end, gridIndex) {

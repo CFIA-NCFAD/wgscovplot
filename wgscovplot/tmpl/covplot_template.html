@@ -113,7 +113,6 @@
          */
         var grid_length;
 
-
         /**
          * A variable is used for initial y_start for rendering gene features
          * @type {number}
@@ -164,6 +163,7 @@
             var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
             window.chart = chart;
             updateChartDivSize();
+            // First 3 samples of samples list are displayed when the chart first initialized or the HTLM is refreshed
             var initial_samples = _.slice(window.samples, 0, default_num_chart)
             var initial_depths = []
             var initial_variants = []

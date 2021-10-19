@@ -71,10 +71,8 @@ def main(
                                             names=['amplicon_region_file', 'amplicon_perbase_file', 'vcf_file'],
                                             index_col=0, header=None)
         df_samples_amplicon = df_samples_amplicon.fillna(0)
-
         # Get list of samples name
         samples_name = df_samples_amplicon.index.to_list()
-
         # Get depths and variant data
         depth_data = get_depth_data(df_samples_amplicon, len(ref_seq), amplicon)
         variant_data = get_variant_data(df_samples_amplicon)
@@ -100,18 +98,15 @@ def main(
                          itemStyle={"color": 'skyblue'})
                 )
     else:
-
+        '''
         df_samples = pd.read_table(samples_data, names=['coverage_depth_file', 'vcf_file'], index_col=0, header=None)
         df_samples = df_samples.fillna(0)
-
         # Get list of samples name
         samples_name = df_samples.index.to_list()
-
         # Get depths and variant data
         depth_data = get_depth_data(df_samples, len(ref_seq), amplicon)
         variant_data = get_variant_data(df_samples)
         amplicon_data = {}
-
         # Get Coverage Statistics
         coverage_stat = get_coverage_stat(depth_data, len(ref_seq), 10)
         '''
@@ -120,9 +115,6 @@ def main(
         variant_data={}
         coverage_stat=[]
         amplicon_data = {}
-        '''
-
-
 
     # Parse README to HTML save to them About Tab
     dirpath = Path(__file__).parent
