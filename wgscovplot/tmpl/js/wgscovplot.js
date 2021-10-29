@@ -1,12 +1,12 @@
 /**
- * The function returns the points of gene features shape
- * @param x - x-axis coordinate
- * @param y  - x-axis coordinate
- * @param width - width of shape
- * @param height - height of shape
- * @param strand - strand of feature
- * @param feature - gene feature or amplicon feature
- * @returns { Coordinate of 5 points for gene feature or 4 points for amplicon feature }
+ * Define the points of gene/amplicon features shape
+ * @param {number} x - x-axis coordinate
+ * @param {number} y  - x-axis coordinate
+ * @param {number} width - width of shape
+ * @param {number} height - height of shape
+ * @param {number} strand - strand of feature
+ * @param {string} feature - gene feature or amplicon feature
+ * @returns {Array<Array<number>>} - Coordinate of 5 points for gene feature or 4 points for amplicon feature
  */
 function renderPoints(x, y, width, height, strand, feature) {
     if (feature === 'gene_feature') {
@@ -17,7 +17,7 @@ function renderPoints(x, y, width, height, strand, feature) {
                 [x + width, y - height / 2],
                 [x + width - width / 100, y - height],
                 [x, y - height],
-            ]
+            ];
         } else {
             return [
                 [x, y - height / 2],
@@ -25,7 +25,7 @@ function renderPoints(x, y, width, height, strand, feature) {
                 [x + width, y],
                 [x + width, y - height],
                 [x + width / 100, y - height],
-            ]
+            ];
         }
     } else if (feature === 'amplicon_feature') {
         return [
@@ -33,41 +33,35 @@ function renderPoints(x, y, width, height, strand, feature) {
             [x + width, y],
             [x + width, y - height],
             [x, y - height],
-        ]
+        ];
     }
     else {
-        return null
+        return null;
     }
 }
 
 /**
- * The function renders the gene features shape based on below information of gene_feature
+ * Renders the gene/amplicon features shape based on below information of geneFeatureData and ampliconData
  * @param params - Echarts arg
  * @param api - Echarts arg
- * @returns { shape of gene feature or amplicon feature based on points returned from renderPoints function }
  */
 function renderGeneFeatures(params, api) {
-    var points, shape, rotate_angle;
+    var points, shape, rotateAngle;
     var start, end, height, width, x, y;
-    //var categoryIndex = api.value(0);
     var categoryIndex = params.dataIndex;
-    var feature = gene_feature[categoryIndex]
+    var feature = geneFeatureData[categoryIndex];
     start = api.coord([feature.value.start, categoryIndex]);
     if (categoryIndex === 0) {
-        y_start = start[1];
+        yStart = start[1];
     }
     end = api.coord([feature.value.end, categoryIndex]);
-    height = gene_feature_properties["rec_items_height"];
+    height = geneFeatureProperties["rec_items_height"];
     width = end[0] - start[0];
     x = start[0];
-    y = y_start - height / 2 - feature.value.level;
+    y = yStart - height / 2 - feature.value.level;
+    points = renderPoints(x, y, width, height, feature.value.strand, feature.value.type);
     if (feature.value.type === 'gene_feature') {
-        points = renderPoints(x, y, width, height, feature.value.strand, 'gene_feature');
-        if (feature.value.strand === 1) { // Plus Strand
-            rotate_angle = 0.7;
-        } else { // Minus Strand
-            rotate_angle = -0.7;
-        }
+        rotateAngle = (feature.value.strand === 1) ? 0.7 : -0.7;
         shape = echarts.graphic.clipPointsByRect(points, {
             x: params.coordSys.x,
             y: params.coordSys.y,
@@ -82,10 +76,10 @@ function renderGeneFeatures(params, api) {
             style: api.style({}),
             textContent: {
                 type: "text",
-                invisible: invisible_gene_label,
+                invisible: !showGeneLabel,
                 style: {
-                    text: gene_feature[categoryIndex].name,
-                    fill: gene_feature[categoryIndex].itemStyle.color,
+                    text: geneFeatureData[categoryIndex].name,
+                    fill: geneFeatureData[categoryIndex].itemStyle.color,
                     fontStyle: "normal",
                     fontSize: 10,
                     fontWeight: "bolder",
@@ -94,12 +88,11 @@ function renderGeneFeatures(params, api) {
             textConfig: {
                 position: "top",
                 distance: 20,
-                rotation: rotate_angle,
+                rotation: rotateAngle,
                 local: true,
             },
         };
     } else if (feature.value.type === 'amplicon_feature') {
-        points = renderPoints(x, y, width, height, feature.value.strand, 'amplicon_feature');
         shape = echarts.graphic.clipPointsByRect(points, {
             x: params.coordSys.x,
             y: params.coordSys.y,
@@ -117,99 +110,104 @@ function renderGeneFeatures(params, api) {
         };
     }
     else {
-        return null
+        return null;
     }
 }
 
 /**
- * The function returns options for gene features charts
- * @param index - gene feature is displayed in the last index of grid
- * @returns {*[]}
+ * Define options for gene features charts
+ * @param {number} index - gene feature is displayed in the last index of grid
+ * @returns {Array<Dict[]>}
  */
 function getGeneFeatureSeries(index) {
-    var feature_series = [];
-    feature_series.push({
-        type: "custom",
-        xAxisIndex: index,
-        yAxisIndex: index,
-        renderItem: renderGeneFeatures,
-        labelLayout: {
-            hideOverlap: false,
-        },
-        data: gene_feature,
-        tooltip: {
-            trigger: "item",
-            enterable: true,
-            appendToBody: true,
-            renderMode: "html",
-            borderRadius: 6,
-            borderWidth: 2,
-            showContent: "true",
-            textStyle: {
-                fontSize: 15,
-                fontWeight: "bolder",
+    var featureSeries = [];
+    if (amplicon === 'True' || geneFeature === 'True'){
+        featureSeries.push({
+            type: "custom",
+            xAxisIndex: index,
+            yAxisIndex: index,
+            renderItem: renderGeneFeatures,
+            labelLayout: {
+                hideOverlap: false,
             },
-            formatter: function (params) {
-                var output = "";
-                rows = [
-                    [
-                        "Range",
-                        params.value.start.toLocaleString() + " - " + params.value.end.toLocaleString(),
-                    ],
-                    ["Length", (params.value.end - params.value.start + 1).toLocaleString()],
-                    ["Strand", params.value.strand],
-                ];
-                output += toTableHtml([params.name, ""], rows, "table small");
-                return output;
+            data: geneFeatureData,
+            tooltip: {
+                trigger: "item",
+                enterable: true,
+                appendToBody: true,
+                renderMode: "html",
+                borderRadius: 6,
+                borderWidth: 2,
+                showContent: "true",
+                position: 'top',
+                textStyle: {
+                    fontSize: 15,
+                    fontWeight: "bolder",
+                },
+                formatter: function (params) {
+                    var output = "";
+                    rows = [
+                        [
+                            "Range",
+                            params.value.start.toLocaleString() + " - " + params.value.end.toLocaleString(),
+                        ],
+                        ["Length", (params.value.end - params.value.start + 1).toLocaleString()],
+                        ["Strand", params.value.strand],
+                    ];
+                    output += toTableHtml([params.name, ""], rows, "table small");
+                    return output;
+                },
             },
-        },
-    });
-    return feature_series;
+        });
+    }
+    return featureSeries;
 }
 
 /**
- * The functions returns options for X axis
- * @param samples - the list samples name
- * @param ref_len -the length of reference sequence
- * @returns {*[]}
+ * Define options for x Axis
+ * @param {Array<string>} samples - An array of samples name
+ * @param {number} xAxisMax - Max value is set for x Axis
+ * @returns {Array<Dict[]>}
  */
-function getXAxes(samples, ref_len) {
+function getXAxes(samples, xAxisMax) {
     var axes = [];
     for (var [i, sample] of samples.entries()) {
         axes.push({
             type: "value",
             gridIndex: i,
             min: 1,
-            max: ref_len,
+            max: xAxisMax,
             axisLabel: {
                 interval: "auto",
             },
         });
     }
-    axes.push({
-        type: "value",
-        gridIndex: samples.length,
-        min: 1,
-        max: ref_len,
-        axisLabel: {
-            interval: "auto",
-        },
-    });
+    if (amplicon === "True" || geneFeature === "True"){
+        axes.push({
+            type: "value",
+            gridIndex: samples.length,
+            min: 1,
+            max: xAxisMax,
+            axisLabel: {
+                interval: "auto",
+            },
+        });
+    }
     return axes;
 }
 
 /**
- * The functions returns options for Y axis
- * @param samples - the list of samples name
- * @param scaletype - scale for Y Axis: either linear or log scale
- * @param ymax - max value of y Axis
- * @returns {*[]}
+ * Define options for Y axis
+ * @param {Array<string>} samples - An array of samples name
+ * @param {string} scaleType - scale for Y Axis, either value or log
+ * @param {number} yMax - max value is set for y Axis
+ * @returns {Array<Dict[]>}
  */
-function getYAxes(samples, scaletype, ymax) {
+function getYAxes(samples, scaleType, yMax) {
     var axes = [];
     for (var [i, sample] of samples.entries()) {
         axes.push({
-            type: scaletype,
+            type: scaleType,
             gridIndex: i,
             name: sample,
             nameTextStyle: {
@@ -218,27 +216,29 @@ function getYAxes(samples, scaletype, ymax) {
             },
             nameLocation: "end",
             min: 1,
-            max: ymax,
+            max: yMax,
             minorSplitLine: {
                 show: true,
             },
         });
     }
-    axes.push({
-        max: gene_feature_properties["max_grid_height"],
-        gridIndex: samples.length,
-        show: false,
-    });
+    if (amplicon === "True" || geneFeature === "True"){
+        axes.push({
+            max: geneFeatureProperties["max_grid_height"],
+            gridIndex: samples.length,
+            show: false,
+        });
+    }
     return axes;
 }
 
 /**
- * The function returns dataset information
- * @param depths - the dict of depth data
- * @param positions - an array of genome positions which represent in X Axis
- * @returns {*[]}
+ * Get dataset information
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Array<number>} positions - an array of genome positions which represent in X Axis
+ * @returns {Array<Dict[]>}
  */
-function getDatasets(depths, positions) {
+function getDatasets(depths, positionArray) {
     var datasets = [];
     for (var [i, depthArray] of depths.entries()) {
         datasets.push({
@@ -247,7 +247,7 @@ function getDatasets(depths, positions) {
                 {name: "position", type: "int"},
             ],
             source: {
-                position: positions,
+                position: positionArray,
                 depth: depthArray,
             },
         });
@@ -256,14 +256,14 @@ function getDatasets(depths, positions) {
 }
 
 /**
- * The function returns options for depth coverage charts
- * @param samples - the list of samples name
- * @returns []
+ * Define options for depth coverage charts
+ * @param {Array<string>} samples - An array of samples name
+ * @returns {Array<Dict[]>}
  */
 function getDepthSeries(samples) {
-    var series = [];
+    var depthSeries = [];
     for (var [i, sample] of samples.entries()) {
-        series.push({
+        depthSeries.push({
             type: "line",
             xAxisIndex: i,
             yAxisIndex: i,
@@ -283,18 +283,18 @@ function getDepthSeries(samples) {
             large: true,
         });
     }
-    return series;
+    return depthSeries;
 }
 
 /**
- * The function returns options for  amplicon depth coverage bars
- * @param samples - the list of samples name
- * @returns []
+ * Define options for amplicon depth coverage bars
+ * @param {Array<string>} samples - An array of samples name
+ * @returns {Array<Dict[]>}
  */
 function getAmpliconDepthSeries(samples) {
-    var series = []
+    var ampliconDepthSeries = [];
     for (var [i, sample] of samples.entries()) {
-        series.push({
+        ampliconDepthSeries.push({
             type: "custom",
             xAxisIndex: i,
             yAxisIndex: i,
@@ -334,58 +334,59 @@ function getAmpliconDepthSeries(samples) {
                 x: [0, 1],
                 y: 2,
             },
-            data: amplicon_data[sample],
+            data: ampliconData[sample],
         })
     }
-    return series
+    return ampliconDepthSeries;
 }
 
 /**
- * The function returns options for variant charts
- * @param variants - the dict of variants data
- * @param depths - the dict of depths data
- * @returns {*[]}
+ * Define options for variant bar charts
+ * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @returns {Array<Dict[]>}
  */
 function getVariantsSeries(variants, depths) {
-    var series = [];
+    var variantsSeries = [];
     for (var [i, varMap] of variants.entries()) {
         (function (i, varMap) {
-            series.push({
+            variantsSeries.push({
                 type: "bar",
                 xAxisIndex: i,
                 yAxisIndex: i,
-                data: Object.keys(varMap).map((x) => [parseInt(x), depths[i][x]]),
+                data: Object.values(varMap).map((x) => [parseInt(x['POS']), depths[i][x['POS']]]),
                 barWidth: 2,
                 itemStyle: {
                     color: function (params) {
                         var pos = params.data[0];
-                        var nt = variants[i][pos];
-                        if (ntColor.hasOwnProperty(nt[0][0])) {
-                            return ntColor[nt[0][0]];
+                        var nt = window.refSeq[pos-1]
+                        if (ntColor.hasOwnProperty(nt)) {
+                            return ntColor[nt];
                         }
                         return "#333";
                     },
                 },
+
             });
         })(i, varMap);
-    }
-    return series;
+    };
+    return variantsSeries;
 }
 
 /**
- *  The function defines grid for whole charts
- * @param samples - the list of samples name
- * @returns []
+ *  Define grid for whole charts
+ * @param {Array<string>} samples - An array of samples
+ * @returns {Array<Dict[]>}
  */
 function getGrids(samples) {
     var n = samples.length + 1;
-    var last_height;
-    var last_top;
+    var lastHeight;
+    var lastTop;
     var grids = Object.keys(samples).map(function (sample) {
-        last_height = (1 / n) * 100 - 6;
+        lastHeight = (1 / n) * 100 - 6;
         if (n == 2) {
             // Only 1 sample (1 sample + gene feature plot)
-            last_height = 70;
+            lastHeight = 70;
             return {
                 show: true,
                 height: "70%", // plot display in nearly full scale
@@ -398,27 +399,29 @@ function getGrids(samples) {
     });
     grids.forEach(function (grid, idx) {
         var padTop = 4;
-        last_top = (idx / n) * 100 + padTop;
+        lastTop = (idx / n) * 100 + padTop;
         grid.top = (idx / n) * 100 + padTop + "%";
-        grid.left = "5%";
-        grid.right = "5%";
+        grid.left = "8%";
+        grid.right = "8%";
     });
-    grids.push({
-        show: true,
-        height: gene_feature_properties["grid_height"],
-        top: last_height + last_top + 3 + "%",
-        left: "5%",
-        right: "5%",
-    });
+    if (amplicon === "True" || geneFeature === "True"){
+        grids.push({
+            show: true,
+            height: geneFeatureProperties["grid_height"],
+            top: lastHeight + lastTop + 3 + "%",
+            left: "8%",
+            right: "8%",
+        });
+    }
     return grids;
 }
 
 /**
- * The function defines options for tooltips
- * @param samples - the list of sample names
- * @param depths - the dict of depths data
- * @param variants - the dict of variants data
- * @returns {[{renderMode: string, formatter: ((function(*): (string))|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}]}
+ * Define options for tooltips
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @returns {Array<Dict[]>}
  */
 function getTooltips(samples, depths, variants) {
     return [
@@ -428,6 +431,13 @@ function getTooltips(samples, depths, variants) {
             appendToBody: true,
             renderMode: "html",
             showContent: true,
+            position: function (pos, params, dom, rect, size) {
+                // tooltip will be fixed on the right if mouse hovering on the left,
+                // and on the left if hovering on the right.
+                var obj = {top: 5};
+                obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+                return obj;
+            },
             formatter: function (params) {
                 var output = "";
                 var param = params[0];
@@ -438,43 +448,45 @@ function getTooltips(samples, depths, variants) {
                 var sample = samples[i];
                 var position = param.data[1];
                 var depth = param.data[0];
-                var start_pos = Math.floor(chart.getOption().dataZoom[0].startValue);
-                var end_pos = Math.floor(chart.getOption().dataZoom[0].endValue);
-                var mean_cov = meanCoverage(depths, start_pos, end_pos, i).toFixed(2);
-                var median_cov = medianCoverage(depths, start_pos, end_pos, i).toFixed(2);
-                var genome_cov = genomeCoverage(depths, start_pos, end_pos, i, 10).toFixed(2);
+                var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+                var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+                var meanCov = meanCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
+                var medianCov = medianCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
+                var genomeCov = genomeCoverage(depths, zoomStart, zoomEnd, i, 10).toFixed(2);
                 output += "<h5>" + sample + "</h5>";
                 var rows = [
                     ["Position", position.toLocaleString()],
                     ["Depth", depth.toLocaleString()],
                 ];
-                if (variants[i].hasOwnProperty(position)) {
-                    rows.push(
-                        ...[
-                            [
-                                "Ref",
-                                ref_seq.substring(
-                                    position - 1,
-                                    position - 1 + variants[i][position].length
-                                ),
-                            ],
-                            ["Variant", variants[i][position]],
-                        ]
-                    );
+                if (params.length > 1) {
+                    Object.values(variants[i]).forEach(values => {
+                        if (values['POS'] === position) {
+                            for (const [key, value] of Object.entries(values)) {
+                                if (key !== 'POS' && key !== 'sample') {
+                                    rows.push(
+                                        ...[[key, value]]
+                                    )
+                                }
+
+                            }
+                        }
+
+                    })
                 } else {
-                    rows.push(["Sequence", ref_seq[position - 1]]);
+                    rows.push(["Sequence", window.refSeq[position - 1]]);
                 }
                 output += toTableHtml(["Position Info", ""], rows, "table small");
                 rows = [
                     [
                         "Range",
-                        start_pos.toLocaleString() + " - " + end_pos.toLocaleString(),
+                        zoomStart.toLocaleString() + " - " + zoomEnd.toLocaleString(),
                     ],
-                    ["Mean Coverage", mean_cov + "X"],
-                    ["Median Coverage", median_cov + "X"],
-                    ["Genome Coverage ( >= 10x)", genome_cov + "%"],
+                    ["Mean Coverage", meanCov + "X"],
+                    ["Median Coverage", medianCov + "X"],
+                    ["Genome Coverage ( >= 10x)", genomeCov + "%"],
                 ];
                 output += toTableHtml(["Coverage View Stats", ""], rows, "table small");
+
                 return output;
             },
         },
@@ -482,25 +494,25 @@ function getTooltips(samples, depths, variants) {
 }
 
 /**
- * The function builds all options for coverage chart
- * @param samples - the list of sample names
- * @param depths - the dict of depths data
- * @param variants - the dict of variants data
- * @returns {yAxis: *[], xAxis: *[], series: *[], grid: [], tooltip: {renderMode: string, formatter: ((function(*): string)|*), enterable: boolean, appendToBody: boolean, showContent: boolean, trigger: string}[], toolbox: {feature: {saveAsImage: {name: string}, restore: {}, dataView: {readOnly: boolean}}, show: string}, dataZoom: [{filterMode: string, xAxisIndex: number[], type: string, zoomLock: boolean}, {filterMode: string, xAxisIndex: number[], show: boolean, type: string, zoomLock: boolean}], title: {}, dataset: *[]}
+ * Define all options for coverage chart
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @returns {Dict[]}
  */
 function getCoverageChartOption(samples, depths, variants) {
-    grid_length = samples.length;
-    var options = {
+    gridLength = samples.length;
+    var chartOptions = {
         title: {},
         dataset: getDatasets(depths, positions),
-        xAxis: getXAxes(samples, ref_len),
-        yAxis: getYAxes(samples, "log", max_depth),
+        xAxis: getXAxes(samples, refSeqLength),
+        yAxis: getYAxes(samples, "log", maxDepth),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples),
             ...getVariantsSeries(variants, depths),
             ...getAmpliconDepthSeries(samples),
-            ...getGeneFeatureSeries(grid_length)
+            ...getGeneFeatureSeries(gridLength)
         ],
         tooltip: getTooltips(samples, depths, variants),
         toolbox: {
@@ -511,7 +523,7 @@ function getCoverageChartOption(samples, depths, variants) {
                 },
                 restore: {},
                 saveAsImage: {
-                    name: "Coverage_Plot",
+                    name: "wgscovplot",
                 },
             },
         },
@@ -519,337 +531,397 @@ function getCoverageChartOption(samples, depths, variants) {
             {
                 type: "inside",
                 filterMode: "none",
-                xAxisIndex: [...Array(grid_length + 1).keys()],
+                xAxisIndex: [...Array(gridLength + 1).keys()],
                 zoomLock: false,
             },
             {
                 show: true,
                 filterMode: "none",
-                xAxisIndex: [...Array(grid_length + 1).keys()],
+                xAxisIndex: [...Array(gridLength + 1).keys()],
                 type: "slider",
                 zoomLock: false,
             },
         ],
-        grid: getGrids(samples),
-
+        grid: getGrids(samples)
     };
-    return options;
+    return chartOptions;
 }
 
 /**
- * The function updates options for coverage charts.
- * Whenever the selected samples changed, the whole chart will be re-rendered but not dispose the chart
- * @param samples -the list samples name
+ * Updates options for coverage charts.
+ * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are still reserved
+ * Users's settings are respected
+ * @param {Array<string>} samples - An array of samples name
  */
+
 function updateCoverageChartOption(samples) {
     var depths = [];
     var variants = [];
+    var scaleType;
+    var max;
+    var leftMargin;
+    var rightMargin;
+    var geneFeatureHeight;
     samples.forEach(sample => {
         depths.push(window.depths[sample]);
         variants.push(window.variants[sample]);
     })
-    // The current chart is not disposed so norMerge must be set true
+    /* Need to handle the case when user removes all samples on the chart and add new samples to be displayed
+    Variables lenCheck1, lenCheck2 and closures lastYAxisScale, lastYAxisMax are used to keep track the scale settings of a last sample on the chart before it was removed
+    lenCheck1, lenCheck1 depends on whether the last subplot is used for plotting gene/amplicon features or not
+     */
+    var chartOption = chart.getOption();
+    var lenCheck1 = (amplicon === 'True' || geneFeature === 'True') ? 2 : 1
+    var lenCheck2 = (amplicon === 'True' || geneFeature === 'True') ? 1 : 0
+    if (chartOption.yAxis.length === lenCheck1){
+        lastYAxisScale = chartOption.yAxis[0].type;
+        lastYAxisMax = chartOption.yAxis[0].max;
+    }
+    if (chartOption.yAxis.length === lenCheck2){
+        scaleType = lastYAxisScale
+        max = lastYAxisMax
+    }else{
+        // Get Current scale type and yAxis max to set it back
+        scaleType = chartOption.yAxis[0].type;
+        max = chartOption.yAxis[0].max;
+    }
+    //Left/right margin
+    if (chartOption.grid.length === 0){ // There is no subplot and gene/amplicon feature
+        leftMargin = 8
+        rightMargin = 8
+        document.getElementById("chart-left-input").value = _.toInteger(leftMargin);
+        document.getElementById("chart-left-output").value = _.toInteger(leftMargin) + "%";
+        document.getElementById("chart-right-input").value = _.toInteger(rightMargin);
+        document.getElementById("chart-right-output").value = _.toInteger(rightMargin) + "%";
+    }
+    else{
+        leftMargin = _.toInteger(chartOption.grid[0].left.replace("%", ""));
+        rightMargin = _.toInteger(chartOption.grid[0].right.replace("%", ""));
+    }
+    // Get Current Data Zoom
+    var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+    var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+    // The current chart is not disposed so notMerge must be set true
     chart.setOption(option = getCoverageChartOption(samples, depths, variants), notMerge = true);
+    setScale(scaleType, max);
+    setDataZoom(zoomStart, zoomEnd);
+    updateChartLeftMargin(leftMargin);
+    updateChartRightMargin(rightMargin);
     updateControlMenu();
 }
 
 /**
- * The function returns the list of first 'default_num_chart = 3' samples when the chart is initialized
- * @param samples - the list samples name
+ * When the chart is firstly initialized, the samples to plot on control menu is updated with first 3 samples
+ * @param {Array<string>} samples - An array of samples name
  */
-function selectDefaultSamples(updated_samples) {
+function setDefaultSamples(samples) {
     // Set default samples display
-    $("#selectedsamples").select2();
-    $("#selectedsamples").val(updated_samples);
-    $("#selectedsamples").trigger('change')
+    let $selectedsamples = $("#selectedsamples");
+    $selectedsamples.select2();
+    $selectedsamples.val(samples);
+    $selectedsamples.trigger('change')
 }
 
 /**
- * The function to get the current samples of multiple select of select2
- * @returns {*[]}
+ * Get the list of current samples in the Samples to plot menu
+ * @returns {Array<string>>} An array of samples name
  */
-function selectCurrentSamples() {
-    var selectData = $("#selectedsamples").select2("data");
-    var current_samples = [];
-    for (var [key, entries] of selectData.entries()) {
-        current_samples.push(selectData[key].text);
-    }
-    return current_samples
-}
-
-/**
- * A document is ready for fire action with Jquery
- */
-$(document).ready(function () {
-
-    $("#selectedsamples").select2({
-        tags: true,
-    });
-
-    /**
-     * Jquery function to make the list of samples is not forced in alphabetical order
-     */
-    $("#selectedsamples").on("select2:select", function (evt) {
-        var element = evt.params.data.element;
-        var $element = $(element);
-        $element.detach();
-        $(this).append($element);
-        $(this).trigger("change");
-    });
-
-    /**
-     * Jquery function update chart options when number of selected samples changes
-     */
-    $("#selectedsamples").on("change", function () {
-        updateCoverageChartOption(selectCurrentSamples());
-    });
-
-    /**
-     * Toggle dark mode, the entire chart will be disposed and re-initialized
-     * And the current selected samples of select2 will re-rendered
-     */
-    $("#toggle-darkmode").change(function () {
-        var render_env = "canvas";
-        if (document.getElementById("render-env"))
-            render_env = document.getElementById("render-env").value;
-        var current_samples = selectCurrentSamples();
-        var current_depths = []
-        var current_variants = []
-        current_samples.forEach(sample => {
-            current_depths.push(window.depths[sample]);
-            current_variants.push(window.variants[sample]);
-        })
-
-        echarts.dispose(chart); // destroy chart instance and re-init chart
-        $chart = document.getElementById("chart");
-        if ($(this).prop("checked")) {
-            chart = echarts.init($chart, "dark", {renderer: render_env});
-        } else {
-            chart = echarts.init($chart, "white", {renderer: render_env});
+function getCurrentSamples(chartOption) {
+    var samples = [];
+    // If the chart is not initalizaed yet, get 3 first samples from window.samples
+    if (chartOption === undefined || chartOption === null){
+        samples = _.slice(window.samples, 0, defaultNumChart);
+    } else{
+        var selectData = $("#selectedsamples").select2("data");
+        for (var [key, entries] of selectData.entries()) {
+            samples.push(selectData[key].text);
         }
-        chart.setOption(option = getCoverageChartOption(current_samples, current_depths, current_variants));
-        chartDispatchDataZoomAction();
-        updateControlMenu();
-    });
+    }
+    return samples;
+}
 
-    /**
-     * Toggle to Amplicon Depth Label
-     */
-    $("#toggle-amplicon-depthlabel").change(function () {
-        var series_option = chart.getOption().series;
-        var isChecked = $(this).prop("checked")
-        _.forEach(series_option, function (element) {
-            if (element.type === 'custom') {
-                element.label.show = isChecked
-            }
-        })
-        chart.setOption({series: [...series_option]});
-    });
+/**
+ * Initialize the events handler for chart after it is initialized
+ */
+function initWgscovplotEvent(){
+    $(document).ready(function () {
+        /**
+         * Toggle dark mode, the entire chart will be disposed and re-initialized
+         * However, the old settings of charts are set back (users's settings are respected)
+         */
+        $("#toggle-darkmode").change(function () {
+            initWgscovplotRenderEnv();
+        });
 
-    /**
-     * Toggle to show gene label or not
-     */
-    $("#toggle-genelabel").change(function () {
-        var series_option = chart.getOption().series;
-        invisible_gene_label = !($(this).prop("checked"))
-        series_option[series_option.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
-        chart.setOption({series: [...series_option]});
-    });
+        /**
+         * Toggle to Amplicon Depth Label
+         */
+        $("#toggle-amplicon-depthlabel").change(function () {
+            var seriesOption = chart.getOption().series;
+            var isChecked = $(this).prop("checked");
+            _.forEach(seriesOption, function (element) {
+                if (element.type === 'custom') {
+                    element.label.show = isChecked
+                }
+            });
+            chart.setOption({series: [...seriesOption]});
+        });
 
-    /**
-     * Toggle tooltip for coverage chart, this action does not affect gene feature chart
-     */
-    $("#toggle-tooltip").change(function () {
-        var isChecked = $(this).prop("checked")
-        chart.setOption({
-            tooltip: {showContent: isChecked},
+        /**
+         * Jquery actions to make the list of samples is not forced in alphabetical order
+         */
+        $("#selectedsamples").select2({
+            tags: true,
+        });
+
+        $("#selectedsamples").on("select2:select", function (evt) {
+            var element = evt.params.data.element;
+            var $element = $(element);
+            $element.detach();
+            $(this).append($element);
+            $(this).trigger("change");
+        });
+
+        /**
+         * An action updates chart options when number of selected samples changes
+         * The chart options such as y Axis scale, yMax, DataZoom are still reserved (users's settings are respected)
+         */
+        $("#selectedsamples").on("change", function () {
+            updateCoverageChartOption(getCurrentSamples(chart.getOption()));
+        });
+
+        /**
+         * Toggle to show gene label or not
+         */
+        $("#toggle-genelabel").change(function () {
+            var seriesOption = chart.getOption().series;
+            showGeneLabel = $(this).prop("checked");
+            seriesOption[seriesOption.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle tooltip for coverage chart, this action does not affect gene/amplicon feature chart
+         */
+        $("#toggle-tooltip").change(function () {
+            var isChecked = $(this).prop("checked");
+            chart.setOption({
+                tooltip: {showContent: isChecked},
+            });
+        });
+
+        /**
+         * Toggle slider zoom
+         */
+        $("#toggle-slider").change(function () {
+            var isChecked = $(this).prop("checked");
+            chart.setOption({
+                dataZoom: [
+                    {
+                        type: "inside",
+                        filterMode: "none",
+                        xAxisIndex: [...Array(gridLength + 1).keys()],
+                    },
+                    {
+                        type: "slider",
+                        show: isChecked,
+                        filterMode: "none",
+                        xAxisIndex: isChecked ? [...Array(gridLength + 1).keys()] : null,
+                    },
+                ],
+            })
         });
     });
-
-    /**
-     * Toggle slider zoom
-     */
-    $("#toggle-slider").change(function () {
-        var isChecked = $(this).prop("checked")
-        chart.setOption({
-            dataZoom: [
-                {
-                    type: "inside",
-                    filterMode: "none",
-                    xAxisIndex: [...Array(grid_length + 1).keys()],
-                },
-                {
-                    show: isChecked,
-                    filterMode: "none",
-                    xAxisIndex: isChecked ? [...Array(grid_length + 1).keys()] : null,
-                    type: "slider",
-                },
-            ],
-        })
-    });
-});
-
-/**
- * Select svg or canvas as rendered environment, the entire chart will be disposed and re-initialized
- * And the current selected samples of select2 will re-rendered
- */
-function selectRenderEnv() {
-    var render_env = document.getElementById("render-env").value;
-    var isChecked = document.getElementById("toggle-darkmode").checked;
-    var current_samples = selectCurrentSamples();
-    var current_depths = []
-    var current_variants = []
-    current_samples.forEach(sample => {
-        current_depths.push(window.depths[sample]);
-        current_variants.push(window.variants[sample]);
-    })
-    var mode = "white";
-    if (isChecked) mode = "dark";
-    else mode = "white";
-    echarts.dispose(chart); // destroy chart instance and re-init chart
-    $chart = document.getElementById("chart");
-    if (render_env === "canvas") {
-        chart = echarts.init($chart, mode, {renderer: "canvas"});
-    } else {
-        chart = echarts.init($chart, mode, {renderer: "svg"});
-    }
-    chart.setOption(option = getCoverageChartOption(current_samples, current_depths, current_variants));
-    chartDispatchDataZoomAction();
-    updateControlMenu();
 }
 
 /**
- * Adjust chart height
- * @param val - Subplots height percent value
+ * Initialize the enviroment for the chart (sgv/canvas or dark/white mode)
+ * The entire chart will be disposed and re-initialized
+ * However, the old settings of charts are reserved (users's settings are respected)
  */
-function updateChartHeight(val) {
+function initWgscovplotRenderEnv() {
+    var chartOption = chart.getOption();
+    var plotSamples = getCurrentSamples(chartOption);
+    var plotDepths = [];
+    var plotVariants = [];
+    plotSamples.forEach(sample => {
+        plotDepths.push(window.depths[sample]);
+        plotVariants.push(window.variants[sample]);
+    });
+    if (chartOption === undefined || chartOption === null) {
+        setDefaultSamples(plotSamples);
+        chart.setOption(option = getCoverageChartOption(plotSamples, plotDepths, plotVariants));
+    } else {
+        var renderEnv = document.getElementById("render-env").value;
+        var isChecked = document.getElementById("toggle-darkmode").checked;
+        var mode = isChecked ? "dark" : "white";
+        var gridOption = chart.getOption().grid;
+        var scaleType = chart.getOption().yAxis[0].type;
+        var max = chart.getOption().yAxis[0].max;
+        var dataZoomOption = chart.getOption().dataZoom;
+        echarts.dispose(chart); // destroy chart instance and re-init chart
+        $chart = document.getElementById("chart");
+        chart = echarts.init($chart, mode, {renderer: renderEnv});
+        chart.setOption(option = getCoverageChartOption(plotSamples, plotDepths, plotVariants));
+        chart.setOption({grid: gridOption, dataZoom: dataZoomOption});
+        setScale(scaleType, max);
+    }
+    onChartDataZoomActions();
+}
+
+/**
+ * Adjust subplot height
+ * @param {number} val - Subplots height percent value
+ */
+function updateSubPlotHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
-    var grid_option = chart.getOption().grid;
-    for (var i = 0; i < grid_option.length; i++) {
-        if (i < grid_option.length - 1)
-            // don't change height of DNA feature charts
-            grid_option[i]["height"] = val + "%";
+    var gridOption = chart.getOption().grid;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
+    for (var i = 0; i < len; i++) {
+        gridOption[i]["height"] = val + "%";
         if (i > 0) {
-            grid_option[i]["top"] =
-                _.toInteger(grid_option[i - 1]["top"].replace("%", "")) +
-                _.toInteger(grid_option[i - 1]["height"].replace("%", "")) +
+            gridOption[i]["top"] =
+                _.toInteger(gridOption[i - 1]["top"].replace("%", "")) +
+                _.toInteger(gridOption[i - 1]["height"].replace("%", "")) +
                 4 +
                 "%";
         }
-    }
-    chart.setOption({grid: grid_option});
+    };
+    chart.setOption({grid: gridOption});
 }
 
 /**
  * Adjust left margin of chart
- * @param val - Subplots left margin percent value
+ * @param {number} val - Left margin percent value
  */
-function updateChartLeft(val) {
+function updateChartLeftMargin(val) {
     document.getElementById("chart-left-output").value = val + "%";
-    var grid_option = chart.getOption().grid;
-    _.forEach(grid_option, function (element) {
+    var gridOption = chart.getOption().grid;
+    _.forEach(gridOption, function (element) {
         element.left = val + "%";
     });
-    chart.setOption({grid: grid_option});
+    chart.setOption({grid: gridOption});
 }
 
 /**
  * Adjust right margin of chart
- * @param val - Subplots right margin percent value
+ * @param {number} val - Right margin percent value
  */
-function updateChartRight(val) {
+function updateChartRightMargin(val) {
     document.getElementById("chart-right-output").value = val + "%";
-    var grid_option = chart.getOption().grid;
-    _.forEach(grid_option, function (element) {
+    var gridOption = chart.getOption().grid;
+    _.forEach(gridOption, function (element) {
         element.right = val + "%";
     });
-    chart.setOption({grid: grid_option});
+    chart.setOption({grid: gridOption});
 }
 
 /**
  * Adjust top margin of chart
- * @param val - Subplots top margin percent value
+ * @param {number} val - Subplots top margin percent value
  */
-function updateChartTop(val) {
+function updateSubPlotTopMargin(val) {
     document.getElementById("chart-top-output").value = val + "%";
-    var grid_option = chart.getOption().grid;
-    for (var i = 0; i < grid_option.length; i++) {
+    var gridOption = chart.getOption().grid;
+    for (var i = 0; i < gridOption.length; i++) {
         if (i === 0) {
-            grid_option[i]["top"] = val + "%";
+            gridOption[i]["top"] = val + "%";
         } else {
-            grid_option[i]["top"] =
-                _.toInteger(grid_option[i - 1]["top"].replace("%", "")) +
-                _.toInteger(grid_option[i - 1]["height"].replace("%", "")) +
+            gridOption[i]["top"] =
+                _.toInteger(gridOption[i - 1]["top"].replace("%", "")) +
+                _.toInteger(gridOption[i - 1]["height"].replace("%", "")) +
                 _.toInteger(val) +
                 "%";
         }
     }
-    chart.setOption({grid: grid_option});
+    chart.setOption({grid: gridOption});
 }
 
-
-
 /**
- * Adjust the height of gene feature charts
- * @param val - Subplots gene feature height percent value
+ * Adjust the height of gene/amplicon feature charts
+ * @param {number} val - Subplots gene feature height percent value
  */
 function updateGeneFeatureHeight(val) {
     document.getElementById("genefeature-height-output").value = val + "%";
-    var grid_option = chart.getOption().grid;
-    gene_features_grid_index = grid_option.length - 1;
-    grid_option[gene_features_grid_index]["height"] = val + "%";
-    chart.setOption({grid: grid_option});
+    var gridOption = chart.getOption().grid;
+    gridOption[gridOption.length - 1]["height"] = val + "%";
+    chart.setOption({grid: gridOption});
 }
 
 /**
- * Select log or linear scale for the chart
+ * Set scale for y Axis
+ * @param {string} scaleType - Either value or log
+ * @param {number} max - Max value is set for y Axis
  */
-function setScale() {
-    var scale_type = document.getElementById("scale").value;
-    var yaxis_option = chart.getOption().yAxis;
-    if (scale_type === "value") {
-        _.forEach(yaxis_option, function (element) {
-            if (element.gridIndex < yaxis_option.length - 1) {
-                element.type = scale_type;
-                element.min = 0;
-                element.max = max_depth;
-            }
-        });
-        chart.setOption({yAxis: yaxis_option});
-        document.getElementById("ymax").value = max_depth; // update control menu
-    } else {
-        _.forEach(yaxis_option, function (element) {
-            if (element.gridIndex < yaxis_option.length - 1) {
-                element.type = scale_type;
-                element.min = 1;
-                element.max = max_depth;
-            }
-        });
-        chart.setOption({yAxis: yaxis_option});
-        document.getElementById("ymax").value = max_depth; // update control menu
+function setScale(scaleType, max) {
+    var scale;
+    var yMax;
+    if (scaleType === null && max === null){
+        scale = document.getElementById("scale").value;
+        yMax = document.getElementById("ymax").value;
     }
+    else{
+        scale = scaleType;
+        yMax = max;
+    }
+    var yAxisOption = chart.getOption().yAxis;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    if (scale === "value") {
+        _.forEach(yAxisOption, function (element) {
+            if (element.gridIndex < len) {
+                element.type = scale;
+                element.min = 0;
+                element.max = yMax;
+            }
+        });
+    } else {
+        _.forEach(yAxisOption, function (element) {
+            if (element.gridIndex < len) {
+                element.type = scale;
+                element.min = 1;
+                element.max = yMax;
+            }
+        });
+    }
+    chart.setOption({yAxis: yAxisOption});
+    document.getElementById("ymax").value = yMax; // update control menu
 }
 
 /**
- * Set YMax for Y Axis
+ * Set yMax for Y Axis
  */
 function setYMax() {
-    var ymax = document.getElementById("ymax").value;
-    var yaxis_option = chart.getOption().yAxis;
-    _.forEach(yaxis_option, function (element) {
-        if (element.gridIndex < yaxis_option.length - 1) {
-            element.max = ymax;
+    var yMax = document.getElementById("ymax").value;
+    var yAxisOption = chart.getOption().yAxis;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    _.forEach(yAxisOption, function (element) {
+        if (element.gridIndex < len) {
+            element.max = yMax;
         }
     });
-    chart.setOption({yAxis: yaxis_option});
+    chart.setOption({yAxis: yAxisOption});
 }
 
 /**
- * Set range of gene feature to zoom in
+ * Set zoom view for the chart
+ * @param {number} zoomStart - Start view point
+ * @param {number} zoomEnd - End view point
  */
-function setDataZoom() {
-    var start = document.getElementById("start-pos").value;
-    var end = document.getElementById("end-pos").value;
+function setDataZoom(zoomStart, zoomEnd){
+    var start;
+    var end;
+    if (zoomStart === null && zoomEnd === null){
+        start = document.getElementById("start-pos").value;
+        end = document.getElementById("end-pos").value;
+    }
+    else{
+        start = zoomStart;
+        end = zoomEnd;
+    }
+    // Update Control menu
+    document.getElementById("start-pos").value = start;
+    document.getElementById("end-pos").value = end;
+    // Dispatch Action to chart
     chart.dispatchAction({
         type: "dataZoom",
         startValue: start,
@@ -858,83 +930,52 @@ function setDataZoom() {
 }
 
 /**
- * Reset range of gene feature to default [1, ref_len]
+ * Dispatch click/dbclick actions for the whole chart
  */
-function resetDataZoom() {
-    document.getElementById("start-pos").value = 1;
-    document.getElementById("end-pos").value = ref_len;
-    chart.dispatchAction({
-        type: "dataZoom",
-        start: 0,
-        end: 100,
-    });
-}
-
-
-/**
- * The Control Menu is updated when render env, toggle dark mode or the selected samples changed
- */
-function updateControlMenu() {
-    var grid_option = chart.getOption().grid;
-    var height1 = _.replace(grid_option[0].height, "%", "");
-    var height2 = _.replace(grid_option[grid_option.length - 1].height, "%", "");
-    var left = _.replace(grid_option[0].left, "%", "");
-    var right = _.replace(grid_option[0].right, "%", "");
-    var top = _.replace(grid_option[0].top, "%", "");
-    // Reset Chart Properties and Gene Features Menu
-    document.getElementById("chart-height-input").value = _.toInteger(height1);
-    document.getElementById("chart-height-output").value = _.toInteger(height1) + "%";
-    document.getElementById("chart-left-input").value = _.toInteger(left);
-    document.getElementById("chart-left-output").value = _.toInteger(left) + "%";
-    document.getElementById("chart-right-input").value = _.toInteger(right);
-    document.getElementById("chart-right-output").value = _.toInteger(right) + "%";
-    document.getElementById("chart-top-input").value = _.toInteger(top);
-    document.getElementById("chart-top-output").value = _.toInteger(top) + "%";
-    document.getElementById("genefeature-height-input").value = _.toInteger(height2);
-    document.getElementById("genefeature-height-output").value = _.toInteger(height2) + "%";
-    // Set Axis to Log scale
-    document.getElementById("scale").value = "log"
-    document.getElementById("ymax").value = max_depth
-    // Reset Data Zoom
-    resetDataZoom()
-}
-
-/**
- * Dispacth click, dbclick event to DataZoom
- * The function will be called when the chart is intialized, toggle dark mode and change render env
- */
-function chartDispatchDataZoomAction() {
-    chart.on("click", function (params) {
+function onChartDataZoomActions(){
+    chart.on("click", function(params){
         document.getElementById("start-pos").value = params.value.start;
         document.getElementById("end-pos").value = params.value.end;
-        chart.dispatchAction({
-            type: "dataZoom",
-            startValue: params.value.start,
-            endValue: params.value.end,
-        });
+        setDataZoom(params.value.start, params.value.end);
     });
-
-    chart.on("dblclick", function (params) {
+    chart.on("dblclick", function(params){
         document.getElementById("start-pos").value = 1;
-        document.getElementById("end-pos").value = ref_len;
-        chart.dispatchAction({
-            type: "dataZoom",
-            start: 0,
-            end: 100,
-        });
+        document.getElementById("end-pos").value = refSeqLength;
+        setDataZoom(1, refSeqLength);
     });
+}
+
+/**
+ * The Control Menu is updated when the number of selected samples changes
+ * Menu is updated to reflect chart properties such as subplot height/top margin
+ */
+function updateControlMenu() {
+    var gridOption = chart.getOption().grid;
+    if (gridOption.length > 0) {
+        var height1 = _.replace(gridOption[0].height, "%", "");
+        var top = _.replace(gridOption[0].top, "%", "");
+        document.getElementById("chart-height-input").value = _.toInteger(height1);
+        document.getElementById("chart-height-output").value = _.toInteger(height1) + "%";
+        document.getElementById("chart-top-input").value = _.toInteger(top);
+        document.getElementById("chart-top-output").value = _.toInteger(top) + "%";
+        if (amplicon === 'True' || geneFeature === 'True') {
+            var height2 = _.replace(gridOption[gridOption.length - 1].height, "%", "");
+            document.getElementById("genefeature-height-input").value = _.toInteger(height2);
+            document.getElementById("genefeature-height-output").value = _.toInteger(height2) + "%";
+        }
+    }
 }
 
 /**
  * Write tooltip information to HTML table
- * @param headers - Header of table
- * @param rows - Rows of table
- * @param classes - Classes defined for table
+ * @param {string} headers - Header of table
+ * @param {Array<string>} rows - Rows of table
+ * @param {string} classes - Classes defined for table
  * @returns {string}
  */
 function toTableHtml(headers, rows, classes) {
-    classes = _.defaultTo(classes, "table");
-    var out = '<table class="' + classes + '"><thead>';
+    var classTable = _.defaultTo(classes, "table");
+    var out = '<table class="' + classTable + '"><thead>';
     out += _.join(
         _.map(headers, function (x) {
             return "<strong>" + x + "</strong>";
@@ -962,58 +1003,56 @@ function toTableHtml(headers, rows, classes) {
 }
 
 /**
- * Calculate mean coverage for specific range
- * @param depths - depth array
- * @param start - start position
- * @param end - end position
- * @param gridIndex - grid index of sample
+ * Calculate mean coverage for a genome region
+ * @param {Array<number>} depths - depths array
+ * @param {number} start - start position
+ * @param {number} end - end position
+ * @param {number} gridIndex - grid index of sample
  * @returns {number}
  */
 function meanCoverage(depths, start, end, gridIndex) {
-    var sub_array = _.slice(depths[gridIndex], start - 1, end);
-    return _.mean(sub_array);
+    var subArray = _.slice(depths[gridIndex], start - 1, end);
+    return _.mean(subArray);
 }
 
 /**
- *  Calculate genome coverage depth which is >= low (10)
- * @param depths - depth array
- * @param start - start position
- * @param end - end position
- * @param gridIndex - grid index of sample
- * @param low
+ *  Calculate genome coverage depth acorrding to threshod low
+ * @param {Array<number>} depths - depth array
+ * @param {number} start - start position
+ * @param {number} end - end position
+ * @param {number} gridIndex - grid index of sample
+ * @param {number} low - the threshold that wants to set
  * @returns {number}
  */
 function genomeCoverage(depths, start, end, gridIndex, low) {
-    var sub_array = _.slice(depths[gridIndex], start - 1, end);
-    var fileted_array = _.filter(sub_array, function (x) {
+    var subArray = _.slice(depths[gridIndex], start - 1, end);
+    var filetedArray = _.filter(subArray, function (x) {
         return x >= low;
     });
-    return (fileted_array.length / (end - start + 1)) * 100;
+    return (filetedArray.length / (end - start + 1)) * 100;
 }
 
 /**
  * Calculate median of an array
- * @param arr
+ * @param {Array<number>} arr
  * @returns {number}
  */
 function median(arr) {
-    arr.sort(function (a, b) {
-        return a - b;
-    });
-    var half = Math.floor(arr.length / 2);
-    if (arr.length % 2) return arr[half];
-    else return (arr[half - 1] + arr[half]) / 2.0;
+    var sortedArr = _.sortBy(arr)
+    var half = Math.floor(sortedArr.length / 2);
+    if (sortedArr.length % 2) return sortedArr[half];
+    else return (sortedArr[half - 1] + sortedArr[half]) / 2.0;
 }
 
 /**
- * Calculate median coverage for specific range
- * @param depths - depth array
- * @param start - start pos
- * @param end - end pos
- * @param gridIndex - grid index of sample
+ * Calculate median coverage for a genome region
+ * @param {Array<number>} depths - depth array
+ * @param {number} start - start position
+ * @param {number} end - end position
+ * @param {number} gridIndex - grid index of sample
  * @returns {number}
  */
 function medianCoverage(depths, start, end, gridIndex) {
-    var sub_array = _.slice(depths[gridIndex], start - 1, end);
-    return median(sub_array);
+    var subArray = _.slice(depths[gridIndex], start - 1, end);
+    return median(subArray);
 }

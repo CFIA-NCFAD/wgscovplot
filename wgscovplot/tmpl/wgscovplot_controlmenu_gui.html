@@ -56,7 +56,7 @@
                             <div class="mb-3 row">
                                 <label for="scale" class="col-sm-4 col-form-label">Scaling</label>
                                 <div class="col-sm-8">
-                                    <select class="form-select" id="scale" onchange="setScale()">
+                                    <select class="form-select" id="scale" onchange="setScale(null, null)">
                                         <option value="value">Linear</option>
                                         <option value="log" selected>Log</option>
                                     </select>
@@ -95,7 +95,7 @@
                             <div class="row mb-3">
                                 <label for="render-env" class="col-sm-4 col-form-label">Renderer</label>
                                 <div class="col-sm-8">
-                                    <select id="render-env" class="form-select" onchange="selectRenderEnv()">
+                                    <select id="render-env" class="form-select" onchange="initWgscovplotRenderEnv()">
                                         <option value="svg">svg</option>
                                         <option value="canvas" selected>canvas</option>
                                     </select>
@@ -112,8 +112,8 @@
                             <div class="row mb-3">
                                 <div>
                                     <label for="chart-height-input" class="form-label">Subplot Height</label>
-                                    <input type="range" id="chart-height-input" class="form-range" value="15" min="1"
-                                           max="70" step="1" onchange="updateChartHeight(this.value);">
+                                    <input type="range" id="chart-height-input" class="form-range" value="19" min="1"
+                                           max="70" step="1" onchange="updateSubPlotHeight(this.value);">
                                     <output style="display: block; text-align:center;" type="text"
                                             id="chart-height-output">19<span>%</span></output>
                                 </div>
@@ -121,26 +121,26 @@
                             <div class="row mb-3">
                                 <div>
                                     <label for="chart-left-input" class="form-label">Left Margin</label>
-                                    <input type="range" id="chart-left-input" class="form-range" value="5" min="1"
-                                           max="50" step="1" onchange="updateChartLeft(this.value);">
+                                    <input type="range" id="chart-left-input" class="form-range" value="8" min="1"
+                                           max="50" step="1" onchange="updateChartLeftMargin(this.value);">
                                     <output style="display: block; text-align:center;" type="text"
-                                            id="chart-left-output">5<span>%</span></output>
+                                            id="chart-left-output">8<span>%</span></output>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div>
                                     <label for="chart-right-input" class="form-label">Right Margin</label>
-                                    <input type="range" id="chart-right-input" class="form-range" value="5" min="1"
-                                           max="50" step="1" onchange="updateChartRight(this.value);">
+                                    <input type="range" id="chart-right-input" class="form-range" value="8" min="1"
+                                           max="50" step="1" onchange="updateChartRightMargin(this.value);">
                                     <output style="display: block; text-align:center;" type="text"
-                                            id="chart-right-output">5<span>%</span></output>
+                                            id="chart-right-output">8<span>%</span></output>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div>
-                                    <label class="form-label">Top Margin</label>
+                                    <label class="form-label">Subplot Top Margin</label>
                                     <input type="range" id="chart-top-input" class="form-range" value="4" min="0"
-                                           max="25" step="0.1" onchange="updateChartTop(this.value);">
+                                           max="25" step="0.1" onchange="updateSubPlotTopMargin(this.value);">
                                     <output style="display: block; text-align:center;" type="text" id="chart-top-output">
                                         4<span>%</span></output>
                                 </div>
@@ -148,19 +148,22 @@
                         </div>
                     </div>
                 </div>
+                {% if gene_feature == True or amplicon == True %}
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
-                            Genetic Features
+                            Genetic/Amplicon Features
                         </button>
                     </h2>
                     <div id="genefeatures" class="accordion-collapse collapse">
                         <div class="accordion-body">
+                            {% if gene_feature == True %}
                             <div class="form-check form-switch">
                                 <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
                                 <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
                             </div>
+                            {% endif %}
                             <div>
                                 <label class="form-label">Height</label>
                                 <input type="range" id="genefeature-height-input" class="form-range" value="15" min="1"
@@ -171,6 +174,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -194,15 +198,15 @@
                             <div class="row mb-3">
                                 <label for="end-pos" class="col-form-label col-sm-4">Zoom end</label>
                                 <div class="col-sm-8">
-                                    <input type="number" id="end-pos" class="form-control" value=29903>
+                                    <input type="number" id="end-pos" class="form-control" value={{ref_seq_length}}>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md">
-                                    <button class="btn btn-outline-primary" onclick="setDataZoom()">Set zoom</button>
+                                    <button class="btn btn-outline-primary" onclick="setDataZoom(null, null)">Set zoom</button>
                                 </div>
                                 <div class="col-md">
-                                    <button class="btn btn-outline-secondary" onclick="resetDataZoom()">Reset zoom
+                                    <button class="btn btn-outline-secondary" onclick="setDataZoom(1, {{ref_seq_length}})">Reset zoom
                                     </button>
                                 </div>
                             </div>

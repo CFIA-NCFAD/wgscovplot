@@ -12,8 +12,9 @@
     <script>{{ select2_js }}</script>
 </head>
 <body>
+
     {% block content%}
-        {% include "control_menu_design.html" %}
+        {% include "wgscovplot_controlmenu_gui.html" %}
     {% endblock %}
 
     <script type="text/javascript">
@@ -23,8 +24,9 @@
     <script>
         /**
          * Reference Sequence
+         * @type {string}
          */
-        window.ref_seq = "{{ ref_seq }}";
+        window.refSeq = "{{ ref_seq }}";
 
         /**
          * List of samples name
@@ -33,27 +35,27 @@
 
         /**
          * Dict of depth data
-         * {samples_name: depth_data}
+         * @type {Dict[samples_name: depth_data]}
          */
         window.depths = {{ depth_data }};
 
         /**
          * Dict of variant data
-         * {samples_name: variant_data}
+         * @type {Dict[samples_name: variant_data]}
          */
         window.variants = {{ variant_data }};
 
         /**
          * Dict of gene features
-         * [{
-         *     'name': 'feature_name'
-         *     'value: [index, start_pos, end_pos, level, strand, 'gene_features' or 'amplicon_features']
-         *     'itemStyle': {
-         *          'color': 'color'
-         *     }
-         * }]
+         * @type {Dict[]}
          */
-        var gene_feature = {{ gene_feature }}
+        const geneFeatureData = {{ gene_feature_data }}
+
+        /**
+         * Whether to plot gene feature or not
+         * @type {boolean}
+         */
+        const geneFeature = "{{ gene_feature }}"
 
         /**
          * Default properties for gene features chart, to have best view for the whole chart, user can adjust high, right/left/top margin
@@ -61,67 +63,98 @@
          *  'rec_items_height': 12,
          *  'minus_strand_level': 55,
          *  'grid_height': "15%"
-         *
+         * @type {Dict[]}
          */
-        var gene_feature_properties = {{ gene_feature_properties }}
+        const geneFeatureProperties = {{ gene_feature_properties }}
 
         /**
          * Whether amplicon plot or normal coverage plot
          * @type {boolean}
          */
-        var amplicon = "{{amplicon}}"
+        const amplicon = "{{amplicon}}"
 
         /**
          * Dict of Amplicon Depth Coverage
-         * { sample_name: [
-         *      {   value : [start, end, depth, amplicon_name],
-         *          itemStyle: { color: 'color'
-         *      }
-         *    ]
-         * }
-         *
+         * @type {Dict[]}
          */
-        var amplicon_data = {{ amplicon_data }}
-        const ref_len = window.ref_seq.length;
+        const ampliconData = {{ amplicon_data }}
+        const refSeqLength = window.refSeq.length;
 
         /**
-         * A variable is used keep track the current number samples in the chart and is used for toggling slider
-         * @type {number}
+         * A closure is used keep track the current number samples in the chart and is used for toggling slider
+         * @type {function(): number}
          */
-        var grid_length;
+        var gridLength = (function (){
+            var len;
+            return function (){
+                return len;
+            }
+        })();
 
         /**
-         * A variable is used for initial y_start for rendering gene features
-         * @type {number}
+         * A closure is used for initial y_start for rendering gene features
+         * @type {function(): number}
          */
-        var y_start;
+        var yStart = (function (){
+            var start;
+            return function (){
+                return start;
+            };
+        })();
 
-        const default_num_chart = 3;
+        /**
+         * A closure lastYAxisScale is used to keep track the scale settings of a last sample on the chart before it was remove
+         * @type {function(): string}
+         */
+        var lastYAxisScale = (function (){
+            var yAxisScale;
+            return function (){
+                return yAxisScale;
+            };
+        })();
+
+        /**
+         * A closure lastYAxisMax is used to keep track the scale settings of a last sample on the chart before it was remove
+         * @type {function(): number}
+         */
+        var lastYAxisMax = (function (){
+            var yAxisMax;
+            return function (){
+                return yAxisMax;
+            };
+        })();
+
+        const defaultNumChart = 3;
 
         /**
          * The max value is set for y-Axis
          * @type {number}
          */
-        var max_depth = {{ max_depth }}
+        const maxDepth = {{ max_depth }}
 
         /**
          * An array of positions of reference sequence which represent in X-Axis
-         * @type {number[]}
+         * @type {<Array<number>}
          */
-        var positions = [...Array(ref_len + 1).keys()];
+        var positions = [...Array(refSeqLength + 1).keys()];
         positions.shift();
 
         /**
-         * A variable is used to toggle gene label name
-         * @type {boolean}
+         * A closure is used to toggle gene label name
+         * @type {function(): boolean}
          */
-        var invisible_gene_label = false;
+        var showGeneLabel = (function (){
+            var isShow = true;
+            return function (){
+                return isShow;
+            };
+        })();
 
         /**
          * Dict of color for coloring variant position in the chart
-         * @type {A: string, C: string, T: string, G: string}
+         * @type {Dict[]}
          */
-        var ntColor = {
+        const ntColor = {
             "A": "#ea5e48",
             "C": "#eaca48",
             "G": "#6ad82b",
@@ -146,19 +179,9 @@
             var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
             window.chart = chart;
             updateChartDivSize();
-            // First 3 samples of samples list are displayed when the chart first initialized or the HTLM is refreshed
-            var initial_samples = _.slice(window.samples, 0, default_num_chart)
-            var initial_depths = []
-            var initial_variants = []
-            initial_samples.forEach(sample => {
-                initial_depths.push(window.depths[sample]);
-                initial_variants.push(window.variants[sample]);
-            })
-            selectDefaultSamples(initial_samples)
-            chart.setOption(option = getCoverageChartOption(initial_samples, initial_depths, initial_variants));
-            chartDispatchDataZoomAction()
+            initWgscovplotRenderEnv();
         })
-
+        initWgscovplotEvent();
     </script>
 </body>
 </html>

@@ -15,6 +15,7 @@ requirements = [
     'pandas',
     'biopython',
     'requests',
+    'pydantic',
     'markdown',
 ]
 

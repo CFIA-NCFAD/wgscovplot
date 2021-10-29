@@ -2,13 +2,11 @@ include CONTRIBUTING.md
 include HISTORY.md
 include LICENSE
 include README.md
-include wgscovplot/tmpl/amplicon_covplot_template.html
-include wgscovplot/tmpl/covplot_template.html
-include wgscovplot/tmpl/control_menu_design.html
+include wgscovplot/tmpl/wgscovplot_template.html
+include wgscovplot/tmpl/wgscovplot_controlmenu_gui.html
 include wgscovplot/readme/README.md
 
 recursive-include wgscovplot/tmpl/js *.js
-recursive-include wgscovplot/tmpl/styles *.css
 recursive-include tests *
 recursive-include docs *
 recursive-exclude * __pycache__
