@@ -47,7 +47,7 @@ setup(
     include_package_data=True,
     keywords='wgscovplot',
     name='wgscovplot',
-    packages=find_packages(include=['wgscovplot']),
+    packages=find_packages(include=['wgscovplot', 'wgscovplot.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
