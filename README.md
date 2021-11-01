@@ -16,7 +16,7 @@
 
 ### Programming Languages
 
-- Python (>=3.6)
+- Python (>=3.7)
 - HTML/CSS/Javascript
 
 ### Tools/libraries
