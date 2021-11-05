@@ -30,7 +30,8 @@ def check_dir_exists_callback(path: Path) -> Path:
     epilog=f"wgscovplot version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
 )
 def main(
-        input_dir: Path = typer.Option(..., callback=check_dir_exists_callback, help="Nextflow workflow results directory"),
+        input_dir: Path = typer.Option(..., callback=check_dir_exists_callback, help="Nextflow workflow results "
+                                                                                     "directory"),
         output_html: Path = typer.Option("wgscovplot.html", help="Output File of Interactive HTML Coverage Plot"),
         ref_seq: Path = typer.Option(..., help="Reference Sequences"),
         genbank: Path = typer.Option(None, help="Genbank file contains features of reference sequence"),
