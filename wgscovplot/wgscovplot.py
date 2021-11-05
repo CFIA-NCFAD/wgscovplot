@@ -27,6 +27,9 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
     if amplicon:
         amplicon_depths_data = mosdepth.get_depth_amplicon(input_dir)
         amplicon_regions_data = mosdepth.get_region_amplicon(input_dir)
+        if not amplicon_depths_data or not amplicon_regions_data:
+            logging.warning('No amplicon data found')
+            amplicon = False
     else:
         amplicon_depths_data = {}
         amplicon_regions_data = {}
