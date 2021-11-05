@@ -21,6 +21,7 @@ def test_cli():
     assert 'Error: Missing option' in result.output
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
+    print(help_result.output)
     assert 'Show this message and exit.' in help_result.output
     with runner.isolated_filesystem():
         out_html = 'wgscovplot.html'
