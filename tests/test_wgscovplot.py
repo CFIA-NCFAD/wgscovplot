@@ -40,9 +40,7 @@ def test_cli():
         assert test_result.exit_code == 1
 
     with runner.isolated_filesystem():
-        out_html = 'wgscovplot.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
-                                          '--ref-seq', str(input_ref.absolute()),
-                                          '--output-html', out_html])
+                                          '--ref-seq', str(input_ref.absolute())])
         assert test_result.exit_code == 0
-        assert exists(out_html)
+        assert exists('wgscovplot.html')
