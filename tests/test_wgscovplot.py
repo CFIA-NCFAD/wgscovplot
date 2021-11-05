@@ -32,6 +32,14 @@ def test_cli():
         assert exists(out_html)
 
     with runner.isolated_filesystem():
+        out_html = 'wgscovplot_gene_feature.html'
+        test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
+                                          '--ref-seq', str(input_ref.absolute()),
+                                          '--output-html', out_html,
+                                          '--gene-feature'])
+        assert test_result.exit_code == 1
+
+    with runner.isolated_filesystem():
         out_html = 'wgscovplot.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ref-seq', str(input_ref.absolute()),
