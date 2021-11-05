@@ -21,7 +21,7 @@ def test_cli():
     assert 'Error: Missing option' in result.output
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
-    print(help_result.output)
+    print(help_result)
     assert 'Show this message and exit.' in help_result.output
     with runner.isolated_filesystem():
         out_html = 'wgscovplot.html'
@@ -29,5 +29,6 @@ def test_cli():
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--genbank', str(input_genbank.absolute()),
                                           '--gene-feature'])
+        print(test_result)
         assert test_result.exit_code == 0
         assert exists(out_html)
