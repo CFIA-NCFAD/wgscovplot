@@ -67,7 +67,7 @@ If the installation was successful, you should be able to type `wgscovplot --hel
   + Support both Log and Linear Scale.
   + Customize plot height/width.
   + Support svg/canvas renderer and light/dark mode.
-  + Gene feature can be plotted below coverage plot, use can view coverage information for specific gene/region.
+  + Gene feature can be plotted below coverage plot, user can view coverage information for specific gene/region.
   + Plot Amplicon coverage depth.
   + Tooltip with rich information.
   + Support inside and slider zoom (set zoom view or reset zoom view).
