@@ -58,7 +58,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
     readme = dirpath / 'readme/README.md'
     with open(readme, "r", encoding="utf-8") as input_file:
         text = input_file.read()
-    about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra'])
+    about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
     # Write coverage plot to HTML file
     write_html_coverage_plot(samples_name=samples_name,
                              depth_data=depths_data,
