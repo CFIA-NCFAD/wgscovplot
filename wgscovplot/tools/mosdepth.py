@@ -49,7 +49,8 @@ def read_mosdepth_region_bed(p: Path) -> pd.DataFrame:
 
 
 def get_interval_coords_bed(df: pd.DataFrame, threshold: int = 0) -> str:
-    df_below = df[df.depth <= threshold]
+    mask = df.depth == 0 if threshold == 0 else df.depth < threshold
+    df_below = df[mask]
     start_pos, end_pos = df_below.start_idx, df_below.end_idx
     coords = []
     for x, y in zip(start_pos, end_pos):
@@ -155,7 +156,7 @@ def get_info(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, Mosdep
         median_cov = pd.Series(arr).median()
         depth_info = MosdepthDepthInfo(sample=sample,
                                        low_coverage_threshold=low_coverage_threshold,
-                                       n_low_coverage=count_positions(df[df.depth <= low_coverage_threshold]),
+                                       n_low_coverage=count_positions(df[df.depth < low_coverage_threshold]),
                                        n_zero_coverage=count_positions(df[df.depth == 0]),
                                        zero_coverage_coords=get_interval_coords_bed(df),
                                        low_coverage_coords=get_interval_coords_bed(df, low_coverage_threshold),

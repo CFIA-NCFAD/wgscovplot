@@ -3,7 +3,7 @@ import requests
 import math
 import markdown
 import pandas as pd
-from typing import Tuple, Dict, List, Any
+from typing import Dict, List, Any
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
@@ -76,7 +76,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
 def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo]) -> str:
     df = pd.DataFrame(sample_depth_info.values())
     headers = ['Sample', '# 0 Coverage Positions', '0 Coverage Regions', 'Low Coverage Threshold',
-               '# Low Coverage Positions (<= 10X)', 'Low Coverage Regions (<= 10X)', '% Genome Coverage',
+               '# Low Coverage Positions (< 10X)', 'Low Coverage Regions (< 10X)', '% Genome Coverage',
                'Mean Coverage Depth',
                'Median Coverage Depth', 'Ref Sequence Length']
     df.columns = headers
