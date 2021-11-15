@@ -1,7 +1,7 @@
 /**
  * Define the points of gene/amplicon features shape
  * @param {number} x - x-axis coordinate
- * @param {number} y  - x-axis coordinate
+ * @param {number} y - y-axis coordinate
  * @param {number} width - width of shape
  * @param {number} height - height of shape
  * @param {number} strand - strand of feature
@@ -41,7 +41,7 @@ function renderPoints(x, y, width, height, strand, feature) {
 }
 
 /**
- * Renders the gene/amplicon features shape based on below information of geneFeatureData and ampliconData
+ * Renders the gene/amplicon features shape
  * @param params - Echarts arg
  * @param api - Echarts arg
  */
@@ -376,8 +376,8 @@ function getVariantsSeries(variants, depths) {
 }
 
 /**
- *  Define grid for whole charts
- * @param {Array<string>} samples - An array of samples
+ *  Define grid for the whole charts
+ * @param {Array<string>} samples - An array of samples name
  * @returns {Array<Dict[]>}
  */
 function getGrids(samples) {
@@ -550,11 +550,10 @@ function getCoverageChartOption(samples, depths, variants) {
 
 /**
  * Updates options for coverage charts.
- * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are still reserved
+ * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are reserved
  * Users's settings are respected
  * @param {Array<string>} samples - An array of samples name
  */
-
 function updateCoverageChartOption(samples) {
     var depths = [];
     var variants = [];
@@ -586,7 +585,7 @@ function updateCoverageChartOption(samples) {
         scaleType = chartOption.yAxis[0].type;
         max = chartOption.yAxis[0].max;
     }
-    //Left/right margin
+    // Left-right margin
     if (chartOption.grid.length === 0){ // There is no subplot and gene/amplicon feature
         leftMargin = 8
         rightMargin = 8
@@ -612,7 +611,7 @@ function updateCoverageChartOption(samples) {
 }
 
 /**
- * When the chart is firstly initialized, the samples to plot on control menu is updated with first 3 samples
+ * When the chart is initialized, the first 3 samples are plotted
  * @param {Array<string>} samples - An array of samples name
  */
 function setDefaultSamples(samples) {
@@ -624,7 +623,7 @@ function setDefaultSamples(samples) {
 }
 
 /**
- * Get the list of current samples in the Samples to plot menu
+ * Get the list of current samples on the control menu
  * @returns {Array<string>>} An array of samples name
  */
 function getCurrentSamples(chartOption) {
@@ -642,7 +641,7 @@ function getCurrentSamples(chartOption) {
 }
 
 /**
- * Initialize the events handler for chart after it is initialized
+ * Initialize the events handler for chart
  */
 function initWgscovplotEvent(){
     $(document).ready(function () {
@@ -684,8 +683,8 @@ function initWgscovplotEvent(){
         });
 
         /**
-         * An action updates chart options when number of selected samples changes
-         * The chart options such as y Axis scale, yMax, DataZoom are still reserved (users's settings are respected)
+         * Update chart options when the number of selected samples changed
+         * The chart options such as y Axis scale, yMax, DataZoom are reserved (users's settings are respected)
          */
         $("#selectedsamples").on("change", function () {
             updateCoverageChartOption(getCurrentSamples(chart.getOption()));
@@ -970,7 +969,7 @@ function updateControlMenu() {
 /**
  * Write tooltip information to HTML table
  * @param {string} headers - Header of table
- * @param {Array<string>} rows - Rows of table
+ * @param {Array<Array<string>>} rows - Rows of table
  * @param {string} classes - Classes defined for table
  * @returns {string}
  */
