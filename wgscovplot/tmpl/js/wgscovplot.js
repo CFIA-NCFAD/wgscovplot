@@ -215,7 +215,7 @@ function getYAxes(samples, scaleType, yMax) {
                 fontWeight: "bolder",
             },
             nameLocation: "end",
-            min: 1,
+            min: scaleType === 'log' ? 1 : 0,
             max: yMax,
             minorSplitLine: {
                 show: true,
