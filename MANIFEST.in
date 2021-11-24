@@ -7,6 +7,7 @@ include wgscovplot/tmpl/wgscovplot_controlmenu_gui.html
 include wgscovplot/readme/README.md
 
 recursive-include wgscovplot/tmpl/js *.js
+recursive-include src *.js
 recursive-include tests *
 recursive-include docs *
 recursive-exclude * __pycache__

@@ -10,6 +10,9 @@
     <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
+    <script type="text/javascript">
+        {% include "js/wgscovplot.js" %}
+    </script>
 </head>
 <body>
 
@@ -18,7 +21,7 @@
     {% endblock %}
 
     <script type="text/javascript">
-        {% include "js/wgscovplot.js" %}
+        {% include "js/main_wgscovplot.js" %}
     </script>
 
     <script>
