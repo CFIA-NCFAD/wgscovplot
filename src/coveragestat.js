@@ -17,7 +17,7 @@ function meanCoverage(depths, start, end, gridIndex) {
 }
 
 /**
- *  Calculate genome coverage depth acorrding to threshold low
+ *  Calculate genome coverage depth according to threshold low
  * @param {Array<number>} depths - depth array
  * @param {number} start - start position
  * @param {number} end - end position
@@ -58,4 +58,4 @@ function medianCoverage(depths, start, end, gridIndex) {
     return median(subArray);
 }
 
-export {median, meanCoverage, genomeCoverage, medianCoverage}
+export {median, meanCoverage, genomeCoverage, medianCoverage};
