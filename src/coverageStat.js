@@ -10,7 +10,7 @@ const mean = require('lodash/mean');
  * @param {number} start - start position
  * @param {number} end - end position
  * @param {number} gridIndex - grid index of sample
- * @returns {number}
+ * @returns {number} - Returns the mean
  */
 function meanCoverage(depths, start, end, gridIndex) {
     var subArray = slice(depths[gridIndex], start - 1, end);
@@ -18,13 +18,13 @@ function meanCoverage(depths, start, end, gridIndex) {
 }
 
 /**
- *  Calculate genome coverage depth according to threshold low
+ *  Calculate coverage depth of genome region according to threshold low
  * @param {Array<number>} depths - depth array
  * @param {number} start - start position
  * @param {number} end - end position
  * @param {number} gridIndex - grid index of sample
  * @param {number} low - the threshold that wants to set
- * @returns {number}
+ * @returns {number} - Returns the genome coverage
  */
 function genomeCoverage(depths, start, end, gridIndex, low) {
     var subArray = slice(depths[gridIndex], start - 1, end);
@@ -36,8 +36,8 @@ function genomeCoverage(depths, start, end, gridIndex, low) {
 
 /**
  * Calculate median of an array
- * @param {Array<number>} arr
- * @returns {number}
+ * @param {Array<number>} arr - The array to iterate over
+ * @returns {number} - Returns the median
  */
 function median(arr) {
     var sortedArr = sortBy(arr)
@@ -52,11 +52,11 @@ function median(arr) {
  * @param {number} start - start position
  * @param {number} end - end position
  * @param {number} gridIndex - grid index of sample
- * @returns {number}
+ * @returns {number} - Returns the median
  */
-
 function medianCoverage(depths, start, end, gridIndex) {
     var subArray = slice(depths[gridIndex], start - 1, end);
     return median(subArray);
 }
+
 export {median, meanCoverage, genomeCoverage, medianCoverage};
