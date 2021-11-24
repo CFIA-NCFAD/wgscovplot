@@ -4,7 +4,8 @@ module.exports = {
         '_': lodash
     }
 };
-const {median} = require('./wgscovplot.js');
+//const {median} = require('../wgscovplot/tmpl/js/wgscovplot');
+import {median} from "../src/coveragestat";
 var arr = [1, 4 , 7 , 9];
 
 test('Median of an array [1, 4 , 7 , 9]', () => {
