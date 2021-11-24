@@ -1,3 +1,4 @@
+var _ = require(lodash)
 const {median} = require('./wgscovplot.js');
 var arr = [1, 4 , 7 , 9];
 

@@ -11,6 +11,7 @@ jobs:
       run: |
         yarn
         yarn add --dev jest
+        yarn add --dev lodash
     - name: Run Jest
       uses: stefanoeb/jest-action@1.0.3
       with:
