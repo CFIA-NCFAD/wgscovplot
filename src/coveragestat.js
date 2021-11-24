@@ -1,4 +1,8 @@
-
+// Select methods for smaller webpack bundles
+const slice = require('lodash/slice');
+const filter = require('lodash/filter');
+const sortBy = require('lodash/sortBy');
+const mean = require('lodash/mean');
 /**
  * Calculate mean coverage for a genome region
  * @param {Array<number>} depths - depths array
@@ -8,12 +12,12 @@
  * @returns {number}
  */
 function meanCoverage(depths, start, end, gridIndex) {
-    var subArray = _.slice(depths[gridIndex], start - 1, end);
-    return _.mean(subArray);
+    var subArray = slice(depths[gridIndex], start - 1, end);
+    return mean(subArray);
 }
 
 /**
- *  Calculate genome coverage depth acorrding to threshod low
+ *  Calculate genome coverage depth acorrding to threshold low
  * @param {Array<number>} depths - depth array
  * @param {number} start - start position
  * @param {number} end - end position
@@ -22,8 +26,8 @@ function meanCoverage(depths, start, end, gridIndex) {
  * @returns {number}
  */
 function genomeCoverage(depths, start, end, gridIndex, low) {
-    var subArray = _.slice(depths[gridIndex], start - 1, end);
-    var filetedArray = _.filter(subArray, function (x) {
+    var subArray = slice(depths[gridIndex], start - 1, end);
+    var filetedArray = filter(subArray, function (x) {
         return x >= low;
     });
     return (filetedArray.length / (end - start + 1)) * 100;
@@ -35,7 +39,7 @@ function genomeCoverage(depths, start, end, gridIndex, low) {
  * @returns {number}
  */
 function median(arr) {
-    var sortedArr = _.sortBy(arr)
+    var sortedArr = sortBy(arr)
     var half = Math.floor(sortedArr.length / 2);
     if (sortedArr.length % 2) return sortedArr[half];
     else return (sortedArr[half - 1] + sortedArr[half]) / 2.0;
@@ -50,7 +54,7 @@ function median(arr) {
  * @returns {number}
  */
 function medianCoverage(depths, start, end, gridIndex) {
-    var subArray = _.slice(depths[gridIndex], start - 1, end);
+    var subArray = slice(depths[gridIndex], start - 1, end);
     return median(subArray);
 }
 
