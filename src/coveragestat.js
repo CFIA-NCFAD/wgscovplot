@@ -3,6 +3,7 @@ const slice = require('lodash/slice');
 const filter = require('lodash/filter');
 const sortBy = require('lodash/sortBy');
 const mean = require('lodash/mean');
+
 /**
  * Calculate mean coverage for a genome region
  * @param {Array<number>} depths - depths array
@@ -15,6 +16,7 @@ function meanCoverage(depths, start, end, gridIndex) {
     var subArray = slice(depths[gridIndex], start - 1, end);
     return mean(subArray);
 }
+
 /**
  *  Calculate genome coverage depth according to threshold low
  * @param {Array<number>} depths - depth array
@@ -31,6 +33,7 @@ function genomeCoverage(depths, start, end, gridIndex, low) {
     });
     return (filetedArray.length / (end - start + 1)) * 100;
 }
+
 /**
  * Calculate median of an array
  * @param {Array<number>} arr
@@ -42,6 +45,7 @@ function median(arr) {
     if (sortedArr.length % 2) return sortedArr[half];
     else return (sortedArr[half - 1] + sortedArr[half]) / 2.0;
 }
+
 /**
  * Calculate median coverage for a genome region
  * @param {Array<number>} depths - depth array
@@ -50,6 +54,7 @@ function median(arr) {
  * @param {number} gridIndex - grid index of sample
  * @returns {number}
  */
+
 function medianCoverage(depths, start, end, gridIndex) {
     var subArray = slice(depths[gridIndex], start - 1, end);
     return median(subArray);
