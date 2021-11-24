@@ -8,8 +8,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build:js": "webpack --config webpack.config.js",
-    "build:jest": "cp wgscovplot/tmpl/js/wgscovplot.js tests"
+    "build:js": "webpack --config webpack.config.js && cp wgscovplot/tmpl/js/wgscovplot.js tests"
   },
   "repository": {
     "type": "git",
