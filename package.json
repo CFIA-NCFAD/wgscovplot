@@ -1,0 +1,32 @@
+{
+  "name": "wgscovplot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "wgscovplot/tmpl/wgscovplot.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "build:js": "webpack --config webpack.config.js",
+    "build:jest": "cp wgscovplot/tmpl/js/wgscovplot.js tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nhhaidee/wgscovplot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nhhaidee/wgscovplot/issues"
+  },
+  "homepage": "https://github.com/nhhaidee/wgscovplot#readme",
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "babel-loader": "^8.2.3",
+    "webpack": "^5.64.3",
+    "webpack-cli": "^4.9.1"
+  }
+}
