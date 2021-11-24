@@ -4,7 +4,7 @@ module.exports = {
     entry: './src/index.js',
     output:{
         path: path.resolve(__dirname, './wgscovplot/tmpl/js'),
-        filename: "wgscovplot.js",
+        filename: "wgscovplot.bundle.js",
         library: "wgscovplot",
         libraryTarget: "umd",
         globalObject: "this"

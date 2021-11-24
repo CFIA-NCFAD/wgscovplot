@@ -1,1 +1,961 @@
-!function(r,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.wgscovplot=t():r.wgscovplot=t()}(this,(function(){return(()=>{var r={8552:(r,t,e)=>{var n=e(852)(e(5639),"DataView");r.exports=n},1989:(r,t,e)=>{var n=e(1789),o=e(401),a=e(7667),u=e(1327),i=e(1866);function c(r){var t=-1,e=null==r?0:r.length;for(this.clear();++t<e;){var n=r[t];this.set(n[0],n[1])}}c.prototype.clear=n,c.prototype.delete=o,c.prototype.get=a,c.prototype.has=u,c.prototype.set=i,r.exports=c},8407:(r,t,e)=>{var n=e(7040),o=e(4125),a=e(2117),u=e(7529),i=e(4705);function c(r){var t=-1,e=null==r?0:r.length;for(this.clear();++t<e;){var n=r[t];this.set(n[0],n[1])}}c.prototype.clear=n,c.prototype.delete=o,c.prototype.get=a,c.prototype.has=u,c.prototype.set=i,r.exports=c},7071:(r,t,e)=>{var n=e(852)(e(5639),"Map");r.exports=n},3369:(r,t,e)=>{var n=e(4785),o=e(1285),a=e(6e3),u=e(9916),i=e(5265);function c(r){var t=-1,e=null==r?0:r.length;for(this.clear();++t<e;){var n=r[t];this.set(n[0],n[1])}}c.prototype.clear=n,c.prototype.delete=o,c.prototype.get=a,c.prototype.has=u,c.prototype.set=i,r.exports=c},3818:(r,t,e)=>{var n=e(852)(e(5639),"Promise");r.exports=n},8525:(r,t,e)=>{var n=e(852)(e(5639),"Set");r.exports=n},8668:(r,t,e)=>{var n=e(3369),o=e(619),a=e(2385);function u(r){var t=-1,e=null==r?0:r.length;for(this.__data__=new n;++t<e;)this.add(r[t])}u.prototype.add=u.prototype.push=o,u.prototype.has=a,r.exports=u},6384:(r,t,e)=>{var n=e(8407),o=e(7465),a=e(3779),u=e(7599),i=e(4758),c=e(4309);function s(r){var t=this.__data__=new n(r);this.size=t.size}s.prototype.clear=o,s.prototype.delete=a,s.prototype.get=u,s.prototype.has=i,s.prototype.set=c,r.exports=s},2705:(r,t,e)=>{var n=e(5639).Symbol;r.exports=n},1149:(r,t,e)=>{var n=e(5639).Uint8Array;r.exports=n},577:(r,t,e)=>{var n=e(852)(e(5639),"WeakMap");r.exports=n},6874:r=>{r.exports=function(r,t,e){switch(e.length){case 0:return r.call(t);case 1:return r.call(t,e[0]);case 2:return r.call(t,e[0],e[1]);case 3:return r.call(t,e[0],e[1],e[2])}return r.apply(t,e)}},4963:r=>{r.exports=function(r,t){for(var e=-1,n=null==r?0:r.length,o=0,a=[];++e<n;){var u=r[e];t(u,e,r)&&(a[o++]=u)}return a}},4636:(r,t,e)=>{var n=e(2545),o=e(5694),a=e(1469),u=e(4144),i=e(5776),c=e(6719),s=Object.prototype.hasOwnProperty;r.exports=function(r,t){var e=a(r),f=!e&&o(r),p=!e&&!f&&u(r),v=!e&&!f&&!p&&c(r),l=e||f||p||v,h=l?n(r.length,String):[],x=h.length;for(var y in r)!t&&!s.call(r,y)||l&&("length"==y||p&&("offset"==y||"parent"==y)||v&&("buffer"==y||"byteLength"==y||"byteOffset"==y)||i(y,x))||h.push(y);return h}},9932:r=>{r.exports=function(r,t){for(var e=-1,n=null==r?0:r.length,o=Array(n);++e<n;)o[e]=t(r[e],e,r);return o}},2488:r=>{r.exports=function(r,t){for(var e=-1,n=t.length,o=r.length;++e<n;)r[o+e]=t[e];return r}},2908:r=>{r.exports=function(r,t){for(var e=-1,n=null==r?0:r.length;++e<n;)if(t(r[e],e,r))return!0;return!1}},8470:(r,t,e)=>{var n=e(7813);r.exports=function(r,t){for(var e=r.length;e--;)if(n(r[e][0],t))return e;return-1}},9881:(r,t,e)=>{var n=e(7816),o=e(9291)(n);r.exports=o},760:(r,t,e)=>{var n=e(9881);r.exports=function(r,t){var e=[];return n(r,(function(r,n,o){t(r,n,o)&&e.push(r)})),e}},1078:(r,t,e)=>{var n=e(2488),o=e(7285);r.exports=function r(t,e,a,u,i){var c=-1,s=t.length;for(a||(a=o),i||(i=[]);++c<s;){var f=t[c];e>0&&a(f)?e>1?r(f,e-1,a,u,i):n(i,f):u||(i[i.length]=f)}return i}},8483:(r,t,e)=>{var n=e(5063)();r.exports=n},7816:(r,t,e)=>{var n=e(8483),o=e(3674);r.exports=function(r,t){return r&&n(r,t,o)}},7786:(r,t,e)=>{var n=e(1811),o=e(327);r.exports=function(r,t){for(var e=0,a=(t=n(t,r)).length;null!=r&&e<a;)r=r[o(t[e++])];return e&&e==a?r:void 0}},8866:(r,t,e)=>{var n=e(2488),o=e(1469);r.exports=function(r,t,e){var a=t(r);return o(r)?a:n(a,e(r))}},4239:(r,t,e)=>{var n=e(2705),o=e(9607),a=e(2333),u=n?n.toStringTag:void 0;r.exports=function(r){return null==r?void 0===r?"[object Undefined]":"[object Null]":u&&u in Object(r)?o(r):a(r)}},13:r=>{r.exports=function(r,t){return null!=r&&t in Object(r)}},9454:(r,t,e)=>{var n=e(4239),o=e(7005);r.exports=function(r){return o(r)&&"[object Arguments]"==n(r)}},939:(r,t,e)=>{var n=e(2492),o=e(7005);r.exports=function r(t,e,a,u,i){return t===e||(null==t||null==e||!o(t)&&!o(e)?t!=t&&e!=e:n(t,e,a,u,r,i))}},2492:(r,t,e)=>{var n=e(6384),o=e(7114),a=e(8351),u=e(6096),i=e(4160),c=e(1469),s=e(4144),f=e(6719),p="[object Arguments]",v="[object Array]",l="[object Object]",h=Object.prototype.hasOwnProperty;r.exports=function(r,t,e,x,y,b){var d=c(r),_=c(t),g=d?v:i(r),j=_?v:i(t),O=(g=g==p?l:g)==l,w=(j=j==p?l:j)==l,m=g==j;if(m&&s(r)){if(!s(t))return!1;d=!0,O=!1}if(m&&!O)return b||(b=new n),d||f(r)?o(r,t,e,x,y,b):a(r,t,g,e,x,y,b);if(!(1&e)){var A=O&&h.call(r,"__wrapped__"),S=w&&h.call(t,"__wrapped__");if(A||S){var z=A?r.value():r,P=S?t.value():t;return b||(b=new n),y(z,P,e,x,b)}}return!!m&&(b||(b=new n),u(r,t,e,x,y,b))}},2958:(r,t,e)=>{var n=e(6384),o=e(939);r.exports=function(r,t,e,a){var u=e.length,i=u,c=!a;if(null==r)return!i;for(r=Object(r);u--;){var s=e[u];if(c&&s[2]?s[1]!==r[s[0]]:!(s[0]in r))return!1}for(;++u<i;){var f=(s=e[u])[0],p=r[f],v=s[1];if(c&&s[2]){if(void 0===p&&!(f in r))return!1}else{var l=new n;if(a)var h=a(p,v,f,r,t,l);if(!(void 0===h?o(v,p,3,a,l):h))return!1}}return!0}},8458:(r,t,e)=>{var n=e(3560),o=e(5346),a=e(3218),u=e(346),i=/^\[object .+?Constructor\]$/,c=Function.prototype,s=Object.prototype,f=c.toString,p=s.hasOwnProperty,v=RegExp("^"+f.call(p).replace(/[\\^$.*+?()[\]{}|]/g,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$");r.exports=function(r){return!(!a(r)||o(r))&&(n(r)?v:i).test(u(r))}},8749:(r,t,e)=>{var n=e(4239),o=e(1780),a=e(7005),u={};u["[object Float32Array]"]=u["[object Float64Array]"]=u["[object Int8Array]"]=u["[object Int16Array]"]=u["[object Int32Array]"]=u["[object Uint8Array]"]=u["[object Uint8ClampedArray]"]=u["[object Uint16Array]"]=u["[object Uint32Array]"]=!0,u["[object Arguments]"]=u["[object Array]"]=u["[object ArrayBuffer]"]=u["[object Boolean]"]=u["[object DataView]"]=u["[object Date]"]=u["[object Error]"]=u["[object Function]"]=u["[object Map]"]=u["[object Number]"]=u["[object Object]"]=u["[object RegExp]"]=u["[object Set]"]=u["[object String]"]=u["[object WeakMap]"]=!1,r.exports=function(r){return a(r)&&o(r.length)&&!!u[n(r)]}},7206:(r,t,e)=>{var n=e(1573),o=e(6432),a=e(6557),u=e(1469),i=e(9601);r.exports=function(r){return"function"==typeof r?r:null==r?a:"object"==typeof r?u(r)?o(r[0],r[1]):n(r):i(r)}},280:(r,t,e)=>{var n=e(5726),o=e(6916),a=Object.prototype.hasOwnProperty;r.exports=function(r){if(!n(r))return o(r);var t=[];for(var e in Object(r))a.call(r,e)&&"constructor"!=e&&t.push(e);return t}},9199:(r,t,e)=>{var n=e(9881),o=e(8612);r.exports=function(r,t){var e=-1,a=o(r)?Array(r.length):[];return n(r,(function(r,n,o){a[++e]=t(r,n,o)})),a}},1573:(r,t,e)=>{var n=e(2958),o=e(1499),a=e(2634);r.exports=function(r){var t=o(r);return 1==t.length&&t[0][2]?a(t[0][0],t[0][1]):function(e){return e===r||n(e,r,t)}}},6432:(r,t,e)=>{var n=e(939),o=e(7361),a=e(9095),u=e(5403),i=e(9162),c=e(2634),s=e(327);r.exports=function(r,t){return u(r)&&i(t)?c(s(r),t):function(e){var u=o(e,r);return void 0===u&&u===t?a(e,r):n(t,u,3)}}},9787:(r,t,e)=>{var n=e(7762);r.exports=function(r,t){var e=null==r?0:r.length;return e?n(r,t)/e:NaN}},2689:(r,t,e)=>{var n=e(9932),o=e(7786),a=e(7206),u=e(9199),i=e(1131),c=e(7518),s=e(5022),f=e(6557),p=e(1469);r.exports=function(r,t,e){t=t.length?n(t,(function(r){return p(r)?function(t){return o(t,1===r.length?r[0]:r)}:r})):[f];var v=-1;t=n(t,c(a));var l=u(r,(function(r,e,o){return{criteria:n(t,(function(t){return t(r)})),index:++v,value:r}}));return i(l,(function(r,t){return s(r,t,e)}))}},371:r=>{r.exports=function(r){return function(t){return null==t?void 0:t[r]}}},9152:(r,t,e)=>{var n=e(7786);r.exports=function(r){return function(t){return n(t,r)}}},5976:(r,t,e)=>{var n=e(6557),o=e(5357),a=e(61);r.exports=function(r,t){return a(o(r,t,n),r+"")}},6560:(r,t,e)=>{var n=e(5703),o=e(8777),a=e(6557),u=o?function(r,t){return o(r,"toString",{configurable:!0,enumerable:!1,value:n(t),writable:!0})}:a;r.exports=u},4259:r=>{r.exports=function(r,t,e){var n=-1,o=r.length;t<0&&(t=-t>o?0:o+t),(e=e>o?o:e)<0&&(e+=o),o=t>e?0:e-t>>>0,t>>>=0;for(var a=Array(o);++n<o;)a[n]=r[n+t];return a}},1131:r=>{r.exports=function(r,t){var e=r.length;for(r.sort(t);e--;)r[e]=r[e].value;return r}},7762:r=>{r.exports=function(r,t){for(var e,n=-1,o=r.length;++n<o;){var a=t(r[n]);void 0!==a&&(e=void 0===e?a:e+a)}return e}},2545:r=>{r.exports=function(r,t){for(var e=-1,n=Array(r);++e<r;)n[e]=t(e);return n}},531:(r,t,e)=>{var n=e(2705),o=e(9932),a=e(1469),u=e(3448),i=n?n.prototype:void 0,c=i?i.toString:void 0;r.exports=function r(t){if("string"==typeof t)return t;if(a(t))return o(t,r)+"";if(u(t))return c?c.call(t):"";var e=t+"";return"0"==e&&1/t==-1/0?"-0":e}},7561:(r,t,e)=>{var n=e(7990),o=/^\s+/;r.exports=function(r){return r?r.slice(0,n(r)+1).replace(o,""):r}},7518:r=>{r.exports=function(r){return function(t){return r(t)}}},4757:r=>{r.exports=function(r,t){return r.has(t)}},1811:(r,t,e)=>{var n=e(1469),o=e(5403),a=e(5514),u=e(9833);r.exports=function(r,t){return n(r)?r:o(r,t)?[r]:a(u(r))}},6393:(r,t,e)=>{var n=e(3448);r.exports=function(r,t){if(r!==t){var e=void 0!==r,o=null===r,a=r==r,u=n(r),i=void 0!==t,c=null===t,s=t==t,f=n(t);if(!c&&!f&&!u&&r>t||u&&i&&s&&!c&&!f||o&&i&&s||!e&&s||!a)return 1;if(!o&&!u&&!f&&r<t||f&&e&&a&&!o&&!u||c&&e&&a||!i&&a||!s)return-1}return 0}},5022:(r,t,e)=>{var n=e(6393);r.exports=function(r,t,e){for(var o=-1,a=r.criteria,u=t.criteria,i=a.length,c=e.length;++o<i;){var s=n(a[o],u[o]);if(s)return o>=c?s:s*("desc"==e[o]?-1:1)}return r.index-t.index}},4429:(r,t,e)=>{var n=e(5639)["__core-js_shared__"];r.exports=n},9291:(r,t,e)=>{var n=e(8612);r.exports=function(r,t){return function(e,o){if(null==e)return e;if(!n(e))return r(e,o);for(var a=e.length,u=t?a:-1,i=Object(e);(t?u--:++u<a)&&!1!==o(i[u],u,i););return e}}},5063:r=>{r.exports=function(r){return function(t,e,n){for(var o=-1,a=Object(t),u=n(t),i=u.length;i--;){var c=u[r?i:++o];if(!1===e(a[c],c,a))break}return t}}},8777:(r,t,e)=>{var n=e(852),o=function(){try{var r=n(Object,"defineProperty");return r({},"",{}),r}catch(r){}}();r.exports=o},7114:(r,t,e)=>{var n=e(8668),o=e(2908),a=e(4757);r.exports=function(r,t,e,u,i,c){var s=1&e,f=r.length,p=t.length;if(f!=p&&!(s&&p>f))return!1;var v=c.get(r),l=c.get(t);if(v&&l)return v==t&&l==r;var h=-1,x=!0,y=2&e?new n:void 0;for(c.set(r,t),c.set(t,r);++h<f;){var b=r[h],d=t[h];if(u)var _=s?u(d,b,h,t,r,c):u(b,d,h,r,t,c);if(void 0!==_){if(_)continue;x=!1;break}if(y){if(!o(t,(function(r,t){if(!a(y,t)&&(b===r||i(b,r,e,u,c)))return y.push(t)}))){x=!1;break}}else if(b!==d&&!i(b,d,e,u,c)){x=!1;break}}return c.delete(r),c.delete(t),x}},8351:(r,t,e)=>{var n=e(2705),o=e(1149),a=e(7813),u=e(7114),i=e(8776),c=e(1814),s=n?n.prototype:void 0,f=s?s.valueOf:void 0;r.exports=function(r,t,e,n,s,p,v){switch(e){case"[object DataView]":if(r.byteLength!=t.byteLength||r.byteOffset!=t.byteOffset)return!1;r=r.buffer,t=t.buffer;case"[object ArrayBuffer]":return!(r.byteLength!=t.byteLength||!p(new o(r),new o(t)));case"[object Boolean]":case"[object Date]":case"[object Number]":return a(+r,+t);case"[object Error]":return r.name==t.name&&r.message==t.message;case"[object RegExp]":case"[object String]":return r==t+"";case"[object Map]":var l=i;case"[object Set]":var h=1&n;if(l||(l=c),r.size!=t.size&&!h)return!1;var x=v.get(r);if(x)return x==t;n|=2,v.set(r,t);var y=u(l(r),l(t),n,s,p,v);return v.delete(r),y;case"[object Symbol]":if(f)return f.call(r)==f.call(t)}return!1}},6096:(r,t,e)=>{var n=e(8234),o=Object.prototype.hasOwnProperty;r.exports=function(r,t,e,a,u,i){var c=1&e,s=n(r),f=s.length;if(f!=n(t).length&&!c)return!1;for(var p=f;p--;){var v=s[p];if(!(c?v in t:o.call(t,v)))return!1}var l=i.get(r),h=i.get(t);if(l&&h)return l==t&&h==r;var x=!0;i.set(r,t),i.set(t,r);for(var y=c;++p<f;){var b=r[v=s[p]],d=t[v];if(a)var _=c?a(d,b,v,t,r,i):a(b,d,v,r,t,i);if(!(void 0===_?b===d||u(b,d,e,a,i):_)){x=!1;break}y||(y="constructor"==v)}if(x&&!y){var g=r.constructor,j=t.constructor;g==j||!("constructor"in r)||!("constructor"in t)||"function"==typeof g&&g instanceof g&&"function"==typeof j&&j instanceof j||(x=!1)}return i.delete(r),i.delete(t),x}},1957:(r,t,e)=>{var n="object"==typeof e.g&&e.g&&e.g.Object===Object&&e.g;r.exports=n},8234:(r,t,e)=>{var n=e(8866),o=e(9551),a=e(3674);r.exports=function(r){return n(r,a,o)}},5050:(r,t,e)=>{var n=e(7019);r.exports=function(r,t){var e=r.__data__;return n(t)?e["string"==typeof t?"string":"hash"]:e.map}},1499:(r,t,e)=>{var n=e(9162),o=e(3674);r.exports=function(r){for(var t=o(r),e=t.length;e--;){var a=t[e],u=r[a];t[e]=[a,u,n(u)]}return t}},852:(r,t,e)=>{var n=e(8458),o=e(7801);r.exports=function(r,t){var e=o(r,t);return n(e)?e:void 0}},9607:(r,t,e)=>{var n=e(2705),o=Object.prototype,a=o.hasOwnProperty,u=o.toString,i=n?n.toStringTag:void 0;r.exports=function(r){var t=a.call(r,i),e=r[i];try{r[i]=void 0;var n=!0}catch(r){}var o=u.call(r);return n&&(t?r[i]=e:delete r[i]),o}},9551:(r,t,e)=>{var n=e(4963),o=e(479),a=Object.prototype.propertyIsEnumerable,u=Object.getOwnPropertySymbols,i=u?function(r){return null==r?[]:(r=Object(r),n(u(r),(function(t){return a.call(r,t)})))}:o;r.exports=i},4160:(r,t,e)=>{var n=e(8552),o=e(7071),a=e(3818),u=e(8525),i=e(577),c=e(4239),s=e(346),f="[object Map]",p="[object Promise]",v="[object Set]",l="[object WeakMap]",h="[object DataView]",x=s(n),y=s(o),b=s(a),d=s(u),_=s(i),g=c;(n&&g(new n(new ArrayBuffer(1)))!=h||o&&g(new o)!=f||a&&g(a.resolve())!=p||u&&g(new u)!=v||i&&g(new i)!=l)&&(g=function(r){var t=c(r),e="[object Object]"==t?r.constructor:void 0,n=e?s(e):"";if(n)switch(n){case x:return h;case y:return f;case b:return p;case d:return v;case _:return l}return t}),r.exports=g},7801:r=>{r.exports=function(r,t){return null==r?void 0:r[t]}},222:(r,t,e)=>{var n=e(1811),o=e(5694),a=e(1469),u=e(5776),i=e(1780),c=e(327);r.exports=function(r,t,e){for(var s=-1,f=(t=n(t,r)).length,p=!1;++s<f;){var v=c(t[s]);if(!(p=null!=r&&e(r,v)))break;r=r[v]}return p||++s!=f?p:!!(f=null==r?0:r.length)&&i(f)&&u(v,f)&&(a(r)||o(r))}},1789:(r,t,e)=>{var n=e(4536);r.exports=function(){this.__data__=n?n(null):{},this.size=0}},401:r=>{r.exports=function(r){var t=this.has(r)&&delete this.__data__[r];return this.size-=t?1:0,t}},7667:(r,t,e)=>{var n=e(4536),o=Object.prototype.hasOwnProperty;r.exports=function(r){var t=this.__data__;if(n){var e=t[r];return"__lodash_hash_undefined__"===e?void 0:e}return o.call(t,r)?t[r]:void 0}},1327:(r,t,e)=>{var n=e(4536),o=Object.prototype.hasOwnProperty;r.exports=function(r){var t=this.__data__;return n?void 0!==t[r]:o.call(t,r)}},1866:(r,t,e)=>{var n=e(4536);r.exports=function(r,t){var e=this.__data__;return this.size+=this.has(r)?0:1,e[r]=n&&void 0===t?"__lodash_hash_undefined__":t,this}},7285:(r,t,e)=>{var n=e(2705),o=e(5694),a=e(1469),u=n?n.isConcatSpreadable:void 0;r.exports=function(r){return a(r)||o(r)||!!(u&&r&&r[u])}},5776:r=>{var t=/^(?:0|[1-9]\d*)$/;r.exports=function(r,e){var n=typeof r;return!!(e=null==e?9007199254740991:e)&&("number"==n||"symbol"!=n&&t.test(r))&&r>-1&&r%1==0&&r<e}},6612:(r,t,e)=>{var n=e(7813),o=e(8612),a=e(5776),u=e(3218);r.exports=function(r,t,e){if(!u(e))return!1;var i=typeof t;return!!("number"==i?o(e)&&a(t,e.length):"string"==i&&t in e)&&n(e[t],r)}},5403:(r,t,e)=>{var n=e(1469),o=e(3448),a=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,u=/^\w*$/;r.exports=function(r,t){if(n(r))return!1;var e=typeof r;return!("number"!=e&&"symbol"!=e&&"boolean"!=e&&null!=r&&!o(r))||u.test(r)||!a.test(r)||null!=t&&r in Object(t)}},7019:r=>{r.exports=function(r){var t=typeof r;return"string"==t||"number"==t||"symbol"==t||"boolean"==t?"__proto__"!==r:null===r}},5346:(r,t,e)=>{var n,o=e(4429),a=(n=/[^.]+$/.exec(o&&o.keys&&o.keys.IE_PROTO||""))?"Symbol(src)_1."+n:"";r.exports=function(r){return!!a&&a in r}},5726:r=>{var t=Object.prototype;r.exports=function(r){var e=r&&r.constructor;return r===("function"==typeof e&&e.prototype||t)}},9162:(r,t,e)=>{var n=e(3218);r.exports=function(r){return r==r&&!n(r)}},7040:r=>{r.exports=function(){this.__data__=[],this.size=0}},4125:(r,t,e)=>{var n=e(8470),o=Array.prototype.splice;r.exports=function(r){var t=this.__data__,e=n(t,r);return!(e<0||(e==t.length-1?t.pop():o.call(t,e,1),--this.size,0))}},2117:(r,t,e)=>{var n=e(8470);r.exports=function(r){var t=this.__data__,e=n(t,r);return e<0?void 0:t[e][1]}},7529:(r,t,e)=>{var n=e(8470);r.exports=function(r){return n(this.__data__,r)>-1}},4705:(r,t,e)=>{var n=e(8470);r.exports=function(r,t){var e=this.__data__,o=n(e,r);return o<0?(++this.size,e.push([r,t])):e[o][1]=t,this}},4785:(r,t,e)=>{var n=e(1989),o=e(8407),a=e(7071);r.exports=function(){this.size=0,this.__data__={hash:new n,map:new(a||o),string:new n}}},1285:(r,t,e)=>{var n=e(5050);r.exports=function(r){var t=n(this,r).delete(r);return this.size-=t?1:0,t}},6e3:(r,t,e)=>{var n=e(5050);r.exports=function(r){return n(this,r).get(r)}},9916:(r,t,e)=>{var n=e(5050);r.exports=function(r){return n(this,r).has(r)}},5265:(r,t,e)=>{var n=e(5050);r.exports=function(r,t){var e=n(this,r),o=e.size;return e.set(r,t),this.size+=e.size==o?0:1,this}},8776:r=>{r.exports=function(r){var t=-1,e=Array(r.size);return r.forEach((function(r,n){e[++t]=[n,r]})),e}},2634:r=>{r.exports=function(r,t){return function(e){return null!=e&&e[r]===t&&(void 0!==t||r in Object(e))}}},4523:(r,t,e)=>{var n=e(8306);r.exports=function(r){var t=n(r,(function(r){return 500===e.size&&e.clear(),r})),e=t.cache;return t}},4536:(r,t,e)=>{var n=e(852)(Object,"create");r.exports=n},6916:(r,t,e)=>{var n=e(5569)(Object.keys,Object);r.exports=n},1167:(r,t,e)=>{r=e.nmd(r);var n=e(1957),o=t&&!t.nodeType&&t,a=o&&r&&!r.nodeType&&r,u=a&&a.exports===o&&n.process,i=function(){try{return a&&a.require&&a.require("util").types||u&&u.binding&&u.binding("util")}catch(r){}}();r.exports=i},2333:r=>{var t=Object.prototype.toString;r.exports=function(r){return t.call(r)}},5569:r=>{r.exports=function(r,t){return function(e){return r(t(e))}}},5357:(r,t,e)=>{var n=e(6874),o=Math.max;r.exports=function(r,t,e){return t=o(void 0===t?r.length-1:t,0),function(){for(var a=arguments,u=-1,i=o(a.length-t,0),c=Array(i);++u<i;)c[u]=a[t+u];u=-1;for(var s=Array(t+1);++u<t;)s[u]=a[u];return s[t]=e(c),n(r,this,s)}}},5639:(r,t,e)=>{var n=e(1957),o="object"==typeof self&&self&&self.Object===Object&&self,a=n||o||Function("return this")();r.exports=a},619:r=>{r.exports=function(r){return this.__data__.set(r,"__lodash_hash_undefined__"),this}},2385:r=>{r.exports=function(r){return this.__data__.has(r)}},1814:r=>{r.exports=function(r){var t=-1,e=Array(r.size);return r.forEach((function(r){e[++t]=r})),e}},61:(r,t,e)=>{var n=e(6560),o=e(1275)(n);r.exports=o},1275:r=>{var t=Date.now;r.exports=function(r){var e=0,n=0;return function(){var o=t(),a=16-(o-n);if(n=o,a>0){if(++e>=800)return arguments[0]}else e=0;return r.apply(void 0,arguments)}}},7465:(r,t,e)=>{var n=e(8407);r.exports=function(){this.__data__=new n,this.size=0}},3779:r=>{r.exports=function(r){var t=this.__data__,e=t.delete(r);return this.size=t.size,e}},7599:r=>{r.exports=function(r){return this.__data__.get(r)}},4758:r=>{r.exports=function(r){return this.__data__.has(r)}},4309:(r,t,e)=>{var n=e(8407),o=e(7071),a=e(3369);r.exports=function(r,t){var e=this.__data__;if(e instanceof n){var u=e.__data__;if(!o||u.length<199)return u.push([r,t]),this.size=++e.size,this;e=this.__data__=new a(u)}return e.set(r,t),this.size=e.size,this}},5514:(r,t,e)=>{var n=e(4523),o=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,a=/\\(\\)?/g,u=n((function(r){var t=[];return 46===r.charCodeAt(0)&&t.push(""),r.replace(o,(function(r,e,n,o){t.push(n?o.replace(a,"$1"):e||r)})),t}));r.exports=u},327:(r,t,e)=>{var n=e(3448);r.exports=function(r){if("string"==typeof r||n(r))return r;var t=r+"";return"0"==t&&1/r==-1/0?"-0":t}},346:r=>{var t=Function.prototype.toString;r.exports=function(r){if(null!=r){try{return t.call(r)}catch(r){}try{return r+""}catch(r){}}return""}},7990:r=>{var t=/\s/;r.exports=function(r){for(var e=r.length;e--&&t.test(r.charAt(e)););return e}},5703:r=>{r.exports=function(r){return function(){return r}}},7813:r=>{r.exports=function(r,t){return r===t||r!=r&&t!=t}},3105:(r,t,e)=>{var n=e(4963),o=e(760),a=e(7206),u=e(1469);r.exports=function(r,t){return(u(r)?n:o)(r,a(t,3))}},7361:(r,t,e)=>{var n=e(7786);r.exports=function(r,t,e){var o=null==r?void 0:n(r,t);return void 0===o?e:o}},9095:(r,t,e)=>{var n=e(13),o=e(222);r.exports=function(r,t){return null!=r&&o(r,t,n)}},6557:r=>{r.exports=function(r){return r}},5694:(r,t,e)=>{var n=e(9454),o=e(7005),a=Object.prototype,u=a.hasOwnProperty,i=a.propertyIsEnumerable,c=n(function(){return arguments}())?n:function(r){return o(r)&&u.call(r,"callee")&&!i.call(r,"callee")};r.exports=c},1469:r=>{var t=Array.isArray;r.exports=t},8612:(r,t,e)=>{var n=e(3560),o=e(1780);r.exports=function(r){return null!=r&&o(r.length)&&!n(r)}},4144:(r,t,e)=>{r=e.nmd(r);var n=e(5639),o=e(5062),a=t&&!t.nodeType&&t,u=a&&r&&!r.nodeType&&r,i=u&&u.exports===a?n.Buffer:void 0,c=(i?i.isBuffer:void 0)||o;r.exports=c},3560:(r,t,e)=>{var n=e(4239),o=e(3218);r.exports=function(r){if(!o(r))return!1;var t=n(r);return"[object Function]"==t||"[object GeneratorFunction]"==t||"[object AsyncFunction]"==t||"[object Proxy]"==t}},1780:r=>{r.exports=function(r){return"number"==typeof r&&r>-1&&r%1==0&&r<=9007199254740991}},3218:r=>{r.exports=function(r){var t=typeof r;return null!=r&&("object"==t||"function"==t)}},7005:r=>{r.exports=function(r){return null!=r&&"object"==typeof r}},3448:(r,t,e)=>{var n=e(4239),o=e(7005);r.exports=function(r){return"symbol"==typeof r||o(r)&&"[object Symbol]"==n(r)}},6719:(r,t,e)=>{var n=e(8749),o=e(7518),a=e(1167),u=a&&a.isTypedArray,i=u?o(u):n;r.exports=i},3674:(r,t,e)=>{var n=e(4636),o=e(280),a=e(8612);r.exports=function(r){return a(r)?n(r):o(r)}},8659:(r,t,e)=>{var n=e(9787),o=e(6557);r.exports=function(r){return n(r,o)}},8306:(r,t,e)=>{var n=e(3369);function o(r,t){if("function"!=typeof r||null!=t&&"function"!=typeof t)throw new TypeError("Expected a function");var e=function(){var n=arguments,o=t?t.apply(this,n):n[0],a=e.cache;if(a.has(o))return a.get(o);var u=r.apply(this,n);return e.cache=a.set(o,u)||a,u};return e.cache=new(o.Cache||n),e}o.Cache=n,r.exports=o},9601:(r,t,e)=>{var n=e(371),o=e(9152),a=e(5403),u=e(327);r.exports=function(r){return a(r)?n(u(r)):o(r)}},2571:(r,t,e)=>{var n=e(4259),o=e(6612),a=e(554);r.exports=function(r,t,e){var u=null==r?0:r.length;return u?(e&&"number"!=typeof e&&o(r,t,e)?(t=0,e=u):(t=null==t?0:a(t),e=void 0===e?u:a(e)),n(r,t,e)):[]}},9734:(r,t,e)=>{var n=e(1078),o=e(2689),a=e(5976),u=e(6612),i=a((function(r,t){if(null==r)return[];var e=t.length;return e>1&&u(r,t[0],t[1])?t=[]:e>2&&u(t[0],t[1],t[2])&&(t=[t[0]]),o(r,n(t,1),[])}));r.exports=i},479:r=>{r.exports=function(){return[]}},5062:r=>{r.exports=function(){return!1}},8601:(r,t,e)=>{var n=e(4841);r.exports=function(r){return r?Infinity===(r=n(r))||r===-1/0?17976931348623157e292*(r<0?-1:1):r==r?r:0:0===r?r:0}},554:(r,t,e)=>{var n=e(8601);r.exports=function(r){var t=n(r),e=t%1;return t==t?e?t-e:t:0}},4841:(r,t,e)=>{var n=e(7561),o=e(3218),a=e(3448),u=/^[-+]0x[0-9a-f]+$/i,i=/^0b[01]+$/i,c=/^0o[0-7]+$/i,s=parseInt;r.exports=function(r){if("number"==typeof r)return r;if(a(r))return NaN;if(o(r)){var t="function"==typeof r.valueOf?r.valueOf():r;r=o(t)?t+"":t}if("string"!=typeof r)return 0===r?r:+r;r=n(r);var e=i.test(r);return e||c.test(r)?s(r.slice(2),e?2:8):u.test(r)?NaN:+r}},9833:(r,t,e)=>{var n=e(531);r.exports=function(r){return null==r?"":n(r)}}},t={};function e(n){var o=t[n];if(void 0!==o)return o.exports;var a=t[n]={id:n,loaded:!1,exports:{}};return r[n](a,a.exports,e),a.loaded=!0,a.exports}e.d=(r,t)=>{for(var n in t)e.o(t,n)&&!e.o(r,n)&&Object.defineProperty(r,n,{enumerable:!0,get:t[n]})},e.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(r){if("object"==typeof window)return window}}(),e.o=(r,t)=>Object.prototype.hasOwnProperty.call(r,t),e.r=r=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(r,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(r,"__esModule",{value:!0})},e.nmd=r=>(r.paths=[],r.children||(r.children=[]),r);var n={};return(()=>{"use strict";e.r(n),e.d(n,{genomeCoverage:()=>i,meanCoverage:()=>u,median:()=>c,medianCoverage:()=>s,renderPoints:()=>f});const r=e(2571),t=e(3105),o=e(9734),a=e(8659);function u(t,e,n,o){var u=r(t[o],e-1,n);return a(u)}function i(e,n,o,a,u){var i=r(e[a],n-1,o);return t(i,(function(r){return r>=u})).length/(o-n+1)*100}function c(r){var t=o(r),e=Math.floor(t.length/2);return t.length%2?t[e]:(t[e-1]+t[e])/2}function s(t,e,n,o){return c(r(t[o],e-1,n))}function f(r,t,e,n,o,a){return"gene_feature"===a?1===o?[[r,t],[r+e-e/100,t],[r+e,t-n/2],[r+e-e/100,t-n],[r,t-n]]:[[r,t-n/2],[r+e/100,t],[r+e,t],[r+e,t-n],[r+e/100,t-n]]:"amplicon_feature"===a?[[r,t],[r+e,t],[r+e,t-n],[r,t-n]]:null}})(),n})()}));
+/**
+ * Renders the gene/amplicon features shape
+ * @param params - Echarts arg
+ * @param api - Echarts arg
+ */
+function renderGeneFeatures(params, api) {
+    var points, shape, rotateAngle;
+    var start, end, height, width, x, y;
+    var categoryIndex = params.dataIndex;
+    var feature = geneFeatureData[categoryIndex];
+    start = api.coord([feature.value.start, categoryIndex]);
+    if (categoryIndex === 0) {
+        yStart = start[1];
+    }
+    end = api.coord([feature.value.end, categoryIndex]);
+    height = geneFeatureProperties["rec_items_height"];
+    width = end[0] - start[0];
+    x = start[0];
+    y = yStart - height / 2 - feature.value.level;
+    points = wgscovplot.renderPoints(x, y, width, height, feature.value.strand, feature.value.type);
+    if (feature.value.type === 'gene_feature') {
+        rotateAngle = (feature.value.strand === 1) ? 0.7 : -0.7;
+        shape = echarts.graphic.clipPointsByRect(points, {
+            x: params.coordSys.x,
+            y: params.coordSys.y,
+            width: params.coordSys.width,
+            height: params.coordSys.height,
+        });
+        return {
+            type: "polygon",
+            shape: {
+                points: shape,
+            },
+            style: api.style({}),
+            textContent: {
+                type: "text",
+                invisible: !showGeneLabel,
+                style: {
+                    text: geneFeatureData[categoryIndex].name,
+                    fill: geneFeatureData[categoryIndex].itemStyle.color,
+                    fontStyle: "normal",
+                    fontSize: 10,
+                    fontWeight: "bolder",
+                },
+            },
+            textConfig: {
+                position: "top",
+                distance: 20,
+                rotation: rotateAngle,
+                local: true,
+            },
+        };
+    } else if (feature.value.type === 'amplicon_feature') {
+        shape = echarts.graphic.clipPointsByRect(points, {
+            x: params.coordSys.x,
+            y: params.coordSys.y,
+            width: params.coordSys.width,
+            height: params.coordSys.height,
+        });
+        return {
+            type: "polygon",
+            shape: {
+                points: shape,
+            },
+            style: api.style(),
+            textContent: {},
+            textConfig: {},
+        };
+    }
+    else {
+        return null;
+    }
+}
+
+/**
+ * Define options for gene features charts
+ * @param {number} index - gene feature is displayed in the last index of grid
+ * @returns {Array<Dict[]>}
+ */
+function getGeneFeatureSeries(index) {
+    var featureSeries = [];
+    if (amplicon === 'True' || geneFeature === 'True'){
+        featureSeries.push({
+            type: "custom",
+            xAxisIndex: index,
+            yAxisIndex: index,
+            renderItem: renderGeneFeatures,
+            labelLayout: {
+                hideOverlap: false,
+            },
+            data: geneFeatureData,
+            tooltip: {
+                trigger: "item",
+                enterable: true,
+                appendToBody: true,
+                renderMode: "html",
+                borderRadius: 6,
+                borderWidth: 2,
+                showContent: "true",
+                position: 'top',
+                textStyle: {
+                    fontSize: 15,
+                    fontWeight: "bolder",
+                },
+                formatter: function (params) {
+                    var output = "";
+                    rows = [
+                        [
+                            "Range",
+                            params.value.start.toLocaleString() + " - " + params.value.end.toLocaleString(),
+                        ],
+                        ["Length", (params.value.end - params.value.start + 1).toLocaleString()],
+                        ["Strand", params.value.strand],
+                    ];
+                    output += toTableHtml([params.name, ""], rows, "table small");
+                    return output;
+                },
+            },
+        });
+    }
+    return featureSeries;
+}
+
+/**
+ * Define options for x Axis
+ * @param {Array<string>} samples - An array of samples name
+ * @param {number} xAxisMax - Max value is set for x Axis
+ * @returns {Array<Dict[]>}
+ */
+function getXAxes(samples, xAxisMax) {
+    var axes = [];
+    for (var [i, sample] of samples.entries()) {
+        axes.push({
+            type: "value",
+            gridIndex: i,
+            min: 1,
+            max: xAxisMax,
+            axisLabel: {
+                interval: "auto",
+            },
+        });
+    }
+    if (amplicon === "True" || geneFeature === "True"){
+        axes.push({
+            type: "value",
+            gridIndex: samples.length,
+            min: 1,
+            max: xAxisMax,
+            axisLabel: {
+                interval: "auto",
+            },
+        });
+    }
+    return axes;
+}
+
+/**
+ * Define options for Y axis
+ * @param {Array<string>} samples - An array of samples name
+ * @param {string} scaleType - scale for Y Axis, either value or log
+ * @param {number} yMax - max value is set for y Axis
+ * @returns {Array<Dict[]>}
+ */
+function getYAxes(samples, scaleType, yMax) {
+    var axes = [];
+    for (var [i, sample] of samples.entries()) {
+        axes.push({
+            type: scaleType,
+            gridIndex: i,
+            name: sample,
+            nameTextStyle: {
+                fontStyle: "normal",
+                fontWeight: "bolder",
+            },
+            nameLocation: "end",
+            min: scaleType === 'log' ? 1 : 0,
+            max: yMax,
+            minorSplitLine: {
+                show: true,
+            },
+        });
+    }
+    if (amplicon === "True" || geneFeature === "True"){
+        axes.push({
+            max: geneFeatureProperties["max_grid_height"],
+            gridIndex: samples.length,
+            show: false,
+        });
+    }
+    return axes;
+}
+
+/**
+ * Get dataset information
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Array<number>} positions - an array of genome positions which represent in X Axis
+ * @returns {Array<Dict[]>}
+ */
+function getDatasets(depths, positionArray) {
+    var datasets = [];
+    for (var [i, depthArray] of depths.entries()) {
+        datasets.push({
+            dimensions: [
+                {name: "depth", type: "float"},
+                {name: "position", type: "int"},
+            ],
+            source: {
+                position: positionArray,
+                depth: depthArray,
+            },
+        });
+    }
+    return datasets;
+}
+
+/**
+ * Define options for depth coverage charts
+ * @param {Array<string>} samples - An array of samples name
+ * @returns {Array<Dict[]>}
+ */
+function getDepthSeries(samples) {
+    var depthSeries = [];
+    for (var [i, sample] of samples.entries()) {
+        depthSeries.push({
+            type: "line",
+            xAxisIndex: i,
+            yAxisIndex: i,
+            areaStyle: {
+                color: "#666",
+            },
+            encode: {
+                x: "position",
+                y: "depth",
+            },
+            symbol: "none",
+            datasetIndex: i,
+            lineStyle: {
+                color: "#666",
+                opacity: 0,
+            },
+            large: true,
+        });
+    }
+    return depthSeries;
+}
+
+/**
+ * Define options for amplicon depth coverage bars
+ * @param {Array<string>} samples - An array of samples name
+ * @returns {Array<Dict[]>}
+ */
+function getAmpliconDepthSeries(samples) {
+    var ampliconDepthSeries = [];
+    if (amplicon === 'True'){
+        for (var [i, sample] of samples.entries()) {
+            ampliconDepthSeries.push({
+                type: "custom",
+                xAxisIndex: i,
+                yAxisIndex: i,
+                renderItem: function (params, api) {
+                    var start = api.coord([api.value(0), api.value(2)]);
+                    var end = api.coord([api.value(1), 1]);
+                    var rectShape = echarts.graphic.clipRectByRect(
+                        {
+                            x: start[0],
+                            y: start[1],
+                            width: end[0] - start[0],
+                            height: end[1] - start[1]
+                        },
+                        {
+                            x: params.coordSys.x,
+                            y: params.coordSys.y,
+                            width: params.coordSys.width,
+                            height: params.coordSys.height
+                        }
+                    );
+                    return rectShape && {
+                        type: "rect",
+                        shape: rectShape,
+                        style: api.style({})
+                    }
+                },
+                label: {
+                    show: false,
+                    position: "top",
+                    distance: 25,
+                    rotate:60
+                },
+                labelLayout: {
+                    hideOverlap: false
+                },
+                encode: {
+                    x: [0, 1],
+                    y: 2,
+                },
+                data: ampliconData[sample],
+            })
+        }
+    }
+    return ampliconDepthSeries;
+}
+
+/**
+ * Define options for variant bar charts
+ * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @returns {Array<Dict[]>}
+ */
+function getVariantsSeries(variants, depths) {
+    var variantsSeries = [];
+    for (var [i, varMap] of variants.entries()) {
+        (function (i, varMap) {
+            variantsSeries.push({
+                type: "bar",
+                xAxisIndex: i,
+                yAxisIndex: i,
+                data: Object.values(varMap).map((x) => [parseInt(x['POS']), depths[i][x['POS']]]),
+                barWidth: 2,
+                itemStyle: {
+                    color: function (params) {
+                        var pos = params.data[0];
+                        var nt = window.refSeq[pos-1]
+                        if (ntColor.hasOwnProperty(nt)) {
+                            return ntColor[nt];
+                        }
+                        return "#333";
+                    },
+                },
+
+            });
+        })(i, varMap);
+    };
+    return variantsSeries;
+}
+
+/**
+ *  Define grid for the whole charts
+ * @param {Array<string>} samples - An array of samples name
+ * @returns {Array<Dict[]>}
+ */
+function getGrids(samples) {
+    var n = samples.length + 1;
+    var lastHeight;
+    var lastTop;
+    var grids = Object.keys(samples).map(function (sample) {
+        lastHeight = (1 / n) * 100 - 6;
+        if (n == 2) {
+            // Only 1 sample (1 sample + gene feature plot)
+            lastHeight = 70;
+            return {
+                show: true,
+                height: "70%", // plot display in nearly full scale
+            };
+        }
+        return {
+            show: true,
+            height: (1 / n) * 100 - 6 + "%",
+        };
+    });
+    grids.forEach(function (grid, idx) {
+        var padTop = 4;
+        lastTop = (idx / n) * 100 + padTop;
+        grid.top = (idx / n) * 100 + padTop + "%";
+        grid.left = "8%";
+        grid.right = "8%";
+    });
+    if (amplicon === "True" || geneFeature === "True"){
+        grids.push({
+            show: true,
+            height: geneFeatureProperties["grid_height"],
+            top: lastHeight + lastTop + 3 + "%",
+            left: "8%",
+            right: "8%",
+        });
+    }
+    return grids;
+}
+
+/**
+ * Define options for tooltips
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @returns {Array<Dict[]>}
+ */
+function getTooltips(samples, depths, variants) {
+    return [
+        {
+            trigger: "axis",
+            enterable: true,
+            appendToBody: true,
+            renderMode: "html",
+            showContent: true,
+            position: function (pos, params, dom, rect, size) {
+                // tooltip will be fixed on the right if mouse hovering on the left,
+                // and on the left if hovering on the right.
+                var obj = {top: 5};
+                obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+                return obj;
+            },
+            formatter: function (params) {
+                var output = "";
+                var param = params[0];
+                var i = param.axisIndex;
+                if (i > samples.length) {
+                    return output;
+                }
+                var sample = samples[i];
+                var position = param.data[1];
+                var depth = param.data[0];
+                var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+                var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+                var meanCov = wgscovplot.meanCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
+                var medianCov = wgscovplot.medianCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
+                var genomeCov = wgscovplot.genomeCoverage(depths, zoomStart, zoomEnd, i, 10).toFixed(2);
+                output += "<h5>" + sample + "</h5>";
+                var rows = [
+                    ["Position", position.toLocaleString()],
+                    ["Depth", depth.toLocaleString()],
+                ];
+                if (params.length > 1) {
+                    Object.values(variants[i]).forEach(values => {
+                        if (values['POS'] === position) {
+                            for (const [key, value] of Object.entries(values)) {
+                                if (key !== 'POS' && key !== 'sample') {
+                                    rows.push(
+                                        ...[[key, value]]
+                                    )
+                                }
+
+                            }
+                        }
+                    })
+                } else {
+                    rows.push(["Sequence", window.refSeq[position - 1]]);
+                }
+                output += toTableHtml(["Position Info", ""], rows, "table small");
+                rows = [
+                    [
+                        "Range",
+                        zoomStart.toLocaleString() + " - " + zoomEnd.toLocaleString(),
+                    ],
+                    ["Mean Coverage", meanCov + "X"],
+                    ["Median Coverage", medianCov + "X"],
+                    ["Genome Coverage ( >= 10x)", genomeCov + "%"],
+                ];
+                output += toTableHtml(["Coverage View Stats", ""], rows, "table small");
+
+                return output;
+            },
+        },
+    ];
+}
+
+/**
+ * Define all options for coverage chart
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @returns {Dict[]}
+ */
+function getCoverageChartOption(samples, depths, variants) {
+    gridLength = samples.length;
+    var chartOptions = {
+        title: {},
+        dataset: getDatasets(depths, positions),
+        xAxis: getXAxes(samples, refSeqLength),
+        yAxis: getYAxes(samples, "log", maxDepth),
+        // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
+        series: [
+            ...getDepthSeries(samples),
+            ...getVariantsSeries(variants, depths),
+            ...getAmpliconDepthSeries(samples),
+            ...getGeneFeatureSeries(gridLength)
+        ],
+        tooltip: getTooltips(samples, depths, variants),
+        toolbox: {
+            show: "true",
+            feature: {
+                dataView: {
+                    readOnly: false,
+                },
+                restore: {},
+                saveAsImage: {
+                    name: "wgscovplot",
+                },
+            },
+        },
+        dataZoom: [
+            {
+                type: "inside",
+                filterMode: "none",
+                xAxisIndex: [...Array(gridLength + 1).keys()],
+                zoomLock: false,
+            },
+            {
+                show: true,
+                filterMode: "none",
+                xAxisIndex: [...Array(gridLength + 1).keys()],
+                type: "slider",
+                zoomLock: false,
+            },
+        ],
+        grid: getGrids(samples)
+    };
+    return chartOptions;
+}
+
+/**
+ * Updates options for coverage charts.
+ * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are reserved
+ * Users's settings are respected
+ * @param {Array<string>} samples - An array of samples name
+ */
+function updateCoverageChartOption(samples) {
+    var depths = [];
+    var variants = [];
+    var scaleType;
+    var max;
+    var leftMargin;
+    var rightMargin;
+    var geneFeatureHeight;
+    samples.forEach(sample => {
+        depths.push(window.depths[sample]);
+        variants.push(window.variants[sample]);
+    })
+    /* Need to handle the case when user removes all samples on the chart and add new samples to be displayed
+    Variables lenCheck1, lenCheck2 and closures lastYAxisScale, lastYAxisMax are used to keep track the scale settings of a last sample on the chart before it was removed
+    lenCheck1, lenCheck1 depends on whether the last subplot is used for plotting gene/amplicon features or not
+     */
+    var chartOption = chart.getOption();
+    var lenCheck1 = (amplicon === 'True' || geneFeature === 'True') ? 2 : 1
+    var lenCheck2 = (amplicon === 'True' || geneFeature === 'True') ? 1 : 0
+    if (chartOption.yAxis.length === lenCheck1){
+        lastYAxisScale = chartOption.yAxis[0].type;
+        lastYAxisMax = chartOption.yAxis[0].max;
+    }
+    if (chartOption.yAxis.length === lenCheck2){
+        scaleType = lastYAxisScale
+        max = lastYAxisMax
+    }else{
+        // Get Current scale type and yAxis max to set it back
+        scaleType = chartOption.yAxis[0].type;
+        max = chartOption.yAxis[0].max;
+    }
+    // Left-right margin
+    if (chartOption.grid.length === 0){ // There is no subplot and gene/amplicon feature
+        leftMargin = 8
+        rightMargin = 8
+        document.getElementById("chart-left-input").value = _.toInteger(leftMargin);
+        document.getElementById("chart-left-output").value = _.toInteger(leftMargin) + "%";
+        document.getElementById("chart-right-input").value = _.toInteger(rightMargin);
+        document.getElementById("chart-right-output").value = _.toInteger(rightMargin) + "%";
+    }
+    else{
+        leftMargin = _.toInteger(chartOption.grid[0].left.replace("%", ""));
+        rightMargin = _.toInteger(chartOption.grid[0].right.replace("%", ""));
+    }
+    // Get Current Data Zoom
+    var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+    var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+    // The current chart is not disposed so notMerge must be set true
+    chart.setOption(option = getCoverageChartOption(samples, depths, variants), notMerge = true);
+    setScale(scaleType, max);
+    setDataZoom(zoomStart, zoomEnd);
+    updateChartLeftMargin(leftMargin);
+    updateChartRightMargin(rightMargin);
+    updateControlMenu();
+}
+
+/**
+ * When the chart is initialized, the first 3 samples are plotted
+ * @param {Array<string>} samples - An array of samples name
+ */
+function setDefaultSamples(samples) {
+    // Set default samples display
+    let $selectedsamples = $("#selectedsamples");
+    $selectedsamples.select2();
+    $selectedsamples.val(samples);
+    $selectedsamples.trigger('change')
+}
+
+/**
+ * Get the list of current samples on the control menu
+ * @returns {Array<string>>} An array of samples name
+ */
+function getCurrentSamples(chartOption) {
+    var samples = [];
+    // If the chart is not initalizaed yet, get 3 first samples from window.samples
+    if (chartOption === undefined || chartOption === null){
+        samples = _.slice(window.samples, 0, defaultNumChart);
+    } else{
+        var selectData = $("#selectedsamples").select2("data");
+        for (var [key, entries] of selectData.entries()) {
+            samples.push(selectData[key].text);
+        }
+    }
+    return samples;
+}
+
+/**
+ * Initialize the events handler for chart
+ */
+function initWgscovplotEvent(){
+    $(document).ready(function () {
+        /**
+         * Toggle dark mode, the entire chart will be disposed and re-initialized
+         * However, the old settings of charts are set back (users's settings are respected)
+         */
+        $("#toggle-darkmode").change(function () {
+            initWgscovplotRenderEnv();
+        });
+
+        /**
+         * Toggle to Amplicon Depth Label
+         */
+        $("#toggle-amplicon-depthlabel").change(function () {
+            var seriesOption = chart.getOption().series;
+            var isChecked = $(this).prop("checked");
+            _.forEach(seriesOption, function (element) {
+                if (element.type === 'custom') {
+                    element.label.show = isChecked
+                }
+            });
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Jquery actions to make the list of samples is not forced in alphabetical order
+         */
+        $("#selectedsamples").select2({
+            tags: true,
+        });
+
+        $("#selectedsamples").on("select2:select", function (evt) {
+            var element = evt.params.data.element;
+            var $element = $(element);
+            $element.detach();
+            $(this).append($element);
+            $(this).trigger("change");
+        });
+
+        /**
+         * Update chart options when the number of selected samples changed
+         * The chart options such as y Axis scale, yMax, DataZoom are reserved (users's settings are respected)
+         */
+        $("#selectedsamples").on("change", function () {
+            updateCoverageChartOption(getCurrentSamples(chart.getOption()));
+        });
+
+        /**
+         * Toggle to show gene label or not
+         */
+        $("#toggle-genelabel").change(function () {
+            var seriesOption = chart.getOption().series;
+            showGeneLabel = $(this).prop("checked");
+            seriesOption[seriesOption.length - 1]["renderItem"] = renderGeneFeatures; // Re-update Gene Feature Chart Only
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle tooltip for coverage chart, this action does not affect gene/amplicon feature chart
+         */
+        $("#toggle-tooltip").change(function () {
+            var isChecked = $(this).prop("checked");
+            chart.setOption({
+                tooltip: {showContent: isChecked},
+            });
+        });
+
+        /**
+         * Toggle slider zoom
+         */
+        $("#toggle-slider").change(function () {
+            var isChecked = $(this).prop("checked");
+            chart.setOption({
+                dataZoom: [
+                    {
+                        type: "inside",
+                        filterMode: "none",
+                        xAxisIndex: [...Array(gridLength + 1).keys()],
+                    },
+                    {
+                        type: "slider",
+                        show: isChecked,
+                        filterMode: "none",
+                        xAxisIndex: isChecked ? [...Array(gridLength + 1).keys()] : null,
+                    },
+                ],
+            })
+        });
+    });
+}
+
+/**
+ * Initialize the enviroment for the chart (sgv/canvas or dark/white mode)
+ * The entire chart will be disposed and re-initialized
+ * However, the old settings of charts are reserved (users's settings are respected)
+ */
+function initWgscovplotRenderEnv() {
+    var chartOption = chart.getOption();
+    var plotSamples = getCurrentSamples(chartOption);
+    var plotDepths = [];
+    var plotVariants = [];
+    plotSamples.forEach(sample => {
+        plotDepths.push(window.depths[sample]);
+        plotVariants.push(window.variants[sample]);
+    });
+    if (chartOption === undefined || chartOption === null) {
+        setDefaultSamples(plotSamples);
+        chart.setOption(option = getCoverageChartOption(plotSamples, plotDepths, plotVariants));
+    } else {
+        var renderEnv = document.getElementById("render-env").value;
+        var isChecked = document.getElementById("toggle-darkmode").checked;
+        var mode = isChecked ? "dark" : "white";
+        var gridOption = chart.getOption().grid;
+        var scaleType = chart.getOption().yAxis[0].type;
+        var max = chart.getOption().yAxis[0].max;
+        var dataZoomOption = chart.getOption().dataZoom;
+        echarts.dispose(chart); // destroy chart instance and re-init chart
+        $chart = document.getElementById("chart");
+        chart = echarts.init($chart, mode, {renderer: renderEnv});
+        chart.setOption(option = getCoverageChartOption(plotSamples, plotDepths, plotVariants));
+        chart.setOption({grid: gridOption, dataZoom: dataZoomOption});
+        setScale(scaleType, max);
+    }
+    onChartDataZoomActions();
+}
+
+/**
+ * Adjust subplot height
+ * @param {number} val - Subplots height percent value
+ */
+function updateSubPlotHeight(val) {
+    document.getElementById("chart-height-output").value = val + "%";
+    var gridOption = chart.getOption().grid;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
+    for (var i = 0; i < len; i++) {
+        gridOption[i]["height"] = val + "%";
+        if (i > 0) {
+            gridOption[i]["top"] =
+                _.toInteger(gridOption[i - 1]["top"].replace("%", "")) +
+                _.toInteger(gridOption[i - 1]["height"].replace("%", "")) +
+                4 +
+                "%";
+        }
+    };
+    chart.setOption({grid: gridOption});
+}
+
+/**
+ * Adjust left margin of chart
+ * @param {number} val - Left margin percent value
+ */
+function updateChartLeftMargin(val) {
+    document.getElementById("chart-left-output").value = val + "%";
+    var gridOption = chart.getOption().grid;
+    _.forEach(gridOption, function (element) {
+        element.left = val + "%";
+    });
+    chart.setOption({grid: gridOption});
+}
+
+/**
+ * Adjust right margin of chart
+ * @param {number} val - Right margin percent value
+ */
+function updateChartRightMargin(val) {
+    document.getElementById("chart-right-output").value = val + "%";
+    var gridOption = chart.getOption().grid;
+    _.forEach(gridOption, function (element) {
+        element.right = val + "%";
+    });
+    chart.setOption({grid: gridOption});
+}
+
+/**
+ * Adjust top margin of chart
+ * @param {number} val - Subplots top margin percent value
+ */
+function updateSubPlotTopMargin(val) {
+    document.getElementById("chart-top-output").value = val + "%";
+    var gridOption = chart.getOption().grid;
+    for (var i = 0; i < gridOption.length; i++) {
+        if (i === 0) {
+            gridOption[i]["top"] = val + "%";
+        } else {
+            gridOption[i]["top"] =
+                _.toInteger(gridOption[i - 1]["top"].replace("%", "")) +
+                _.toInteger(gridOption[i - 1]["height"].replace("%", "")) +
+                _.toInteger(val) +
+                "%";
+        }
+    }
+    chart.setOption({grid: gridOption});
+}
+
+/**
+ * Adjust the height of gene/amplicon feature charts
+ * @param {number} val - Subplots gene feature height percent value
+ */
+function updateGeneFeatureHeight(val) {
+    document.getElementById("genefeature-height-output").value = val + "%";
+    var gridOption = chart.getOption().grid;
+    gridOption[gridOption.length - 1]["height"] = val + "%";
+    chart.setOption({grid: gridOption});
+}
+
+/**
+ * Set scale for y Axis
+ * @param {string} scaleType - Either value or log
+ * @param {number} max - Max value is set for y Axis
+ */
+function setScale(scaleType, max) {
+    var scale;
+    var yMax;
+    if (scaleType === null && max === null){
+        scale = document.getElementById("scale").value;
+        yMax = document.getElementById("ymax").value;
+    }
+    else{
+        scale = scaleType;
+        yMax = max;
+    }
+    var yAxisOption = chart.getOption().yAxis;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    if (scale === "value") {
+        _.forEach(yAxisOption, function (element) {
+            if (element.gridIndex < len) {
+                element.type = scale;
+                element.min = 0;
+                element.max = yMax;
+            }
+        });
+    } else {
+        _.forEach(yAxisOption, function (element) {
+            if (element.gridIndex < len) {
+                element.type = scale;
+                element.min = 1;
+                element.max = yMax;
+            }
+        });
+    }
+    chart.setOption({yAxis: yAxisOption});
+    document.getElementById("ymax").value = yMax; // update control menu
+}
+
+/**
+ * Set yMax for Y Axis
+ */
+function setYMax() {
+    var yMax = document.getElementById("ymax").value;
+    var yAxisOption = chart.getOption().yAxis;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    _.forEach(yAxisOption, function (element) {
+        if (element.gridIndex < len) {
+            element.max = yMax;
+        }
+    });
+    chart.setOption({yAxis: yAxisOption});
+}
+
+/**
+ * Set zoom view for the chart
+ * @param {number} zoomStart - Start view point
+ * @param {number} zoomEnd - End view point
+ */
+function setDataZoom(zoomStart, zoomEnd){
+    var start;
+    var end;
+    if (zoomStart === null && zoomEnd === null){
+        start = document.getElementById("start-pos").value;
+        end = document.getElementById("end-pos").value;
+    }
+    else{
+        start = zoomStart;
+        end = zoomEnd;
+    }
+    // Update Control menu
+    document.getElementById("start-pos").value = start;
+    document.getElementById("end-pos").value = end;
+    // Dispatch Action to chart
+    chart.dispatchAction({
+        type: "dataZoom",
+        startValue: start,
+        endValue: end,
+    });
+}
+
+/**
+ * Dispatch click/dbclick actions for the whole chart
+ */
+function onChartDataZoomActions(){
+    chart.on("click", function(params){
+        document.getElementById("start-pos").value = params.value.start;
+        document.getElementById("end-pos").value = params.value.end;
+        setDataZoom(params.value.start, params.value.end);
+    });
+    chart.on("dblclick", function(params){
+        document.getElementById("start-pos").value = 1;
+        document.getElementById("end-pos").value = refSeqLength;
+        setDataZoom(1, refSeqLength);
+    });
+}
+
+/**
+ * The Control Menu is updated when the number of selected samples changes
+ * Menu is updated to reflect chart properties such as subplot height/top margin
+ */
+function updateControlMenu() {
+    var gridOption = chart.getOption().grid;
+    if (gridOption.length > 0) {
+        var height1 = _.replace(gridOption[0].height, "%", "");
+        var top = _.replace(gridOption[0].top, "%", "");
+        document.getElementById("chart-height-input").value = _.toInteger(height1);
+        document.getElementById("chart-height-output").value = _.toInteger(height1) + "%";
+        document.getElementById("chart-top-input").value = _.toInteger(top);
+        document.getElementById("chart-top-output").value = _.toInteger(top) + "%";
+        if (amplicon === 'True' || geneFeature === 'True') {
+            var height2 = _.replace(gridOption[gridOption.length - 1].height, "%", "");
+            document.getElementById("genefeature-height-input").value = _.toInteger(height2);
+            document.getElementById("genefeature-height-output").value = _.toInteger(height2) + "%";
+        }
+    }
+}
+
+/**
+ * Write tooltip information to HTML table
+ * @param {string} headers - Header of table
+ * @param {Array<Array<string>>} rows - Rows of table
+ * @param {string} classes - Classes defined for table
+ * @returns {string}
+ */
+function toTableHtml(headers, rows, classes) {
+    var classTable = _.defaultTo(classes, "table");
+    var out = '<table class="' + classTable + '"><thead>';
+    out += _.join(
+        _.map(headers, function (x) {
+            return "<strong>" + x + "</strong>";
+        }),
+        ""
+    );
+    out += "</thead><tbody>";
+    out += _.join(
+        _.map(rows, function (xs) {
+            return (
+                "<tr>" +
+                _.join(
+                    _.map(xs, function (x, i) {
+                        return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + x + "</td>";
+                    }),
+                    ""
+                ) +
+                "</tr>"
+            );
+        }),
+        ""
+    );
+    out += "</tbody></table>";
+    return out;
+}
