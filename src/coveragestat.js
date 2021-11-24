@@ -54,4 +54,4 @@ function medianCoverage(depths, start, end, gridIndex) {
     return median(subArray);
 }
 
-export {meanCoverage, genomeCoverage, medianCoverage}
+export {median, meanCoverage, genomeCoverage, medianCoverage}

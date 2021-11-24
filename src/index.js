@@ -1,2 +1,2 @@
-import {meanCoverage, genomeCoverage, medianCoverage} from "./coveragestat";
-export {meanCoverage, genomeCoverage, medianCoverage}
+import {median, meanCoverage, genomeCoverage, medianCoverage} from "./coveragestat";
+export {median, meanCoverage, genomeCoverage, medianCoverage}

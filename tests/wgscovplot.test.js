@@ -1,4 +1,4 @@
-const {median} = require('../wgscovplot/tmpl/js/wgscovplot.js')
+const {median} = require('../wgscovplot/tmpl/js/wgscovplot.js');
 var arr = [1, 4 , 7 , 9];
 
 test('Median of an array [1, 4 , 7 , 9]', () => {
