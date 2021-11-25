@@ -1,3 +1,8 @@
+import {defaultTo} from "lodash/util";
+
+const join = require('lodash/join');
+const map = require('lodash/map');
+const de
 /**
  * Write tooltip information to HTML table
  * @param {string} headers - Header of table
@@ -6,21 +11,21 @@
  * @returns {string}
  */
 function toTableHtml(headers, rows, classes) {
-    var classTable = _.defaultTo(classes, "table");
+    var classTable = defaultTo(classes, "table");
     var out = '<table class="' + classTable + '"><thead>';
-    out += _.join(
-        _.map(headers, function (x) {
+    out += join(
+        map(headers, function (x) {
             return "<strong>" + x + "</strong>";
         }),
         ""
     );
     out += "</thead><tbody>";
-    out += _.join(
-        _.map(rows, function (xs) {
+    out += join(
+        map(rows, function (xs) {
             return (
                 "<tr>" +
-                _.join(
-                    _.map(xs, function (x, i) {
+                join(
+                    map(xs, function (x, i) {
                         return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + x + "</td>";
                     }),
                     ""
