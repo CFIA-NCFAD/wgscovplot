@@ -84,28 +84,6 @@
         const refSeqLength = window.refSeq.length;
 
         /**
-         * A closure is used keep track the current number samples in the chart and is used for toggling slider
-         * @type {function(): number}
-         */
-        var gridLength = (function (){
-            var len;
-            return function (){
-                return len;
-            }
-        })();
-
-        /**
-         * A closure is used for initial y_start for rendering gene/amplicon features
-         * @type {function(): number}
-         */
-        var yStart = (function (){
-            var start;
-            return function (){
-                return start;
-            };
-        })();
-
-        /**
          * A closure lastYAxisScale is used to keep track the scale settings of a last sample on the chart before it was remove
          * @type {function(): string}
          */
@@ -152,17 +130,6 @@
                 return isShow;
             };
         })();
-
-        /**
-         * Dict of color for coloring variant position in the chart
-         * @type {Dict[]}
-         */
-        const ntColor = {
-            "A": "#ea5e48",
-            "C": "#eaca48",
-            "G": "#6ad82b",
-            "T": "#2b87d8",
-        }
 
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;

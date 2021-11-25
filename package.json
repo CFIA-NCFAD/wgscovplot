@@ -2,7 +2,7 @@
   "name": "wgscovplot",
   "version": "1.0.0",
   "description": "",
-  "main": "wgscovplot/tmpl/wgscovplot.js",
+  "main": "wgscovplot/tmpl/wgscovplot.bundle.js",
   "directories": {
     "doc": "docs",
     "test": "tests"

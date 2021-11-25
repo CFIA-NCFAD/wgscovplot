@@ -1,4 +1,4 @@
-const {median, genomeCoverage, medianCoverage, meanCoverage} = require('../wgscovplot/tmpl/js/wgscovplot.js');
+const {median, genomeCoverage, medianCoverage, meanCoverage} = require('../wgscovplot/tmpl/js/wgscovplot.bundle');
 var depths =[
     [1,2,45,3,2,34,54,65,7,6,34,45,56,67,78,78],
     [1,2,45,0,0,9,15,65,7,6,20,8,4,15,100,102],

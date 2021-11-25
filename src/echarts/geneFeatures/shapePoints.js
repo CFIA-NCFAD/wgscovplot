@@ -8,7 +8,7 @@
  * @param {string} feature - gene feature or amplicon feature
  * @returns {Array<Array<number>>} - Coordinate of 5 points for gene feature or 4 points for amplicon feature
  */
-function renderPoints(x, y, width, height, strand, feature) {
+function shapePoints(x, y, width, height, strand, feature) {
     if (feature === 'gene_feature') {
         if (strand === 1) {
             return [
@@ -40,4 +40,4 @@ function renderPoints(x, y, width, height, strand, feature) {
     }
 }
 
-export {renderPoints};
+export {shapePoints};
