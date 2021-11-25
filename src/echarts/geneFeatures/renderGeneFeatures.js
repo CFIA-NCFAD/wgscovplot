@@ -1,4 +1,5 @@
 import {shapePoints} from "./shapePoints";
+import * as echarts from 'echarts/core';
 
 /**
  * A closure is used for initial y_start for rendering gene/amplicon features

@@ -209,9 +209,9 @@ function initWgscovplotRenderEnv() {
         var scaleType = chart.getOption().yAxis[0].type;
         var max = chart.getOption().yAxis[0].max;
         var dataZoomOption = chart.getOption().dataZoom;
-        echarts.dispose(chart); // destroy chart instance and re-init chart
+        wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
-        chart = echarts.init($chart, mode, {renderer: renderEnv});
+        chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
         chart.setOption(option = wgscovplot.getCoverageChartOption(plotSamples, plotDepths, plotVariants));
         chart.setOption({grid: gridOption, dataZoom: dataZoomOption});
         setScale(scaleType, max);

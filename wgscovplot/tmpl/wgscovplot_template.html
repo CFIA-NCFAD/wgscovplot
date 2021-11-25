@@ -7,7 +7,6 @@
     <style>{{ bootstrap_css }}</style>
     <script>{{ jquery_js }}</script>
     <script>{{ bootstrap_js }}</script>
-    <script>{{ echarts_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
     <script type="text/javascript">
@@ -146,7 +145,7 @@
         document.addEventListener("DOMContentLoaded", function(event) {
             var $chart = document.getElementById('chart');
             window.$chart = $chart;
-            var chart = echarts.init($chart, 'white', {renderer: 'canvas'});
+            var chart = wgscovplot.echarts.init($chart, 'white', {renderer: 'canvas'});
             window.chart = chart;
             updateChartDivSize();
             initWgscovplotRenderEnv();

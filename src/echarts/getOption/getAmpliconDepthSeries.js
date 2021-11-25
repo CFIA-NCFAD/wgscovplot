@@ -1,3 +1,5 @@
+import * as echarts from 'echarts/core';
+
 /**
  * Define options for amplicon depth coverage bars
  * @param {Array<string>} samples - An array of samples name
