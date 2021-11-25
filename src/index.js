@@ -1,5 +1,6 @@
 import {median, meanCoverage, medianCoverage, genomeCoverage} from "./coverageStat";
 import {getCoverageChartOption} from "./echarts/getOption/getCoverageChartOption";
+// Import the echarts core module, which provides the necessary interfaces for using echarts.
 import * as echarts from 'echarts/core';
 
 import {LineChart, BarChart, CustomChart} from 'echarts/charts';

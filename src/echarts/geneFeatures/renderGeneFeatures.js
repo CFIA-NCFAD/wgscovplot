@@ -1,5 +1,5 @@
 import {shapePoints} from "./shapePoints";
-import * as echarts from 'echarts/core';
+import {graphic} from "echarts/core";
 
 /**
  * A closure is used for initial y_start for rendering gene/amplicon features
@@ -34,7 +34,7 @@ function renderGeneFeatures(params, api) {
     points = shapePoints(x, y, width, height, feature.value.strand, feature.value.type);
     if (feature.value.type === 'gene_feature') {
         rotateAngle = (feature.value.strand === 1) ? 0.7 : -0.7;
-        shape = echarts.graphic.clipPointsByRect(points, {
+        shape = graphic.clipPointsByRect(points, {
             x: params.coordSys.x,
             y: params.coordSys.y,
             width: params.coordSys.width,
@@ -65,7 +65,7 @@ function renderGeneFeatures(params, api) {
             },
         };
     } else if (feature.value.type === 'amplicon_feature') {
-        shape = echarts.graphic.clipPointsByRect(points, {
+        shape = graphic.clipPointsByRect(points, {
             x: params.coordSys.x,
             y: params.coordSys.y,
             width: params.coordSys.width,

@@ -1,9 +1,12 @@
 const path = require("path")
 module.exports = {
-    entry: './src/index.js',
+    mode: "development",
+    entry: {
+        wgscovplot:'./src/index.js',
+    },
     output:{
         path: path.resolve(__dirname, './wgscovplot/tmpl/js'),
-        filename: "wgscovplot.bundle.js",
+        filename: "[name].bundle.js",
         library: "wgscovplot",
         libraryTarget: "umd",
         globalObject: "this"

@@ -1,4 +1,4 @@
-import * as echarts from 'echarts/core';
+import {graphic} from "echarts/core";
 
 /**
  * Define options for amplicon depth coverage bars
@@ -16,7 +16,7 @@ function getAmpliconDepthSeries(samples) {
                 renderItem: function (params, api) {
                     var start = api.coord([api.value(0), api.value(2)]);
                     var end = api.coord([api.value(1), 1]);
-                    var rectShape = echarts.graphic.clipRectByRect(
+                    var rectShape = graphic.clipRectByRect(
                         {
                             x: start[0],
                             y: start[1],
