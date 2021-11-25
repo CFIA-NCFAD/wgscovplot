@@ -39,14 +39,14 @@ function updateCoverageChartOption(samples) {
     if (chartOption.grid.length === 0){ // There is no subplot and gene/amplicon feature
         leftMargin = 8
         rightMargin = 8
-        document.getElementById("chart-left-input").value = _.toInteger(leftMargin);
-        document.getElementById("chart-left-output").value = _.toInteger(leftMargin) + "%";
-        document.getElementById("chart-right-input").value = _.toInteger(rightMargin);
-        document.getElementById("chart-right-output").value = _.toInteger(rightMargin) + "%";
+        document.getElementById("chart-left-input").value = parseInt(leftMargin);
+        document.getElementById("chart-left-output").value = parseInt(leftMargin) + "%";
+        document.getElementById("chart-right-input").value = parseInt(rightMargin);
+        document.getElementById("chart-right-output").value = parseInt(rightMargin) + "%";
     }
     else{
-        leftMargin = _.toInteger(chartOption.grid[0].left.replace("%", ""));
-        rightMargin = _.toInteger(chartOption.grid[0].right.replace("%", ""));
+        leftMargin = parseInt(chartOption.grid[0].left.replace("%", ""));
+        rightMargin = parseInt(chartOption.grid[0].right.replace("%", ""));
     }
     // Get Current Data Zoom
     var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
@@ -80,7 +80,7 @@ function getCurrentSamples(chartOption) {
     var samples = [];
     // If the chart is not initalizaed yet, get 3 first samples from window.samples
     if (chartOption === undefined || chartOption === null){
-        samples = _.slice(window.samples, 0, defaultNumChart);
+        samples = window.samples.slice(0, 3)
     } else{
         var selectData = $("#selectedsamples").select2("data");
         for (var [key, entries] of selectData.entries()) {
@@ -109,7 +109,7 @@ function initWgscovplotEvent(){
         $("#toggle-amplicon-depthlabel").change(function () {
             var seriesOption = chart.getOption().series;
             var isChecked = $(this).prop("checked");
-            _.forEach(seriesOption, function (element) {
+            seriesOption.forEach(element => {
                 if (element.type === 'custom') {
                     element.label.show = isChecked
                 }
@@ -231,8 +231,8 @@ function updateSubPlotHeight(val) {
         gridOption[i]["height"] = val + "%";
         if (i > 0) {
             gridOption[i]["top"] =
-                _.toInteger(gridOption[i - 1]["top"].replace("%", "")) +
-                _.toInteger(gridOption[i - 1]["height"].replace("%", "")) +
+                parseInt(gridOption[i - 1]["top"].replace("%", "")) +
+                parseInt(gridOption[i - 1]["height"].replace("%", "")) +
                 4 +
                 "%";
         }
@@ -247,7 +247,7 @@ function updateSubPlotHeight(val) {
 function updateChartLeftMargin(val) {
     document.getElementById("chart-left-output").value = val + "%";
     var gridOption = chart.getOption().grid;
-    _.forEach(gridOption, function (element) {
+    gridOption.forEach(element => {
         element.left = val + "%";
     });
     chart.setOption({grid: gridOption});
@@ -260,7 +260,7 @@ function updateChartLeftMargin(val) {
 function updateChartRightMargin(val) {
     document.getElementById("chart-right-output").value = val + "%";
     var gridOption = chart.getOption().grid;
-    _.forEach(gridOption, function (element) {
+    gridOption.forEach(element => {
         element.right = val + "%";
     });
     chart.setOption({grid: gridOption});
@@ -278,9 +278,9 @@ function updateSubPlotTopMargin(val) {
             gridOption[i]["top"] = val + "%";
         } else {
             gridOption[i]["top"] =
-                _.toInteger(gridOption[i - 1]["top"].replace("%", "")) +
-                _.toInteger(gridOption[i - 1]["height"].replace("%", "")) +
-                _.toInteger(val) +
+                parseInt(gridOption[i - 1]["top"].replace("%", "")) +
+                parseInt(gridOption[i - 1]["height"].replace("%", "")) +
+                parseInt(val) +
                 "%";
         }
     }
@@ -317,7 +317,7 @@ function setScale(scaleType, max) {
     var yAxisOption = chart.getOption().yAxis;
     var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
     if (scale === "value") {
-        _.forEach(yAxisOption, function (element) {
+        yAxisOption.forEach(element => {
             if (element.gridIndex < len) {
                 element.type = scale;
                 element.min = 0;
@@ -325,7 +325,7 @@ function setScale(scaleType, max) {
             }
         });
     } else {
-        _.forEach(yAxisOption, function (element) {
+        yAxisOption.forEach(element => {
             if (element.gridIndex < len) {
                 element.type = scale;
                 element.min = 1;
@@ -344,7 +344,7 @@ function setYMax() {
     var yMax = document.getElementById("ymax").value;
     var yAxisOption = chart.getOption().yAxis;
     var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
-    _.forEach(yAxisOption, function (element) {
+    yAxisOption.forEach(element => {
         if (element.gridIndex < len) {
             element.max = yMax;
         }
@@ -402,16 +402,16 @@ function onChartDataZoomActions(){
 function updateControlMenu() {
     var gridOption = chart.getOption().grid;
     if (gridOption.length > 0) {
-        var height1 = _.replace(gridOption[0].height, "%", "");
-        var top = _.replace(gridOption[0].top, "%", "");
-        document.getElementById("chart-height-input").value = _.toInteger(height1);
-        document.getElementById("chart-height-output").value = _.toInteger(height1) + "%";
-        document.getElementById("chart-top-input").value = _.toInteger(top);
-        document.getElementById("chart-top-output").value = _.toInteger(top) + "%";
+        var height1 = gridOption[0].height.replace("%", "");
+        var top = gridOption[0].top.replace("%", "");
+        document.getElementById("chart-height-input").value = parseInt(height1);
+        document.getElementById("chart-height-output").value = parseInt(height1) + "%";
+        document.getElementById("chart-top-input").value = parseInt(top);
+        document.getElementById("chart-top-output").value = parseInt(top) + "%";
         if (amplicon === 'True' || geneFeature === 'True') {
-            var height2 = _.replace(gridOption[gridOption.length - 1].height, "%", "");
-            document.getElementById("genefeature-height-input").value = _.toInteger(height2);
-            document.getElementById("genefeature-height-output").value = _.toInteger(height2) + "%";
+            var height2 = gridOption[gridOption.length - 1].height.replace("%", "");
+            document.getElementById("genefeature-height-input").value = parseInt(height2);
+            document.getElementById("genefeature-height-output").value = parseInt(height2) + "%";
         }
     }
 }

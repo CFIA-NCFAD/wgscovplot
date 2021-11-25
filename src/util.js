@@ -1,8 +1,7 @@
 import {defaultTo} from "lodash/util";
-
 const join = require('lodash/join');
 const map = require('lodash/map');
-const de
+
 /**
  * Write tooltip information to HTML table
  * @param {string} headers - Header of table

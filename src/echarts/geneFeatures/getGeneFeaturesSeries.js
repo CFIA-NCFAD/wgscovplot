@@ -1,5 +1,5 @@
 import {renderGeneFeatures} from "./renderGeneFeatures";
-import {toTableHtml} from "../../ulti";
+import {toTableHtml} from "../../util";
 
 /**
  * Define options for gene features charts

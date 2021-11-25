@@ -1,5 +1,5 @@
 import {meanCoverage, genomeCoverage, medianCoverage} from "../../coverageStat";
-import {toTableHtml} from "../../ulti";
+import {toTableHtml} from "../../util";
 
 /**
  * Define options for tooltips
