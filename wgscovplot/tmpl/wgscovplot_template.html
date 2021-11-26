@@ -5,6 +5,7 @@
     <title>WGS Coverage Plot</title>
     <style>{{ bootstrap_css }}</style>
     <script>{{ jquery_js }}</script>
+    <script>{{ popper_js }}</script>
     <script>{{ bootstrap_js }}</script>
     <style>{{ select2_css }}</style>
     <script>{{ select2_js }}</script>
@@ -60,25 +61,18 @@
 
         /**
          * Whether to plot gene feature or not
-         * @type {boolean}
+         * @type {string}
+         * Get from Python Boolean which is True or False
          */
         const geneFeature = "{{ gene_feature }}"
 
         /**
          * Whether amplicon coverage plot or not
-         * @type {boolean}
+         * @type {string}
+         * Get from Python Boolean which is True or False
          */
         const amplicon = "{{amplicon}}"
 
-        /**
-         * Default properties for gene features chart, to have best view for the whole chart, user can adjust high, right/left/top margin
-         *  'max_grid_height': 80,
-         *  'rec_items_height': 12,
-         *  'minus_strand_level': 55,
-         *  'grid_height': "15%"
-         * @type {Dict[]}
-         */
-        const geneFeatureProperties = {{ gene_feature_properties }}
         const refSeqLength = window.refSeq.length;
 
         /**
@@ -102,8 +96,6 @@
                 return yAxisMax;
             };
         })();
-
-        const defaultNumChart = 3;
 
         /**
          * The max value is set for y-Axis

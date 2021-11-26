@@ -207,8 +207,7 @@ def write_html_coverage_plot(samples_name: List[str],
         for k, v in cdn_resources.items():
             logging.info(f'Getting HTML resource "{k}" from "{v}"')
             scripts_css[k] = requests.get(v).text
-        fout.write(template_file.render(gene_feature_properties=gene_feature_properties,
-                                        gene_feature_data=gene_feature_data,
+        fout.write(template_file.render(gene_feature_data=gene_feature_data,
                                         gene_feature=gene_feature,
                                         amplicon_data=amplicon_data,
                                         amplicon=amplicon,

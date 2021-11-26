@@ -1,9 +1,11 @@
+import {geneFeaturePlotProperties} from "../../util";
+
 /**
  * Define options for x Axis
  * @param {Array<string>} samples - An array of samples name
  * @param {number} xAxisMax - Max value is set for x Axis
- * @param {boolean} geneFeature - whether to plot gene feature or not
- * @param {boolean} amplicon - whether to plot amplicon feature or not
+ * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
+ * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
  * @returns {Array<Dict[]>}
  */
 function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
@@ -38,8 +40,8 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
  * @param {Array<string>} samples - An array of samples name
  * @param {string} scaleType - scale for Y Axis, either value or log
  * @param {number} yMax - max value is set for y Axis
- * @param {boolean} geneFeature - whether to plot gene feature or not
- * @param {boolean} amplicon - whether to plot amplicon feature or not
+ * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
+ * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
  * @returns {Array<Dict[]>}
  */
 function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
@@ -63,7 +65,7 @@ function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
     }
     if (amplicon === "True" || geneFeature === "True"){
         axes.push({
-            max: geneFeatureProperties["max_grid_height"],
+            max: geneFeaturePlotProperties["max_grid_height"],
             gridIndex: samples.length,
             show: false,
         });

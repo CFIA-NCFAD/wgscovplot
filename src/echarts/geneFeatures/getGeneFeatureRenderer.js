@@ -1,4 +1,5 @@
 import {shapePoints} from "./shapePoints";
+import {geneFeaturePlotProperties} from "../../util";
 import {graphic} from "echarts/core";
 
 /**
@@ -34,7 +35,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
             yStart = start[1];
         }
         end = api.coord([feature.value.end, categoryIndex]);
-        height = geneFeatureProperties["rec_items_height"];
+        height = geneFeaturePlotProperties["rec_items_height"];
         width = end[0] - start[0];
         x = start[0];
         y = yStart - height / 2 - feature.value.level;

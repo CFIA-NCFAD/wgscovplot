@@ -1,14 +1,4 @@
-
-/**
- * Dict of color for coloring variant position in the chart
- * @type {Dict[]}
- */
-const ntColor = {
-    "A": "#ea5e48",
-    "C": "#eaca48",
-    "G": "#6ad82b",
-    "T": "#2b87d8",
-}
+import {ntColor} from "../../util";
 
 /**
  * Define options for variant bar charts

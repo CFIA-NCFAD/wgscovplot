@@ -11,7 +11,6 @@ function updateCoverageChartOption(samples) {
     var max;
     var leftMargin;
     var rightMargin;
-    var geneFeatureHeight;
     samples.forEach(sample => {
         depths.push(window.depths[sample]);
         variants.push(window.variants[sample]);

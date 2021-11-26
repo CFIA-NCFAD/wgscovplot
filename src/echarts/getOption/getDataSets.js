@@ -4,7 +4,7 @@
  * @param {Array<number>} positions - an array of genome positions which represent in X Axis
  * @returns {Array<Dict[]>}
  */
-function getDatasets(depths, positionArray) {
+function getDatasets(depths, positions) {
     var datasets = [];
     for (var [i, depthArray] of depths.entries()) {
         datasets.push({
@@ -13,7 +13,7 @@ function getDatasets(depths, positionArray) {
                 {name: "position", type: "int"},
             ],
             source: {
-                position: positionArray,
+                position: positions,
                 depth: depthArray,
             },
         });

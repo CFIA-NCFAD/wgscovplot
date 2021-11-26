@@ -15,8 +15,8 @@ import {getTooltips} from "./getTooltips";
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Dict[string, Dict[]]} variants - The dict of variants data
- * @param {boolean} geneFeature - whether to plot gene feature or not
- * @param {boolean} amplicon - whether to plot amplicon feature or not
+ * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
+ * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
  * @returns {Dict[]}
  *  * geneFeatureAmpliconData = [{
  *                    "idx": index,
