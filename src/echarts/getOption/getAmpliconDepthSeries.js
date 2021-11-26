@@ -3,9 +3,10 @@ import {graphic} from "echarts/core";
 /**
  * Define options for amplicon depth coverage bars
  * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Dict[]>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
  * @returns {Array<Dict[]>}
  */
-function getAmpliconDepthSeries(samples) {
+function getAmpliconDepthSeries(samples, ampliconDepthBarData) {
     var ampliconDepthSeries = [];
     if (amplicon === 'True'){
         for (var [i, sample] of samples.entries()) {
@@ -49,7 +50,7 @@ function getAmpliconDepthSeries(samples) {
                     x: [0, 1],
                     y: 2,
                 },
-                data: ampliconData[sample],
+                data: ampliconDepthBarData[sample],
             })
         }
     }

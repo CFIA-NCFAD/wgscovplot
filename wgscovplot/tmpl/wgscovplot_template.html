@@ -47,16 +47,28 @@
         window.variants = {{ variant_data }};
 
         /**
-         * Dict of gene features
+         * Dict of gene or amplicon features
          * @type {Dict[]}
          */
-        const geneFeatureData = {{ gene_feature_data }}
+        const geneFeatureAmpliconData = {{ gene_feature_data }}
+
+        /**
+         * Dict of Amplicon Depth Coverage
+         * @type {Dict[]}
+         */
+        const ampliconDepthBarData = {{ amplicon_data }}
 
         /**
          * Whether to plot gene feature or not
          * @type {boolean}
          */
         const geneFeature = "{{ gene_feature }}"
+
+        /**
+         * Whether amplicon coverage plot or not
+         * @type {boolean}
+         */
+        const amplicon = "{{amplicon}}"
 
         /**
          * Default properties for gene features chart, to have best view for the whole chart, user can adjust high, right/left/top margin
@@ -67,18 +79,6 @@
          * @type {Dict[]}
          */
         const geneFeatureProperties = {{ gene_feature_properties }}
-
-        /**
-         * Whether amplicon plot or normal coverage plot
-         * @type {boolean}
-         */
-        const amplicon = "{{amplicon}}"
-
-        /**
-         * Dict of Amplicon Depth Coverage
-         * @type {Dict[]}
-         */
-        const ampliconData = {{ amplicon_data }}
         const refSeqLength = window.refSeq.length;
 
         /**
@@ -117,17 +117,6 @@
          */
         var positions = [...Array(refSeqLength + 1).keys()];
         positions.shift();
-
-        /**
-         * A closure is used to toggle gene label name
-         * @type {function(): boolean}
-         */
-        var showGeneLabel = (function (){
-            var isShow = true;
-            return function (){
-                return isShow;
-            };
-        })();
 
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;

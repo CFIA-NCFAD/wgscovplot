@@ -2,9 +2,11 @@
  * Define options for x Axis
  * @param {Array<string>} samples - An array of samples name
  * @param {number} xAxisMax - Max value is set for x Axis
+ * @param {boolean} geneFeature - whether to plot gene feature or not
+ * @param {boolean} amplicon - whether to plot amplicon feature or not
  * @returns {Array<Dict[]>}
  */
-function getXAxes(samples, xAxisMax) {
+function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
     var axes = [];
     for (var [i, sample] of samples.entries()) {
         axes.push({
@@ -36,9 +38,11 @@ function getXAxes(samples, xAxisMax) {
  * @param {Array<string>} samples - An array of samples name
  * @param {string} scaleType - scale for Y Axis, either value or log
  * @param {number} yMax - max value is set for y Axis
+ * @param {boolean} geneFeature - whether to plot gene feature or not
+ * @param {boolean} amplicon - whether to plot amplicon feature or not
  * @returns {Array<Dict[]>}
  */
-function getYAxes(samples, scaleType, yMax) {
+function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
     var axes = [];
     for (var [i, sample] of samples.entries()) {
         axes.push({

@@ -1,23 +1,26 @@
-import {renderGeneFeatures} from "./renderGeneFeatures";
+import {getGeneFeatureRenderer} from "./getGeneFeatureRenderer";
 import {toTableHtml} from "../../util";
 
 /**
  * Define options for gene features charts
+ * @param {Array<Dict[]>} geneFeatureData - Array of dictionary geneFeature or amplicon data
  * @param {number} index - gene feature is displayed in the last index of grid
+ * @param {boolean} geneFeature - whether to plot gene feature or not
+ * @param {boolean} amplicon - whether to plot amplicon feature or not
  * @returns {Array<Dict[]>}
  */
-function getGeneFeatureSeries(index) {
+function getGeneFeatureSeries(geneFeatureAmpliconData, index, geneFeature, amplicon) {
     var featureSeries = [];
     if (amplicon === 'True' || geneFeature === 'True'){
         featureSeries.push({
             type: "custom",
             xAxisIndex: index,
             yAxisIndex: index,
-            renderItem: renderGeneFeatures,
+            renderItem: getGeneFeatureRenderer(true, geneFeatureAmpliconData),
             labelLayout: {
                 hideOverlap: false,
             },
-            data: geneFeatureData,
+            data: geneFeatureAmpliconData,
             tooltip: {
                 trigger: "item",
                 enterable: true,

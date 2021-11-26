@@ -52,7 +52,8 @@ function updateCoverageChartOption(samples) {
     var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
     var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
     // The current chart is not disposed so notMerge must be set true
-    chart.setOption(option = wgscovplot.getCoverageChartOption(samples, depths, variants), notMerge = true);
+    chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,
+        samples, depths, variants, geneFeature, amplicon), notMerge = true);
     setScale(scaleType, max);
     setDataZoom(zoomStart, zoomEnd);
     updateChartLeftMargin(leftMargin);
@@ -146,7 +147,7 @@ function initWgscovplotEvent(){
         $("#toggle-genelabel").change(function () {
             var seriesOption = chart.getOption().series;
             showGeneLabel = $(this).prop("checked");
-            seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.renderGeneFeatures; // Re-update Gene Feature Chart Only
+            seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData); // Re-update Gene Feature Chart Only
             chart.setOption({series: [...seriesOption]});
         });
 
@@ -165,18 +166,19 @@ function initWgscovplotEvent(){
          */
         $("#toggle-slider").change(function () {
             var isChecked = $(this).prop("checked");
+            var numChart = chart.getOption().grid.length;
             chart.setOption({
                 dataZoom: [
                     {
                         type: "inside",
                         filterMode: "none",
-                        xAxisIndex: [...Array(gridLength + 1).keys()],
+                        xAxisIndex: [...Array(numChart).keys()],
                     },
                     {
                         type: "slider",
                         show: isChecked,
                         filterMode: "none",
-                        xAxisIndex: isChecked ? [...Array(gridLength + 1).keys()] : null,
+                        xAxisIndex: isChecked ? [...Array(numChart).keys()] : null,
                     },
                 ],
             })
@@ -200,7 +202,8 @@ function initWgscovplotRenderEnv() {
     });
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
-        chart.setOption(option = wgscovplot.getCoverageChartOption(plotSamples, plotDepths, plotVariants));
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,
+            plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
@@ -212,7 +215,8 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        chart.setOption(option = wgscovplot.getCoverageChartOption(plotSamples, plotDepths, plotVariants));
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,
+            plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
         chart.setOption({grid: gridOption, dataZoom: dataZoomOption});
         setScale(scaleType, max);
     }
