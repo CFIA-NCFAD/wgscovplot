@@ -51,8 +51,8 @@ function updateCoverageChartOption(samples) {
     var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
     var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
     // The current chart is not disposed so notMerge must be set true
-    chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,
-        samples, depths, variants, geneFeature, amplicon), notMerge = true);
+    chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, positions,
+        maxDepth, samples, depths, variants, geneFeature, amplicon), notMerge = true);
     setScale(scaleType, max);
     setDataZoom(zoomStart, zoomEnd);
     updateChartLeftMargin(leftMargin);
@@ -201,8 +201,8 @@ function initWgscovplotRenderEnv() {
     });
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
-        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,
-            plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, positions,
+            maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
@@ -214,8 +214,8 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,
-            plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, positions,
+            maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
         chart.setOption({grid: gridOption, dataZoom: dataZoomOption});
         setScale(scaleType, max);
     }
