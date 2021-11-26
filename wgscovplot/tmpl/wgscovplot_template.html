@@ -101,14 +101,7 @@
          * The max value is set for y-Axis
          * @type {number}
          */
-        const maxDepth = {{ max_depth }}
-
-        /**
-         * An array of positions of reference sequence which represent in X-Axis
-         * @type {<Array<number>}
-         */
-        var positions = [...Array(refSeqLength + 1).keys()];
-        positions.shift();
+        const yAxisMax = {{ max_depth }}
 
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;

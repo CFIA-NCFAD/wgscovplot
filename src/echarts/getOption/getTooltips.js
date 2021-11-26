@@ -5,10 +5,11 @@ import {toTableHtml} from "../../util";
  * Define options for tooltips
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
- * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @param {Array<Dict[]>} variants - The dict of variants data
+ * @param {string} refSeq - Reference seq
  * @returns {Array<Dict[]>}
  */
-function getTooltips(samples, depths, variants) {
+function getTooltips(samples, depths, variants, refSeq) {
     return [
         {
             trigger: "axis",
@@ -57,7 +58,7 @@ function getTooltips(samples, depths, variants) {
                         }
                     })
                 } else {
-                    rows.push(["Sequence", window.refSeq[position - 1]]);
+                    rows.push(["Sequence", refSeq[position - 1]]);
                 }
                 output += toTableHtml(["Position Info", ""], rows, "table small");
                 rows = [

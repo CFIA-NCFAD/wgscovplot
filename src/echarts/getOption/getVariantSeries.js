@@ -2,11 +2,12 @@ import {ntColor} from "../../util";
 
 /**
  * Define options for variant bar charts
- * @param {Dict[string, Dict[]]} variants - The dict of variants data
+ * @param {Array<Dict[]>} variants - The dict of variants data
  * @param {Array<Array<number>>} depths - Array of depths
+ * @param {string} refSeq - Reference seq
  * @returns {Array<Dict[]>}
  */
-function getVariantsSeries(variants, depths) {
+function getVariantsSeries(variants, depths, refSeq) {
     var variantsSeries = [];
     for (var [i, varMap] of variants.entries()) {
         (function (i, varMap) {
@@ -19,7 +20,7 @@ function getVariantsSeries(variants, depths) {
                 itemStyle: {
                     color: function (params) {
                         var pos = params.data[0];
-                        var nt = window.refSeq[pos-1]
+                        var nt = refSeq[pos-1]
                         if (ntColor.hasOwnProperty(nt)) {
                             return ntColor[nt];
                         }
