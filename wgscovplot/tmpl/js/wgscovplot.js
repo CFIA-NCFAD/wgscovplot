@@ -1,14 +1,14 @@
 /**
  * Updates options for coverage charts.
  * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are reserved
- * Users's settings are respected
+ * Users's settings are respected by keeping old settings and set it back.
  * @param {Array<string>} samples - An array of samples name
  */
 function updateCoverageChartOption(samples) {
     var depths = [];
     var variants = [];
     var scaleType;
-    var max;
+    var yAxisMax;
     var leftMargin;
     var rightMargin;
     samples.forEach(sample => {
@@ -28,38 +28,76 @@ function updateCoverageChartOption(samples) {
     }
     if (chartOption.yAxis.length === lenCheck2){
         scaleType = lastYAxisScale
-        max = lastYAxisMax
+        yAxisMax = lastYAxisMax
     }else{
         // Get Current scale type and yAxis max to set it back
         scaleType = chartOption.yAxis[0].type;
-        max = chartOption.yAxis[0].max;
+        yAxisMax = chartOption.yAxis[0].max;
     }
     // Left-right margin
     if (chartOption.grid.length === 0){ // There is no subplot and gene/amplicon feature
-        leftMargin = 8
-        rightMargin = 8
+        leftMargin = "8%";
+        rightMargin = "8%";
         document.getElementById("chart-left-input").value = parseInt(leftMargin);
         document.getElementById("chart-left-output").value = parseInt(leftMargin) + "%";
         document.getElementById("chart-right-input").value = parseInt(rightMargin);
         document.getElementById("chart-right-output").value = parseInt(rightMargin) + "%";
     }
     else{
-        leftMargin = parseInt(chartOption.grid[0].left.replace("%", ""));
-        rightMargin = parseInt(chartOption.grid[0].right.replace("%", ""));
+        leftMargin = chartOption.grid[0].left;
+        rightMargin = chartOption.grid[0].right;
     }
     // Get Current Data Zoom
-    var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
-    var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
-    // The current chart is not disposed so notMerge must be set true
-    chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-        yAxisMax, samples, depths, variants, geneFeature, amplicon), notMerge = true);
-    setScale(scaleType, max);
-    setDataZoom(zoomStart, zoomEnd);
-    updateChartLeftMargin(leftMargin);
-    updateChartRightMargin(rightMargin);
+    var currentDataZoom = chart.getOption().dataZoom;
+    // get Coverage Chart Option with new data
+    var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+        yAxisMax, samples, depths, variants, geneFeature, amplicon)
+    // Update grid
+    updateOption.grid.forEach(element => {
+        element.left = leftMargin;
+        element.right = rightMargin;
+    })
+    // Update datzoom
+    updateOption.dataZoom = currentDataZoom
+    updateOption.dataZoom.forEach(element => {
+        element.xAxisIndex = [...Array(updateOption.grid.length).keys()]
+    })
+    //update scale and yAxis max
+    updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
+    //set chart option
+    chart.setOption(option = updateOption, notMerge = true);
+    //update control menu
     updateControlMenu();
 }
 
+/**
+ * Update scale type and max for Y Axis
+ * @param {Dict[]} yAxisOption - Options of Yaxis need to be updated
+ * @param {string} scaleType - Either log or value
+ * @param {number} yAxisMax - Max value is set for Y Axis
+ * @returns {Dict[]} Returns the updated options (Scale type or ymax) for yAxis
+ */
+function updateYAxisOption(yAxisOption, scaleType, yAxisMax){
+    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    if (scaleType === "value") {
+        yAxisOption.forEach(element => {
+            if (element.gridIndex < len) {
+                element.type = scaleType;
+                element.min = 0;
+                element.max = yAxisMax;
+            }
+        });
+    } else {
+        yAxisOption.forEach(element => {
+            if (element.gridIndex < len) {
+                element.type = scaleType;
+                element.min = 1;
+                element.max = yAxisMax;
+            }
+        });
+    }
+    return yAxisOption;
+}
 /**
  * When the chart is initialized, the first 3 samples are plotted
  * @param {Array<string>} samples - An array of samples name
@@ -133,7 +171,7 @@ function initWgscovplotEvent(){
         });
 
         /**
-         * Update chart options when the number of selected samples changed
+         * Update chart options when adding/romoving samples
          * The chart options such as y Axis scale, yMax, DataZoom are reserved (users's settings are respected)
          */
         $("#selectedsamples").on("change", function () {
@@ -209,15 +247,21 @@ function initWgscovplotRenderEnv() {
         var mode = isChecked ? "dark" : "white";
         var gridOption = chart.getOption().grid;
         var scaleType = chart.getOption().yAxis[0].type;
-        var max = chart.getOption().yAxis[0].max;
+        var yAxisMax = chart.getOption().yAxis[0].max;
         var dataZoomOption = chart.getOption().dataZoom;
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
-        chart.setOption({grid: gridOption, dataZoom: dataZoomOption});
-        setScale(scaleType, max);
+        var chartOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon)
+        // Keep grid option
+        chartOption.grid = gridOption;
+        // Keep data zoom option
+        chartOption.dataZoom = dataZoomOption;
+        // Keep yAxis option
+        chartOption.yAxis = updateYAxisOption(chartOption.yAxis, scaleType, yAxisMax);
+        //set chart option
+        chart.setOption(option = chartOption);
     }
     onChartDataZoomActions();
 }
@@ -303,41 +347,12 @@ function updateGeneFeatureHeight(val) {
 
 /**
  * Set scale for y Axis
- * @param {string} scaleType - Either value or log
- * @param {number} max - Max value is set for y Axis
  */
-function setScale(scaleType, max) {
-    var scale;
-    var yMax;
-    if (scaleType === null && max === null){
-        scale = document.getElementById("scale").value;
-        yMax = document.getElementById("ymax").value;
-    }
-    else{
-        scale = scaleType;
-        yMax = max;
-    }
-    var yAxisOption = chart.getOption().yAxis;
-    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
-    if (scale === "value") {
-        yAxisOption.forEach(element => {
-            if (element.gridIndex < len) {
-                element.type = scale;
-                element.min = 0;
-                element.max = yMax;
-            }
-        });
-    } else {
-        yAxisOption.forEach(element => {
-            if (element.gridIndex < len) {
-                element.type = scale;
-                element.min = 1;
-                element.max = yMax;
-            }
-        });
-    }
+function setScale() {
+    var scaleType = document.getElementById("scale").value;
+    var yAxisMax = document.getElementById("ymax").value;
+    var yAxisOption =  updateYAxisOption(chart.getOption().yAxis, scaleType, yAxisMax)
     chart.setOption({yAxis: yAxisOption});
-    document.getElementById("ymax").value = yMax; // update control menu
 }
 
 /**

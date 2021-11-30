@@ -18,11 +18,9 @@
     {% block content%}
         {% include "wgscovplot_controlmenu_gui.html" %}
     {% endblock %}
-
     <script type="text/javascript">
         {% include "js/wgscovplot.js" %}
     </script>
-
     <script>
         /**
          * Reference Sequence
@@ -113,8 +111,6 @@
             $chart.style.height = height + 'px';
             chart.resize();
         }
-
-        window.addEventListener("resize", updateChartDivSize);
         document.addEventListener("DOMContentLoaded", function(event) {
             var $chart = document.getElementById('chart');
             window.$chart = $chart;
@@ -123,6 +119,7 @@
             updateChartDivSize();
             initWgscovplotRenderEnv();
         })
+        window.addEventListener("resize", updateChartDivSize);
         initWgscovplotEvent();
     </script>
 </body>
