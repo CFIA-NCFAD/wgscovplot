@@ -25,6 +25,7 @@ function getGeneFeatureSeries(geneFeatureAmpliconData, index, geneFeature, ampli
                 trigger: "item",
                 enterable: true,
                 appendToBody: true,
+                triggerOn: "mousemove",
                 renderMode: "html",
                 borderRadius: 6,
                 borderWidth: 2,

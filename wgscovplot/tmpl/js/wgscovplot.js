@@ -189,13 +189,34 @@ function initWgscovplotEvent(){
         });
 
         /**
-         * Toggle tooltip for coverage chart, this action does not affect gene/amplicon feature chart
+         * Toggle tooltip for coverage chart
          */
         $("#toggle-tooltip").change(function () {
             var isChecked = $(this).prop("checked");
             chart.setOption({
-                tooltip: {showContent: isChecked},
+                tooltip: {triggerOn: isChecked ? "mousemove": "none"},
             });
+        });
+
+        /**
+         * Fix tooltip position on the charts
+         * If it is fixed: tooltip will be on the right if mouse hovering on the left and vice versa
+         * Default tooltip follows cursor
+         */
+        $("#fix-tooltip-display").change(function () {
+            var isChecked = $(this).prop("checked");
+            var tooltipOption  = chart.getOption().tooltip;
+            if (isChecked){
+                tooltipOption[0]["position"] = function (pos, params, dom, rect, size) {
+                    var obj = {top: 5};
+                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+                    return obj;
+                }
+            }
+            else{
+                tooltipOption[0]["position"] = ""
+            }
+            chart.setOption({tooltip: tooltipOption});
         });
 
         /**
@@ -249,6 +270,7 @@ function initWgscovplotRenderEnv() {
         var scaleType = chart.getOption().yAxis[0].type;
         var yAxisMax = chart.getOption().yAxis[0].max;
         var dataZoomOption = chart.getOption().dataZoom;
+        var tooltipOption = chart.getOption().tooltip;
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
@@ -260,6 +282,8 @@ function initWgscovplotRenderEnv() {
         chartOption.dataZoom = dataZoomOption;
         // Keep yAxis option
         chartOption.yAxis = updateYAxisOption(chartOption.yAxis, scaleType, yAxisMax);
+        // Keep tooltip
+        chartOption.tooltip = tooltipOption;
         //set chart option
         chart.setOption(option = chartOption);
     }

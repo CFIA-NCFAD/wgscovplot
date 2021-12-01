@@ -14,16 +14,11 @@ function getTooltips(samples, depths, variants, refSeq) {
         {
             trigger: "axis",
             enterable: true,
+            triggerOn: "mousemove",
             appendToBody: true,
             renderMode: "html",
             showContent: true,
-            position: function (pos, params, dom, rect, size) {
-                // tooltip will be fixed on the right if mouse hovering on the left,
-                // and on the left if hovering on the right.
-                var obj = {top: 5};
-                obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
-                return obj;
-            },
+            position:"", // tooltip follows cursor
             formatter: function (params) {
                 var output = "";
                 var param = params[0];
