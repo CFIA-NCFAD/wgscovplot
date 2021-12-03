@@ -16,7 +16,7 @@ var yStart = (function (){
 /**
  * Renders the gene/amplicon features shape
  * @param {boolean} isShowGeneLabel - Whether to show gene label or not
- * @param {Array<Dict[]>} geneFeatureAmpliconData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} geneFeatureAmpliconData - Array of dictionary geneFeature or amplicon data
  * @returns The shape of gene feature and/or amplicon feature
  */
 function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {

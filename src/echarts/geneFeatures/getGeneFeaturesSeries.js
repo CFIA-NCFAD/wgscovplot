@@ -3,11 +3,11 @@ import {toTableHtml} from "../../util";
 
 /**
  * Define options for gene features charts
- * @param {Array<Dict[]>} geneFeatureData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} geneFeatureData - Array of dictionary geneFeature or amplicon data
  * @param {number} index - gene feature is displayed in the last index of grid
  * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getGeneFeatureSeries(geneFeatureAmpliconData, index, geneFeature, amplicon) {
     var featureSeries = [];

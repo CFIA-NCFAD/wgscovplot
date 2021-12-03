@@ -42,7 +42,7 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
  * @param {number} yMax - max value is set for y Axis
  * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
     var axes = [];

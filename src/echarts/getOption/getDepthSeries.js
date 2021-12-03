@@ -1,7 +1,7 @@
 /**
  * Define options for depth coverage charts
  * @param {Array<string>} samples - An array of samples name
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getDepthSeries(samples) {
     var depthSeries = [];

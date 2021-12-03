@@ -1,6 +1,7 @@
 import {median, meanCoverage, medianCoverage, genomeCoverage} from "./coverageStat";
 import {getCoverageChartOption} from "./echarts/getOption/getCoverageChartOption";
 import {getGeneFeatureRenderer} from "./echarts/geneFeatures/getGeneFeatureRenderer";
+import {getTooltips} from "./echarts/getOption/getTooltips";
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
 import * as echarts from 'echarts/core';
 
@@ -15,4 +16,4 @@ echarts.use(
       DatasetComponent, SVGRenderer, CanvasRenderer]
 );
 
-export {getCoverageChartOption, median, meanCoverage, medianCoverage, genomeCoverage, getGeneFeatureRenderer, echarts};
+export {getCoverageChartOption, median, meanCoverage, medianCoverage, genomeCoverage, getGeneFeatureRenderer, getTooltips, echarts};

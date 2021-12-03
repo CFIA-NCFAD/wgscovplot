@@ -10,15 +10,18 @@ import {getTooltips} from "./getTooltips";
 
 /**
  * Define all options for coverage chart
- * @param {Array<Dict[]>} geneFeatureAmpliconData - Array of dictionary geneFeature or amplicon data
- * @param {Array<Dict[]>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} geneFeatureAmpliconData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
  * @param {string} refSeq - Reference seq
  * @param {number} yAxisMax - Max of Y Axis
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
- * @param {Array<Dict[]>} variants - The dict of variants data
+ * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
+ * @param {string} triggerOnType - mousemove or click
+ * @param {boolean} isVariantSitesOnly - whether to show tooltips for variant sites only
+ * @param {boolean} isVariantComparation - whether to compare variants across samples
  * @returns {Dict[]} - The options for coverage chart
  *
  * The format of data
@@ -39,65 +42,17 @@ import {getTooltips} from "./getTooltips";
  *       [12, 12, 425, 3, 2, 10, 12, 9, 7, 6, 1, 45, 45, 67, 87, 97]
  *   ]
  * * variants = [
- *      {
- *         sample: 'sample1',
- *         CHROM: 'MN908947.3',
- *         mutation: 'C14408T(orf1ab:L4715L)',
- *         POS: 14408,
- *         REF: 'C',
- *         ALT: 'T',
- *         REF_DP: 0,
- *         ALT_DP: 2053,
- *         DP: 2053,
- *         ALT_FREQ: 1,
- *         gene: 'orf1ab',
- *         impact: 'LOW',
- *         effect: 'synonymous_variant',
- *         aa: 'p.Leu4715Leu',
- *         aa_pos: '4715',
- *         aa_len: '7095'
- *      },
- *      {
- *         sample: 'sample2',
- *         CHROM: 'MN908947.3',
- *         mutation: 'C15480A(orf1ab:P5072H)',
- *         POS: 15480,
- *         REF: 'C',
- *         ALT: 'A',
- *         REF_DP: 1,
- *         ALT_DP: 671,
- *         DP: 672,
- *         ALT_FREQ: 0.998512,
- *         gene: 'orf1ab',
- *         impact: 'MODERATE',
- *         effect: 'missense_variant',
- *         aa: 'p.Pro5072His',
- *         aa_pos: '5072',
- *         aa_len: '7095'
- *      },
- *      {
- *         sample: 'sample3',
- *         CHROM: 'MN908947.3',
- *         mutation: 'A17066G(orf1ab:I5601V)',
- *         POS: 17066,
- *         REF: 'A',
- *         ALT: 'G',
- *         REF_DP: 0,
- *         ALT_DP: 850,
- *         DP: 850,
- *         ALT_FREQ: 1,
- *         gene: 'orf1ab',
- *         impact: 'MODERATE',
- *         effect: 'missense_variant',
- *         aa: 'p.Ile5601Val',
- *         aa_pos: '5601',
- *         aa_len: '7095'
- *       }
- * ]
+ *       [{sample: 'sample1', CHROM: 'MN908947.3',mutation: 'C14408T(orf1ab:L4715L)',POS: 14408},
+ *        {sample: 'sample1', CHROM: 'MN908947.3',mutation: 'C14408T(orf1ab:L4715L)',POS: 29300}],
+ *       [{sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 10000},
+ *        {sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 25300}]
+ *    ]
  */
 function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,refSeq,
                                 yAxisMax, samples, depths, variants,
-                                geneFeature, amplicon) {
+                                geneFeature= "False", amplicon= "False",
+                                triggerOnType= "mousemove", isVariantSitesOnly = false,
+                                isVariantComparation = false) {
 
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
@@ -113,7 +68,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq),
+        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isVariantSitesOnly, isVariantComparation),
         toolbox: {
             show: "true",
             feature: {

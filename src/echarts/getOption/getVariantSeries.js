@@ -2,7 +2,7 @@ import {ntColor} from "../../util";
 
 /**
  * Define options for variant bar charts
- * @param {Array<Dict[]>} variants - The dict of variants data
+ * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {string} refSeq - Reference seq
  * @returns {Array<Dict[]>}

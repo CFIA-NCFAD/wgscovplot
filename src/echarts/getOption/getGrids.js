@@ -5,7 +5,7 @@ import {geneFeaturePlotProperties} from "../../util";
  * @param {Array<string>} samples - An array of samples name
  * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getGrids(samples, geneFeature, amplicon) {
     var n = samples.length + 1;

@@ -2,7 +2,7 @@
  * Get dataset information
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<number>} positions - an array of genome positions which represent in X Axis
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getDatasets(depths, positions) {
     var datasets = [];

@@ -1,20 +1,25 @@
 import {meanCoverage, genomeCoverage, medianCoverage} from "../../coverageStat";
-import {toTableHtml} from "../../util";
+import {toTableHtml, getVariantComparation} from "../../util";
 
 /**
  * Define options for tooltips
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
- * @param {Array<Dict[]>} variants - The dict of variants data
+ * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {string} refSeq - Reference seq
- * @returns {Array<Dict[]>}
+ * @param {string} triggerOnType - mousemove or click
+ * @param {boolean} isVariantSitesOnly - whether to show tooltips for variant sites only
+ * @param {boolean} isVariantComparation - whether to compare variants across samples
+ * @returns {Array<Object>}
  */
-function getTooltips(samples, depths, variants, refSeq) {
+function getTooltips(samples, depths, variants, refSeq,
+                     triggerOnType="mousemove", isVariantSitesOnly= false,
+                     isVariantComparation= false) {
     return [
         {
             trigger: "axis",
             enterable: true,
-            triggerOn: "mousemove",
+            triggerOn: triggerOnType,
             appendToBody: true,
             renderMode: "html",
             showContent: true,
@@ -34,39 +39,60 @@ function getTooltips(samples, depths, variants, refSeq) {
                 var meanCov = meanCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
                 var medianCov = medianCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
                 var genomeCov = genomeCoverage(depths, zoomStart, zoomEnd, i, 10).toFixed(2);
-                output += "<h5>" + sample + "</h5>";
-                var rows = [
-                    ["Position", position.toLocaleString()],
-                    ["Depth", depth.toLocaleString()],
-                ];
-                if (params.length > 1) {
-                    Object.values(variants[i]).forEach(values => {
-                        if (values['POS'] === position) {
-                            for (const [key, value] of Object.entries(values)) {
-                                if (key !== 'POS' && key !== 'sample') {
-                                    rows.push(
-                                        ...[[key, value]]
-                                    )
+                var rows = [];
+                const isVariantBar = params.find(element => {
+                    if (element.componentSubType === "bar") {
+                        return true;
+                    }
+                    return false
+                });
+                if (isVariantBar) {
+                    if (isVariantComparation){
+                        rows = getVariantComparation(samples, variants, depths, position, sample);
+                    }
+                    else {
+                        rows = [
+                            ["Position", position.toLocaleString()],
+                            ["Coverage Depth", depth.toLocaleString()],
+                        ];
+                        Object.values(variants[i]).forEach(values => {
+                            if (values['POS'] === position) {
+                                for (const [key, value] of Object.entries(values)) {
+                                    if (key !== 'POS' && key !== 'sample') {
+                                        rows.push(
+                                            ...[[key, value]]
+                                        )
+                                    }
                                 }
-
                             }
-                        }
-                    })
+                        })
+                    }
                 } else {
-                    rows.push(["Sequence", refSeq[position - 1]]);
+                    if (isVariantSitesOnly){
+                        rows = [];
+                    }
+                    else{
+                        rows = [
+                            ["Position", position.toLocaleString()],
+                            ["Coverage Depth", depth.toLocaleString()],
+                        ];
+                        rows.push(["Sequence", refSeq[position - 1]]);
+                    }
                 }
-                output += toTableHtml(["Position Info", ""], rows, "table small");
-                rows = [
-                    [
-                        "Range",
-                        zoomStart.toLocaleString() + " - " + zoomEnd.toLocaleString(),
-                    ],
-                    ["Mean Coverage", meanCov + "X"],
-                    ["Median Coverage", medianCov + "X"],
-                    ["Genome Coverage ( >= 10x)", genomeCov + "%"],
-                ];
-                output += toTableHtml(["Coverage View Stats", ""], rows, "table small");
-
+                if (rows.length){
+                    output += "<h5>" + sample + "</h5>";
+                    output += toTableHtml(["Position Info", ""], rows, "table small");
+                    rows = [
+                        [
+                            "Range",
+                            zoomStart.toLocaleString() + " - " + zoomEnd.toLocaleString(),
+                        ],
+                        ["Mean Coverage", meanCov + "X"],
+                        ["Median Coverage", medianCov + "X"],
+                        ["Genome Coverage ( >= 10x)", genomeCov + "%"],
+                    ];
+                    output += toTableHtml(["Coverage View Stats", ""], rows, "table small");
+                }
                 return output;
             },
         },

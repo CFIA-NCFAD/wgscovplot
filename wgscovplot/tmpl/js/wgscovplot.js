@@ -47,25 +47,48 @@ function updateCoverageChartOption(samples) {
         leftMargin = chartOption.grid[0].left;
         rightMargin = chartOption.grid[0].right;
     }
+
     // Get Current Data Zoom
-    var currentDataZoom = chart.getOption().dataZoom;
+    var oldDataZoom = chartOption.dataZoom;
+
     // get Coverage Chart Option with new data
     var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-        yAxisMax, samples, depths, variants, geneFeature, amplicon)
+        yAxisMax, samples, depths, variants, geneFeature, amplicon);
+
+    // Update tooltip
+    var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+    var triggerOnType;
+    if (isTooltipEnable){
+        triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
+    }else{
+        triggerOnType ="none";
+    }
+    var isVariantComparation = document.getElementById("toggle-variant-comparation").checked;
+    var isVariantSitesOnly = document.getElementById("toggle-tooltip-variant-sites").checked;
+    updateOption.tooltip = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
+                triggerOnType=triggerOnType, isVariantSitesOnly=isVariantSitesOnly,
+                isVariantComparation=isVariantComparation)
+    var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
+    updateOption.tooltip[0]["position"] = tooltipPosition(isFixTooltipPostion);
+
     // Update grid
     updateOption.grid.forEach(element => {
         element.left = leftMargin;
         element.right = rightMargin;
     })
+
     // Update datzoom
-    updateOption.dataZoom = currentDataZoom
+    updateOption.dataZoom = oldDataZoom;
     updateOption.dataZoom.forEach(element => {
-        element.xAxisIndex = [...Array(updateOption.grid.length).keys()]
+        element.xAxisIndex = [...Array(updateOption.grid.length).keys()];
     })
+
     //update scale and yAxis max
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
+
     //set chart option
     chart.setOption(option = updateOption, notMerge = true);
+
     //update control menu
     updateControlMenu();
 }
@@ -193,9 +216,66 @@ function initWgscovplotEvent(){
          */
         $("#toggle-tooltip").change(function () {
             var isChecked = $(this).prop("checked");
+            var triggerType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
             chart.setOption({
-                tooltip: {triggerOn: isChecked ? "mousemove": "none"},
+                tooltip: {triggerOn: isChecked ? triggerType: "none"},
             });
+        });
+
+        /**
+         * Toggle turn tooltip display for variant sites only
+         */
+        $("#toggle-tooltip-variant-sites").change(function (){
+            var isChecked = $(this).prop("checked");
+            var chartOption = chart.getOption();
+            var samples = getCurrentSamples(chartOption);
+            var depths = [];
+            var variants = [];
+            samples.forEach(sample => {
+                depths.push(window.depths[sample]);
+                variants.push(window.variants[sample]);
+            });
+            var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+            var triggerOnType;
+            if (isTooltipEnable){
+                triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
+            }else{
+                triggerOnType ="none";
+            }
+            var isVariantComparation = document.getElementById("toggle-variant-comparation").checked;
+            var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
+                triggerOnType=triggerOnType, isVariantSitesOnly=isChecked,
+                isVariantComparation=isVariantComparation);
+            var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
+            tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
+            chart.setOption({tooltip: tooltipOption});
+        });
+
+
+        $("#toggle-variant-comparation").change(function (){
+            var isChecked = $(this).prop("checked");
+            var chartOption = chart.getOption();
+            var samples = getCurrentSamples(chartOption);
+            var depths = [];
+            var variants = [];
+            samples.forEach(sample => {
+                depths.push(window.depths[sample]);
+                variants.push(window.variants[sample]);
+            });
+            var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+            var triggerOnType;
+            if (isTooltipEnable){
+                triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
+            }else{
+                triggerOnType ="none";
+            }
+            var isVariantSitesOnly = document.getElementById("toggle-tooltip-variant-sites").checked;
+            var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
+                triggerOnType=triggerOnType, isVariantSitesOnly=isVariantSitesOnly,
+                isVariantComparation=isChecked);
+            var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
+            tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
+            chart.setOption({tooltip: tooltipOption});
         });
 
         /**
@@ -203,20 +283,29 @@ function initWgscovplotEvent(){
          * If it is fixed: tooltip will be on the right if mouse hovering on the left and vice versa
          * Default tooltip follows cursor
          */
-        $("#fix-tooltip-display").change(function () {
+        $("#fix-tooltip-postion").change(function () {
             var isChecked = $(this).prop("checked");
             var tooltipOption  = chart.getOption().tooltip;
-            if (isChecked){
-                tooltipOption[0]["position"] = function (pos, params, dom, rect, size) {
-                    var obj = {top: 5};
-                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
-                    return obj;
-                }
+            tooltipOption[0]["position"] = tooltipPosition(isChecked)
+            chart.setOption({tooltip: tooltipOption});
+        });
+
+        /**
+         * Toogle tooltip trigger on click
+         */
+        $("#toggle-tooltip-trigger-click").change(function () {
+            var isChecked = $(this).prop("checked");
+            var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+            if (isTooltipEnable){
+                chart.setOption({
+                    tooltip: {triggerOn: isChecked ? "click" : "mousemove"}
+                });
             }
             else{
-                tooltipOption[0]["position"] = ""
+                chart.setOption({
+                    tooltip: {triggerOn: "none"}
+                });
             }
-            chart.setOption({tooltip: tooltipOption});
         });
 
         /**
@@ -261,7 +350,8 @@ function initWgscovplotRenderEnv() {
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
+            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon,
+            triggerOnType= "mousemove", isVariantSitesOnly = false, isVariantComparation=true));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
@@ -288,6 +378,24 @@ function initWgscovplotRenderEnv() {
         chart.setOption(option = chartOption);
     }
     onChartDataZoomActions();
+}
+
+/**
+ * Functions to return tooltip position
+ * @param {boolean} isChecked
+ * @returns Returns the tooltip position
+ */
+function tooltipPosition(isChecked){
+    if (isChecked){
+        return function (pos, params, dom, rect, size) {
+            var obj = {top: 5};
+            obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+            return obj;
+        }
+    }
+    else{
+        return ""; // follow cursor
+    }
 }
 
 /**
