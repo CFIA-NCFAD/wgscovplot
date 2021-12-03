@@ -63,11 +63,11 @@ function updateCoverageChartOption(samples) {
     }else{
         triggerOnType ="none";
     }
-    var isVariantComparation = document.getElementById("toggle-variant-comparation").checked;
+    var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
     var isVariantSitesOnly = document.getElementById("toggle-tooltip-variant-sites").checked;
     updateOption.tooltip = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
                 triggerOnType=triggerOnType, isVariantSitesOnly=isVariantSitesOnly,
-                isVariantComparation=isVariantComparation)
+                isVariantComparison=isVariantComparison)
     var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
     updateOption.tooltip[0]["position"] = tooltipPosition(isFixTooltipPostion);
 
@@ -242,17 +242,17 @@ function initWgscovplotEvent(){
             }else{
                 triggerOnType ="none";
             }
-            var isVariantComparation = document.getElementById("toggle-variant-comparation").checked;
+            var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
             var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
                 triggerOnType=triggerOnType, isVariantSitesOnly=isChecked,
-                isVariantComparation=isVariantComparation);
+                isVariantComparison=isVariantComparison);
             var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
             tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
             chart.setOption({tooltip: tooltipOption});
         });
 
 
-        $("#toggle-variant-comparation").change(function (){
+        $("#toggle-variant-comparison").change(function (){
             var isChecked = $(this).prop("checked");
             var chartOption = chart.getOption();
             var samples = getCurrentSamples(chartOption);
@@ -272,7 +272,7 @@ function initWgscovplotEvent(){
             var isVariantSitesOnly = document.getElementById("toggle-tooltip-variant-sites").checked;
             var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
                 triggerOnType=triggerOnType, isVariantSitesOnly=isVariantSitesOnly,
-                isVariantComparation=isChecked);
+                isVariantComparison=isChecked);
             var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
             tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
             chart.setOption({tooltip: tooltipOption});
@@ -351,7 +351,7 @@ function initWgscovplotRenderEnv() {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
             yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon,
-            triggerOnType= "mousemove", isVariantSitesOnly = false, isVariantComparation=true));
+            triggerOnType= "mousemove", isVariantSitesOnly = false, isVariantComparison=true));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;

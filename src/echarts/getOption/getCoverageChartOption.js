@@ -21,8 +21,8 @@ import {getTooltips} from "./getTooltips";
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} isVariantSitesOnly - whether to show tooltips for variant sites only
- * @param {boolean} isVariantComparation - whether to compare variants across samples
- * @returns {Dict[]} - The options for coverage chart
+ * @param {boolean} isVariantComparison - whether to compare variants across samples
+ * @returns {Object} - The options for coverage chart
  *
  * The format of data
  * * geneFeatureAmpliconData = [{
@@ -52,7 +52,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 yAxisMax, samples, depths, variants,
                                 geneFeature= "False", amplicon= "False",
                                 triggerOnType= "mousemove", isVariantSitesOnly = false,
-                                isVariantComparation = false) {
+                                isVariantComparison = false) {
 
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
@@ -68,7 +68,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isVariantSitesOnly, isVariantComparation),
+        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isVariantSitesOnly, isVariantComparison),
         toolbox: {
             show: "true",
             feature: {

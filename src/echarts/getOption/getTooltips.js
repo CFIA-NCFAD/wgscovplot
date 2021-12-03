@@ -1,5 +1,5 @@
 import {meanCoverage, genomeCoverage, medianCoverage} from "../../coverageStat";
-import {toTableHtml, getVariantComparation} from "../../util";
+import {toTableHtml, getVariantComparison} from "../../util";
 
 /**
  * Define options for tooltips
@@ -9,12 +9,12 @@ import {toTableHtml, getVariantComparation} from "../../util";
  * @param {string} refSeq - Reference seq
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} isVariantSitesOnly - whether to show tooltips for variant sites only
- * @param {boolean} isVariantComparation - whether to compare variants across samples
+ * @param {boolean} isVariantComparison - whether to compare variants across samples
  * @returns {Array<Object>}
  */
 function getTooltips(samples, depths, variants, refSeq,
                      triggerOnType="mousemove", isVariantSitesOnly= false,
-                     isVariantComparation= false) {
+                     isVariantComparison= false) {
     return [
         {
             trigger: "axis",
@@ -47,8 +47,8 @@ function getTooltips(samples, depths, variants, refSeq,
                     return false
                 });
                 if (isVariantBar) {
-                    if (isVariantComparation){
-                        rows = getVariantComparation(samples, variants, depths, position, sample);
+                    if (isVariantComparison){
+                        rows = getVariantComparison(samples, variants, depths, position, sample);
                     }
                     else {
                         rows = [

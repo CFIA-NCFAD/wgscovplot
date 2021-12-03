@@ -24,15 +24,15 @@ export const ntColor = {
 }
 
 /**
- * Function get Variant Comparation across samples
+ * Function get Variant Comparison across samples
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {number} position - Variant position
  * @param {string} currentSample - selected sample
- * @returns <Array<Array<string>> - Variant comparation across samples
+ * @returns <Array<Array<string>> - Variant comparison across samples
  */
-function getVariantComparation(samples, variants, depths, position, currentSample){
+function getVariantComparison(samples, variants, depths, position, currentSample){
     var rows = [];
     var variantArr = [];
     //console.log(variants)
@@ -117,4 +117,4 @@ function toTableHtml(headers, rows, classes) {
     return out;
 }
 
-export {toTableHtml, getVariantComparation};
+export {toTableHtml, getVariantComparison};
