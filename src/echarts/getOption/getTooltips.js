@@ -8,13 +8,10 @@ import {toTableHtml, getVariantComparison} from "../../util";
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {string} refSeq - Reference seq
  * @param {string} triggerOnType - mousemove or click
- * @param {boolean} isVariantSitesOnly - whether to show tooltips for variant sites only
- * @param {boolean} isVariantComparison - whether to compare variants across samples
  * @returns {Array<Object>}
  */
 function getTooltips(samples, depths, variants, refSeq,
-                     triggerOnType="mousemove", isVariantSitesOnly= false,
-                     isVariantComparison= false) {
+                     triggerOnType="mousemove", isVariantComparison = false) {
     return [
         {
             trigger: "axis",
@@ -23,7 +20,11 @@ function getTooltips(samples, depths, variants, refSeq,
             appendToBody: true,
             renderMode: "html",
             showContent: true,
-            position:"", // tooltip follows cursor
+            confine: true,
+            position: "cursor",
+            axisPointer: {
+                type: 'line'
+            },
             formatter: function (params) {
                 var output = "";
                 var param = params[0];
@@ -32,8 +33,8 @@ function getTooltips(samples, depths, variants, refSeq,
                     return output;
                 }
                 var sample = samples[i];
-                var position = param.data[1];
-                var depth = param.data[0];
+                var position = param.axisValue;
+                var depth = depths[i][position-1];
                 var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
                 var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
                 var meanCov = meanCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
@@ -68,20 +69,15 @@ function getTooltips(samples, depths, variants, refSeq,
                         })
                     }
                 } else {
-                    if (isVariantSitesOnly){
-                        rows = [];
-                    }
-                    else{
-                        rows = [
-                            ["Position", position.toLocaleString()],
-                            ["Coverage Depth", depth.toLocaleString()],
-                        ];
-                        rows.push(["Sequence", refSeq[position - 1]]);
-                    }
+                    rows = [
+                        ["Position", position.toLocaleString()],
+                        ["Coverage Depth", depth.toLocaleString()],
+                    ];
+                    rows.push(["Sequence", refSeq[position-1]]);
                 }
                 if (rows.length){
-                    output += "<h5>" + sample + "</h5>";
-                    output += toTableHtml(["Position Info", ""], rows, "table small");
+                    output += "<h5>" + "Selected sample: " + sample + "</h5>";
+                    output += toTableHtml(["Position Info", ""], rows, "table table-hover table-bordered table-responsive-md");
                     rows = [
                         [
                             "Range",
@@ -91,7 +87,7 @@ function getTooltips(samples, depths, variants, refSeq,
                         ["Median Coverage", medianCov + "X"],
                         ["Genome Coverage ( >= 10x)", genomeCov + "%"],
                     ];
-                    output += toTableHtml(["Coverage View Stats", ""], rows, "table small");
+                    output += toTableHtml(["Coverage View Stats (Sample: " + sample + ")", ""], rows, "table table-hover table-bordered table-responsive-md");
                 }
                 return output;
             },

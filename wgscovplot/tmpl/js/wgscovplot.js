@@ -52,10 +52,6 @@ function updateCoverageChartOption(samples) {
     var oldDataZoom = chartOption.dataZoom;
 
     // get Coverage Chart Option with new data
-    var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-        yAxisMax, samples, depths, variants, geneFeature, amplicon);
-
-    // Update tooltip
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     var triggerOnType;
     if (isTooltipEnable){
@@ -63,11 +59,25 @@ function updateCoverageChartOption(samples) {
     }else{
         triggerOnType ="none";
     }
+    var isVariantSites = document.getElementById("toggle-tooltip-variant-sites").checked;
+    var isNonVarianSites = document.getElementById("toggle-tooltip-non-variant-sites").checked;
     var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
-    var isVariantSitesOnly = document.getElementById("toggle-tooltip-variant-sites").checked;
-    updateOption.tooltip = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
-                triggerOnType=triggerOnType, isVariantSitesOnly=isVariantSitesOnly,
-                isVariantComparison=isVariantComparison)
+
+    var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+        yAxisMax, samples, depths, variants, geneFeature, amplicon,
+        triggerOnType= triggerOnType, isVariantSites=isVariantSites,
+        isNonVariantSites=isNonVarianSites, isVariantComparison=isVariantComparison);
+
+    // Update tooltip
+    var seriesOption = updateOption.series;
+    seriesOption.forEach(element => {
+        if (element.type === 'line'){
+            element.tooltip.trigger = isNonVariantSites ? "axis" : "none"
+        }
+        else if (element.type === 'bar'){
+            element.tooltip.trigger = isVariantSites ? "axis" : "none"
+        }
+    })
     var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
     updateOption.tooltip[0]["position"] = tooltipPosition(isFixTooltipPostion);
 
@@ -222,63 +232,7 @@ function initWgscovplotEvent(){
             });
         });
 
-        /**
-         * Toggle turn tooltip display for variant sites only
-         */
-        $("#toggle-tooltip-variant-sites").change(function (){
-            var isChecked = $(this).prop("checked");
-            var chartOption = chart.getOption();
-            var samples = getCurrentSamples(chartOption);
-            var depths = [];
-            var variants = [];
-            samples.forEach(sample => {
-                depths.push(window.depths[sample]);
-                variants.push(window.variants[sample]);
-            });
-            var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
-            var triggerOnType;
-            if (isTooltipEnable){
-                triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
-            }else{
-                triggerOnType ="none";
-            }
-            var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
-            var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
-                triggerOnType=triggerOnType, isVariantSitesOnly=isChecked,
-                isVariantComparison=isVariantComparison);
-            var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
-            tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
-            chart.setOption({tooltip: tooltipOption});
-        });
-
-
-        $("#toggle-variant-comparison").change(function (){
-            var isChecked = $(this).prop("checked");
-            var chartOption = chart.getOption();
-            var samples = getCurrentSamples(chartOption);
-            var depths = [];
-            var variants = [];
-            samples.forEach(sample => {
-                depths.push(window.depths[sample]);
-                variants.push(window.variants[sample]);
-            });
-            var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
-            var triggerOnType;
-            if (isTooltipEnable){
-                triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
-            }else{
-                triggerOnType ="none";
-            }
-            var isVariantSitesOnly = document.getElementById("toggle-tooltip-variant-sites").checked;
-            var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
-                triggerOnType=triggerOnType, isVariantSitesOnly=isVariantSitesOnly,
-                isVariantComparison=isChecked);
-            var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
-            tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
-            chart.setOption({tooltip: tooltipOption});
-        });
-
-        /**
+                /**
          * Fix tooltip position on the charts
          * If it is fixed: tooltip will be on the right if mouse hovering on the left and vice versa
          * Default tooltip follows cursor
@@ -306,6 +260,59 @@ function initWgscovplotEvent(){
                     tooltip: {triggerOn: "none"}
                 });
             }
+        });
+
+        /**
+         * Toggle turn tooltip display for variant sites only
+         */
+        $("#toggle-tooltip-variant-sites").change(function (){
+            var isChecked = $(this).prop("checked");
+            var chartOption = chart.getOption();
+            var seriesOption = chartOption.series;
+            var samples = getCurrentSamples(chartOption);
+            var depths = [];
+            var variants = [];
+            samples.forEach(sample => {
+                depths.push(window.depths[sample]);
+                variants.push(window.variants[sample]);
+            });
+            updateVariantOption(samples, depths, variants, seriesOption,
+                isChecked, document.getElementById("toggle-tooltip-non-variant-sites").checked,
+                document.getElementById("toggle-variant-comparison").checked);
+        });
+
+        $("#toggle-tooltip-non-variant-sites").change(function (){
+            var isChecked = $(this).prop("checked");
+            var chartOption = chart.getOption();
+            var seriesOption = chartOption.series;
+            var samples = getCurrentSamples(chartOption);
+            var depths = [];
+            var variants = [];
+            samples.forEach(sample => {
+                depths.push(window.depths[sample]);
+                variants.push(window.variants[sample]);
+            });
+            updateVariantOption(samples, depths, variants, seriesOption,
+                document.getElementById("toggle-tooltip-variant-sites").checked, isChecked,
+                document.getElementById("toggle-variant-comparison").checked);
+        });
+
+
+        $("#toggle-variant-comparison").change(function (){
+            var isChecked = $(this).prop("checked");
+            var chartOption = chart.getOption();
+            var seriesOption = chartOption.series;
+            var samples = getCurrentSamples(chartOption);
+            var depths = [];
+            var variants = [];
+            samples.forEach(sample => {
+                depths.push(window.depths[sample]);
+                variants.push(window.variants[sample]);
+            });
+            updateVariantOption(samples, depths, variants, seriesOption,
+                document.getElementById("toggle-tooltip-variant-sites").checked,
+                document.getElementById("toggle-tooltip-non-variant-sites").checked,
+                isChecked);
         });
 
         /**
@@ -350,13 +357,13 @@ function initWgscovplotRenderEnv() {
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon,
-            triggerOnType= "mousemove", isVariantSitesOnly = false, isVariantComparison=true));
+            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
         var mode = isChecked ? "dark" : "white";
         var gridOption = chart.getOption().grid;
+        var seriesOption = chart.getOption().series;
         var scaleType = chart.getOption().yAxis[0].type;
         var yAxisMax = chart.getOption().yAxis[0].max;
         var dataZoomOption = chart.getOption().dataZoom;
@@ -374,10 +381,48 @@ function initWgscovplotRenderEnv() {
         chartOption.yAxis = updateYAxisOption(chartOption.yAxis, scaleType, yAxisMax);
         // Keep tooltip
         chartOption.tooltip = tooltipOption;
+        // Keep series
+        chartOption.series = seriesOption;
         //set chart option
         chart.setOption(option = chartOption);
     }
     onChartDataZoomActions();
+}
+
+/**
+ * Update option for displaying tooltip for variant and non variant sites
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {Array<Array<Object>>} variants - The object of variants data
+ * @param {Array<Array<Object>>} seriesOption - Series option of the chart
+ * @param {boolean} isVariantSites - Whether to enable tooltip for variant sites or not
+ * @param {boolean} isNonVariantSites - Whether to enable tooltip for non variant sites or not
+ * @param {boolean} isVariantComparison - Whether to compare variant information across selected samples
+ * @returns Re update option for the chart
+ */
+function updateVariantOption (samples, depths, variants, seriesOption,
+                              isVariantSites, isNonVariantSites, isVariantComparison){
+    var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+    var triggerOnType;
+    if (isTooltipEnable){
+        triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
+    }else{
+        triggerOnType ="none";
+    }
+    seriesOption.forEach(element => {
+        if (element.type === 'line'){
+            element.tooltip.trigger = isNonVariantSites ? "axis" : "none"
+        }
+        else if (element.type === 'bar'){
+            element.tooltip.trigger = isVariantSites ? "axis" : "none"
+        }
+    })
+    var tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
+    triggerOnType=triggerOnType, isVariantComparison=isVariantComparison);
+    var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
+    tooltipOption[0]["position"] = tooltipPosition(isFixTooltipPostion);
+    tooltipOption[0].triggerOn = triggerOnType;
+    chart.setOption({tooltip: tooltipOption, series: seriesOption});
 }
 
 /**
@@ -394,7 +439,7 @@ function tooltipPosition(isChecked){
         }
     }
     else{
-        return ""; // follow cursor
+        return "cursor"; // follow cursor
     }
 }
 
@@ -533,16 +578,24 @@ function setDataZoom(zoomStart, zoomEnd){
  * Dispatch click/dbclick actions for the whole chart
  */
 function onChartDataZoomActions(){
+
     chart.on("click", function(params){
-        document.getElementById("start-pos").value = params.value.start;
-        document.getElementById("end-pos").value = params.value.end;
-        setDataZoom(params.value.start, params.value.end);
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom'){
+            document.getElementById("start-pos").value = params.value.start;
+            document.getElementById("end-pos").value = params.value.end;
+            setDataZoom(params.value.start, params.value.end);
+        }
+
     });
+
     chart.on("dblclick", function(params){
-        document.getElementById("start-pos").value = 1;
-        document.getElementById("end-pos").value = refSeqLength;
-        setDataZoom(1, refSeqLength);
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom'){
+            document.getElementById("start-pos").value = 1;
+            document.getElementById("end-pos").value = refSeqLength;
+            setDataZoom(1, refSeqLength);
+        }
     });
+
 }
 
 /**

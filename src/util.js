@@ -32,10 +32,9 @@ export const ntColor = {
  * @param {string} currentSample - selected sample
  * @returns <Array<Array<string>> - Variant comparison across samples
  */
-function getVariantComparison(samples, variants, depths, position, currentSample){
+function getVariantComparison(samples, variants, depths, position, currentSample=""){
     var rows = [];
     var variantArr = [];
-    //console.log(variants)
     for (var [i, element] of variants.entries()) {
         if (element.length){
             var isPOSExist = false;
@@ -53,7 +52,6 @@ function getVariantComparison(samples, variants, depths, position, currentSample
             variantArr.push({"sample": samples[i], "POS":position}); // sample has no variant information
         }
     }
-    //console.log(variantArr)
     var unionKeys = [...new Set(variantArr.reduce((r, e) => [...r, ...Object.keys(e)], []))];
     unionKeys.push("Coverage Depth") // Add Coverage Depth row
     unionKeys.forEach(key => {

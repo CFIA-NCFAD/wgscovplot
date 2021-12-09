@@ -16,4 +16,5 @@ echarts.use(
       DatasetComponent, SVGRenderer, CanvasRenderer]
 );
 
-export {getCoverageChartOption, median, meanCoverage, medianCoverage, genomeCoverage, getGeneFeatureRenderer, getTooltips, echarts};
+export {getCoverageChartOption, median, meanCoverage, medianCoverage, genomeCoverage,
+      getGeneFeatureRenderer, getTooltips, echarts};

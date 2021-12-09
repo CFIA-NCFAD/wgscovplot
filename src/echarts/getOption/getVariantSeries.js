@@ -4,10 +4,11 @@ import {ntColor} from "../../util";
  * Define options for variant bar charts
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {Array<Array<number>>} depths - Array of depths
+ * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {string} refSeq - Reference seq
  * @returns {Array<Dict[]>}
  */
-function getVariantsSeries(variants, depths, refSeq) {
+function getVariantsSeries(variants, depths, refSeq, isVariantSites) {
     var variantsSeries = [];
     for (var [i, varMap] of variants.entries()) {
         (function (i, varMap) {
@@ -27,7 +28,9 @@ function getVariantsSeries(variants, depths, refSeq) {
                         return "#333";
                     },
                 },
-
+                tooltip:{
+                    trigger: isVariantSites ? "axis" : "none"
+                }
             });
         })(i, varMap);
     };

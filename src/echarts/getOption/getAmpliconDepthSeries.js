@@ -51,6 +51,10 @@ function getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
                     x: [0, 1],
                     y: 2,
                 },
+                tooltip: {
+                    trigger: "none"
+                },
+                silent: true,
                 data: ampliconDepthBarData[sample],
             })
         }

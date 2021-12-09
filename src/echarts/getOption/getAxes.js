@@ -6,7 +6,7 @@ import {geneFeaturePlotProperties} from "../../util";
  * @param {number} xAxisMax - Max value is set for x Axis
  * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
     var axes = [];
@@ -18,7 +18,7 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
             max: xAxisMax,
             axisLabel: {
                 interval: "auto",
-            },
+            }
         });
     }
     if (amplicon === "True" || geneFeature === "True"){

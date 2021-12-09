@@ -16,11 +16,12 @@ import {getTooltips} from "./getTooltips";
  * @param {number} yAxisMax - Max of Y Axis
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
- * @param {Array<Array<Object>>} variants - The dict of variants data
+ * @param {Array<Array<Object>>} variants - The object of variants data
  * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
  * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
  * @param {string} triggerOnType - mousemove or click
- * @param {boolean} isVariantSitesOnly - whether to show tooltips for variant sites only
+ * @param {boolean} isVariantSites- whether to show tooltips for variant sites
+ * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
  * @param {boolean} isVariantComparison - whether to compare variants across samples
  * @returns {Object} - The options for coverage chart
  *
@@ -50,9 +51,9 @@ import {getTooltips} from "./getTooltips";
  */
 function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,refSeq,
                                 yAxisMax, samples, depths, variants,
-                                geneFeature= "False", amplicon= "False",
-                                triggerOnType= "mousemove", isVariantSitesOnly = false,
-                                isVariantComparison = false) {
+                                geneFeature="False", amplicon="False",
+                                triggerOnType= "mousemove", isVariantSites=true,
+                                isNonVariantSites=true, isVariantComparison=true) {
 
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
@@ -63,12 +64,12 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
         yAxis: getYAxes(samples, "log", yAxisMax, geneFeature, amplicon),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
-            ...getDepthSeries(samples),
-            ...getVariantsSeries(variants, depths, refSeq),
+            ...getDepthSeries(samples, isNonVariantSites),
+            ...getVariantsSeries(variants, depths, refSeq, isVariantSites),
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isVariantSitesOnly, isVariantComparison),
+        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isVariantComparison),
         toolbox: {
             show: "true",
             feature: {
