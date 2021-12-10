@@ -6,12 +6,12 @@ import {getTooltips} from "./echarts/getOption/getTooltips";
 import * as echarts from 'echarts/core';
 
 import {LineChart, BarChart, CustomChart} from 'echarts/charts';
-import {TooltipComponent, GridComponent, DataZoomComponent, DatasetComponent,} from 'echarts/components';
+import {TooltipComponent, GridComponent, DataZoomComponent, DatasetComponent, ToolboxComponent} from 'echarts/components';
 import {SVGRenderer, CanvasRenderer } from 'echarts/renderers';
 
 echarts.use(
   [TooltipComponent, GridComponent,
-      LineChart, BarChart,
+      LineChart, BarChart, ToolboxComponent,
       DataZoomComponent, CustomChart,
       DatasetComponent, SVGRenderer, CanvasRenderer]
 );
