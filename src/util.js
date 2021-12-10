@@ -1,4 +1,5 @@
 import {defaultTo} from "lodash/util";
+import {genomeCoverage, meanCoverage, medianCoverage} from "./coverageStat";
 const join = require('lodash/join');
 const map = require('lodash/map');
 
@@ -21,6 +22,47 @@ export const ntColor = {
     "C": "#eaca48",
     "G": "#6ad82b",
     "T": "#2b87d8",
+}
+
+/**
+ * Function get Coverage Stat comparison across samples
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<number>>} depths - Array of depths
+ * @param {number} start - start position
+ * @param {number} end - end position
+ * @param {string} currentSample - selected sample
+ * @returns <Array<Array<string>> - Coverage Stat comparison across samples
+ */
+function getCoverageStatComparison (samples, depths, start, end, currentSample){
+    var rows = [];
+    var fisrtCol = ["sample", "Range", "Mean Coverage", "Median Coverage", "Genome Coverage ( >= 10x)"];
+    var range = start.toLocaleString() + " - " + end.toLocaleString();
+    var sampleInfo = [];
+    for (var[i, sample] of samples.entries()){
+        var meanCov = meanCoverage(depths, start, end, i).toFixed(2);
+        var medianCov = medianCoverage(depths, start, end, i).toFixed(2);
+        var genomeCov = genomeCoverage(depths, start, end, i, 10).toFixed(2);
+        sampleInfo.push({
+            "sample": (sample===currentSample) ? sample.bold() : sample,
+            "Range": range,
+            "Mean Coverage": meanCov + "X",
+            "Median Coverage": medianCov + "X",
+            "Genome Coverage ( >= 10x)":genomeCov + "%"
+        })
+    }
+    fisrtCol.forEach(col => {
+        var row= [];
+        row.push(col);
+        sampleInfo.forEach(element => {
+            Object.keys(element).forEach(key => {
+                if (key === col){
+                    row.push(element[key])
+                }
+            })
+        })
+        rows.push(...[row])
+    })
+    return rows;
 }
 
 /**
@@ -115,4 +157,4 @@ function toTableHtml(headers, rows, classes) {
     return out;
 }
 
-export {toTableHtml, getVariantComparison};
+export {toTableHtml, getVariantComparison, getCoverageStatComparison};
