@@ -981,16 +981,16 @@ test('Median of an array ' + '[' + depths["sample01"] + ']', () => {
 
 var gridIndex0 = 0;
 test('Mean Coverage of depths array [' + depths[gridIndex0] + '], with region:' + 0 + '-' + (depths[gridIndex0].length - 3), () => {
-    expect(meanCoverage(depths, 1, depths[gridIndex0].length - 3, gridIndex0).toFixed(2)).toBe("27.23");
+    expect(meanCoverage(depths[gridIndex0], 1, depths[gridIndex0].length - 3).toFixed(2)).toBe("27.23");
 });
 
 var gridIndex1 = 1;
 test('Genome Coverage of depths array [' + depths[gridIndex1] + '], with region:' + 0 + '-' + (depths[gridIndex1].length - 1), () => {
-    expect(genomeCoverage(depths, 1, depths[gridIndex1].length - 1, gridIndex1, 10).toFixed(2)).toBe("40.00");
+    expect(genomeCoverage(depths[gridIndex1], 1, depths[gridIndex1].length - 1, 10).toFixed(2)).toBe("40.00");
 });
 
 var gridIndex2 = 2;
 test('Median Coverage of depths array [' + depths[gridIndex2] + '], with region:' + 1 + '-' + (depths[gridIndex2].length - 3), () => {
-    expect(medianCoverage(depths, 2, depths[gridIndex2].length - 3, gridIndex2).toFixed(2)).toBe("9.50");
+    expect(medianCoverage(depths[gridIndex2], 2, depths[gridIndex2].length - 3).toFixed(2)).toBe("9.50");
 });
 

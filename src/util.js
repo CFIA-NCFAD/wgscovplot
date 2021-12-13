@@ -39,9 +39,9 @@ function getCoverageStatComparison (samples, depths, start, end, currentSample){
     var range = start.toLocaleString() + " - " + end.toLocaleString();
     var sampleInfo = [];
     for (var[i, sample] of samples.entries()){
-        var meanCov = meanCoverage(depths, start, end, i).toFixed(2);
-        var medianCov = medianCoverage(depths, start, end, i).toFixed(2);
-        var genomeCov = genomeCoverage(depths, start, end, i, 10).toFixed(2);
+        var meanCov = meanCoverage(depths[i], start, end).toFixed(2);
+        var medianCov = medianCoverage(depths[i], start, end).toFixed(2);
+        var genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
         sampleInfo.push({
             "sample": (sample===currentSample) ? sample.bold() : sample,
             "Range": range,

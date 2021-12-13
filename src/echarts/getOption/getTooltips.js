@@ -81,9 +81,9 @@ function getTooltips(samples, depths, variants, refSeq,
                         coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample);
                     }
                     else{
-                        var meanCov = meanCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
-                        var medianCov = medianCoverage(depths, zoomStart, zoomEnd, i).toFixed(2);
-                        var genomeCov = genomeCoverage(depths, zoomStart, zoomEnd, i, 10).toFixed(2);
+                        var meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
+                        var medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
+                        var genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);
                         coverageStatRows = [
                             [
                                 "Range",
