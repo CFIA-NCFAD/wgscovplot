@@ -9,49 +9,12 @@ function updateCoverageChartOption(samples) {
     var variants = [];
     var scaleType;
     var yAxisMax;
-    var leftMargin;
-    var rightMargin;
     samples.forEach(sample => {
         depths.push(window.depths[sample]);
         variants.push(window.variants[sample]);
     })
-    /* Need to handle the case when user removes all samples on the chart and add new samples to be displayed
-    Variables lenCheck1, lenCheck2 and closures lastYAxisScale, lastYAxisMax are used to keep track the scale settings of a last sample on the chart before it was removed
-    lenCheck1, lenCheck1 depends on whether the last subplot is used for plotting gene/amplicon features or not
-     */
     var chartOption = chart.getOption();
-    var lenCheck1 = (amplicon === 'True' || geneFeature === 'True') ? 2 : 1;
-    var lenCheck2 = (amplicon === 'True' || geneFeature === 'True') ? 1 : 0;
-    if (chartOption.yAxis.length === lenCheck1){
-        lastYAxisScale = chartOption.yAxis[0].type;
-        lastYAxisMax = chartOption.yAxis[0].max;
-    }
-    if (chartOption.yAxis.length === lenCheck2){
-        scaleType = lastYAxisScale
-        yAxisMax = lastYAxisMax
-    }else{
-        // Get Current scale type and yAxis max to set it back
-        scaleType = chartOption.yAxis[0].type;
-        yAxisMax = chartOption.yAxis[0].max;
-    }
-    // Left-right margin
-    if (chartOption.grid.length === 0){ // There is no subplot and gene/amplicon feature
-        leftMargin = "8%";
-        rightMargin = "8%";
-        document.getElementById("chart-left-input").value = parseInt(leftMargin);
-        document.getElementById("chart-left-output").value = parseInt(leftMargin) + "%";
-        document.getElementById("chart-right-input").value = parseInt(rightMargin);
-        document.getElementById("chart-right-output").value = parseInt(rightMargin) + "%";
-    }
-    else{
-        leftMargin = chartOption.grid[0].left;
-        rightMargin = chartOption.grid[0].right;
-    }
-
-    // Get Current Data Zoom
-    var oldDataZoom = chartOption.dataZoom;
-
-    // get Coverage Chart Option with new data
+    // Reserver Tooltip option
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     var triggerOnType;
     if (isTooltipEnable){
@@ -68,7 +31,7 @@ function updateCoverageChartOption(samples) {
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
         isNonVariantSites=isNonVarianSites, isVariantComparison=isVariantComparison);
 
-    // Update tooltip
+    // Reserve tooltip in series option
     var seriesOption = updateOption.series;
     seriesOption.forEach(element => {
         if (element.type === 'line'){
@@ -81,25 +44,35 @@ function updateCoverageChartOption(samples) {
     var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
     updateOption.tooltip[0]["position"] = tooltipPosition(isFixTooltipPostion);
 
-    // Update grid
+    // Reserve grid option
     updateOption.grid.forEach(element => {
-        element.left = leftMargin;
-        element.right = rightMargin;
+        element.left = $("#chart-left-input").val() + "%";;
+        element.right = $("#chart-right-input").val() + "%";;
     })
 
-    // Update datzoom
+    // Reserve datzoom
+    var oldDataZoom = chartOption.dataZoom;
     updateOption.dataZoom = oldDataZoom;
     updateOption.dataZoom.forEach(element => {
         element.xAxisIndex = [...Array(updateOption.grid.length).keys()];
     })
 
-    //update scale and yAxis max
+    //Reserve scale and yAxis max
+    scaleType = $("#scale").val();
+    yAxisMax = $("#ymax").val();
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
+
+    // Reserve Gene/Amplicon Feature Height
+    if (amplicon === 'True' || geneFeature === 'True'){
+        var geneFeaturePlotHeight = $("#genefeature-height-input").val() + "%";
+        var gridLength = updateOption.grid.length
+        updateOption.grid[gridLength-1].height = geneFeaturePlotHeight;
+    }
 
     //set chart option
     chart.setOption(option = updateOption, notMerge = true);
 
-    //update control menu
+    // Update control menu
     updateControlMenu();
 }
 
@@ -605,17 +578,12 @@ function onChartDataZoomActions(){
 function updateControlMenu() {
     var gridOption = chart.getOption().grid;
     if (gridOption.length > 0) {
-        var height1 = gridOption[0].height.replace("%", "");
+        var height = gridOption[0].height.replace("%", "");
         var top = gridOption[0].top.replace("%", "");
-        document.getElementById("chart-height-input").value = parseInt(height1);
-        document.getElementById("chart-height-output").value = parseInt(height1) + "%";
+        document.getElementById("chart-height-input").value = parseInt(height);
+        document.getElementById("chart-height-output").value = parseInt(height) + "%";
         document.getElementById("chart-top-input").value = parseInt(top);
         document.getElementById("chart-top-output").value = parseInt(top) + "%";
-        if (amplicon === 'True' || geneFeature === 'True') {
-            var height2 = gridOption[gridOption.length - 1].height.replace("%", "");
-            document.getElementById("genefeature-height-input").value = parseInt(height2);
-            document.getElementById("genefeature-height-output").value = parseInt(height2) + "%";
-        }
     }
 }
 
