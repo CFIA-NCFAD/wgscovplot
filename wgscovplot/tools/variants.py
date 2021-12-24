@@ -3,6 +3,7 @@ import os
 import re
 from enum import Enum
 from pathlib import Path
+from operator import itemgetter
 from typing import Dict, Tuple, List, Optional, Iterable, Union
 
 import pandas as pd
@@ -452,13 +453,14 @@ def get_info(basedir: Path) -> Dict[str, pd.DataFrame]:
                                            single_entry_selector_func=vcf_selector)
     sample_dfvcf = {}
     for sample, vcf_path in sample_vcf.items():
+        logger.info(f'Sample "{sample}" has variant file "{vcf_path}"')
         variant_caller, df_vcf = read_vcf(vcf_path)
         if variant_caller.startswith(VariantCaller.iVar.value):
             df_parsed_ivar_vcf = parse_ivar_vcf(df_vcf, sample)
             if df_parsed_ivar_vcf is not None:
                 sample_dfvcf[sample] = df_parsed_ivar_vcf
             else:
-                sample_dfvcf[sample] = pd.DataFrame() # assign empty DataFame for this sample
+                sample_dfvcf[sample] = pd.DataFrame()  # assign empty DataFame for this sample
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         elif variant_caller.startswith(VariantCaller.Longshot.value):
             df_longshot_vcf = parse_longshot_vcf(df_vcf, sample)
@@ -485,6 +487,7 @@ def get_info(basedir: Path) -> Dict[str, pd.DataFrame]:
         logger.warning(f'No SnpSift tables found in "{basedir}" using glob patterns "{SNPSIFT_GLOB_PATTERNS}"')
     sample_dfsnpsift = {}
     for sample, snpsift_path in sample_snpsift.items():
+        logger.info(f'Sample "{sample}" has SnpSift file "{snpsift_path}"')
         df_snpsift = simplify_snpsift(pd.read_table(snpsift_path), sample)
         if df_snpsift is not None:
             sample_dfsnpsift[sample] = df_snpsift
@@ -507,3 +510,25 @@ def get_info(basedir: Path) -> Dict[str, pd.DataFrame]:
 
     return out
 
+
+def to_dataframe(dfs: Iterable[pd.DataFrame]) -> pd.DataFrame:
+    df = pd.concat(list(dfs))
+    df.sort_values(['sample', 'POS'], inplace=True)
+    df.set_index('sample', inplace=True)
+    df.index.name = 'Sample'
+    return df.rename(columns={x: y for x, y, _ in variants_cols})
+
+
+def to_variant_pivot_table(df: pd.DataFrame) -> pd.DataFrame:
+    df_vars = df.copy()
+    df_vars.reset_index(inplace=True)
+    df_pivot = pd.pivot_table(df_vars,
+                              index='Sample',
+                              columns='Mutation',
+                              values='Alternate Allele Frequency',
+                              aggfunc='first',
+                              fill_value=0.0)
+    pivot_cols = list(zip(df_pivot.columns,
+                          df_pivot.columns.str.replace(r'[A-Z]+(\d+).*', r'\1').astype(int)))
+    pivot_cols.sort(key=itemgetter(1))
+    return df_pivot[[x for x, y in pivot_cols]]

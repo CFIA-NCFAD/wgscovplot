@@ -54,7 +54,6 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 geneFeature="False", amplicon="False",
                                 triggerOnType= "mousemove", isVariantSites=true,
                                 isNonVariantSites=true, isVariantComparison=true) {
-
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
     var chartOptions = {

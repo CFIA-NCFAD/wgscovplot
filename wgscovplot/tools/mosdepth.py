@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Dict, List
 
@@ -7,18 +8,24 @@ from pydantic import BaseModel
 
 from wgscovplot.util import find_file_for_each_sample
 
+logger = logging.getLogger(__name__)
+
 SAMPLE_NAME_CLEANUP = [
     '.genome.per-base.bed.gz',
+    # '.amplicon.per-base.bed.gz',
     '.per-base.bed.gz',
     '.genome.regions.bed.gz',
+    # '.amplicon.regions.bed.gz',
     '.regions.bed.gz',
     '.trim',
     '.mkD',
+    # '-depths.tsv'
 ]
 
 PER_BASE_PATTERNS = [
     '**/mosdepth/**/*.genome.per-base.bed.gz',
-    '**/mosdepth/**/*.per-base.bed.gz'
+    '**/mosdepth/**/*.per-base.bed.gz',
+    # '**/mosdepth/**/*-depths.tsv'
 ]
 
 REGIONS_PATTERNS = [
@@ -86,12 +93,29 @@ def depth_array(df: pd.DataFrame) -> np.ndarray:
     return arr
 
 
+def read_regular_depths(fpath: Path) -> pd.DataFrame:
+    df = pd.read_table(fpath,
+                       names=['sample_name', 'reference', 'pos', 'depth'],
+                       header=None)
+    return df
+
+
 def get_depth(basedir: Path) -> Dict[str, List]:
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=PER_BASE_PATTERNS,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
     for sample, bed_path in sample_beds.items():
+        logger.info(f'Sample "{sample}" has depth file "{bed_path}"')
+        # Temporary
+        '''
+        if 'depths.tsv' in str(bed_path):
+            df_coverage_depth = read_regular_depths(bed_path)
+            df_coverage_depth.loc[df_coverage_depth.depth == 0, 'depth'] = 1E-20
+            out[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
+        ##############################
+        else:
+        '''
         df = read_mosdepth_bed(bed_path)
         arr = depth_array(df)
         arr[arr == 0] = 1E-20
@@ -115,6 +139,7 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
     for sample, bed_path in sample_beds.items():
+        logger.info(f'Sample "{sample}" has region depth file "{bed_path}"')
         df = read_mosdepth_region_bed(bed_path)
         out[sample] = []
         for row in df.itertuples():
@@ -143,6 +168,22 @@ def get_region_amplicon(basedir: Path) -> Dict[str, List]:
         break
     return out
 
+'''
+def get_interval_coords(df: pd.DataFrame, threshold=0):
+    pos = df[df.depth <= threshold].pos
+    coords = []
+    for i, x in enumerate(pos):
+        if coords:
+            last = coords[-1][-1]
+            if x == last + 1:
+                coords[-1].append(x)
+            else:
+                coords.append([x])
+        else:
+            coords.append([x])
+    return '; '.join([f'{xs[0]}-{xs[-1]}' for xs in coords])
+'''
+
 
 def get_info(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, MosdepthDepthInfo]:
     sample_beds = find_file_for_each_sample(basedir,
@@ -150,6 +191,32 @@ def get_info(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, Mosdep
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
     for sample, bed_path in sample_beds.items():
+        '''
+        if 'depths.tsv' in str(bed_path):
+            df_coverage_depth = read_regular_depths(bed_path)
+            df_coverage_depth.loc[df_coverage_depth.depth == 0, 'depth'] = 1E-20
+            low_depth = (df_coverage_depth.depth < low_coverage_threshold)
+            zero_depth = (df_coverage_depth.depth == 1E-20)
+            mean_cov = df_coverage_depth.depth.mean()
+            median_cov = df_coverage_depth.depth.median()
+            genome_cov = ((df_coverage_depth.depth >= low_coverage_threshold).sum() / df_coverage_depth.shape[0])
+            pos_low_cov = low_depth.sum()
+            pos_no_cov = zero_depth.sum()
+            region_low_cov = get_interval_coords(df_coverage_depth, low_coverage_threshold - 1)
+            region_no_cov = get_interval_coords(df_coverage_depth, 1E-20)
+            depth_info = MosdepthDepthInfo(sample=sample,
+                                           low_coverage_threshold=low_coverage_threshold,
+                                           n_low_coverage=pos_low_cov,
+                                           n_zero_coverage=pos_no_cov,
+                                           zero_coverage_coords=region_no_cov,
+                                           low_coverage_coords=region_low_cov,
+                                           genome_coverage=genome_cov,
+                                           mean_coverage=mean_cov,
+                                           median_coverage=median_cov,
+                                           ref_seq_length=29903)
+            #continue
+        else:
+        '''
         df = read_mosdepth_bed(bed_path)
         arr = depth_array(df)
         mean_cov = arr.mean()

@@ -18,6 +18,7 @@ def find_file_for_each_sample(basedir: Path,
         for p in basedir.glob(glob_pattern):
             sample = extract_sample_name(p.name,
                                          remove=sample_name_cleanup)
+
             sample_files[sample].append(p)
     sample_file = {}
     for sample, files in sample_files.items():

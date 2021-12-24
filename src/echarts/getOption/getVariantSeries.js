@@ -6,13 +6,13 @@ import {ntColor} from "../../util";
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {string} refSeq - Reference seq
- * @returns {Array<Dict[]>}
+ * @returns {Array<Object>}
  */
 function getVariantsSeries(variants, depths, refSeq, isVariantSites) {
-    var variantsSeries = [];
+    var variantSeries = [];
     for (var [i, varMap] of variants.entries()) {
         (function (i, varMap) {
-            variantsSeries.push({
+            variantSeries.push({
                 type: "bar",
                 xAxisIndex: i,
                 yAxisIndex: i,
@@ -34,7 +34,8 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites) {
             });
         })(i, varMap);
     };
-    return variantsSeries;
+    return variantSeries;
 }
+
 
 export {getVariantsSeries};

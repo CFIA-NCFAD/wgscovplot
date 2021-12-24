@@ -3,7 +3,7 @@ import requests
 import math
 import markdown
 import pandas as pd
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple, Union
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
@@ -45,6 +45,19 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
     sample_stat_info = stat_info(mosdepth_info)
     # Get Depths and Variants data
     samples_variants_info = variants.get_info(input_dir)
+    # Get Variant matrix
+    df_variants = variants.to_dataframe(samples_variants_info.values())
+    mutation = []
+    variant_matrix_data = []
+    if 'Mutation' in df_variants.columns:
+        df_varmap = variants.to_variant_pivot_table(df_variants)
+        for i, sample in enumerate(samples_name):
+            for j, col in enumerate(df_varmap.columns):
+                if sample in df_varmap.index:
+                    variant_matrix_data.append([j, i, df_varmap.loc[sample, col]])
+                else:
+                    variant_matrix_data.append([j, i, 0.0])
+        mutation = df_varmap.columns.tolist()
     depths_data = mosdepth.get_depth(input_dir)
     variants_data = {}
     coverage_stat = {}
@@ -54,7 +67,6 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
         coverage_stat[sample] = coverage_info.dict()
     # Read README.md
     dirpath = Path(__file__).parent
-    print(dirpath)
     readme = dirpath / 'readme/README.md'
     with open(readme, "r", encoding="utf-8") as input_file:
         text = input_file.read()
@@ -68,6 +80,8 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
                              gene_feature_data=gene_feature_data,
                              gene_feature=gene_feature,
                              amplicon_data=amplicon_depths_data,
+                             variant_matrix=variant_matrix_data,
+                             mutation=mutation,
                              amplicon=amplicon,
                              about_html=about_html,
                              output_html=output_html)
@@ -76,14 +90,14 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
 def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo]) -> str:
     df = pd.DataFrame(sample_depth_info.values())
     headers = ['Sample', '# 0 Coverage Positions', '0 Coverage Regions', 'Low Coverage Threshold',
-               '# Low Coverage Positions (< 10X)', 'Low Coverage Regions (< 10X)', '% Genome Coverage',
+               '# Low Coverage Positions (< 10X)', 'Low Coverage Regions (< 10X)', '% Genome Coverage >= 10X',
                'Mean Coverage Depth',
                'Median Coverage Depth', 'Ref Sequence Length']
     df.columns = headers
     df.drop(columns=['Low Coverage Threshold'], inplace=True)
     for index in df.index:
         for col in df.columns:
-            df.loc[index, col] = "{:.2%}".format(df.loc[index, col][1]) if col == '% Genome Coverage' else \
+            df.loc[index, col] = "{:.2%}".format(df.loc[index, col][1]) if col == '% Genome Coverage >= 10X' else \
                 df.loc[index, col][1]
     df.sort_values(by=['Sample'], inplace=True)
     df.reset_index(drop=True, inplace=True)
@@ -191,6 +205,8 @@ def write_html_coverage_plot(samples_name: List[str],
                              about_html: str,
                              output_html: Path,
                              amplicon_data: Dict[str, List],
+                             variant_matrix: List[List],
+                             mutation: List[str],
                              amplicon: bool = False,
                              gene_feature: bool = False
                              ) -> None:
@@ -217,6 +233,8 @@ def write_html_coverage_plot(samples_name: List[str],
                                         coverage_stat=coverage_stat,
                                         ref_seq=ref_seq,
                                         ref_seq_length=len(ref_seq),
+                                        variant_matrix=variant_matrix,
+                                        mutation=mutation,
                                         about_html=about_html,
                                         max_depth=max_depth(depth_data),
                                         **scripts_css))

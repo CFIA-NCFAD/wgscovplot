@@ -25,7 +25,6 @@ function updateCoverageChartOption(samples) {
     var isVariantSites = document.getElementById("toggle-tooltip-variant-sites").checked;
     var isNonVarianSites = document.getElementById("toggle-tooltip-non-variant-sites").checked;
     var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
-
     var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
@@ -330,7 +329,8 @@ function initWgscovplotRenderEnv() {
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
-            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
+            maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
+        variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(window.samples, window.mutations, window.variantMatrix, window.variants));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
@@ -377,6 +377,7 @@ function updateVariantOption (samples, depths, variants, seriesOption,
                               isVariantSites, isNonVariantSites, isVariantComparison){
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     var triggerOnType;
+    console.log(variants)
     if (isTooltipEnable){
         triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
     }else{
@@ -420,8 +421,40 @@ function tooltipPosition(isChecked){
  * Adjust subplot height
  * @param {number} val - Subplots height percent value
  */
+function updateVarMapHeight(val) {
+    document.getElementById("varmap-height-output").value = val + "%";
+    var gridOption = variantHeatmap.getOption().grid;
+    gridOption[0]["height"] = val + "%";
+    variantHeatmap.setOption({grid: gridOption});
+}
+
+/**
+ * Adjust subplot height
+ * @param {number} val - Subplots height percent value
+ */
 function updateSubPlotHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
+    var gridOption = chart.getOption().grid;
+    var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
+    for (var i = 0; i < len; i++) {
+        gridOption[i]["height"] = val + "%";
+        if (i > 0) {
+            gridOption[i]["top"] =
+                parseInt(gridOption[i - 1]["top"].replace("%", "")) +
+                parseInt(gridOption[i - 1]["height"].replace("%", "")) +
+                4 +
+                "%";
+        }
+    };
+    chart.setOption({grid: gridOption});
+}
+
+/**
+ * Adjust subplot height
+ * @param {number} val - Subplots height percent value
+ */
+function updatevarMapHeight(val) {
+    document.getElementById("varmap-height-output").value = val + "%";
     var gridOption = chart.getOption().grid;
     var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
     for (var i = 0; i < len; i++) {
