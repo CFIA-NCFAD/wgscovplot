@@ -43,10 +43,10 @@ import {getTooltips} from "./getTooltips";
  *       [12, 12, 425, 3, 2, 10, 12, 9, 7, 6, 1, 45, 45, 67, 87, 97]
  *   ]
  * * variants = [
- *       [{sample: 'sample1', CHROM: 'MN908947.3',mutation: 'C14408T(orf1ab:L4715L)',POS: 14408},
- *        {sample: 'sample1', CHROM: 'MN908947.3',mutation: 'C14408T(orf1ab:L4715L)',POS: 29300}],
- *       [{sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 10000},
- *        {sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 25300}]
+ *       [0:{sample: 'sample1', CHROM: 'MN908947.3',mutation: 'C14408T(orf1ab:L4715L)',POS: 14408},
+ *        1:{sample: 'sample1', CHROM: 'MN908947.3',mutation: 'C14408T(orf1ab:L4715L)',POS: 29300}],
+ *       [0:{sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 10000},
+ *        1:{sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 25300}]
  *    ]
  */
 function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,refSeq,

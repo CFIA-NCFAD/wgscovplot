@@ -21,8 +21,10 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
                 ref_seq = seq
     else:
         logging.error('Please provide reference sequences of your analysis')
+
     # Get the list of samples name
     samples_name = mosdepth.get_samples_name(input_dir)
+
     # Get amplicon data
     if amplicon:
         amplicon_depths_data = mosdepth.get_depth_amplicon(input_dir)
@@ -33,6 +35,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
     else:
         amplicon_depths_data = {}
         amplicon_regions_data = {}
+
     # Get gene/amplicon feature
     if gene_feature:
         if genbank is None:
@@ -40,12 +43,14 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
                           'option --genbank /path/to/genbank.gb')
             exit(1)
     gene_feature_data = get_gene_feature(gene_feature, genbank, amplicon_regions_data)
+
     # Get coverage statistics information for all samples
     mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=10)
     sample_stat_info = stat_info(mosdepth_info)
-    # Get Depths and Variants data
+
     samples_variants_info = variants.get_info(input_dir)
-    # Get Variant matrix
+
+    # Get Variant matrix using for Variant Heatmap
     df_variants = variants.to_dataframe(samples_variants_info.values())
     mutation = []
     variant_matrix_data = []
@@ -58,19 +63,27 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
                 else:
                     variant_matrix_data.append([j, i, 0.0])
         mutation = df_varmap.columns.tolist()
-    depths_data = mosdepth.get_depth(input_dir)
+
+    # Get Variant data
     variants_data = {}
-    coverage_stat = {}
     for sample, df_variants in samples_variants_info.items():
         variants_data[sample] = df_variants.to_dict(orient='records')
+
+    # Get Depths data
+    depths_data = mosdepth.get_depth(input_dir)
+
+    # Get Coverage stat for summary inforamtion
+    coverage_stat = {}
     for sample, coverage_info in mosdepth_info.items():
         coverage_stat[sample] = coverage_info.dict()
+
     # Read README.md
     dirpath = Path(__file__).parent
     readme = dirpath / 'readme/README.md'
     with open(readme, "r", encoding="utf-8") as input_file:
         text = input_file.read()
     about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
+
     # Write coverage plot to HTML file
     write_html_coverage_plot(samples_name=samples_name,
                              depth_data=depths_data,
