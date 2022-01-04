@@ -153,6 +153,7 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
         visualMap: {
             min: 0.00,
             max: 1.00,
+            precision: 2,
             calculable: true,
             orient: 'vertical',
             left: 'right',
