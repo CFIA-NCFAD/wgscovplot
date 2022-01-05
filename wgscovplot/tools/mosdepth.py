@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 
+from wgscovplot.colors import AmpliconColour
 from wgscovplot.util import find_file_for_each_sample
 
 logger = logging.getLogger(__name__)
@@ -135,11 +136,11 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
             if pool_id % 2:  # pool 2
                 out[sample].append(dict(
                     value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
-                    itemStyle={"color": "violet"}))
+                    itemStyle={"color": AmpliconColour.pool2.value}))
             else:  # pool 1
                 out[sample].append(dict(
                     value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
-                    itemStyle={"color": "skyblue"}))
+                    itemStyle={"color": AmpliconColour.pool1.value}))
     return out
 
 

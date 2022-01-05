@@ -1,3 +1,5 @@
+from enum import Enum
+
 color_pallete = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
                  '#CAB2D6',
                  '#6A3D9A', '#FF33D3', '#B15928', '#0006FC', '#2FB0EC', '#F3D742', '#2E9CE1', '#273D63',
@@ -21,3 +23,8 @@ color_pallete = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C
                  '#CF0E24', '#D791A9', '#0892FE', '#F5A865', '#91EBC2', '#9F650D', '#1B0A0F', '#1E9E88',
                  '#B42E38',
                  '#9710C9']
+
+
+class AmpliconColour(Enum):
+    pool1 = 'rgba(255, 99, 71, 0.2)'
+    pool2 = 'rgba(68, 99, 255, 0.2)'

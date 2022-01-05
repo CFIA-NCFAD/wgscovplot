@@ -5,11 +5,13 @@ import markdown
 import pandas as pd
 from typing import Dict, List, Any, Tuple, Union
 from pathlib import Path
+
+from Bio.SeqFeature import SeqFeature
 from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO
 from itertools import cycle
 from .resources import cdn_resources, gene_feature_properties
-from .colors import color_pallete
+from .colors import color_pallete, AmpliconColour
 from wgscovplot.tools import variants, mosdepth
 
 
@@ -29,7 +31,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
     if amplicon:
         amplicon_depths_data = mosdepth.get_depth_amplicon(input_dir)
         amplicon_regions_data = mosdepth.get_region_amplicon(input_dir)
-        if not amplicon_depths_data or not amplicon_regions_data:
+        if not (amplicon_depths_data and amplicon_regions_data):
             logging.warning('No amplicon data found')
             amplicon = False
     else:
@@ -37,11 +39,10 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
         amplicon_regions_data = {}
 
     # Get gene/amplicon feature
-    if gene_feature:
-        if genbank is None:
-            logging.error('If you want to plot gene features, please provide genbank file for gene features, '
-                          'option --genbank /path/to/genbank.gb')
-            exit(1)
+    if gene_feature and genbank is None:
+        logging.error('If you want to plot gene features, please provide genbank file for gene features, '
+                      'option --genbank /path/to/genbank.gb')
+        exit(1)
     gene_feature_data = get_gene_feature(gene_feature, genbank, amplicon_regions_data)
 
     # Get coverage statistics information for all samples
@@ -138,6 +139,7 @@ def get_gene_feature(gene_feature: bool, annotation: Path, amplicon_regions: Dic
         plus_strains_list = [0, 0, 0]
         for seq_record in SeqIO.parse(annotation, "genbank"):
             index = 0  # the index must be continuous for data handling with Echarts
+            seq_feature: SeqFeature
             for seq_feature in seq_record.features:
                 if seq_feature.type in ["CDS", "source"]:
                     continue
@@ -148,6 +150,8 @@ def get_gene_feature(gene_feature: bool, annotation: Path, amplicon_regions: Dic
                         feature_name = seq_feature.qualifiers['gene'][0]
                     elif seq_feature.qualifiers.get('locus_tag'):
                         feature_name = seq_feature.qualifiers['locus_tag'][0]
+                    else:
+                        feature_name = seq_feature.id
                 start_pos = int(seq_feature.location.start) + 1
                 end_pos = int(seq_feature.location.end)
                 strand = seq_feature.strand
@@ -183,17 +187,17 @@ def get_gene_feature(gene_feature: bool, annotation: Path, amplicon_regions: Dic
                          },
                          itemStyle={"color": next(colour_cycle)})
                 )
-                index = index + 1
+                index += 1
     if amplicon_regions:
         for amplicon_name, region in amplicon_regions.items():
             index = int(amplicon_name.split('_')[-1])
             gene_feature_len = len(gene_feature_data)
             if index % 2:
                 level = 95 if gene_feature else 15
-                amplicon_color = 'violet'
+                amplicon_color = AmpliconColour.pool2.value
             else:
                 level = 80 if gene_feature else 0
-                amplicon_color = 'skyblue'
+                amplicon_color = AmpliconColour.pool1.value
             gene_feature_data.append(
                 dict(name=amplicon_name,
                      value={
