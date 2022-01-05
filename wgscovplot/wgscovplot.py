@@ -3,6 +3,7 @@ import requests
 import math
 import markdown
 import pandas as pd
+import re
 from typing import Dict, List, Any, Tuple, Union
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
@@ -57,9 +58,9 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
     if 'Mutation' in df_variants.columns:
         df_varmap = variants.to_variant_pivot_table(df_variants)
         for i, sample in enumerate(samples_name):
-            for j, col in enumerate(df_varmap.columns):
+            for j, mutation_name in enumerate(df_varmap.columns):
                 if sample in df_varmap.index:
-                    variant_matrix_data.append([j, i, df_varmap.loc[sample, col]])
+                    variant_matrix_data.append([j, i, df_varmap.loc[sample, mutation_name]])
                 else:
                     variant_matrix_data.append([j, i, 0.0])
         mutation = df_varmap.columns.tolist()

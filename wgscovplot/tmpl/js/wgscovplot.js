@@ -377,7 +377,6 @@ function updateVariantOption (samples, depths, variants, seriesOption,
                               isVariantSites, isNonVariantSites, isVariantComparison){
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     var triggerOnType;
-    console.log(variants)
     if (isTooltipEnable){
         triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
     }else{

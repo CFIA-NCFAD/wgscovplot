@@ -161,7 +161,6 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
             inRange: {
                 color: [
                     '#a50026',
-                    '#d73027',
                     '#f46d43',
                     '#fdae61',
                     '#fee08b',
