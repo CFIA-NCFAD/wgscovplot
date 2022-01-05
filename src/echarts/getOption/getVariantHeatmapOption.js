@@ -34,7 +34,7 @@ function getTooltipHeatmap(samples, mutations, variants) {
                         }
                     })
                     if (rows.length) {
-                        output += toTableHtml(["", ""], rows, "table table-hover table-bordered table-responsive-md");
+                        output += toTableHtml(["", ""], rows, "table-sm table-hover table-bordered table-responsive-md");
                     } else {
                         output += ("Not detected mutation " + mutationName.bold() + " in sample " + sample.bold())
                     }
@@ -158,6 +158,17 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
             orient: 'vertical',
             left: 'right',
             top: '5%',
+            inRange: {
+                color: [
+                    '#a50026',
+                    '#d73027',
+                    '#f46d43',
+                    '#fdae61',
+                    '#fee08b',
+                    '#f7ff00',
+                    '#006837'
+                ]
+            }
         },
         series: [
             {

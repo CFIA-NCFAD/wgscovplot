@@ -76,7 +76,7 @@ function getTooltips(samples, depths, variants, refSeq,
                 }
                 if (positionRows.length){
                     output += "<h5>" + "Selected sample: " + sample + "</h5>";
-                    output += toTableHtml(["Position Info", ""], positionRows, "table table-hover table-bordered table-responsive-md");
+                    output += toTableHtml(["Position Info", ""], positionRows, "table-sm table-hover table-bordered table-responsive-md");
                     if (isVariantComparison){
                         coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample);
                     }
@@ -94,7 +94,7 @@ function getTooltips(samples, depths, variants, refSeq,
                             ["Genome Coverage ( >= 10x)", genomeCov + "%"],
                         ];
                     }
-                    output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table table-hover table-bordered table-responsive-md");
+                    output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table-sm table-hover table-bordered table-responsive-md");
                 }
                 return output;
             },
