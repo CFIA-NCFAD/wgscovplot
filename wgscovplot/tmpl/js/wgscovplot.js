@@ -1,18 +1,33 @@
 /**
+ * Get depths and variants for samples
+ * @param {Array<string>} samples - An array of samples name
+ * @returns [Array<Array<number>>, Array<Array<Object>>]
+ */
+function getDepthsVariants(samples){
+    var depths = [];
+    var variants = [];
+    samples.forEach(sample => {
+        if (window.depths[sample] !== undefined && window.depths[sample] !== null)
+            depths.push(window.depths[sample]);
+        else
+            depths.push([]);
+        if (window.variants[sample] !== undefined && window.variants[sample] !== null)
+            variants.push(window.variants[sample]);
+        else
+            variants.push({});
+    })
+    return [depths, variants]
+}
+/**
  * Updates options for coverage charts.
  * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are reserved
  * Users's settings are respected by keeping old settings and set it back.
  * @param {Array<string>} samples - An array of samples name
  */
 function updateCoverageChartOption(samples) {
-    var depths = [];
-    var variants = [];
     var scaleType;
     var yAxisMax;
-    samples.forEach(sample => {
-        depths.push(window.depths[sample]);
-        variants.push(window.variants[sample]);
-    })
+    const [depths, variants] = getDepthsVariants(samples);
     var chartOption = chart.getOption();
     // Reserver Tooltip option
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
@@ -242,12 +257,7 @@ function initWgscovplotEvent(){
             var chartOption = chart.getOption();
             var seriesOption = chartOption.series;
             var samples = getCurrentSamples(chartOption);
-            var depths = [];
-            var variants = [];
-            samples.forEach(sample => {
-                depths.push(window.depths[sample]);
-                variants.push(window.variants[sample]);
-            });
+            const [depths, variants] = getDepthsVariants(samples);
             updateVariantOption(samples, depths, variants, seriesOption,
                 isChecked, document.getElementById("toggle-tooltip-non-variant-sites").checked,
                 document.getElementById("toggle-variant-comparison").checked);
@@ -258,12 +268,7 @@ function initWgscovplotEvent(){
             var chartOption = chart.getOption();
             var seriesOption = chartOption.series;
             var samples = getCurrentSamples(chartOption);
-            var depths = [];
-            var variants = [];
-            samples.forEach(sample => {
-                depths.push(window.depths[sample]);
-                variants.push(window.variants[sample]);
-            });
+            const [depths, variants] = getDepthsVariants(samples);
             updateVariantOption(samples, depths, variants, seriesOption,
                 document.getElementById("toggle-tooltip-variant-sites").checked, isChecked,
                 document.getElementById("toggle-variant-comparison").checked);
@@ -275,12 +280,7 @@ function initWgscovplotEvent(){
             var chartOption = chart.getOption();
             var seriesOption = chartOption.series;
             var samples = getCurrentSamples(chartOption);
-            var depths = [];
-            var variants = [];
-            samples.forEach(sample => {
-                depths.push(window.depths[sample]);
-                variants.push(window.variants[sample]);
-            });
+            const [depths, variants] = getDepthsVariants(samples);
             updateVariantOption(samples, depths, variants, seriesOption,
                 document.getElementById("toggle-tooltip-variant-sites").checked,
                 document.getElementById("toggle-tooltip-non-variant-sites").checked,
@@ -320,12 +320,7 @@ function initWgscovplotEvent(){
 function initWgscovplotRenderEnv() {
     var chartOption = chart.getOption();
     var plotSamples = getCurrentSamples(chartOption);
-    var plotDepths = [];
-    var plotVariants = [];
-    plotSamples.forEach(sample => {
-        plotDepths.push(window.depths[sample]);
-        plotVariants.push(window.variants[sample]);
-    });
+    const [plotDepths, plotVariants] = getDepthsVariants(plotSamples);
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
