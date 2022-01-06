@@ -79,7 +79,7 @@ function updateCoverageChartOption(samples) {
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
 
     // Reserve Gene/Amplicon Feature Height
-    if (amplicon === 'True' || geneFeature === 'True'){
+    if (amplicon || geneFeature){
         var geneFeaturePlotHeight = $("#genefeature-height-input").val() + "%";
         var gridLength = updateOption.grid.length
         updateOption.grid[gridLength-1].height = geneFeaturePlotHeight;
@@ -100,7 +100,7 @@ function updateCoverageChartOption(samples) {
  * @returns {Object} Returns the updated options (Scale type or ymax) for yAxis
  */
 function updateYAxisOption(yAxisOption, scaleType, yAxisMax){
-    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    var len = (amplicon || geneFeature) ? yAxisOption.length - 1 : yAxisOption.length
     if (scaleType === "value") {
         yAxisOption.forEach(element => {
             if (element.gridIndex < len) {
@@ -430,7 +430,7 @@ function updateVarMapHeight(val) {
 function updateSubPlotHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
     var gridOption = chart.getOption().grid;
-    var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
+    var len = (amplicon || geneFeature) ? gridOption.length - 1 : gridOption.length
     for (var i = 0; i < len; i++) {
         gridOption[i]["height"] = val + "%";
         if (i > 0) {
@@ -518,7 +518,7 @@ function setScale() {
 function setYMax() {
     var yMax = document.getElementById("ymax").value;
     var yAxisOption = chart.getOption().yAxis;
-    var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
+    var len = (amplicon || geneFeature) ? yAxisOption.length - 1 : yAxisOption.length
     yAxisOption.forEach(element => {
         if (element.gridIndex < len) {
             element.max = yMax;

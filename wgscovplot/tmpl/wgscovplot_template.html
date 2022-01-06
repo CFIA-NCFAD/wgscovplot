@@ -54,7 +54,7 @@
 
         /**
          * Dict of Amplicon Depth Coverage
-         * @type {Dict[]}
+         * @type {Object}
          */
         const ampliconDepthBarData = {{ amplicon_data }}
 
@@ -63,17 +63,17 @@
 
         /**
          * Whether to plot gene feature or not
-         * @type {string}
+         * @type {boolean}
          * Get from Python Boolean which is True or False
          */
-        const geneFeature = "{{ gene_feature }}"
+        const geneFeature = {{ gene_feature|tojson }}
 
         /**
          * Whether amplicon coverage plot or not
-         * @type {string}
+         * @type {boolean}
          * Get from Python Boolean which is True or False
          */
-        const amplicon = "{{amplicon}}"
+        const amplicon = {{ amplicon|tojson }}
 
         const refSeqLength = window.refSeq.length;
 

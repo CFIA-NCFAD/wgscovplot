@@ -3,8 +3,8 @@ import {geneFeaturePlotProperties} from "../../util";
 /**
  *  Define grid for the whole charts
  * @param {Array<string>} samples - An array of samples name
- * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
- * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
+ * @param {boolean} geneFeature - whether to plot gene feature or not ("True" or "False")
+ * @param {boolean} amplicon - whether to plot amplicon feature or not ("True" or "False")
  * @returns {Array<Object>}
  */
 function getGrids(samples, geneFeature, amplicon) {
@@ -33,7 +33,7 @@ function getGrids(samples, geneFeature, amplicon) {
         grid.left = "8%";
         grid.right = "8%";
     });
-    if (amplicon === "True" || geneFeature === "True"){
+    if (amplicon || geneFeature){
         grids.push({
             show: true,
             height: geneFeaturePlotProperties["grid_height"],

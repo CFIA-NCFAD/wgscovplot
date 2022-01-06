@@ -17,8 +17,8 @@ import {getTooltips} from "./getTooltips";
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<Array<Object>>} variants - The object of variants data
- * @param {string} geneFeature - whether to plot gene feature or not ("True" or "False")
- * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
+ * @param {boolean} geneFeature - whether to plot gene feature or not (true or false)
+ * @param {boolean} amplicon - whether to plot amplicon feature or not (true or false)
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
@@ -51,7 +51,7 @@ import {getTooltips} from "./getTooltips";
  */
 function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,refSeq,
                                 yAxisMax, samples, depths, variants,
-                                geneFeature="False", amplicon="False",
+                                geneFeature=false, amplicon=false,
                                 triggerOnType= "mousemove", isVariantSites=true,
                                 isNonVariantSites=true, isVariantComparison=true) {
     var positions = [...Array(refSeq.length + 1).keys()];

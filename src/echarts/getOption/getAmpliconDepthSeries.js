@@ -4,12 +4,12 @@ import {graphic} from "echarts/core";
  * Define options for amplicon depth coverage bars
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Object>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
- * @param {string} amplicon - whether to plot amplicon feature or not ("True" or "False")
+ * @param {boolean} amplicon - whether to plot amplicon feature or not (true or false)
  * @returns {Array<Object>}
  */
 function getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
     var ampliconDepthSeries = [];
-    if (amplicon === 'True'){
+    if (amplicon){
         for (var [i, sample] of samples.entries()) {
             ampliconDepthSeries.push({
                 type: "custom",
