@@ -1,9 +1,10 @@
+"""VCF and SnpEff/SnpSift parsing functions"""
 import logging
 import os
 import re
 from enum import Enum
-from pathlib import Path
 from operator import itemgetter
+from pathlib import Path
 from typing import Dict, Tuple, List, Optional, Iterable, Union
 
 import pandas as pd
@@ -130,6 +131,16 @@ variant_summary_cols = [
         'Mean AF',
         'Mean/average alternate allele frequency of mutation in all samples.'
     ),
+    (
+        'nt_pos',
+        'Nucleotide Position',
+        'Nucleotide position of mutation with respect to reference genome.'
+    ),
+    (
+        'aa_pos',
+        'Amino Acid Position',
+        'Amino acid position of mutation in reference genome gene.'
+    )
 ]
 
 BCFTOOLS_STATS_GLOB_PATTERNS = [
@@ -155,11 +166,14 @@ class VariantCaller(Enum):
     iVar = 'iVar'
     Longshot = 'Longshot'
     Nanopolish = 'nanopolish'
+    Medaka = 'medaka'
 
 
 VCF_GLOB_PATTERNS = [
     '**/nanopolish/*.pass.vcf.gz',
     '**/ivar/*.vcf.gz',
+    '**/*.filt.no_fs.vcf',
+    '**/*.longshot.vcf',
     '**/*.vcf',
 ]
 
@@ -167,12 +181,18 @@ VCF_SAMPLE_NAME_CLEANUP = [
     re.compile(r'(\.pass)?\.vcf(\.gz)?$'),
     re.compile(r'\.AF0\.\d+(\.filt)?'),
     re.compile(r'\.0\.\d+AF(\.filt)?'),
+    re.compile(r'\.medaka'),
+    re.compile(r'\.longshot'),
+    re.compile(r'\.snpeff'),
+    re.compile(r'\.no_fs'),
 ]
 
 SNPSIFT_GLOB_PATTERNS = [
     '**/ivar/**/*.snpSift.table.txt',
+    '**/ivar/**/*.snpsift.table.txt',
     '**/ivar/**/*.snpsift.txt',
     '**/*.snpSift.table.txt',
+    '**/*.snpsift.table.txt',
     '**/*.snpsift.txt',
 ]
 
@@ -219,6 +239,8 @@ def read_vcf(vcf_file: Path) -> Tuple[str, pd.DataFrame]:
                 variant_caller = line.strip().replace('##source=', '')
             if line.startswith('##nanopolish'):
                 variant_caller = 'nanopolish'
+            if line.startswith('##medaka_version'):
+                variant_caller = 'medaka'
             if line.startswith('#CHROM'):
                 vcf_cols = line[1:].strip().split('\t')
                 break
@@ -246,22 +268,24 @@ def parse_aa(gene: str,
             aa_str = aa_str.replace(aa3, aa1)
         if aa_str.endswith('DEL'):
             aa_str = aa_str.replace('DEL', 'del')
-        return f'{ref}{nt_pos}{alt}({gene}:{aa_str})'
+        return f'{gene}:{aa_str} ({ref}{nt_pos}{alt})'
     ref_aa, aa_pos_str, alt_aa = m.groups()
     ref_aa = get_aa(ref_aa)
 
     if effect == 'stop_lost':
         alt_aa = get_aa(alt_aa.replace('ext', ''))
-        return f'{ref}{nt_pos}{alt}({gene}:{ref_aa}{aa_pos_str}{alt_aa}[stop_lost])'
+        return f'{gene}:{ref_aa}{aa_pos_str}{alt_aa} ({ref}{nt_pos}{alt} [stop_lost])'
     if effect == 'frameshift_variant':
-        return f'{ref}{nt_pos}{alt}({gene}:{ref_aa}{aa_pos_str}[FRAMESHIFT])'
+        return f'{gene}:{ref_aa}{aa_pos_str} ({ref}{nt_pos}{alt} [FRAMESHIFT])'
     if effect == 'conservative_inframe_deletion':
-        return f'{ref}{nt_pos}{alt}({gene}:{ref_aa}{aa_pos_str}{alt_aa})'
+        return f'{gene}:{ref_aa}{aa_pos_str}{alt_aa} ({ref}{nt_pos}{alt})'
     if effect == 'disruptive_inframe_deletion':
-        return f'{ref}{nt_pos}{alt}({gene}:{ref_aa}{aa_pos_str}{alt_aa}[disruptive_inframe_deletion])'
+        return f'{gene}:{ref_aa}{aa_pos_str}{alt_aa} ({ref}{nt_pos}{alt} [disruptive_inframe_deletion])'
 
     alt_aa = get_aa(alt_aa)
-    return f'{ref}{nt_pos}{alt}({gene}:{ref_aa}{aa_pos_str}{alt_aa})'
+    if alt_aa == ref_aa:
+        return f'{ref}{nt_pos}{alt}'
+    return f'{gene}:{ref_aa}{aa_pos_str}{alt_aa} ({ref}{nt_pos}{alt})'
 
 
 def get_aa(s: str) -> str:
@@ -288,6 +312,16 @@ def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> Optional[pd.DataFram
             REF_AC = df_ac[0].astype(int)
             REF_AC.name = 'REF_AC'
             ALT_AC = df_ac[1].astype(int)
+            ALT_AC.name = 'ALT_AC'
+            AF = ALT_AC / (REF_AC + ALT_AC)
+            AF.name = 'AF'
+            series += [REF_AC, ALT_AC, AF]
+            continue
+        if c == 'SR':
+            df_ac = df[c].str.split(',', expand=True)
+            REF_AC = df_ac[0].astype(int) + df_ac[1].astype(int)
+            REF_AC.name = 'REF_AC'
+            ALT_AC = df_ac[2].astype(int) + df_ac[3].astype(int)
             ALT_AC.name = 'ALT_AC'
             AF = ALT_AC / (REF_AC + ALT_AC)
             AF.name = 'AF'
@@ -406,6 +440,39 @@ def parse_longshot_vcf(df: pd.DataFrame, sample_name: str = None) -> Optional[pd
     return df_merge.loc[:, cols_to_keep]
 
 
+def parse_medaka_vcf(df: pd.DataFrame, sample_name: str = None, min_coverage: int = 10) -> Optional[pd.DataFrame]:
+    if df.empty:
+        return None
+    if not sample_name:
+        sample_name = df.columns[-1] if df.columns[-1] != 'SAMPLE' else None
+        if sample_name is None:
+            raise ValueError(f'Sample name is not defined for VCF: shape={df.shape}; columns={df.columns}')
+    pos_info_val = {}
+    for row in df.itertuples():
+        # if there is no variant INFO available then this isn't the right file
+        if row.INFO == '.':
+            return None
+        infos = parse_vcf_info(row.INFO)
+        # no DP INFO? skip this file
+        if 'DP' not in infos:
+            return None
+        if infos['DP'] < min_coverage:
+            continue
+        ac_ref_fwd, ac_ref_rev, ac_alt_fwd, ac_alt_rev = infos['SR']
+        infos['REF_DP'] = ac_ref_fwd + ac_ref_rev
+        infos['ALT_DP'] = ac_alt_fwd + ac_alt_rev
+        pos_info_val[row.POS] = infos
+    df_medaka_info = pd.DataFrame(pos_info_val).transpose()
+    df_medaka_info.index.name = 'POS'
+    df_medaka_info.reset_index(inplace=True)
+    df_merge = pd.merge(df, df_medaka_info, on='POS')
+    df_merge['sample'] = sample_name
+    df_merge = df_merge[df_merge.DP > 0]
+    df_merge['ALT_FREQ'] = df_merge.ALT_DP / (df_merge.ALT_DP + df_merge.REF_DP)
+    cols_to_keep = list({col for col, _, _ in variants_cols} & set(df_merge.columns))
+    return df_merge.loc[:, cols_to_keep]
+
+
 def parse_nanopolish_vcf(df: pd.DataFrame, sample_name: str = None) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
@@ -446,38 +513,40 @@ def parse_vcf_info(s: str) -> dict:
     return out
 
 
-def get_info(basedir: Path) -> Dict[str, pd.DataFrame]:
+def get_info(basedir: Path, min_coverage: int = 10) -> Dict[str, pd.DataFrame]:
     sample_vcf = find_file_for_each_sample(basedir=basedir,
                                            glob_patterns=VCF_GLOB_PATTERNS,
                                            sample_name_cleanup=VCF_SAMPLE_NAME_CLEANUP,
                                            single_entry_selector_func=vcf_selector)
     sample_dfvcf = {}
     for sample, vcf_path in sample_vcf.items():
-        logger.info(f'Sample "{sample}" has variant file "{vcf_path}"')
         variant_caller, df_vcf = read_vcf(vcf_path)
         if variant_caller.startswith(VariantCaller.iVar.value):
             df_parsed_ivar_vcf = parse_ivar_vcf(df_vcf, sample)
             if df_parsed_ivar_vcf is not None:
                 sample_dfvcf[sample] = df_parsed_ivar_vcf
             else:
-                sample_dfvcf[sample] = pd.DataFrame()  # assign empty DataFame for this sample
+                logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
+        elif variant_caller.startswith(VariantCaller.Medaka.value):
+            df_medaka_vcf = parse_medaka_vcf(df_vcf, sample, min_coverage)
+            if df_medaka_vcf is not None:
+                sample_dfvcf[sample] = df_medaka_vcf
+            else:
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         elif variant_caller.startswith(VariantCaller.Longshot.value):
             df_longshot_vcf = parse_longshot_vcf(df_vcf, sample)
             if df_longshot_vcf is not None:
                 sample_dfvcf[sample] = df_longshot_vcf
             else:
-                sample_dfvcf[sample] = pd.DataFrame()
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         elif variant_caller.startswith(VariantCaller.Nanopolish.value):
             df_nanopolish_vcf = parse_nanopolish_vcf(df_vcf, sample)
             if df_nanopolish_vcf is not None:
                 sample_dfvcf[sample] = df_nanopolish_vcf
             else:
-                sample_dfvcf[sample] = pd.DataFrame()
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         else:
-            raise NotImplementedError()
+            logger.warning(f'Sample "{sample}" VCF file "{vcf_path}" with variant_caller={variant_caller} not supported. Skipping...')
 
     sample_snpsift = find_file_for_each_sample(basedir=basedir,
                                                glob_patterns=SNPSIFT_GLOB_PATTERNS,
@@ -487,7 +556,6 @@ def get_info(basedir: Path) -> Dict[str, pd.DataFrame]:
         logger.warning(f'No SnpSift tables found in "{basedir}" using glob patterns "{SNPSIFT_GLOB_PATTERNS}"')
     sample_dfsnpsift = {}
     for sample, snpsift_path in sample_snpsift.items():
-        logger.info(f'Sample "{sample}" has SnpSift file "{snpsift_path}"')
         df_snpsift = simplify_snpsift(pd.read_table(snpsift_path), sample)
         if df_snpsift is not None:
             sample_dfsnpsift[sample] = df_snpsift
@@ -519,6 +587,20 @@ def to_dataframe(dfs: Iterable[pd.DataFrame]) -> pd.DataFrame:
     return df.rename(columns={x: y for x, y, _ in variants_cols})
 
 
+def get_nt_position_int(s: str) -> int:
+    """Get the nucleotide position from the mutation string
+
+    >>> get_nt_position_int('A1879G')
+    1879
+    >>> get_nt_position_int('S:Y145_H146del (TATTACC21992T)')
+    21992
+    """
+    if ':' in s:
+        return int(re.sub(r'.*\([AGTC]+(\d+).*', r'\1', s))
+    else:
+        return int(re.sub(r'[AGTC]+(\d+).*', r'\1', s))
+
+
 def to_variant_pivot_table(df: pd.DataFrame) -> pd.DataFrame:
     df_vars = df.copy()
     df_vars.reset_index(inplace=True)
@@ -528,7 +610,32 @@ def to_variant_pivot_table(df: pd.DataFrame) -> pd.DataFrame:
                               values='Alternate Allele Frequency',
                               aggfunc='first',
                               fill_value=0.0)
+    nt_positions = [get_nt_position_int(x) for x in df_pivot.columns]
     pivot_cols = list(zip(df_pivot.columns,
-                          df_pivot.columns.str.replace(r'[A-Z]+(\d+).*', r'\1').astype(int)))
+                          nt_positions))
     pivot_cols.sort(key=itemgetter(1))
     return df_pivot[[x for x, y in pivot_cols]]
+
+
+def to_summary(df: pd.DataFrame) -> pd.DataFrame:
+    df_vars = df.copy()
+    df_vars.reset_index(inplace=True)
+    logger.debug(f'df_vars columns: {df_vars.columns}')
+    df_summary = df_vars.groupby('Mutation', sort=False).agg(
+        n_samples=('Sample', 'size'),
+        samples=('Sample', lambda x: '; '.join(x)),
+        gene=('Gene', 'first'),
+        effect=('Variant Effect', 'first'),
+        impact=('Variant Impact', 'first'),
+        aa=('Amino Acid Change', 'first'),
+        min_depth=('Alternate Allele Depth', 'min'),
+        max_depth=('Alternate Allele Depth', 'max'),
+        mean_depth=('Alternate Allele Depth', lambda x: sum(x) / len(x)),
+        min_af=('Alternate Allele Frequency', 'min'),
+        max_af=('Alternate Allele Frequency', 'max'),
+        mean_af=('Alternate Allele Frequency', lambda x: sum(x) / len(x)),
+        nt_pos=('Position', 'first'),
+        aa_pos=('Amino Acid Position', 'first')
+    )
+    df_summary.sort_values('nt_pos', inplace=True)
+    return df_summary.rename(columns={x: y for x, y, _ in (variant_summary_cols + variants_cols)})
