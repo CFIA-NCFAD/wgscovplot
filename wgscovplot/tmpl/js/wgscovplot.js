@@ -1,18 +1,20 @@
 /**
  * Get depths and variants for samples
  * @param {Array<string>} samples - An array of samples name
+ * @param {Object} depthsData - Depths data
+ * @param {Object} variantsData - Variants data
  * @returns [Array<Array<number>>, Array<Array<Object>>]
  */
-function getDepthsVariants(samples){
+function getDepthsVariants(samples, depthsData, variantsData){
     var depths = [];
     var variants = [];
     samples.forEach(sample => {
-        if (window.depths[sample] !== undefined && window.depths[sample] !== null)
-            depths.push(window.depths[sample]);
+        if (depthsData[sample] !== undefined && depthsData[sample] !== null)
+            depths.push(depthsData[sample]);
         else
             depths.push([]);
-        if (window.variants[sample] !== undefined && window.variants[sample] !== null)
-            variants.push(window.variants[sample]);
+        if (variantsData[sample] !== undefined && variantsData[sample] !== null)
+            variants.push(variantsData[sample]);
         else
             variants.push({});
     })
@@ -27,7 +29,7 @@ function getDepthsVariants(samples){
 function updateCoverageChartOption(samples) {
     var scaleType;
     var yAxisMax;
-    const [depths, variants] = getDepthsVariants(samples);
+    const [depths, variants] = getDepthsVariants(samples, window.depths, window.variants);
     var chartOption = chart.getOption();
     // Reserver Tooltip option
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
@@ -92,10 +94,10 @@ function updateCoverageChartOption(samples) {
 
 /**
  * Update scale type and max for Y Axis
- * @param {Dict[]} yAxisOption - Options of Yaxis need to be updated
+ * @param {Object} yAxisOption - Options of Yaxis need to be updated
  * @param {string} scaleType - Either log or value
  * @param {number} yAxisMax - Max value is set for Y Axis
- * @returns {Dict[]} Returns the updated options (Scale type or ymax) for yAxis
+ * @returns {Object} Returns the updated options (Scale type or ymax) for yAxis
  */
 function updateYAxisOption(yAxisOption, scaleType, yAxisMax){
     var len = (amplicon === 'True' || geneFeature === 'True') ? yAxisOption.length - 1 : yAxisOption.length
@@ -132,7 +134,7 @@ function setDefaultSamples(samples) {
 
 /**
  * Get the list of current samples on the control menu
- * @returns {Array<string>>} An array of samples name
+ * @returns {Array<string>} An array of samples name
  */
 function getCurrentSamples(chartOption) {
     var samples = [];
@@ -257,8 +259,8 @@ function initWgscovplotEvent(){
             var chartOption = chart.getOption();
             var seriesOption = chartOption.series;
             var samples = getCurrentSamples(chartOption);
-            const [depths, variants] = getDepthsVariants(samples);
-            updateVariantOption(samples, depths, variants, seriesOption,
+            const [depths, variants] = getDepthsVariants(samples, window.depths, window.variants);
+            updateTooltipOption(samples, depths, variants, seriesOption,
                 isChecked, document.getElementById("toggle-tooltip-non-variant-sites").checked,
                 document.getElementById("toggle-variant-comparison").checked);
         });
@@ -268,8 +270,8 @@ function initWgscovplotEvent(){
             var chartOption = chart.getOption();
             var seriesOption = chartOption.series;
             var samples = getCurrentSamples(chartOption);
-            const [depths, variants] = getDepthsVariants(samples);
-            updateVariantOption(samples, depths, variants, seriesOption,
+            const [depths, variants] = getDepthsVariants(samples, window.depths, window.variants);
+            updateTooltipOption(samples, depths, variants, seriesOption,
                 document.getElementById("toggle-tooltip-variant-sites").checked, isChecked,
                 document.getElementById("toggle-variant-comparison").checked);
         });
@@ -280,8 +282,8 @@ function initWgscovplotEvent(){
             var chartOption = chart.getOption();
             var seriesOption = chartOption.series;
             var samples = getCurrentSamples(chartOption);
-            const [depths, variants] = getDepthsVariants(samples);
-            updateVariantOption(samples, depths, variants, seriesOption,
+            const [depths, variants] = getDepthsVariants(samples, window.depths, window.variants);
+            updateTooltipOption(samples, depths, variants, seriesOption,
                 document.getElementById("toggle-tooltip-variant-sites").checked,
                 document.getElementById("toggle-tooltip-non-variant-sites").checked,
                 isChecked);
@@ -320,7 +322,7 @@ function initWgscovplotEvent(){
 function initWgscovplotRenderEnv() {
     var chartOption = chart.getOption();
     var plotSamples = getCurrentSamples(chartOption);
-    const [plotDepths, plotVariants] = getDepthsVariants(plotSamples);
+    const [plotDepths, plotVariants] = getDepthsVariants(plotSamples, window.depths, window.variants);
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
@@ -366,9 +368,8 @@ function initWgscovplotRenderEnv() {
  * @param {boolean} isVariantSites - Whether to enable tooltip for variant sites or not
  * @param {boolean} isNonVariantSites - Whether to enable tooltip for non variant sites or not
  * @param {boolean} isVariantComparison - Whether to compare variant information across selected samples
- * @returns Re update option for the chart
  */
-function updateVariantOption (samples, depths, variants, seriesOption,
+function updateTooltipOption(samples, depths, variants, seriesOption,
                               isVariantSites, isNonVariantSites, isVariantComparison){
     var isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     var triggerOnType;
@@ -412,7 +413,7 @@ function tooltipPosition(isChecked){
 }
 
 /**
- * Adjust subplot height
+ * Adjust Variant Heatmap height
  * @param {number} val - Subplots height percent value
  */
 function updateVarMapHeight(val) {
@@ -428,27 +429,6 @@ function updateVarMapHeight(val) {
  */
 function updateSubPlotHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
-    var gridOption = chart.getOption().grid;
-    var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
-    for (var i = 0; i < len; i++) {
-        gridOption[i]["height"] = val + "%";
-        if (i > 0) {
-            gridOption[i]["top"] =
-                parseInt(gridOption[i - 1]["top"].replace("%", "")) +
-                parseInt(gridOption[i - 1]["height"].replace("%", "")) +
-                4 +
-                "%";
-        }
-    };
-    chart.setOption({grid: gridOption});
-}
-
-/**
- * Adjust subplot height
- * @param {number} val - Subplots height percent value
- */
-function updatevarMapHeight(val) {
-    document.getElementById("varmap-height-output").value = val + "%";
     var gridOption = chart.getOption().grid;
     var len = (amplicon === 'True' || geneFeature === 'True') ? gridOption.length - 1 : gridOption.length
     for (var i = 0; i < len; i++) {

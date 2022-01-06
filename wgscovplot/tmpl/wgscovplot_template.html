@@ -34,14 +34,16 @@
         window.samples = {{ samples_name }}
 
         /**
-         * Dict of depth data
-         * @type {Dict[samples_name: depth_data]}
+         * Object of depth data
+         * @type {Object}
+         * {sample_name: Array<number>}
          */
         window.depths = {{ depth_data }};
 
         /**
-         * Dict of variant data
-         * @type {Dict[samples_name: variant_data]}
+         * Object of variant data
+         * @type {Object}
+         * {sample_name: Array<Object>}
          */
         window.variants = {{ variant_data }};
         /**
