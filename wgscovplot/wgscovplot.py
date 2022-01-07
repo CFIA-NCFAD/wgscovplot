@@ -3,27 +3,27 @@ import requests
 import math
 import markdown
 import pandas as pd
-import re
-from typing import Dict, List, Any, Tuple, Union
+from typing import Dict, List, Any
 from pathlib import Path
 
 from Bio.SeqFeature import SeqFeature
 from jinja2 import Environment, FileSystemLoader
-from Bio import SeqIO
+from Bio import SeqIO, Entrez
 from itertools import cycle
 from .resources import cdn_resources, gene_feature_properties
 from .colors import color_pallete, AmpliconColour
 from wgscovplot.tools import variants, mosdepth
 
+logger = logging.getLogger(__name__)
 
-def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feature: bool, output_html: Path) -> None:
+def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, amplicon: bool, gene_feature: bool, output_html: Path) -> None:
     # Parse reference sequence
     if ref_seq.exists():
         with open(ref_seq) as fh:
             for name, seq in SeqIO.FastaIO.SimpleFastaParser(fh):
                 ref_seq = seq
     else:
-        logging.error('Please provide reference sequences of your analysis')
+        logger.error('Please provide reference sequences of your analysis')
 
     # Get the list of samples name
     samples_name = mosdepth.get_samples_name(input_dir)
@@ -40,11 +40,11 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, amplicon: bool, gene_feat
         amplicon_regions_data = {}
 
     # Get gene/amplicon feature
-    if gene_feature and genbank is None:
-        logging.error('If you want to plot gene features, please provide genbank file for gene features, '
-                      'option --genbank /path/to/genbank.gb')
+    if gene_feature and genbank is None and ncbi_accession_id == "":
+        logger.error('If you want to plot gene features, please provide genbank file for gene features, '
+                      'option --genbank /path/to/genbank.gb OR provide NCBI Accession ID with option --ncbi-accession-id')
         exit(1)
-    gene_feature_data = get_gene_feature(gene_feature, genbank, amplicon_regions_data)
+    gene_feature_data = get_gene_feature(gene_feature, genbank, ncbi_accession_id, amplicon_regions_data)
 
     # Get coverage statistics information for all samples
     mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=10)
@@ -132,13 +132,23 @@ def max_depth(depth_data: Dict[str, List]) -> int:
     return math.ceil(max_value * 1.5)
 
 
-def get_gene_feature(gene_feature: bool, annotation: Path, amplicon_regions: Dict[str, List]) -> List[Dict[str, Any]]:
+def get_gene_feature(gene_feature: bool, annotation: Path, ncbi_accession_id: str,
+                     amplicon_regions: Dict[str, List]) -> List[Dict[str, Any]]:
     gene_feature_data = []
     if gene_feature:
         colour_cycle = cycle(color_pallete)
         minus_strains_list = [0, 0, 0]
         plus_strains_list = [0, 0, 0]
-        for seq_record in SeqIO.parse(annotation, "genbank"):
+        if annotation is not None:
+            handle = annotation
+        else:
+            try:
+                Entrez.email = "nhaidee@gmail.com"
+                handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ncbi_accession_id)
+            except:
+                logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id OR '
+                            f'provide option --genbank /path/to/genbank.gb ')
+        for seq_record in SeqIO.parse(handle, "gb"):
             index = 0  # the index must be continuous for data handling with Echarts
             seq_feature: SeqFeature
             for seq_feature in seq_record.features:

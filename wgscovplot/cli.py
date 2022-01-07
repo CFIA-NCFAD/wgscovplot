@@ -35,6 +35,7 @@ def main(
         output_html: Path = typer.Option("wgscovplot.html", help="Output File of Interactive HTML Coverage Plot"),
         ref_seq: Path = typer.Option(..., help="Reference Sequences"),
         genbank: Path = typer.Option(None, help="Genbank file contains features of reference sequence"),
+        ncbi_accession_id: str = typer.Option(default="", help="NCBI accession id to fetch gene feature"),
         amplicon: bool = typer.Option(default=False, help="Plot Amplicon Coverage Depth"),
         gene_feature: bool = typer.Option(default=False, help="Plot Gene Feature"),
         verbose: bool = typer.Option(default=False, help="Verbose logs"),
@@ -52,7 +53,7 @@ def main(
         level=logging.INFO if not verbose else logging.DEBUG,
         handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
     )
-    run(input_dir, ref_seq, genbank, amplicon, gene_feature, output_html)
+    run(input_dir, ref_seq, genbank, ncbi_accession_id, amplicon, gene_feature, output_html)
 
 
 if __name__ == "__main__":
