@@ -65,7 +65,6 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
                 else:
                     variant_matrix_data.append([j, i, 0.0])
         mutation = df_varmap.columns.tolist()
-
     # Get Variant data
     variants_data = {}
     for sample, df_variants in samples_variants_info.items():

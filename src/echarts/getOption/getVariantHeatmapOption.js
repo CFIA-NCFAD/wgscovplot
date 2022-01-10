@@ -39,7 +39,7 @@ function getTooltipHeatmap(samples, mutations, variants) {
                         output += ("Not detected mutation " + mutationName.bold() + " in sample " + sample.bold())
                     }
                 } else {
-                    output += "Sample " + sample.bold() + "has no variant inforamtion";
+                    output += "Sample " + sample.bold() + " has no variant information";
                 }
                 return output
             }
