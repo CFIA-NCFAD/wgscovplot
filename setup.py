@@ -9,10 +9,11 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'rich',
     'typer',
+    'rich',
     'jinja2',
     'pandas',
+    'numpy',
     'biopython',
     'requests',
     'pydantic',
@@ -24,6 +25,7 @@ setup_requirements = ['pytest-runner', ]
 test_requirements = ['pytest', ]
 
 setup(
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
@@ -52,6 +54,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/nhhaidee/sequencing_coverage_plot',
-    version='1.0.0',
+    version='0.1.0',
     zip_safe=False,
 )

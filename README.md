@@ -8,7 +8,7 @@
 
 ### Software Version
 
-- The current version is ```1.0.0```
+- The current version is ```0.1.0```
 
 ### Limitation
 
@@ -125,7 +125,7 @@ wgscovplot --input-dir /path/to/nextflow_results_folder --ref-seq reference.fast
 
 Copyright 2021 Canadian Food Inspection Agency of Canada, Government of Canada.
 
-Distributed under the MIT license.
+WGSCOVPLOT is available under the Apache License V2.
 
 <!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
