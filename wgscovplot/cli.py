@@ -33,9 +33,10 @@ def main(
         input_dir: Path = typer.Option(..., callback=check_dir_exists_callback, help="Nextflow workflow results "
                                                                                      "directory"),
         output_html: Path = typer.Option("wgscovplot.html", help="Output File of Interactive HTML Coverage Plot"),
-        ref_seq: Path = typer.Option(..., help="Reference Sequences"),
-        genbank: Path = typer.Option(None, help="Genbank file contains features of reference sequence"),
-        ncbi_accession_id: str = typer.Option(default="", help="NCBI accession id to fetch gene feature"),
+        ref_seq: Path = typer.Option(None, help="Path to reference sequences"),
+        genbank: Path = typer.Option(None, help="Genbank file contains gene features"),
+        ncbi_accession_id: str = typer.Option(default="", help="NCBI accession id to fetch gene features "
+                                                               "and/or reference sequences"),
         amplicon: bool = typer.Option(default=False, help="Plot Amplicon Coverage Depth"),
         gene_feature: bool = typer.Option(default=False, help="Plot Gene Feature"),
         verbose: bool = typer.Option(default=False, help="Verbose logs"),

@@ -75,10 +75,10 @@ Options:
                                   [required]
   --output-html PATH              Output File of Interactive HTML Coverage
                                   Plot  [default: wgscovplot.html]
-  --ref-seq PATH                  Reference Sequences  [required]
-  --genbank PATH                  Genbank file contains features of reference
-                                  sequence
-  --ncbi-accession-id TEXT        NCBI accession id to fetch gene feature
+  --ref-seq PATH                  Path to reference sequences
+  --genbank PATH                  Genbank file contains gene features
+  --ncbi-accession-id TEXT        NCBI accession id to fetch gene features
+                                  and/or reference sequences
   --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default: no-
                                   amplicon]
   --gene-feature / --no-gene-feature
@@ -92,6 +92,7 @@ Options:
                                   Show completion for the specified shell, to
                                   copy it or customize the installation.
   --help                          Show this message and exit.
+
 
 
 ```
