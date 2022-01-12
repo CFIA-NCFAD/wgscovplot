@@ -164,7 +164,7 @@ def get_gene_feature(gene_feature: bool, annotation: Path, ncbi_accession_id: st
             index = 0  # the index must be continuous for data handling with Echarts
             seq_feature: SeqFeature
             for seq_feature in seq_record.features:
-                if seq_feature.type in ["CDS", "source"]:
+                if seq_feature.type in ["CDS", "source", "repeat_region"]:
                     continue
                 if seq_feature.type in ["5'UTR", "3'UTR"]:
                     feature_name = seq_feature.type
