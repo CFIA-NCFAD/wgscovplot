@@ -19,7 +19,7 @@ Entrez.email = "nhhaidee@gmail.com"
 
 
 def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, amplicon: bool, gene_feature: bool,
-        output_html: Path) -> None:
+        gene_misc_feature: bool, output_html: Path) -> None:
     if ref_seq is None and ncbi_accession_id == "":
         logger.error('Please provide reference sequence --ref-seq /path/to/reference_sequence.fasta '
                      'OR provide NCBI Accession ID with option --ncbi-accession-id')
@@ -57,7 +57,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
         logger.error('If you want to plot gene features, please provide genbank file for gene features, '
                      'option --genbank /path/to/genbank.gb OR provide NCBI Accession ID with option --ncbi-accession-id')
         exit(1)
-    gene_feature_data = get_gene_feature(gene_feature, genbank, ncbi_accession_id, amplicon_regions_data)
+    gene_feature_data = get_gene_feature(gene_feature, gene_misc_feature, genbank, ncbi_accession_id, amplicon_regions_data)
 
     # Get coverage statistics information for all samples
     mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=10)
@@ -144,7 +144,7 @@ def max_depth(depth_data: Dict[str, List]) -> int:
     return math.ceil(max_value * 1.5)
 
 
-def get_gene_feature(gene_feature: bool, annotation: Path, ncbi_accession_id: str,
+def get_gene_feature(gene_feature: bool, gene_misc_feature: bool, annotation: Path, ncbi_accession_id: str,
                      amplicon_regions: Dict[str, List]) -> List[Dict[str, Any]]:
     gene_feature_data = []
     if gene_feature:
@@ -159,12 +159,17 @@ def get_gene_feature(gene_feature: bool, annotation: Path, ncbi_accession_id: st
             except:
                 logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id OR '
                              f'provide option --genbank /path/to/genbank.gb ')
+
                 exit(1)
+        if gene_misc_feature:
+            skip_feature = ["CDS", "source", "repeat_region"]
+        else:
+            skip_feature = ["CDS", "source", "repeat_region", "misc_feature"]
         for seq_record in SeqIO.parse(genbank_handle, "gb"):
             index = 0  # the index must be continuous for data handling with Echarts
             seq_feature: SeqFeature
             for seq_feature in seq_record.features:
-                if seq_feature.type in ["CDS", "source", "repeat_region"]:
+                if seq_feature.type in skip_feature:
                     continue
                 if seq_feature.type in ["5'UTR", "3'UTR"]:
                     feature_name = seq_feature.type
