@@ -82,8 +82,11 @@ Options:
   --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default: no-
                                   amplicon]
   --gene-feature / --no-gene-feature
-                                  Plot Gene Feature  [default: no-gene-
+                                  Plot Gene Features  [default: no-gene-
                                   feature]
+  --gene-misc-feature / --no-gene-misc-feature
+                                  Plot Miscellaneous Features  [default: no-
+                                  gene-misc-feature]
   --verbose / --no-verbose        Verbose logs  [default: no-verbose]
   --version / --no-version        Print wgscovplot version and exit
   --install-completion [bash|zsh|fish|powershell|pwsh]
@@ -92,9 +95,6 @@ Options:
                                   Show completion for the specified shell, to
                                   copy it or customize the installation.
   --help                          Show this message and exit.
-
-
-
 ```
 
 ### Other data:
@@ -110,6 +110,10 @@ The tool will generate the Coverage Plot for samples in HTML file
 
 ```
 wgscovplot --input-dir /path/to/nextflow_results_folder --ref-seq reference.fasta --genbank sequence_genbank.gb --gene-feature
+```
+#### With NCBI Accession ID
+```
+wgscovplot --input-dir /path/to/nextflow_results_folder --ncbi-accession-id MN908947.3 --gene-feature
 ```
 #### For amplicon coverage plot
 ```
