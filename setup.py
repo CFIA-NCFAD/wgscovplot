@@ -9,12 +9,14 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'rich',
     'typer',
+    'rich',
     'jinja2',
     'pandas',
+    'numpy',
     'biopython',
     'requests',
+    'pydantic',
     'markdown',
 ]
 
@@ -23,12 +25,13 @@ setup_requirements = ['pytest-runner', ]
 test_requirements = ['pytest', ]
 
 setup(
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
@@ -46,11 +49,11 @@ setup(
     include_package_data=True,
     keywords='wgscovplot',
     name='wgscovplot',
-    packages=find_packages(include=['wgscovplot']),
+    packages=find_packages(include=['wgscovplot', 'wgscovplot.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/nhhaidee/sequencing_coverage_plot',
-    version='1.0.0.dev0',
+    version='0.1.0',
     zip_safe=False,
 )

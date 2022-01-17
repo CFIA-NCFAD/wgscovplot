@@ -1,248 +1,259 @@
 import logging
 import requests
+import math
+import markdown
 import pandas as pd
-import os
-import numpy as np
-from typing import Tuple
+from typing import Dict, List, Any
 from pathlib import Path
+
+from Bio.SeqFeature import SeqFeature
 from jinja2 import Environment, FileSystemLoader
-from Bio import SeqIO
+from Bio import SeqIO, Entrez
 from itertools import cycle
+from .resources import cdn_resources, gene_feature_properties
+from .colors import color_pallete, AmpliconColour
+from wgscovplot.tools import variants, mosdepth
 
-color_pallete = ['#A6CEE3', '#1F78B4', '#B2DF8A', '#33A02C', '#FB9A99', '#E31A1C', '#fDBF6F', '#FF7F00',
-                       '#CAB2D6',
-                       '#6A3D9A', '#FF33D3', '#B15928', '#0006FC', '#2FB0EC', '#F3D742', '#2E9CE1', '#273D63',
-                       '#980B92',
-                       '#BBB873', '#EEC678', '#47E10B', '#E3139B', '#151179', '#293948', '#5F6005', '#FE24BE',
-                       '#A7C36B',
-                       '#D454DD', '#A68E2D', '#DB5AAC', '#405425', '#A608E4', '#533551', '#367521', '#64B875',
-                       '#6DB011',
-                       '#F5DD11', '#8A8517', '#F8E541', '#2D2A50', '#AAC3CC', '#C5D840', '#B79619', '#BBB2FE',
-                       '#E37B03',
-                       '#AFBB3E', '#74A110', '#E9877E', '#973F28', '#AFCA57', '#6E5EDE', '#B95FC3', '#C10AC8',
-                       '#A59B67',
-                       '#624F98', '#57A6AF', '#2650FB', '#94AAD1', '#5C1662', '#B8A1A1', '#104DB7', '#C6CBEE',
-                       '#AA694D',
-                       '#9B67DA', '#8DE7BC', '#866D49', '#72CEDC', '#574B7C', '#CD4474', '#593A60', '#2A6BB7',
-                       '#286028',
-                       '#6965EB', '#14CB29', '#956709', '#EB6D76', '#7A9A21', '#692C3C', '#AABBB5', '#1989AE',
-                       '#D78DCC',
-                       '#C43AAA', '#BBC863', '#E55F9D', '#741B13', '#6A7675', '#221A53', '#1804EC', '#D61D88',
-                       '#1D50B3',
-                       '#CF0E24', '#D791A9', '#0892FE', '#F5A865', '#91EBC2', '#9F650D', '#1B0A0F', '#1E9E88',
-                       '#B42E38',
-                       '#9710C9']
+logger = logging.getLogger(__name__)
+Entrez.email = "nhhaidee@gmail.com"
 
 
-resources = {
-    'echarts_js': 'https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js',
-    'jquery_js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-    'select2_css': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
-    'select2_js': 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
-    'popper_js': 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js',
-    'bootstrap_js': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js',
-    'bootstrap_css': 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css',
-    'lodash_js': 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js'
-}
+def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, amplicon: bool, gene_feature: bool,
+        gene_misc_feature: bool, output_html: Path) -> None:
+    if ref_seq is None and ncbi_accession_id == "":
+        logger.error('Please provide reference sequence --ref-seq /path/to/reference_sequence.fasta '
+                     'OR provide NCBI Accession ID with option --ncbi-accession-id')
+        exit(1)
+    # Parse reference sequence
+    elif ref_seq is not None:
+        with open(ref_seq) as fh:
+            for name, seq in SeqIO.FastaIO.SimpleFastaParser(fh):
+                ref_seq = seq
+    else:
+        try:
+            with Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=ncbi_accession_id) as fasta_handle:
+                for name, seq in SeqIO.FastaIO.SimpleFastaParser(fasta_handle):
+                    ref_seq = seq
+        except:
+            logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id OR '
+                         f'provide option --ref-seq /path/to/reference_sequence.fasta ')
+            exit(1)
+    # Get the list of samples name
+    samples_name = mosdepth.get_samples_name(input_dir)
 
-gene_features_properties = {
-    'max_grid_height': 80,
-    'rec_items_height': 12,
-    'plus_strand_level': 0,
-    'minus_strand_level': 55,
-    'grid_height': "15%"
-}
+    # Get amplicon data
+    if amplicon:
+        amplicon_depths_data = mosdepth.get_depth_amplicon(input_dir)
+        amplicon_regions_data = mosdepth.get_region_amplicon(input_dir)
+        if not (amplicon_depths_data and amplicon_regions_data):
+            logging.warning('No amplicon data found')
+            amplicon = False
+    else:
+        amplicon_depths_data = {}
+        amplicon_regions_data = {}
 
-depth_zero_workaround = 1E-10
+    # Get gene/amplicon feature
+    if gene_feature and genbank is None and ncbi_accession_id == "":
+        logger.error('If you want to plot gene features, please provide genbank file for gene features, '
+                     'option --genbank /path/to/genbank.gb OR provide NCBI Accession ID with option --ncbi-accession-id')
+        exit(1)
+    gene_feature_data = get_gene_feature(gene_feature, gene_misc_feature, genbank, ncbi_accession_id, amplicon_regions_data)
 
+    # Get coverage statistics information for all samples
+    mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=10)
+    sample_stat_info = stat_info(mosdepth_info)
 
-def get_region_amplicon(bedfile: Path) -> pd.DataFrame:
-    df_amplicon = pd.read_table(bedfile,
-                                names=['reference', 'start', 'end', 'amplicon', 'depth'],
-                                header=None)
-    amplicon_dict = {row.amplicon: [row.start, row.end] for row in df_amplicon.itertuples()}
-    return amplicon_dict
+    samples_variants_info = variants.get_info(input_dir)
 
+    # Get Variant matrix using for Variant Heatmap
+    df_variants = variants.to_dataframe(samples_variants_info.values())
+    mutation = []
+    variant_matrix_data = []
+    if 'Mutation' in df_variants.columns:
+        df_varmap = variants.to_variant_pivot_table(df_variants)
+        for i, sample in enumerate(samples_name):
+            for j, mutation_name in enumerate(df_varmap.columns):
+                if sample in df_varmap.index:
+                    variant_matrix_data.append([j, i, df_varmap.loc[sample, mutation_name]])
+                else:
+                    variant_matrix_data.append([j, i, 0.0])
+        mutation = df_varmap.columns.tolist()
+    # Get Variant data
+    variants_data = {}
+    for sample, df_variants in samples_variants_info.items():
+        variants_data[sample] = df_variants.to_dict(orient='records')
 
-def get_depth_amplicon(ref_len, df_samples_amplicon: pd.DataFrame) -> dict():
-    depth_data_dict = {}
-    depth_perbase_data = np.zeros(ref_len)
-    depth_pool1_data = np.zeros(ref_len)
-    depth_pool2_data = np.zeros(ref_len)
-    for sample in df_samples_amplicon.index:
-        # get regular depth
-        depth_file = df_samples_amplicon.loc[sample, 'amplicon_perbase_file'].strip()
-        df_perbase_depth = pd.read_table(depth_file, names=['reference', 'start', 'end', 'depth'], header=None)
-        df_perbase_depth.loc[df_perbase_depth.depth == 0, 'depth'] = depth_zero_workaround
-        for row in df_perbase_depth.itertuples():
-            if row.depth == 0:
-                depth_perbase_data[row.start:row.end] = depth_zero_workaround
-            else:
-                depth_perbase_data[row.start:row.end] = row.depth
-        # get amplicon depth
-        amplicon_depth_file = df_samples_amplicon.loc[sample, 'amplicon_region_file'].strip()
-        df_amplicon_depth = pd.read_table(amplicon_depth_file, names=['reference', 'start', 'end', 'amplicon', 'depth'])
-        for row in df_amplicon_depth.itertuples():
-            pool_id = int(row.amplicon.split('_')[-1])
-            if pool_id % 2:
-                depth_pool1_data[row.start:row.end + 1] = row.depth
-            else:
-                depth_pool2_data[row.start:row.end + 1] = row.depth
-        depth_pool1_data[depth_pool1_data == 0] = (1 + depth_zero_workaround)
-        depth_pool2_data[depth_pool2_data == 0] = (1 + depth_zero_workaround)
-        depth_data_dict[sample] = [depth_perbase_data.tolist(), depth_pool1_data.tolist(), depth_pool2_data.tolist()]
-    return depth_data_dict
+    # Get Depths data
+    depths_data = mosdepth.get_depth(input_dir)
 
+    # Get Coverage stat for summary inforamtion
+    coverage_stat = {}
+    for sample, coverage_info in mosdepth_info.items():
+        coverage_stat[sample] = coverage_info.dict()
 
-def get_coverage_stat(sample: str, df: pd.DataFrame, low=10) -> list():
-    low_depth = (df.depth < 10)
-    zero_depth = (df.depth == depth_zero_workaround)
-    mean_cov = f'{df.depth.mean():.1f}X'
-    median_cov = f'{df.depth.median():.1f}X'
-    genome_cov = "{:.2%}".format((df.depth >= low).sum() / df.shape[0])
-    pos_low_cov = low_depth.sum()
-    pos_no_cov = zero_depth.sum()
-    region_low_cov = get_interval_coords(df, low - 1)
-    region_no_cov = get_interval_coords(df, depth_zero_workaround)
-    return [sample, mean_cov, median_cov, genome_cov, pos_low_cov, pos_no_cov, region_low_cov, region_no_cov]
+    # Read README.md
+    dirpath = Path(__file__).parent
+    readme = dirpath / 'readme/README.md'
+    with open(readme, "r", encoding="utf-8") as input_file:
+        text = input_file.read()
+    about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
 
-
-def read_regular_depths(fpath: Path) -> pd.DataFrame:
-    df = pd.read_table(fpath,
-                       names=['sample_name', 'reference', 'pos', 'depth'],
-                       header=None)
-    return df
-
-
-def parse_vcf(vcf_file: Path) -> Tuple[str, pd.DataFrame]:
-    """Read VCF file into a DataFrame"""
-    # https://github.com/peterk87/xlavir/blob/fbe11b4cef38bc291500c69d62b8599912c45887/xlavir/tools/variants.py#L211
-    gzipped = vcf_file.endswith('.gz')
-    with os.popen(f'zcat < {vcf_file}') if gzipped else open(vcf_file) as fh:
-        vcf_cols = []
-        variant_caller = ''
-        for line in fh:
-            if line.startswith('##source='):
-                variant_caller = line.strip().replace('##source=', '')
-            if line.startswith('##nanopolish'):
-                variant_caller = 'nanopolish'
-            if line.startswith('#CHROM'):
-                vcf_cols = line[1:].strip().split('\t')
-                break
-        df = pd.read_table(fh,
-                           comment='#',
-                           header=None,
-                           names=vcf_cols)
-        df = df[~df.duplicated(['CHROM', 'POS', 'ID', 'REF', 'ALT', 'FILTER'], keep='first')]
-    return variant_caller, df
+    # Write coverage plot to HTML file
+    write_html_coverage_plot(samples_name=samples_name,
+                             depth_data=depths_data,
+                             variant_data=variants_data,
+                             ref_seq=ref_seq,
+                             coverage_stat=sample_stat_info,
+                             gene_feature_data=gene_feature_data,
+                             gene_feature=gene_feature,
+                             amplicon_data=amplicon_depths_data,
+                             variant_matrix=variant_matrix_data,
+                             mutation=mutation,
+                             amplicon=amplicon,
+                             about_html=about_html,
+                             output_html=output_html)
 
 
-def get_interval_coords(df: pd.DataFrame, threshold=0):
-    pos = df[df.depth <= threshold].pos
-    coords = []
-    for i, x in enumerate(pos):
-        if coords:
-            last = coords[-1][-1]
-            if x == last + 1:
-                coords[-1].append(x)
-            else:
-                coords.append([x])
+def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo]) -> str:
+    df = pd.DataFrame(sample_depth_info.values())
+    headers = ['Sample', '# 0 Coverage Positions', '0 Coverage Regions', 'Low Coverage Threshold',
+               '# Low Coverage Positions (< 10X)', 'Low Coverage Regions (< 10X)', '% Genome Coverage >= 10X',
+               'Mean Coverage Depth',
+               'Median Coverage Depth', 'Ref Sequence Length']
+    df.columns = headers
+    df.drop(columns=['Low Coverage Threshold'], inplace=True)
+    for index in df.index:
+        for col in df.columns:
+            df.loc[index, col] = "{:.2%}".format(df.loc[index, col][1]) if col == '% Genome Coverage >= 10X' else \
+                df.loc[index, col][1]
+    df.sort_values(by=['Sample'], inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    return df.to_html(classes="table table-striped table-hover table-bordered table-responsive-md",
+                      float_format=lambda x: f'{x:0.2f}')
+
+
+def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
+    return start1 <= start2 <= end1 or start1 <= end2 <= end1
+
+
+def max_depth(depth_data: Dict[str, List]) -> int:
+    max_value = 0
+    for key, values in depth_data.items():
+        if max_value <= max(values):
+            max_value = max(values)
+    return math.ceil(max_value * 1.5)
+
+
+def get_gene_feature(gene_feature: bool, gene_misc_feature: bool, annotation: Path, ncbi_accession_id: str,
+                     amplicon_regions: Dict[str, List]) -> List[Dict[str, Any]]:
+    gene_feature_data = []
+    if gene_feature:
+        colour_cycle = cycle(color_pallete)
+        minus_strains_list = [0, 0, 0]
+        plus_strains_list = [0, 0, 0]
+        if annotation is not None:
+            genbank_handle = annotation
         else:
-            coords.append([x])
-    return '; '.join([f'{xs[0]}-{xs[-1]}' for xs in coords])
+            try:
+                genbank_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ncbi_accession_id)
+            except:
+                logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id OR '
+                             f'provide option --genbank /path/to/genbank.gb ')
 
-
-def overlap(start1, end1, start2, end2):
-
-    return (start1 <= start2 <= end1 or start1 <= end2 <= end1)
-
-
-def get_gene_feature(annotation: Path) -> list:
-    gene_feature = []
-    # number_of_colors = 100
-    # color_pallet = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
-    # for i in range(number_of_colors)]
-    # print (color_pallet)
-    colour_cycle = cycle(color_pallete)
-    minus_strains_list = [0, 0,  0]
-    plus_strains_list = [0, 0, 0]
-    for seq_record in SeqIO.parse(annotation, "genbank"):
-        index = 0  # the index must be continuous for data handling with Echarts
-        for seq_feature in seq_record.features:
-            if seq_feature.type in ["CDS", "source"]:
-                continue
-            if seq_feature.type in ["5'UTR", "3'UTR"]:
-                feature_name = seq_feature.type
-            else:
-                if seq_feature.qualifiers.get('gene'):
-                    feature_name = seq_feature.qualifiers['gene'][0]
-                elif seq_feature.qualifiers.get('locus_tag'):
-                    feature_name = seq_feature.qualifiers['locus_tag'][0]
-            start_pos = int(seq_feature.location.start) + 1 
-            end_pos = int(seq_feature.location.end)
-            strand = seq_feature.strand
-            if strand == 1:
-                if overlap(plus_strains_list[0], plus_strains_list[1], start_pos, end_pos):
-                    level = gene_features_properties['plus_strand_level'] + gene_features_properties['rec_items_height'] + 3
-                    if plus_strains_list[2] == gene_features_properties['plus_strand_level'] + gene_features_properties['rec_items_height'] + 3:
-                        level = gene_features_properties['plus_strand_level']
-                        gene_feature.append(
-                                dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
-                                    itemStyle={"color": next(colour_cycle)})
-                        )
-                    else:
-                        gene_feature.append(
-                                dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
-                                    itemStyle={"color": next(colour_cycle)})
-                        )
-
+                exit(1)
+        if gene_misc_feature:
+            skip_feature = ["CDS", "source", "repeat_region"]
+        else:
+            skip_feature = ["CDS", "source", "repeat_region", "misc_feature"]
+        for seq_record in SeqIO.parse(genbank_handle, "gb"):
+            index = 0  # the index must be continuous for data handling with Echarts
+            seq_feature: SeqFeature
+            for seq_feature in seq_record.features:
+                if seq_feature.type in skip_feature:
+                    continue
+                if seq_feature.type in ["5'UTR", "3'UTR"]:
+                    feature_name = seq_feature.type
                 else:
-                    level = gene_features_properties['plus_strand_level']
-                    gene_feature.append(
-                            dict(name=feature_name,
-                                value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
-                                itemStyle={"color": next(colour_cycle)})
-                        )
-                plus_strains_list = [start_pos, end_pos, level]
-            else:
-                if overlap(minus_strains_list[0], minus_strains_list[1], start_pos, end_pos):
-                    level = gene_features_properties['minus_strand_level'] + gene_features_properties['rec_items_height'] + 3
-                    if minus_strains_list[2] == gene_features_properties['minus_strand_level'] + gene_features_properties['rec_items_height'] + 3:
-                        level = gene_features_properties['minus_strand_level']
-                        gene_feature.append(
-                                dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
-                                    itemStyle={"color": next(colour_cycle)})
-                        )
+                    if seq_feature.qualifiers.get('gene'):
+                        feature_name = seq_feature.qualifiers['gene'][0]
+                    elif seq_feature.qualifiers.get('locus_tag'):
+                        feature_name = seq_feature.qualifiers['locus_tag'][0]
                     else:
-                        gene_feature.append(
-                                dict(name=feature_name,
-                                    value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
-                                    itemStyle={"color": next(colour_cycle)})
-                        )
+                        feature_name = seq_feature.id
+                start_pos = int(seq_feature.location.start) + 1
+                end_pos = int(seq_feature.location.end)
+                strand = seq_feature.strand
+                if strand == 1:
+                    if overlap(plus_strains_list[0], plus_strains_list[1], start_pos, end_pos):
+                        level = gene_feature_properties['plus_strand_level'] + gene_feature_properties[
+                            'rec_items_height'] + 3
+                        if plus_strains_list[2] == gene_feature_properties['plus_strand_level'] + \
+                                gene_feature_properties['rec_items_height'] + 3:
+                            level = gene_feature_properties['plus_strand_level']
+                    else:
+                        level = gene_feature_properties['plus_strand_level']
+                    plus_strains_list = [start_pos, end_pos, level]
                 else:
-                    level = gene_features_properties['minus_strand_level']
-                    gene_feature.append(
-                            dict(name=feature_name,
-                                value=[index, start_pos, end_pos, level, strand, 'gene_feature'],
-                                itemStyle={"color": next(colour_cycle)})
-                        )
-                minus_strains_list = [start_pos, end_pos, level]
-            index = index + 1
-    return gene_feature
+                    if overlap(minus_strains_list[0], minus_strains_list[1], start_pos, end_pos):
+                        level = gene_feature_properties['minus_strand_level'] + gene_feature_properties[
+                            'rec_items_height'] + 3
+                        if minus_strains_list[2] == gene_feature_properties['minus_strand_level'] + \
+                                gene_feature_properties['rec_items_height'] + 3:
+                            level = gene_feature_properties['minus_strand_level']
+                    else:
+                        level = gene_feature_properties['minus_strand_level']
+                    minus_strains_list = [start_pos, end_pos, level]
+                gene_feature_data.append(
+                    dict(name=feature_name,
+                         value={
+                             "idx": index,
+                             "start": start_pos,
+                             "end": end_pos,
+                             "level": level,
+                             "strand": strand,
+                             "type": "gene_feature"
+                         },
+                         itemStyle={"color": next(colour_cycle)})
+                )
+                index += 1
+    if amplicon_regions:
+        for amplicon_name, region in amplicon_regions.items():
+            index = int(amplicon_name.split('_')[-1])
+            gene_feature_len = len(gene_feature_data)
+            if index % 2:
+                level = 95 if gene_feature else 15
+                amplicon_color = AmpliconColour.pool2.value
+            else:
+                level = 80 if gene_feature else 0
+                amplicon_color = AmpliconColour.pool1.value
+            gene_feature_data.append(
+                dict(name=amplicon_name,
+                     value={
+                         "idx": gene_feature_len,
+                         "start": region[0],
+                         "end": region[1],
+                         "level": level,
+                         "strand": '',
+                         "type": "amplicon_feature"
+                     },
+                     itemStyle={"color": amplicon_color})
+            )
+    return gene_feature_data
 
 
-def write_html_coverage_plot(samples_name: dict,
-                             depth_data: dict,
-                             variant_data: dict,
+def write_html_coverage_plot(samples_name: List[str],
+                             depth_data: Dict[str, List],
+                             variant_data: Dict[str, List],
                              ref_seq: str,
-                             coverage_stat: list,
-                             gene_feature: dict,
+                             coverage_stat: str,
+                             gene_feature_data: List[Dict[str, Any]],
                              about_html: str,
                              output_html: Path,
+                             amplicon_data: Dict[str, List],
+                             variant_matrix: List[List],
+                             mutation: List[str],
                              amplicon: bool = False,
+                             gene_feature: bool = False
                              ) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -250,51 +261,25 @@ def write_html_coverage_plot(samples_name: dict,
         lstrip_blocks=True,
         loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
     )
-    if amplicon:
-        template_file = render_env.get_template("amplicon_covplot_template.html")
-    else:
-        template_file = render_env.get_template("covplot_template.html")
+    template_file = render_env.get_template("wgscovplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
         logging.info('Retrieving JS and CSS resources for Coverage Plot')
         scripts_css = {}
-        for k, v in resources.items():
+        for k, v in cdn_resources.items():
             logging.info(f'Getting HTML resource "{k}" from "{v}"')
             scripts_css[k] = requests.get(v).text
-        fout.write(template_file.render(gene_features_properties= gene_features_properties,
+        fout.write(template_file.render(gene_feature_data=gene_feature_data,
+                                        gene_feature=gene_feature,
+                                        amplicon_data=amplicon_data,
+                                        amplicon=amplicon,
                                         samples_name=samples_name,
                                         depth_data=depth_data,
                                         variant_data=variant_data,
                                         coverage_stat=coverage_stat,
-                                        gene_feature=gene_feature,
                                         ref_seq=ref_seq,
                                         ref_seq_length=len(ref_seq),
+                                        variant_matrix=variant_matrix,
+                                        mutation=mutation,
                                         about_html=about_html,
+                                        max_depth=max_depth(depth_data),
                                         **scripts_css))
-
-
-def get_samples_name(df_samples: pd.DataFrame) -> dict():
-    samples_dict = {}
-    for i, sample in enumerate(df_samples.index):
-        logging.info(f'Preparing data for sample "{sample}"')
-        samples_dict[i] = sample
-    return samples_dict
-
-
-def get_depth_data(df_samples: pd.DataFrame) -> dict():
-    depth_data = {}
-    for sample in df_samples.index:
-        df_coverage_depth = read_regular_depths(df_samples.loc[sample, 'coverage_depth_file'].strip())
-        df_coverage_depth.loc[df_coverage_depth.depth == 0, 'depth'] = depth_zero_workaround
-        depth_data[sample] = df_coverage_depth.loc[:, 'depth'].to_list()
-    return depth_data
-
-
-def get_variant_data(df_samples: pd.DataFrame) -> dict():
-    variants_data = {}
-    for sample in df_samples.index:
-        variant_info = {}
-        if df_samples.loc[sample, 'vcf_file']:
-            df_vcf = parse_vcf(df_samples.loc[sample, 'vcf_file'].strip())[1]
-            variant_info = {row.POS: (row.REF, row.ALT) for row in df_vcf.itertuples()}
-        variants_data[sample] = variant_info
-    return variants_data
