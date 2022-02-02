@@ -198,9 +198,8 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
             },
         },
         grid: {
-            top: "5%",
-            left: "15%",
-            height: "50%",
+            containLabel: true,
+            top: "5%"
         }
     };
     return chartOptions;
