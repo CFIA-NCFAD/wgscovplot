@@ -42,18 +42,6 @@ cd wgscovplot
 python setup.py install
 ```
 
-### Install by pip
-
-```
-pip install wgscovplot
-```
-
-### Install by conda
-
-```
-conda install -c bioconda wgscovplot
-```
-
 If the installation was successful, you should be able to type `wgscovplot --help` and get a help message on how to use the tool.
 
 ## Features
