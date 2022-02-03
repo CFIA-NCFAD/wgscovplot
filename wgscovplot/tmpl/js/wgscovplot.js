@@ -78,17 +78,11 @@ function updateCoverageChartOption(samples) {
     yAxisMax = $("#ymax").val();
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
 
-    // Reserve Gene/Amplicon Feature Height
-    if (amplicon || geneFeature){
-        var geneFeaturePlotHeight = $("#genefeature-height-input").val() + "%";
-        var gridLength = updateOption.grid.length
-        updateOption.grid[gridLength-1].height = geneFeaturePlotHeight;
-    }
-
     //set chart option
     chart.setOption(option = updateOption, notMerge = true);
 
     // Update control menu
+    console.log(chart.getOption().grid)
     updateControlMenu();
 }
 
@@ -356,6 +350,7 @@ function initWgscovplotRenderEnv() {
         //set chart option
         chart.setOption(option = chartOption);
     }
+    updateControlMenu();
     onChartDataZoomActions();
 }
 
@@ -431,16 +426,20 @@ function updateSubPlotHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
     var gridOption = chart.getOption().grid;
     var len = (amplicon || geneFeature) ? gridOption.length - 1 : gridOption.length
-    for (var i = 0; i < len; i++) {
+    for (var i = 0; i < gridOption.length; i++) {
         gridOption[i]["height"] = val + "%";
         if (i > 0) {
             gridOption[i]["top"] =
                 parseInt(gridOption[i - 1]["top"].replace("%", "")) +
                 parseInt(gridOption[i - 1]["height"].replace("%", "")) +
-                4 +
+                6.5 +
                 "%";
         }
     };
+    if (amplicon || geneFeature){
+            document.getElementById("genefeature-height-input").value = parseInt(val);
+            document.getElementById("genefeature-height-output").value = parseInt(val) + "%";
+    }
     chart.setOption({grid: gridOption});
 }
 
@@ -589,8 +588,12 @@ function updateControlMenu() {
         var top = gridOption[0].top.replace("%", "");
         document.getElementById("chart-height-input").value = parseInt(height);
         document.getElementById("chart-height-output").value = parseInt(height) + "%";
-        document.getElementById("chart-top-input").value = parseInt(top);
-        document.getElementById("chart-top-output").value = parseInt(top) + "%";
+        document.getElementById("chart-top-input").value = parseInt(top) + 2.5;
+        document.getElementById("chart-top-output").value = parseInt(top) + 2.5 + "%";
+        if (amplicon || geneFeature){
+            document.getElementById("genefeature-height-input").value = parseInt(height);
+            document.getElementById("genefeature-height-output").value = parseInt(height) + "%";
+        }
     }
 }
 

@@ -8,37 +8,15 @@ import {geneFeaturePlotProperties} from "../../util";
  * @returns {Array<Object>}
  */
 function getGrids(samples, geneFeature, amplicon) {
-    var n = samples.length + 1;
-    var lastHeight;
-    var lastTop;
-    var grids = Object.keys(samples).map(function (sample) {
-        lastHeight = (1 / n) * 100 - 6;
-        if (n === 2) {
-            // Only 1 sample (1 sample + gene feature plot)
-            lastHeight = 70;
-            return {
-                show: true,
-                height: "70%", // plot display in nearly full scale
-            };
-        }
-        return {
-            show: true,
-            height: (1 / n) * 100 - 6 + "%",
-        };
-    });
-    grids.forEach(function (grid, idx) {
-        var padTop = 4;
-        lastTop = (idx / n) * 100 + padTop;
-        grid.top = (idx / n) * 100 + padTop + "%";
-        grid.left = "8%";
-        grid.right = "8%";
-    });
-    if (amplicon || geneFeature){
+    var padTop = 4;
+    var grids = [];
+    var n = (amplicon || geneFeature) ? samples.length + 1 : samples.length;
+    for (var idx = 0; idx < n; idx++){
         grids.push({
             show: true,
-            height: geneFeaturePlotProperties["grid_height"],
-            top: lastHeight + lastTop + 3 + "%",
-            left: "8%",
+            height: (1/(n+1)) * 100 - 6 + "%",
+            top: (idx/(n+1)) * 100 + padTop + "%",
+            left:"8%",
             right: "8%",
         });
     }
