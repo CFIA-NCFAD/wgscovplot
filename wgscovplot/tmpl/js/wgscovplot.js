@@ -82,7 +82,6 @@ function updateCoverageChartOption(samples) {
     chart.setOption(option = updateOption, notMerge = true);
 
     // Update control menu
-    console.log(chart.getOption().grid)
     updateControlMenu();
 }
 
