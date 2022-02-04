@@ -425,17 +425,21 @@ function updateVarMapHeight(val) {
 function updateSubPlotHeight(val) {
     document.getElementById("chart-height-output").value = val + "%";
     var gridOption = chart.getOption().grid;
-    var len = (amplicon || geneFeature) ? gridOption.length - 1 : gridOption.length
     for (var i = 0; i < gridOption.length; i++) {
         gridOption[i]["height"] = val + "%";
         if (i > 0) {
+            // After adjusting height, need to adjust top margin as well
             gridOption[i]["top"] =
                 parseInt(gridOption[i - 1]["top"].replace("%", "")) +
                 parseInt(gridOption[i - 1]["height"].replace("%", "")) +
-                6.5 +
-                "%";
+                6 + "%"; // Because height of each subplot = (1/(n+1)) * 100 - heightOffset(6) + "%",
+                         // so plus 6 to adjust top margin correctly, please getGrids function
         }
     };
+    //U pdate control menu for Gene feature height
+    document.getElementById("chart-top-input").value = 6;
+    document.getElementById("chart-top-output").value = 6 + "%";
+    // Update control menu for Gene feature height
     if (amplicon || geneFeature){
             document.getElementById("genefeature-height-input").value = parseInt(val);
             document.getElementById("genefeature-height-output").value = parseInt(val) + "%";
@@ -588,8 +592,10 @@ function updateControlMenu() {
         var top = gridOption[0].top.replace("%", "");
         document.getElementById("chart-height-input").value = parseInt(height);
         document.getElementById("chart-height-output").value = parseInt(height) + "%";
-        document.getElementById("chart-top-input").value = parseInt(top) + 2.5;
-        document.getElementById("chart-top-output").value = parseInt(top) + 2.5 + "%";
+        // Because height of each subplot = (1/(n+1)) * 100 - heightOffset(6) + "%",
+        // top margin is set 4 so need to plus 2.
+        document.getElementById("chart-top-input").value = parseInt(top) + 2;
+        document.getElementById("chart-top-output").value = parseInt(top) + 2 + "%";
         if (amplicon || geneFeature){
             document.getElementById("genefeature-height-input").value = parseInt(height);
             document.getElementById("genefeature-height-output").value = parseInt(height) + "%";
