@@ -431,13 +431,9 @@ function updateSubPlotHeight(val) {
             gridOption[i]["top"] =
                 parseInt(gridOption[i - 1]["top"].replace("%", "")) +
                 parseInt(gridOption[i - 1]["height"].replace("%", "")) +
-                6 + "%"; // Because height of each subplot = (1/(n+verticalRatio)) * 100 - heightOffset(6) + "%",
-                         // so plus 6 to adjust top margin correctly, please getGrids function
+                parseInt(document.getElementById("chart-top-input").value) + "%"; // set accoring to user's settings
         }
     };
-    //U pdate control menu for Gene feature height
-    document.getElementById("chart-top-input").value = 6;
-    document.getElementById("chart-top-output").value = 6 + "%";
     // Update control menu for Gene feature height
     if (amplicon || geneFeature){
             document.getElementById("genefeature-height-input").value = parseInt(val);
