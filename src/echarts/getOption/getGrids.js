@@ -10,16 +10,17 @@ import {geneFeaturePlotProperties} from "../../util";
 function getGrids(samples, geneFeature, amplicon) {
     var padTop = 4;
     var heightOffset = 6;
+    var verticalRatio = 0.5;
     var grids = [];
     var n = (amplicon || geneFeature) ? samples.length + 1 : samples.length;
     // Each subplot has same height, the height can be adjusted in control menu
     for (var idx = 0; idx < n; idx++){
         grids.push({
             show: true,
-            height: (1/(n+1)) * 100 - heightOffset + "%",
-            top: (idx/(n+1)) * 100 + padTop + "%",
-            left: "8%",
-            right: "8%",
+            height: (1/(n+verticalRatio)) * 100 - heightOffset + "%", // vertical space
+            top: (idx/(n+verticalRatio)) * 100 + padTop + "%", // vertical space
+            left: "4%", // horizontal space
+            right: "4%", // horizontal space
         });
     }
     return grids;

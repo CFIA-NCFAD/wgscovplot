@@ -431,7 +431,7 @@ function updateSubPlotHeight(val) {
             gridOption[i]["top"] =
                 parseInt(gridOption[i - 1]["top"].replace("%", "")) +
                 parseInt(gridOption[i - 1]["height"].replace("%", "")) +
-                6 + "%"; // Because height of each subplot = (1/(n+1)) * 100 - heightOffset(6) + "%",
+                6 + "%"; // Because height of each subplot = (1/(n+verticalRatio)) * 100 - heightOffset(6) + "%",
                          // so plus 6 to adjust top margin correctly, please getGrids function
         }
     };
@@ -591,7 +591,7 @@ function updateControlMenu() {
         var top = gridOption[0].top.replace("%", "");
         document.getElementById("chart-height-input").value = parseInt(height);
         document.getElementById("chart-height-output").value = parseInt(height) + "%";
-        // Because height of each subplot = (1/(n+1)) * 100 - heightOffset(6) + "%",
+        // Because height of each subplot = (1/(n+verticalRatio)) * 100 - heightOffset(6) + "%",
         // top margin is set 4 so need to plus 2.
         document.getElementById("chart-top-input").value = parseInt(top) + 2;
         document.getElementById("chart-top-output").value = parseInt(top) + 2 + "%";

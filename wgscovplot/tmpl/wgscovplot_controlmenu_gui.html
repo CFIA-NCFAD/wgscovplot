@@ -34,13 +34,12 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#general" aria-expanded="true" aria-controls="general">General
+                                data-bs-target="#plot-sample" aria-expanded="true" aria-controls="plot-sample">Samples
                         </button>
                     </h2>
-                    <div id="general" class="accordion-collapse collapse show">
+                    <div id="plot-sample" class="accordion-collapse collapse show">
                         <div class="accordion-body">
                             <div class="row mb-3">
-                                <label for="selectedsamples">Samples to plot</label>
                                 <select id="selectedsamples" class="selected-samples" multiple="multiple">
                                     {% for sample in samples_name %}
                                         <option value={{sample}}>{{sample}}</option>
@@ -85,168 +84,72 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Heatmap Properties
+                                data-bs-target="#tooltips" aria-expanded="false" aria-controls="axis">Tooltips
                         </button>
                     </h2>
-                    <div id="varmap" class="accordion-collapse collapse">
+                    <div id="tooltips" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="row mb-3">
                                 <div>
-                                    <label for="varmap-height-input" class="form-label">Heatmap Height</label>
-                                    <input type="range" id="varmap-height-input" class="form-range" value="50" min="5"
-                                           max="90" step="1" onchange="updateVarMapHeight(this.value);">
-                                    <output style="display: block; text-align:center;" type="text"
-                                            id="varmap-height-output">50<span>%</span></output>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#chartproperties" aria-expanded="false" aria-controls="chartproperties">
-                            Chart Properties
-                        </button>
-                    </h2>
-                    <div id="chartproperties" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <div class="row mb-3">
-                                <label for="render-env" class="col-sm-4 col-form-label">Renderer</label>
-                                <div class="col-sm-8">
-                                    <select id="render-env" class="form-select" onchange="initWgscovplotRenderEnv()">
-                                        <option value="svg">svg</option>
-                                        <option value="canvas" selected>canvas</option>
-                                    </select>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip">Enable</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-tooltip" checked>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div>
                                     <div class="form-check form-switch">
-                                        <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
-                                        <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
+                                        <label class="form-check-label" for="fix-tooltip-postion">Fix Tooltip
+                                            Position</label>
+                                        <input class="form-check-input" type="checkbox" id="fix-tooltip-postion"
+                                               unchecked>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-header">Tooltip Display</div>
-                                <div class="card-body">
-                                    <div class="row mb-3">
-                                        <div>
-                                            <div class="form-check form-switch">
-                                                <label class="form-check-label" for="toggle-tooltip">Enable</label>
-                                                <input class="form-check-input" type="checkbox" id="toggle-tooltip" checked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div>
-                                            <div class="form-check form-switch">
-                                                <label class="form-check-label" for="fix-tooltip-postion">Fix Tooltip Position</label>
-                                                <input class="form-check-input" type="checkbox" id="fix-tooltip-postion" unchecked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div>
-                                            <div class="form-check form-switch">
-                                                <label class="form-check-label" for="toggle-tooltip-trigger-click">Trigger On Click</label>
-                                                <input class="form-check-input" type="checkbox" id="toggle-tooltip-trigger-click" unchecked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div>
-                                            <div class="form-check form-switch">
-                                                <label class="form-check-label" for="toggle-tooltip-variant-sites">Variant Sites</label>
-                                                <input class="form-check-input" type="checkbox" id="toggle-tooltip-variant-sites" checked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div>
-                                            <div class="form-check form-switch">
-                                                <label class="form-check-label" for="toggle-tooltip-non-variant-sites">Non Variant Sites</label>
-                                                <input class="form-check-input" type="checkbox" id="toggle-tooltip-non-variant-sites" checked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div>
-                                            <div class="form-check form-switch">
-                                                <label class="form-check-label" for="toggle-variant-comparison">Variant Sites/Coverage Stat Comparison</label>
-                                                <input class="form-check-input" type="checkbox" id="toggle-variant-comparison" checked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row mb-3">
-                                <div>
-                                    <label for="chart-height-input" class="form-label">Subplot Height</label>
-                                    <input type="range" id="chart-height-input" class="form-range" value="19" min="1"
-                                           max="70" step="1" onchange="updateSubPlotHeight(this.value);">
-                                    <output style="display: block; text-align:center;" type="text"
-                                            id="chart-height-output">19<span>%</span></output>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div>
-                                    <label for="chart-left-input" class="form-label">Left Margin</label>
-                                    <input type="range" id="chart-left-input" class="form-range" value="8" min="1"
-                                           max="50" step="1" onchange="updateChartLeftMargin(this.value);">
-                                    <output style="display: block; text-align:center;" type="text"
-                                            id="chart-left-output">8<span>%</span></output>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip-trigger-click">Trigger On
+                                            Click</label>
+                                        <input class="form-check-input" type="checkbox"
+                                               id="toggle-tooltip-trigger-click" unchecked>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div>
-                                    <label for="chart-right-input" class="form-label">Right Margin</label>
-                                    <input type="range" id="chart-right-input" class="form-range" value="8" min="1"
-                                           max="50" step="1" onchange="updateChartRightMargin(this.value);">
-                                    <output style="display: block; text-align:center;" type="text"
-                                            id="chart-right-output">8<span>%</span></output>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip-variant-sites">Variant
+                                            Sites</label>
+                                        <input class="form-check-input" type="checkbox"
+                                               id="toggle-tooltip-variant-sites" checked>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div>
-                                    <label class="form-label"> Subplot Top Margin</label>
-                                    <input type="range" id="chart-top-input" class="form-range" value="6.5" min="0"
-                                           max="25" step="0.1" onchange="updateSubPlotTopMargin(this.value);">
-                                    <output style="display: block; text-align:center;" type="text" id="chart-top-output">6.5<span>%</span></output>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip-non-variant-sites">Non
+                                            Variant Sites</label>
+                                        <input class="form-check-input" type="checkbox"
+                                               id="toggle-tooltip-non-variant-sites" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-variant-comparison">Variant
+                                            Sites/Coverage Stat Comparison</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-variant-comparison"
+                                               checked>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% if gene_feature == true or amplicon == true %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
-                            Genetic/Amplicon Features
-                        </button>
-                    </h2>
-                    <div id="genefeatures" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            {% if gene_feature == true %}
-                            <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
-                                <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
-                            </div>
-                            {% endif %}
-                            <div>
-                                <label class="form-label">Height</label>
-                                <input type="range" id="genefeature-height-input" class="form-range" value="15" min="1"
-                                       max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
-                                <output style="display: block; text-align:center;" type="text"
-                                        id="genefeature-height-output">15<span>%</span></output>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -258,7 +161,7 @@
                             <div class="row mb-3">
                                 <div>
                                     <div class="form-check form-switch">
-                                        <label class="form-check-label" for="toggle-slider">Show data zoom slider</label>
+                                        <label class="form-check-label" for="toggle-slider">Show Slider</label>
                                         <input class="form-check-input" type="checkbox" id="toggle-slider" checked>
                                     </div>
                                 </div>
@@ -287,6 +190,40 @@
                         </div>
                     </div>
                 </div>
+                {% if gene_feature == true or amplicon == true %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
+                            Genetic/Amplicon Features
+                        </button>
+                    </h2>
+                    <div id="genefeatures" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            {% if gene_feature == true %}
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <label class="form-label">Height</label>
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <input type="range" id="genefeature-height-input" class="form-range" value="15" min="1"
+                                       max="50" step="1" onchange="updateGeneFeatureHeight(this.value);">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <output style="display: block; text-align:center;" type="text"
+                                        id="genefeature-height-output">15<span>%</span></output>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <!---
                 {% if amplicon == True %}
                 <div class="accordion-item">
                     <h2 class="accordion-header">
@@ -298,13 +235,128 @@
                     <div id="amplicon" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-genelabel">Amplicon Depth</label>
+                                <label class="form-check-label" for="toggle-genelabel">Show Amplicon Depth</label>
                                 <input class="form-check-input" type="checkbox" id="toggle-amplicon-depthlabel" unchecked>
                             </div>
                         </div>
                     </div>
                 </div>
                 {% endif %}
+                --->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#chartproperties" aria-expanded="false" aria-controls="chartproperties">
+                            Advanced Options
+                        </button>
+                    </h2>
+                    <div id="chartproperties" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <label for="render-env" class="col-sm-4 col-form-label">Renderer</label>
+                                <div class="col-sm-8">
+                                    <select id="render-env" class="form-select" onchange="initWgscovplotRenderEnv()">
+                                        <option value="svg">svg</option>
+                                        <option value="canvas" selected>canvas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="chart-height-input" class="form-label">Subplot Height</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-height-input" class="form-range" value="19"
+                                                   min="1" max="70" step="1" onchange="updateSubPlotHeight(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="chart-height-output">19<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="chart-left-input" class="form-label">Left Margin</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-left-input" class="form-range" value="4" min="1"
+                                           max="50" step="1" onchange="updateChartLeftMargin(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="chart-left-output">4<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="chart-right-input" class="form-label">Right Margin</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-right-input" class="form-range" value="4" min="1"
+                                           max="50" step="1" onchange="updateChartRightMargin(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="chart-right-output">4<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label class="form-label"> Subplot Top Margin</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-top-input" class="form-range" value="6.5" min="0"
+                                           max="25" step="0.1" onchange="updateSubPlotTopMargin(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text" id="chart-top-output">6.5<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Heatmap Options
+                        </button>
+                    </h2>
+                    <div id="varmap" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="varmap-height-input" class="form-label">Heatmap Height</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="varmap-height-input" class="form-range" value="50" min="5"
+                                           max="90" step="1" onchange="updateVarMapHeight(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="varmap-height-output">50<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -320,6 +372,3 @@
         </div>
     </div>
 </div>
-
-
-

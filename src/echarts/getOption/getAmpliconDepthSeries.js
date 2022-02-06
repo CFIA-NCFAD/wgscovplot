@@ -36,7 +36,7 @@ function getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
                         type: "rect",
                         shape: rectShape,
                         style: api.style({})
-                    }
+                    };
                 },
                 label: {
                     show: false,
@@ -56,7 +56,7 @@ function getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
                 },
                 silent: true,
                 data: ampliconDepthBarData[sample],
-            })
+            });
         }
     }
     return ampliconDepthSeries;

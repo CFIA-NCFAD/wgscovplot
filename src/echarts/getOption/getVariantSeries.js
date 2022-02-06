@@ -33,7 +33,7 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites) {
                 }
             });
         })(i, varMap);
-    };
+    }
     return variantSeries;
 }
 
