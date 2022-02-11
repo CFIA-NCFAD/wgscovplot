@@ -3,6 +3,7 @@ import {getCoverageChartOption} from "./echarts/getOption/getCoverageChartOption
 import {getVariantHeatmapOption} from "./echarts/getOption/getVariantHeatmapOption";
 import {getGeneFeatureRenderer} from "./echarts/geneFeatures/getGeneFeatureRenderer";
 import {getTooltips} from "./echarts/getOption/getTooltips";
+import {getGrids} from "./echarts/getOption/getGrids";
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
 import * as echarts from 'echarts/core';
 
@@ -19,4 +20,4 @@ echarts.use(
 );
 
 export {getCoverageChartOption, getVariantHeatmapOption, median, meanCoverage, medianCoverage, genomeCoverage,
-      getGeneFeatureRenderer, getTooltips, echarts};
+      getGeneFeatureRenderer, getTooltips, getGrids, echarts};

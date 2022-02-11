@@ -9,10 +9,13 @@ import {toTableHtml, getVariantComparison, getCoverageStatComparison} from "../.
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {string} refSeq - Reference seq
  * @param {string} triggerOnType - mousemove or click
+ * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
+ * @param {boolean} isCovergateStatView - whether to show Coverage stat
  * @returns {Array<Object>}
  */
 function getTooltips(samples, depths, variants, refSeq,
-                     triggerOnType="mousemove", isVariantComparison = false) {
+                     triggerOnType="mousemove", isInfoComparison=true,
+                     isCovergateStatView=false) {
     return [
         {
             trigger: "axis",
@@ -36,18 +39,20 @@ function getTooltips(samples, depths, variants, refSeq,
                 var sample = samples[i];
                 var position = param.axisValue;
                 var depth = depths[i][position-1];
-                var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
-                var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+                if (isCovergateStatView){
+                    var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+                    var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+                }
                 var positionRows = [];
                 var coverageStatRows = [];
                 const isVariantBar = params.find(element => {
                     if (element.componentSubType === "bar") {
                         return true;
                     }
-                    return false
+                    return false;
                 });
                 if (isVariantBar) {
-                    if (isVariantComparison){
+                    if (isInfoComparison){
                         positionRows = getVariantComparison(samples, variants, depths, position, sample);
                     }
                     else {
@@ -75,26 +80,28 @@ function getTooltips(samples, depths, variants, refSeq,
                     positionRows.push(["Sequence", refSeq[position-1]]);
                 }
                 if (positionRows.length){
-                    output += "<h5>" + "Selected sample: " + sample + "</h5>";
-                    output += toTableHtml(["Position Info", ""], positionRows, "table-sm table-hover table-bordered table-responsive-md");
-                    if (isVariantComparison){
-                        coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample);
+                    output += "<h5>" + "Sample: " + sample + "</h5>";
+                    output += toTableHtml(["Position Info", ""], positionRows, "table small");
+                    if (isCovergateStatView){
+                        if (isInfoComparison){
+                            coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample, position);
+                        }
+                        else{
+                            var meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
+                            var medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
+                            var genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);
+                            coverageStatRows = [
+                                [
+                                    "Range",
+                                    zoomStart.toLocaleString() + " - " + zoomEnd.toLocaleString(),
+                                ],
+                                ["Mean Coverage", meanCov + "X"],
+                                ["Median Coverage", medianCov + "X"],
+                                ["Genome Coverage ( >= 10x)", genomeCov + "%"],
+                            ];
+                        }
+                        output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");
                     }
-                    else{
-                        var meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
-                        var medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
-                        var genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);
-                        coverageStatRows = [
-                            [
-                                "Range",
-                                zoomStart.toLocaleString() + " - " + zoomEnd.toLocaleString(),
-                            ],
-                            ["Mean Coverage", meanCov + "X"],
-                            ["Median Coverage", medianCov + "X"],
-                            ["Genome Coverage ( >= 10x)", genomeCov + "%"],
-                        ];
-                    }
-                    output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table-sm table-hover table-bordered table-responsive-md");
                 }
                 return output;
             },
