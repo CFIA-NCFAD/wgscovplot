@@ -27,9 +27,11 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
      */
     function renderGeneFeatures(params, api) {
         var points, shape, rotateAngle;
-        var start, end, height, width, x, y;
+        var start, end, height, width, x, y, leftCoord, rightCoord;
         var categoryIndex = params.dataIndex;
         var feature = geneFeatureAmpliconData[categoryIndex];
+        leftCoord = params.coordSys.x;
+        rightCoord = params.coordSys.width + params.coordSys.x;
         start = api.coord([feature.value.start, categoryIndex]);
         if (categoryIndex === 0) {
             yStart = start[1];
@@ -40,8 +42,19 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
         x = start[0];
         y = yStart - height / 2 - feature.value.level;
         points = shapePoints(x, y, width, height, feature.value.strand, feature.value.type);
+        var invisible = false;
         if (feature.value.type === 'gene_feature') {
             rotateAngle = (feature.value.strand === 1) ? 0.7 : -0.7;
+            if (isShowGeneLabel){
+                // Element width is too small and hide label at the edges
+                if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord){
+                    invisible = true;
+                }else{
+                    invisible = false;
+                }
+            }else{
+                invisible = true;
+            }
             shape = graphic.clipPointsByRect(points, {
                 x: params.coordSys.x,
                 y: params.coordSys.y,
@@ -56,19 +69,22 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
                 style: api.style({}),
                 textContent: {
                     type: "text",
-                    invisible: !isShowGeneLabel,
+                    invisible: invisible,
                     style: {
                         text: feature.name,
                         fill: feature.itemStyle.color,
                         fontStyle: "normal",
-                        fontSize: 10,
+                        //borderWidth: 1.5,
+                        fontSize: 12,
                         fontWeight: "bolder",
                     },
                 },
                 textConfig: {
                     position: "top",
-                    distance: 20,
+                    distance: 18,
                     rotation: rotateAngle,
+                    //outsideStroke: feature.itemStyle.color,
+                    offset: "center",
                     local: true,
                 },
             };

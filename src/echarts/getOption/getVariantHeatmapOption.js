@@ -34,7 +34,7 @@ function getTooltipHeatmap(samples, mutations, variants) {
                         }
                     })
                     if (rows.length) {
-                        output += toTableHtml(["", ""], rows, "table-sm table-hover table-bordered table-responsive-md");
+                        output += toTableHtml(["", ""], rows, "table small");
                     } else {
                         output += ("Not detected mutation " + mutationName.bold() + " in sample " + sample.bold())
                     }

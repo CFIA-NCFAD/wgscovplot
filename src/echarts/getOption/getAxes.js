@@ -54,8 +54,10 @@ function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
             nameTextStyle: {
                 fontStyle: "normal",
                 fontWeight: "bolder",
+                fontSize: 12
             },
             nameLocation: "end",
+            nameRotate: 0.01,
             min: scaleType === 'log' ? 1 : 0,
             max: yMax,
             minorSplitLine: {

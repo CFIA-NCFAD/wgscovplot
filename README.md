@@ -92,7 +92,7 @@ Options:
 - Genbank file contains gene features (sequence_genbank.gb)
 
 ### Output:
-The tool will generate the Coverage Plot for samples in HTML file. <a href="https://nhhaidee.github.io/index.html">Click here for an example</a>
+The tool will generate the Coverage Plot for samples in HTML file. <a href="https://nhhaidee.github.io">Click here for an example</a>
 
 <img width="765" alt="wgscovplot" src="https://raw.githubusercontent.com/nhhaidee/nhhaidee.github.io/master/wgscovplot.png">
 

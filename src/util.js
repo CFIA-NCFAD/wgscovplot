@@ -31,37 +31,21 @@ export const ntColor = {
  * @param {number} start - start position
  * @param {number} end - end position
  * @param {string} currentSample - selected sample
+ * @param {number} position - Selected position
  * @returns <Array<Array<string>> - Coverage Stat comparison across samples
  */
-function getCoverageStatComparison (samples, depths, start, end, currentSample){
-    var rows = [];
-    var fisrtCol = ["sample", "Range", "Mean Coverage", "Median Coverage", "Genome Coverage ( >= 10x)"];
-    var range = start.toLocaleString() + " - " + end.toLocaleString();
-    var sampleInfo = [];
+function getCoverageStatComparison (samples, depths, start, end, currentSample, position){
+    var rows = []
+    var tableHeader = ["Sample", "Depth at position "+ position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
+    rows.push(...[tableHeader]);
     for (var[i, sample] of samples.entries()){
         var meanCov = meanCoverage(depths[i], start, end).toFixed(2);
         var medianCov = medianCoverage(depths[i], start, end).toFixed(2);
         var genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
-        sampleInfo.push({
-            "sample": (sample===currentSample) ? sample.bold() : sample,
-            "Range": range,
-            "Mean Coverage": meanCov + "X",
-            "Median Coverage": medianCov + "X",
-            "Genome Coverage ( >= 10x)":genomeCov + "%"
-        })
+        var coverageDepth = depths[i][position-1];
+        var row = [sample, coverageDepth.toLocaleString(), start.toLocaleString() + " - " + end.toLocaleString(), meanCov, medianCov, genomeCov]
+        rows.push(...[row]);
     }
-    fisrtCol.forEach(col => {
-        var row= [];
-        row.push(col);
-        sampleInfo.forEach(element => {
-            Object.keys(element).forEach(key => {
-                if (key === col){
-                    row.push(element[key])
-                }
-            })
-        })
-        rows.push(...[row])
-    })
     return rows;
 }
 
@@ -85,7 +69,7 @@ function getVariantComparison(samples, variants, depths, position, currentSample
                     isPOSExist = true;
                     variantArr.push(values);
                 }
-            })
+            });
             if (!isPOSExist){
                 variantArr.push({"sample": samples[i], "POS":position}); // sample has variant infor but no variant infor at this position
             }
@@ -101,7 +85,7 @@ function getVariantComparison(samples, variants, depths, position, currentSample
         row.push(key);
         if (key === "Coverage Depth"){
             for (var [i, depthEle] of depths.entries()){
-                row.push(depths[i][position-1].toLocaleString())
+                row.push(depths[i][position-1].toLocaleString());
             }
         }else{
             variantArr.forEach(element => {
@@ -114,10 +98,10 @@ function getVariantComparison(samples, variants, depths, position, currentSample
                 }else {
                     row.push("");
                 }
-            })
+            });
         }
         rows.push(...[row]);
-    })
+    });
     return rows;
 }
 

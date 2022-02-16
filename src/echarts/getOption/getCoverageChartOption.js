@@ -22,7 +22,7 @@ import {getTooltips} from "./getTooltips";
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
- * @param {boolean} isVariantComparison - whether to compare variants across samples
+ * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
  * @returns {Object} - The options for coverage chart
  *
  * The format of data
@@ -52,8 +52,9 @@ import {getTooltips} from "./getTooltips";
 function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,refSeq,
                                 yAxisMax, samples, depths, variants,
                                 geneFeature=false, amplicon=false,
-                                triggerOnType= "mousemove", isVariantSites=true,
-                                isNonVariantSites=true, isVariantComparison=true) {
+                                triggerOnType="mousemove", isVariantSites=true,
+                                isNonVariantSites=false, isInfoComparison=true,
+                                isCovergateStatView=false) {
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
     var chartOptions = {
@@ -68,7 +69,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isVariantComparison),
+        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isInfoComparison, isCovergateStatView),
         toolbox: {
             show: "true",
             feature: {
@@ -94,6 +95,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                 xAxisIndex: [...Array(samples.length + 1).keys()],
                 type: "slider",
                 zoomLock: false,
+                showDataShadow: false
             },
         ],
         grid: getGrids(samples, geneFeature, amplicon)
