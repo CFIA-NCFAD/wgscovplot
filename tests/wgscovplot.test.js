@@ -927,8 +927,9 @@ var variants = []
 samples.forEach(sample => {
     variants.push(variant_data[sample]);
 })
-var ampliconDepthData = {}
-var chartOptions = getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthData, refSeq, 500, samples, depths, variants, "True", "False")
+var ampliconDepthData = {};
+var chartOptions = getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthData, refSeq, 500,
+    samples, depths, variants, true, false, "mousemove", true, false, true, false);
 
 test('Series 0 of the chart', () => {expect(chartOptions.series[0]).toEqual(expect.objectContaining({
         type: 'line',
@@ -969,11 +970,10 @@ test('Series 2 of the chart', () => {expect(chartOptions.series[2]).toEqual(expe
       }
 ))});
 
-test('Grid options for the whole chart', () => {expect(chartOptions.grid).toEqual(expect.arrayContaining([{ show: true, height: '19%', top: '4%', left: '8%', right: '8%' },
-      { show: true, height: '19%', top: '29%', left: '8%', right: '8%' },
-      { show: true, height: '19%', top: '54%', left: '8%', right: '8%' },
-      { show: true, height: '15%', top: '76%', left: '8%', right: '8%' }
-]))});
+test('Grid options for the whole chart', () => {expect(chartOptions.grid).toEqual(expect.arrayContaining([{"height": "20.7%", "left": "4.0%", "right": "4.0%", "show": true, "top": "4.0%"},
+    {"height": "20.7%", "left": "4.0%", "right": "4.0%", "show": true, "top": "30.7%"},
+    {"height": "20.7%", "left": "4.0%", "right": "4.0%", "show": true, "top": "57.3%"},
+    {"height": "6.0%", "left": "4.0%", "right": "4.0%", "show": false, "top": "84.0%"}]))});
 
 test('Median of an array ' + '[' + depths["sample01"] + ']', () => {
     expect(median(depths[0])).toBe(39.5);
