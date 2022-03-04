@@ -41,6 +41,11 @@ Then change directory to `wgscovplot` and install.
 cd wgscovplot
 python setup.py install
 ```
+### Install by pip
+
+```
+pip install wgscovplot
+```
 
 If the installation was successful, you should be able to type `wgscovplot --help` and get a help message on how to use the tool.
 
