@@ -23,6 +23,7 @@ import {getTooltips} from "./getTooltips";
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
  * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
+ * @param {boolean} isShowMutation - whether to show Muation below Variant Sites
  * @returns {Object} - The options for coverage chart
  *
  * The format of data
@@ -54,7 +55,8 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 geneFeature=false, amplicon=false,
                                 triggerOnType="mousemove", isVariantSites=true,
                                 isNonVariantSites=false, isInfoComparison=true,
-                                isCovergateStatView=false) {
+                                isCovergateStatView=false,
+                                isShowMutation=false) {
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
     var chartOptions = {
@@ -65,7 +67,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples, isNonVariantSites),
-            ...getVariantsSeries(variants, depths, refSeq, isVariantSites),
+            ...getVariantsSeries(variants, depths, refSeq, isVariantSites, isShowMutation),
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],

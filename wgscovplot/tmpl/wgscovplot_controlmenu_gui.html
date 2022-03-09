@@ -360,14 +360,18 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Heatmap Options
+                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Options
                         </button>
                     </h2>
                     <div id="varmap" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="row mb-3">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-mutation">Show Mutation</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
+                                </div>
                                 <div>
-                                    <label for="varmap-height-input" class="form-label">Heatmap Height</label>
+                                    <label for="varmap-height-input" class="form-label">Variant Heatmap Height</label>
                                     <div class="row">
                                         <div class="col-md-10">
                                             <input type="range" id="varmap-height-input" class="form-range" value="50" min="5"

@@ -43,11 +43,13 @@ function updateCoverageChartOption(samples) {
     var isNonVarianSites = document.getElementById("toggle-tooltip-non-variant-sites").checked;
     var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
     var isCoverageStatView = document.getElementById("toggle-coverage-stat").checked;
+    var isShowMutation = document.getElementById("toggle-mutation").checked;
     var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
         isNonVariantSites=isNonVarianSites, isInfoComparison=isVariantComparison,
-        isCovergateStatView=isCoverageStatView);
+        isCovergateStatView=isCoverageStatView,
+        isShowMutation=isShowMutation);
 
     // Reserve tooltip in series option
     var seriesOption = updateOption.series;
@@ -202,6 +204,20 @@ function initWgscovplotEvent(){
             var seriesOption = chart.getOption().series;
             showGeneLabel = $(this).prop("checked");
             seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData); // Re-update Gene Feature Chart Only
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to show Mutation below Variant Sites
+         */
+        $("#toggle-mutation").change(function () {
+            var seriesOption = chart.getOption().series;
+            showMutation = $(this).prop("checked");
+            seriesOption.forEach(series => {
+                if (series.type === "bar") {
+                    series.label.show = showMutation;
+                }
+            })
             chart.setOption({series: [...seriesOption]});
         });
 
