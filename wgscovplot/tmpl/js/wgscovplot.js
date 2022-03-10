@@ -44,12 +44,16 @@ function updateCoverageChartOption(samples) {
     var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
     var isCoverageStatView = document.getElementById("toggle-coverage-stat").checked;
     var isShowMutation = document.getElementById("toggle-mutation").checked;
+    var isShowXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
+    var isHideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
         isNonVariantSites=isNonVarianSites, isInfoComparison=isVariantComparison,
         isCovergateStatView=isCoverageStatView,
-        isShowMutation=isShowMutation);
+        isShowMutation=isShowMutation,
+        isShowXAxisLabel=isShowXAxisLabel,
+        isHideOverlapMutation=isHideOverlapMutation);
 
     // Reserve tooltip in series option
     var seriesOption = updateOption.series;
@@ -202,7 +206,7 @@ function initWgscovplotEvent(){
          */
         $("#toggle-genelabel").change(function () {
             var seriesOption = chart.getOption().series;
-            showGeneLabel = $(this).prop("checked");
+            var  showGeneLabel = $(this).prop("checked");
             seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData); // Re-update Gene Feature Chart Only
             chart.setOption({series: [...seriesOption]});
         });
@@ -212,13 +216,40 @@ function initWgscovplotEvent(){
          */
         $("#toggle-mutation").change(function () {
             var seriesOption = chart.getOption().series;
-            showMutation = $(this).prop("checked");
+            var showMutation = $(this).prop("checked");
             seriesOption.forEach(series => {
                 if (series.type === "bar") {
                     series.label.show = showMutation;
                 }
             })
             chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to hide overlapping mutation under Variant Sites
+         */
+        $("#toggle-hideoverlap-mutation").change(function () {
+            var seriesOption = chart.getOption().series;
+            var isHideOverlap = $(this).prop("checked");
+            seriesOption.forEach(series => {
+                if (series.type === "bar") {
+                    series.labelLayout.hideOverlap = isHideOverlap;
+                }
+            })
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to show X Axis
+         */
+        $("#toggle-xaxis-label").change(function () {
+            var xAxisOption = chart.getOption().xAxis;
+            var showAxisLabel = $(this).prop("checked");
+            var gridLength = (amplicon || geneFeature) ? gridLength = xAxisOption.length - 1 : gridLength = xAxisOption.length;
+            for (var i = 0; i < gridLength; i++){
+                xAxisOption[i].axisLabel.show= showAxisLabel;
+            }
+            chart.setOption({xAxis: [...xAxisOption]});
         });
 
         /**

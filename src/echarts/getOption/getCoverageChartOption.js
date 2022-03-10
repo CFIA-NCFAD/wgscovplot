@@ -24,6 +24,8 @@ import {getTooltips} from "./getTooltips";
  * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
  * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
  * @param {boolean} isShowMutation - whether to show Muation below Variant Sites
+ * @param {boolean} isShowXAxisLabel - whether to show X Axis
+ * @param {boolean} isHideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Object} - The options for coverage chart
  *
  * The format of data
@@ -56,18 +58,20 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 triggerOnType="mousemove", isVariantSites=true,
                                 isNonVariantSites=false, isInfoComparison=true,
                                 isCovergateStatView=false,
-                                isShowMutation=false) {
+                                isShowMutation=false,
+                                isShowXAxisLabel=true,
+                                isHideOverlapMutation=true) {
     var positions = [...Array(refSeq.length + 1).keys()];
     positions.shift();
     var chartOptions = {
         title: {},
         dataset: getDatasets(depths, positions),
-        xAxis: getXAxes(samples, positions.length, geneFeature, amplicon),
+        xAxis: getXAxes(samples, positions.length, geneFeature, amplicon, isShowXAxisLabel),
         yAxis: getYAxes(samples, "log", yAxisMax, geneFeature, amplicon),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples, isNonVariantSites),
-            ...getVariantsSeries(variants, depths, refSeq, isVariantSites, isShowMutation),
+            ...getVariantsSeries(variants, depths, refSeq, isVariantSites, isShowMutation, isHideOverlapMutation),
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],

@@ -7,10 +7,11 @@ import {ntColor} from "../../util";
  * @param {string} refSeq - Reference seq
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {boolean} isShowMutation - whether to show Muation below Variant Sites
+ * @param {boolean} isHideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Array<Object>}
  */
 function getVariantsSeries(variants, depths, refSeq, isVariantSites,
-                           isShowMutation) {
+                           isShowMutation, isHideOverlapMutation) {
     var variantSeries = [];
     for (var [i, varMap] of variants.entries()) {
         (function (i, varMap) {
@@ -43,16 +44,14 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                         var output = "";
                         Object.values(variants[i]).forEach(values => {
                             if (values['POS'] === pos) {
-                                if (values["mutation"] !== undefined && values["mutation"] !== null){
-                                    output += values["mutation"];
-                                }
+                                output += (values["REF"] + values["POS"] + values["ALT"]);
                             }
                         });
                         return output;
                     }
                 },
                 labelLayout:{
-                    hideOverlap: true
+                    hideOverlap: isHideOverlapMutation
                 },
                 tooltip:{
                     trigger: isVariantSites ? "axis" : "none"
