@@ -62,6 +62,11 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 isShowXAxisLabel=true,
                                 isHideOverlapMutation=true) {
     var positions = [...Array(refSeq.length + 1).keys()];
+    var doubleStrand = false;
+    Object.values(geneFeatureAmpliconData).forEach(x => {
+        if (x.value.strand === -1)
+            doubleStrand = true
+    })
     positions.shift();
     var chartOptions = {
         title: {},
@@ -104,7 +109,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                 showDataShadow: false
             },
         ],
-        grid: getGrids(samples, geneFeature, amplicon)
+        grid: getGrids(samples, geneFeature, amplicon, doubleStrand)
     };
     return chartOptions;
 }
