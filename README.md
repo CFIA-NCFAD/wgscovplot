@@ -8,11 +8,11 @@
 
 ### Software Version
 
-- The current version is ```0.1.0```
+- The current version is ```0.1.1```
 
-### Limitation
+### Supported Viral Genomes
 
-- The tool is currently designed for SARS-COV-2 virus. The supports for other virus such as Avian Influenza, African Swine Fever Virus (ASFV), Foot and Mouth Disease (FMD) will be added soon.
+- SARS-CoV-2, African Swine Fever Virus (ASFV)
 
 ### Programming Languages
 
