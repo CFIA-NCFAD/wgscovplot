@@ -193,12 +193,36 @@ function initWgscovplotEvent(){
             $(this).trigger("change");
         });
 
+        $("#selected-gene-feature-name").select2({
+            tags: true,
+            width: '100%',
+            minimumResultsForSearch: Infinity
+        });
+
+
         /**
          * Update chart options when adding/romoving samples
          * The chart options such as y Axis scale, yMax, DataZoom are reserved (users's settings are respected)
          */
         $("#selectedsamples").on("change", function () {
             updateCoverageChartOption(getCurrentSamples(chart.getOption()));
+        });
+
+        $("#selected-gene-feature-name").on("change", function () {
+            var featureName = $("#selected-gene-feature-name").select2('data');
+            var startZoom, endZoom;
+            for (var i = 0; i < geneFeatureAmpliconData.length; i++){
+                if (geneFeatureAmpliconData[i].name === featureName[0].text){
+                    startZoom = geneFeatureAmpliconData[i].value.start;
+                    endZoom = geneFeatureAmpliconData[i].value.end;
+                    break;
+                }
+            }
+            if (featureName[0].text === 'Whole Genome'){
+                startZoom = 1;
+                endZoom = refSeqLength;
+            }
+            setDataZoom(startZoom, endZoom);
         });
 
         /**
@@ -622,7 +646,14 @@ function setDataZoom(zoomStart, zoomEnd){
 function resetGridDisplay(){
     var chartOption = chart.getOption();
     var currentSamples = getCurrentSamples(chartOption);
-    var gridOption = wgscovplot.getGrids(currentSamples, geneFeature, amplicon);
+    var doubleStrand = false;
+    for (var i = 0; i < geneFeatureAmpliconData.length; i++){
+        if (geneFeatureAmpliconData[i].value.strand === -1){
+            doubleStrand = true;
+            break;
+        }
+    }
+    var gridOption = wgscovplot.getGrids(currentSamples, geneFeature, amplicon, doubleStrand);
     chart.setOption({grid: gridOption});
     updateControlMenu();
 }

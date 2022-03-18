@@ -227,19 +227,31 @@
                     <div id="genefeatures" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             {% if gene_feature == true %}
-                            <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
-                                <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                            <div class="row mb-3">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label class="col-sm-5">Feature Name</label>
+                                <div class="col-sm-7">
+                                    <select id="selected-gene-feature-name" class="selected-gene-feature-name">
+                                        {% for feature_name in gene_feature_name %}
+                                            <option value={{sample}}>{{feature_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                             {% endif %}
-                            <div>
-                                <label class="form-label">Height</label>
+                            <div class="row">
+                                <label class="form-label">Feature Plot Height</label>
                                 <div class="row">
-                                    <div class="col-md-10">
+                                    <div class="col-sm-10">
                                         <input type="range" id="genefeature-height-input" class="form-range" value="15.0" min="1.0"
                                        max="50.0" step="0.1" onchange="updateGeneFeatureHeight(this.value);">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-sm-2">
                                         <output style="display: block; text-align:center;" type="text"
                                         id="genefeature-height-output">15.0<span>%</span></output>
                                     </div>

@@ -57,7 +57,15 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
         logger.error('If you want to plot gene features, please provide genbank file for gene features, '
                      'option --genbank /path/to/genbank.gb OR provide NCBI Accession ID with option --ncbi-accession-id')
         exit(1)
-    gene_feature_data = get_gene_feature(gene_feature, gene_misc_feature, genbank, ncbi_accession_id, amplicon_regions_data)
+    gene_feature_data = get_gene_feature(gene_feature, gene_misc_feature, genbank, ncbi_accession_id,
+                                         amplicon_regions_data)
+
+    # Get gene feature name, this is used for larger viral genome, use select2 to allow quick nanigation to feature
+    # of interest
+    gene_feature_name = ['Whole Genome']
+    if len(gene_feature_data):
+        for feature in gene_feature_data:
+            gene_feature_name.append(feature["name"])
 
     # Get coverage statistics information for all samples
     mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=10)
@@ -66,9 +74,10 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
     samples_variants_info = variants.get_info(input_dir)
 
     # Get Variant matrix using for Variant Heatmap
-    df_variants = variants.to_dataframe(samples_variants_info.values())
+    #df_variants = variants.to_dataframe(samples_variants_info.values())
     mutation = []
     variant_matrix_data = []
+    '''
     if 'Mutation' in df_variants.columns:
         df_varmap = variants.to_variant_pivot_table(df_variants)
         for i, sample in enumerate(samples_name):
@@ -78,6 +87,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
                 else:
                     variant_matrix_data.append([j, i, 0.0])
         mutation = df_varmap.columns.tolist()
+    '''
     # Get Variant data
     variants_data = {}
     for sample, df_variants in samples_variants_info.items():
@@ -105,6 +115,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
                              ref_seq=ref_seq,
                              coverage_stat=sample_stat_info,
                              gene_feature_data=gene_feature_data,
+                             gene_feature_name=gene_feature_name,
                              gene_feature=gene_feature,
                              amplicon_data=amplicon_depths_data,
                              variant_matrix=variant_matrix_data,
@@ -247,13 +258,14 @@ def write_html_coverage_plot(samples_name: List[str],
                              ref_seq: str,
                              coverage_stat: str,
                              gene_feature_data: List[Dict[str, Any]],
+                             gene_feature_name: List[str],
                              about_html: str,
                              output_html: Path,
                              amplicon_data: Dict[str, List],
                              variant_matrix: List[List],
                              mutation: List[str],
                              amplicon: bool = False,
-                             gene_feature: bool = False
+                             gene_feature: bool = False,
                              ) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -269,6 +281,7 @@ def write_html_coverage_plot(samples_name: List[str],
             logging.info(f'Getting HTML resource "{k}" from "{v}"')
             scripts_css[k] = requests.get(v).text
         fout.write(template_file.render(gene_feature_data=gene_feature_data,
+                                        gene_feature_name=gene_feature_name,
                                         gene_feature=gene_feature,
                                         amplicon_data=amplicon_data,
                                         amplicon=amplicon,
