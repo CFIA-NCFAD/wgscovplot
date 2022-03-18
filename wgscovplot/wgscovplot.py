@@ -71,23 +71,23 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
     mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=10)
     sample_stat_info = stat_info(mosdepth_info)
 
-    samples_variants_info = variants.get_info(input_dir)
-
     # Get Variant matrix using for Variant Heatmap
-    #df_variants = variants.to_dataframe(samples_variants_info.values())
+    #
     mutation = []
     variant_matrix_data = []
-    '''
-    if 'Mutation' in df_variants.columns:
-        df_varmap = variants.to_variant_pivot_table(df_variants)
-        for i, sample in enumerate(samples_name):
-            for j, mutation_name in enumerate(df_varmap.columns):
-                if sample in df_varmap.index:
-                    variant_matrix_data.append([j, i, df_varmap.loc[sample, mutation_name]])
-                else:
-                    variant_matrix_data.append([j, i, 0.0])
-        mutation = df_varmap.columns.tolist()
-    '''
+    samples_variants_info = variants.get_info(input_dir)
+    if samples_variants_info:
+        df_variants = variants.to_dataframe(samples_variants_info.values())
+        if 'Mutation' in df_variants.columns:
+            df_varmap = variants.to_variant_pivot_table(df_variants)
+            for i, sample in enumerate(samples_name):
+                for j, mutation_name in enumerate(df_varmap.columns):
+                    if sample in df_varmap.index:
+                        variant_matrix_data.append([j, i, df_varmap.loc[sample, mutation_name]])
+                    else:
+                        variant_matrix_data.append([j, i, 0.0])
+            mutation = df_varmap.columns.tolist()
+
     # Get Variant data
     variants_data = {}
     for sample, df_variants in samples_variants_info.items():
