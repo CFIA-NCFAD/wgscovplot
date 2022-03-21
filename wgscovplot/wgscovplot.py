@@ -1,5 +1,4 @@
 import logging
-import requests
 import math
 import markdown
 import pandas as pd
@@ -10,7 +9,7 @@ from Bio.SeqFeature import SeqFeature
 from jinja2 import Environment, FileSystemLoader
 from Bio import SeqIO, Entrez
 from itertools import cycle
-from .resources import cdn_resources, gene_feature_properties
+from .resources import gene_feature_properties
 from .colors import color_pallete, AmpliconColour
 from wgscovplot.tools import variants, mosdepth
 
@@ -275,11 +274,6 @@ def write_html_coverage_plot(samples_name: List[str],
     )
     template_file = render_env.get_template("wgscovplot_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
-        logging.info('Retrieving JS and CSS resources for Coverage Plot')
-        scripts_css = {}
-        for k, v in cdn_resources.items():
-            logging.info(f'Getting HTML resource "{k}" from "{v}"')
-            scripts_css[k] = requests.get(v).text
         fout.write(template_file.render(gene_feature_data=gene_feature_data,
                                         gene_feature_name=gene_feature_name,
                                         gene_feature=gene_feature,
@@ -294,5 +288,4 @@ def write_html_coverage_plot(samples_name: List[str],
                                         variant_matrix=variant_matrix,
                                         mutation=mutation,
                                         about_html=about_html,
-                                        max_depth=max_depth(depth_data),
-                                        **scripts_css))
+                                        max_depth=max_depth(depth_data)))
