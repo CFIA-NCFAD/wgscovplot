@@ -6,21 +6,9 @@
 
 **wgscovplot** generates interactive comparative sequencing coverage plots in self-contained, offline-friendly HTML files with optional annotation of variant calling results, PCR amplicon coverage and genetic features.
 
-<<<<<<< HEAD
-## Dependencies
-
-### Software Version
-
-- The current version is ```0.1.1```
-
-### Supported Viral Genomes
-
-- SARS-CoV-2, African Swine Fever Virus (ASFV)
-=======
 - [Live example output](https://nhhaidee.github.io)
 
 ![](https://raw.githubusercontent.com/nhhaidee/nhhaidee.github.io/master/wgscovplot.png)
->>>>>>> master
 
 ## Installation
 
