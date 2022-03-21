@@ -15,7 +15,7 @@ from .colors import color_pallete, AmpliconColour
 from wgscovplot.tools import variants, mosdepth
 
 logger = logging.getLogger(__name__)
-Entrez.email = "nhhaidee@gmail.com"
+Entrez.email = "wgscovplot@github.com"
 
 
 def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, amplicon: bool, gene_feature: bool,
@@ -62,7 +62,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
 
     # Get gene feature name, this is used for larger viral genome, use select2 to allow quick nanigation to feature
     # of interest
-    gene_feature_name = ['Whole Genome']
+    gene_feature_name = []
     if len(gene_feature_data):
         for feature in gene_feature_data:
             gene_feature_name.append(feature["name"])

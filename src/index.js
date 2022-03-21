@@ -7,6 +7,7 @@ import {getGrids} from "./echarts/getOption/getGrids";
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
 import * as echarts from 'echarts/core';
 
+
 import {LineChart, BarChart, CustomChart, HeatmapChart} from 'echarts/charts';
 import {TooltipComponent, GridComponent, DataZoomComponent,
       DatasetComponent, ToolboxComponent, VisualMapComponent} from 'echarts/components';

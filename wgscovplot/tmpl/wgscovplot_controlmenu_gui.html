@@ -16,6 +16,7 @@
         </button>
     </div>
 </nav>
+
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane show active" id="chart-pane" role="tabpanel">
         <div class="container-fluid" id="chart"></div>
@@ -226,24 +227,6 @@
                     </h2>
                     <div id="genefeatures" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            {% if gene_feature == true %}
-                            <div class="row mb-3">
-                                <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
-                                    <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label class="col-sm-5">Feature Name</label>
-                                <div class="col-sm-7">
-                                    <select id="selected-gene-feature-name" class="selected-gene-feature-name">
-                                        {% for feature_name in gene_feature_name %}
-                                            <option value={{sample}}>{{feature_name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            {% endif %}
                             <div class="row">
                                 <label class="form-label">Feature Plot Height</label>
                                 <div class="row">
@@ -257,6 +240,32 @@
                                     </div>
                                 </div>
                             </div>
+                            {% if gene_feature == true %}
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-5">Feature Name</label>
+                                <div class="col-sm-7">
+                                    <select id="selected-gene-feature-name" class="selected-gene-feature-name" multiple="multiple">
+                                        {% for feature_name in gene_feature_name %}
+                                            <option value={{sample}}>{{feature_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="d-grid gap-2 col-4 mx-auto">
+                                    <button class="btn btn-outline-primary" onclick="applyFeatureView()">Apply </button>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

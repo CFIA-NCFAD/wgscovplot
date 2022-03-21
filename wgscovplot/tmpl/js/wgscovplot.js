@@ -196,7 +196,6 @@ function initWgscovplotEvent(){
         $("#selected-gene-feature-name").select2({
             tags: true,
             width: '100%',
-            minimumResultsForSearch: Infinity
         });
 
 
@@ -209,20 +208,7 @@ function initWgscovplotEvent(){
         });
 
         $("#selected-gene-feature-name").on("change", function () {
-            var featureName = $("#selected-gene-feature-name").select2('data');
-            var startZoom, endZoom;
-            for (var i = 0; i < geneFeatureAmpliconData.length; i++){
-                if (geneFeatureAmpliconData[i].name === featureName[0].text){
-                    startZoom = geneFeatureAmpliconData[i].value.start;
-                    endZoom = geneFeatureAmpliconData[i].value.end;
-                    break;
-                }
-            }
-            if (featureName[0].text === 'Whole Genome'){
-                startZoom = 1;
-                endZoom = refSeqLength;
-            }
-            setDataZoom(startZoom, endZoom);
+            $("#selected-gene-feature-name").select2('data');
         });
 
         /**
@@ -502,6 +488,31 @@ function updateVarMapHeight(val) {
     var gridOption = variantHeatmap.getOption().grid;
     gridOption[0]["height"] = val + "%";
     variantHeatmap.setOption({grid: gridOption});
+}
+
+/**
+ * Apply View for selected gene feature
+ */
+const applyFeatureView = async () => {
+    var featureName = $("#selected-gene-feature-name").select2('data');
+    var start = [], end = [];
+    var minStart, maxEnd;
+    featureName.forEach(x => {
+        for (var i = 0; i < geneFeatureAmpliconData.length; i++){
+            if (x.text == geneFeatureAmpliconData[i].name){
+                start.push(geneFeatureAmpliconData[i].value.start);
+                end.push(geneFeatureAmpliconData[i].value.end);
+                break;
+            }
+        }
+    })
+    minStart = Math.min(...start)
+    maxEnd = Math.max(...end)
+    if (featureName.length === 0){
+        minStart = 1;
+        maxEnd = refSeqLength;
+    }
+    await setDataZoom(minStart, maxEnd)
 }
 
 /**
