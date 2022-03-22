@@ -8,9 +8,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install modules
-    - run: |
+    -  run: |
         yarn
         yarn add --dev jest
         yarn add --dev lodash
-        yarn test:ci
-
+    - name: Run Jest
+      uses: stefanoeb/jest-action@1.0.3
+      with:
+        jestArgs: --env=jsdom tests/wgscovplot.test.js
