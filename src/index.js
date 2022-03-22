@@ -27,4 +27,4 @@ echarts.use(
 );
 
 export {getCoverageChartOption, getVariantHeatmapOption, median, meanCoverage, medianCoverage, genomeCoverage,
-      getGeneFeatureRenderer, getTooltips, getGrids, popper, select2, echarts};
+      getGeneFeatureRenderer, getTooltips, getGrids, echarts};

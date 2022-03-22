@@ -658,6 +658,7 @@ function resetGridDisplay(){
     var chartOption = chart.getOption();
     var currentSamples = getCurrentSamples(chartOption);
     var doubleStrand = false;
+    console.log(chart.getOption().series[6].renderItem)
     for (var i = 0; i < geneFeatureAmpliconData.length; i++){
         if (geneFeatureAmpliconData[i].value.strand === -1){
             doubleStrand = true;
