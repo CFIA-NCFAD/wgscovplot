@@ -13,6 +13,6 @@ jobs:
         yarn add --dev jest
         yarn add --dev lodash
     - name: Run Jest
-      uses: stefanoeb/jest-action@1.0.3
+      uses: stefanoeb/jest-action@1.0.3 --env=jsdom
       with:
         jestArgs: tests/wgscovplot.test.js
