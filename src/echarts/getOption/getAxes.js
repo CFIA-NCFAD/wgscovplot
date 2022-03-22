@@ -6,9 +6,10 @@ import {geneFeaturePlotProperties} from "../../util";
  * @param {number} xAxisMax - Max value is set for x Axis
  * @param {boolean} geneFeature - whether to plot gene feature or not (true for false)
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
+ * @param {boolean} isShowXAxisLabel - whether to show X Axis
  * @returns {Array<Object>}
  */
-function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
+function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
     var axes = [];
     for (var [i, sample] of samples.entries()) {
         axes.push({
@@ -17,6 +18,7 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon) {
             min: 1,
             max: xAxisMax,
             axisLabel: {
+                show:isShowXAxisLabel,
                 interval: "auto",
             }
         });

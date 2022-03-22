@@ -44,7 +44,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
         points = shapePoints(x, y, width, height, feature.value.strand, feature.value.type);
         var invisible = false;
         if (feature.value.type === 'gene_feature') {
-            rotateAngle = (feature.value.strand === 1) ? 0.7 : -0.7;
+            rotateAngle = (feature.value.strand === 1) ? 0.5 : -0.5;
             if (isShowGeneLabel){
                 // Element width is too small and hide label at the edges
                 if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord){

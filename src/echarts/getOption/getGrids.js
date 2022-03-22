@@ -5,9 +5,10 @@ import {geneFeaturePlotProperties} from "../../util";
  * @param {Array<string>} samples - An array of samples name
  * @param {boolean} geneFeature - whether to plot gene feature or not
  * @param {boolean} amplicon - whether to plot amplicon feature or not
+ * @param {boolean} doubleStrand - whether to plot amplicon feature or not
  * @returns {Array<Object>}
  */
-function getGrids(samples, geneFeature, amplicon) {
+function getGrids(samples, geneFeature, amplicon, doubleStrand) {
     var padTop = 4.0; // Percentage
     var heightOffset = 6.0;
     var featureHeight;
@@ -19,6 +20,7 @@ function getGrids(samples, geneFeature, amplicon) {
     } else{
         featureHeight = -5.0; // make subplot full
     }
+    featureHeight = (doubleStrand && featureHeight > 0) ? (featureHeight + 6.0) : featureHeight;
     subPlotHeight = 90.0 - featureHeight;
     var grids = [];
     var sampleHeight = (subPlotHeight - padTop) / samples.length - heightOffset;

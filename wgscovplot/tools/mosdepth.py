@@ -13,9 +13,12 @@ logger = logging.getLogger(__name__)
 
 SAMPLE_NAME_CLEANUP = [
     '.genome.per-base.bed.gz',
+    '.amplicon.per-base.bed.gz',
     '.per-base.bed.gz',
     '.genome.regions.bed.gz',
+    '.amplicon.regions.bed.gz',
     '.regions.bed.gz',
+    '-depths.tsv',
     '.trim',
     '.mkD',
 
@@ -24,6 +27,7 @@ SAMPLE_NAME_CLEANUP = [
 PER_BASE_PATTERNS = [
     '**/mosdepth/**/*.genome.per-base.bed.gz',
     '**/mosdepth/**/*.per-base.bed.gz',
+    '**/mosdepth/**/*-depths.tsv',
 ]
 
 REGIONS_PATTERNS = [
@@ -46,6 +50,14 @@ class MosdepthDepthInfo(BaseModel):
 
 
 def read_mosdepth_bed(p: Path) -> pd.DataFrame:
+    if '.tsv' in Path(p).suffixes:
+        df_temp = pd.read_table(p, header=None, names=['sample_name', 'reference', 'pos', 'depth'])
+        coverted_df = pd.DataFrame(columns=['genome', 'start_idx', 'end_idx', 'depth'])
+        coverted_df['genome'] = df_temp['reference']
+        coverted_df['start_idx'] = df_temp['pos'] - 1
+        coverted_df['end_idx'] = df_temp['pos']
+        coverted_df['depth'] = df_temp['depth']
+        return coverted_df
     return pd.read_table(p, header=None, names=['genome', 'start_idx', 'end_idx', 'depth'])
 
 
@@ -104,7 +116,6 @@ def get_depth(basedir: Path) -> Dict[str, List]:
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
     for sample, bed_path in sample_beds.items():
-        logger.info(f'Sample "{sample}" has depth file "{bed_path}"')
         df = read_mosdepth_bed(bed_path)
         arr = depth_array(df)
         arr[arr == 0] = 1E-20

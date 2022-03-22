@@ -16,6 +16,7 @@
         </button>
     </div>
 </nav>
+
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane show active" id="chart-pane" role="tabpanel">
         <div class="container-fluid" id="chart"></div>
@@ -52,10 +53,10 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#axis" aria-expanded="false" aria-controls="axis">Y-axis
+                                data-bs-target="#yaxis" aria-expanded="false" aria-controls="yaxis">Y-axis
                         </button>
                     </h2>
-                    <div id="axis" class="accordion-collapse collapse">
+                    <div id="yaxis" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="mb-3 row">
                                 <label for="scale" class="col-sm-4 col-form-label">Scaling</label>
@@ -76,6 +77,23 @@
                                             Set
                                         </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#xaxis" aria-expanded="false" aria-controls="xaxis">X-axis
+                        </button>
+                    </h2>
+                    <div id="xaxis" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="mb-3 row">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-xaxis-label">Show X-axis Label</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-xaxis-label" checked>
                                 </div>
                             </div>
                         </div>
@@ -209,25 +227,45 @@
                     </h2>
                     <div id="genefeatures" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            {% if gene_feature == true %}
-                            <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
-                                <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
-                            </div>
-                            {% endif %}
-                            <div>
-                                <label class="form-label">Height</label>
+                            <div class="row">
+                                <label class="form-label">Feature Plot Height</label>
                                 <div class="row">
-                                    <div class="col-md-10">
+                                    <div class="col-sm-10">
                                         <input type="range" id="genefeature-height-input" class="form-range" value="15.0" min="1.0"
                                        max="50.0" step="0.1" onchange="updateGeneFeatureHeight(this.value);">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-sm-2">
                                         <output style="display: block; text-align:center;" type="text"
                                         id="genefeature-height-output">15.0<span>%</span></output>
                                     </div>
                                 </div>
                             </div>
+                            {% if gene_feature == true %}
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-5">Feature Name</label>
+                                <div class="col-sm-7">
+                                    <select id="selected-gene-feature-name" class="selected-gene-feature-name" multiple="multiple">
+                                        {% for feature_name in gene_feature_name %}
+                                            <option value={{sample}}>{{feature_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="d-grid gap-2 col-4 mx-auto">
+                                    <button class="btn btn-outline-primary" onclick="applyFeatureView()">Apply</button>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -360,14 +398,22 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Heatmap Options
+                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Options
                         </button>
                     </h2>
                     <div id="varmap" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="row mb-3">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-mutation">Show Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation" checked>
+                                </div>
                                 <div>
-                                    <label for="varmap-height-input" class="form-label">Heatmap Height</label>
+                                    <label for="varmap-height-input" class="form-label">Variant Heatmap Height</label>
                                     <div class="row">
                                         <div class="col-md-10">
                                             <input type="range" id="varmap-height-input" class="form-range" value="50" min="5"

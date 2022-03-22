@@ -43,11 +43,17 @@ function updateCoverageChartOption(samples) {
     var isNonVarianSites = document.getElementById("toggle-tooltip-non-variant-sites").checked;
     var isVariantComparison = document.getElementById("toggle-variant-comparison").checked;
     var isCoverageStatView = document.getElementById("toggle-coverage-stat").checked;
+    var isShowMutation = document.getElementById("toggle-mutation").checked;
+    var isShowXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
+    var isHideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
         isNonVariantSites=isNonVarianSites, isInfoComparison=isVariantComparison,
-        isCovergateStatView=isCoverageStatView);
+        isCovergateStatView=isCoverageStatView,
+        isShowMutation=isShowMutation,
+        isShowXAxisLabel=isShowXAxisLabel,
+        isHideOverlapMutation=isHideOverlapMutation);
 
     // Reserve tooltip in series option
     var seriesOption = updateOption.series;
@@ -187,6 +193,12 @@ function initWgscovplotEvent(){
             $(this).trigger("change");
         });
 
+        $("#selected-gene-feature-name").select2({
+            tags: true,
+            width: '100%',
+        });
+
+
         /**
          * Update chart options when adding/romoving samples
          * The chart options such as y Axis scale, yMax, DataZoom are reserved (users's settings are respected)
@@ -195,14 +207,59 @@ function initWgscovplotEvent(){
             updateCoverageChartOption(getCurrentSamples(chart.getOption()));
         });
 
+        $("#selected-gene-feature-name").on("change", function () {
+            $("#selected-gene-feature-name").select2('data');
+        });
+
         /**
          * Toggle to show gene label or not
          */
         $("#toggle-genelabel").change(function () {
             var seriesOption = chart.getOption().series;
-            showGeneLabel = $(this).prop("checked");
+            var  showGeneLabel = $(this).prop("checked");
             seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData); // Re-update Gene Feature Chart Only
             chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to show Mutation below Variant Sites
+         */
+        $("#toggle-mutation").change(function () {
+            var seriesOption = chart.getOption().series;
+            var showMutation = $(this).prop("checked");
+            seriesOption.forEach(series => {
+                if (series.type === "bar") {
+                    series.label.show = showMutation;
+                }
+            })
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to hide overlapping mutation under Variant Sites
+         */
+        $("#toggle-hideoverlap-mutation").change(function () {
+            var seriesOption = chart.getOption().series;
+            var isHideOverlap = $(this).prop("checked");
+            seriesOption.forEach(series => {
+                if (series.type === "bar") {
+                    series.labelLayout.hideOverlap = isHideOverlap;
+                }
+            })
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to show X Axis
+         */
+        $("#toggle-xaxis-label").change(function () {
+            var xAxisOption = chart.getOption().xAxis;
+            var showAxisLabel = $(this).prop("checked");
+            var gridLength = (amplicon || geneFeature) ? gridLength = xAxisOption.length - 1 : gridLength = xAxisOption.length;
+            for (var i = 0; i < gridLength; i++){
+                xAxisOption[i].axisLabel.show= showAxisLabel;
+            }
+            chart.setOption({xAxis: [...xAxisOption]});
         });
 
         /**
@@ -434,6 +491,31 @@ function updateVarMapHeight(val) {
 }
 
 /**
+ * Apply View for selected gene feature
+ */
+const applyFeatureView = async () => {
+    var featureName = $("#selected-gene-feature-name").select2('data');
+    var start = [], end = [];
+    var minStart, maxEnd;
+    featureName.forEach(x => {
+        for (var i = 0; i < geneFeatureAmpliconData.length; i++){
+            if (x.text == geneFeatureAmpliconData[i].name){
+                start.push(geneFeatureAmpliconData[i].value.start);
+                end.push(geneFeatureAmpliconData[i].value.end);
+                break;
+            }
+        }
+    })
+    minStart = Math.min(...start)
+    maxEnd = Math.max(...end)
+    if (featureName.length === 0){
+        minStart = 1;
+        maxEnd = refSeqLength;
+    }
+    await setDataZoom(minStart, maxEnd)
+}
+
+/**
  * Adjust subplot height
  * @param {number} val - Subplots height percent value
  */
@@ -575,7 +657,15 @@ function setDataZoom(zoomStart, zoomEnd){
 function resetGridDisplay(){
     var chartOption = chart.getOption();
     var currentSamples = getCurrentSamples(chartOption);
-    var gridOption = wgscovplot.getGrids(currentSamples, geneFeature, amplicon);
+    var doubleStrand = false;
+    console.log(chart.getOption().series[6].renderItem)
+    for (var i = 0; i < geneFeatureAmpliconData.length; i++){
+        if (geneFeatureAmpliconData[i].value.strand === -1){
+            doubleStrand = true;
+            break;
+        }
+    }
+    var gridOption = wgscovplot.getGrids(currentSamples, geneFeature, amplicon, doubleStrand);
     chart.setOption({grid: gridOption});
     updateControlMenu();
 }

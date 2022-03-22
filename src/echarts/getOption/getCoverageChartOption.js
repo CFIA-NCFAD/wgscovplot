@@ -23,6 +23,9 @@ import {getTooltips} from "./getTooltips";
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
  * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
  * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
+ * @param {boolean} isShowMutation - whether to show Muation below Variant Sites
+ * @param {boolean} isShowXAxisLabel - whether to show X Axis
+ * @param {boolean} isHideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Object} - The options for coverage chart
  *
  * The format of data
@@ -54,18 +57,26 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 geneFeature=false, amplicon=false,
                                 triggerOnType="mousemove", isVariantSites=true,
                                 isNonVariantSites=false, isInfoComparison=true,
-                                isCovergateStatView=false) {
+                                isCovergateStatView=false,
+                                isShowMutation=false,
+                                isShowXAxisLabel=true,
+                                isHideOverlapMutation=true) {
     var positions = [...Array(refSeq.length + 1).keys()];
+    var doubleStrand = false;
+    Object.values(geneFeatureAmpliconData).forEach(x => {
+        if (x.value.strand === -1)
+            doubleStrand = true
+    })
     positions.shift();
     var chartOptions = {
         title: {},
         dataset: getDatasets(depths, positions),
-        xAxis: getXAxes(samples, positions.length, geneFeature, amplicon),
+        xAxis: getXAxes(samples, positions.length, geneFeature, amplicon, isShowXAxisLabel),
         yAxis: getYAxes(samples, "log", yAxisMax, geneFeature, amplicon),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
             ...getDepthSeries(samples, isNonVariantSites),
-            ...getVariantsSeries(variants, depths, refSeq, isVariantSites),
+            ...getVariantsSeries(variants, depths, refSeq, isVariantSites, isShowMutation, isHideOverlapMutation),
             ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
             ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
         ],
@@ -98,7 +109,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                 showDataShadow: false
             },
         ],
-        grid: getGrids(samples, geneFeature, amplicon)
+        grid: getGrids(samples, geneFeature, amplicon, doubleStrand)
     };
     return chartOptions;
 }
