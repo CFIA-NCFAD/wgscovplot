@@ -12,5 +12,5 @@ jobs:
         yarn
         yarn add --dev jest
         yarn add --dev lodash
-    - run: yarn test:ci
+        yarn test:ci
 
