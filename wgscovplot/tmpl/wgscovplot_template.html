@@ -60,14 +60,14 @@
          * @type {boolean}
          * Get from Python Boolean which is True or False
          */
-        const geneFeature = {{ gene_feature|tojson }}
+        var geneFeature = {{ gene_feature|tojson }}
 
         /**
          * Whether amplicon coverage plot or not
          * @type {boolean}
          * Get from Python Boolean which is True or False
          */
-        const amplicon = {{ amplicon|tojson }}
+        var amplicon = {{ amplicon|tojson }}
 
         const refSeqLength = window.refSeq.length;
 

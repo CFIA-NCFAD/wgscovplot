@@ -21,6 +21,7 @@ requirements = [
     'requests',
     'pydantic',
     'markdown',
+    'tqdm'
 ]
 
 setup_requirements = ['pytest-runner', ]

@@ -19,9 +19,12 @@ Entrez.email = "wgscovplot@github.com"
 
 def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, amplicon: bool, gene_feature: bool,
         gene_misc_feature: bool, output_html: Path) -> None:
+    ref_name = mosdepth.get_refseq_name(input_dir)
+    if ref_name != '' and ncbi_accession_id == "" and ref_seq is None:
+        ncbi_accession_id = ref_name
     if ref_seq is None and ncbi_accession_id == "":
         logger.error('Please provide reference sequence --ref-seq /path/to/reference_sequence.fasta '
-                     'OR provide NCBI Accession ID with option --ncbi-accession-id')
+                     'OR provide correct NCBI Accession ID with option --ncbi-accession-id')
         exit(1)
     # Parse reference sequence
     elif ref_seq is not None:
@@ -30,11 +33,12 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, a
                 ref_seq = seq
     else:
         try:
+            logger.info(f'Fetching reference sequence with accession_id "{ncbi_accession_id}" from NCBI database')
             with Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=ncbi_accession_id) as fasta_handle:
                 for name, seq in SeqIO.FastaIO.SimpleFastaParser(fasta_handle):
                     ref_seq = seq
         except:
-            logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id OR '
+            logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by provding option --ncbi-accession-id OR '
                          f'provide option --ref-seq /path/to/reference_sequence.fasta ')
             exit(1)
     # Get the list of samples name
@@ -165,9 +169,10 @@ def get_gene_feature(gene_feature: bool, gene_misc_feature: bool, annotation: Pa
             genbank_handle = annotation
         else:
             try:
+                logger.info(f'Fetching Genbank file with accession_id "{ncbi_accession_id}" from NCBI database')
                 genbank_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ncbi_accession_id)
             except:
-                logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id OR '
+                logger.error(f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by providing option --ncbi-accession-id OR '
                              f'provide option --genbank /path/to/genbank.gb ')
 
                 exit(1)

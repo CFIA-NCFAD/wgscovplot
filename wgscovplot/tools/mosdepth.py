@@ -103,11 +103,16 @@ def depth_array(df: pd.DataFrame) -> np.ndarray:
     return arr
 
 
-def read_regular_depths(fpath: Path) -> pd.DataFrame:
-    df = pd.read_table(fpath,
-                       names=['sample_name', 'reference', 'pos', 'depth'],
-                       header=None)
-    return df
+def get_refseq_name(basedir: Path) -> str:
+    sample_beds = find_file_for_each_sample(basedir,
+                                            glob_patterns=PER_BASE_PATTERNS,
+                                            sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    refseq_name = ''
+    for sample, bed_path in sample_beds.items():
+        df = read_mosdepth_bed(bed_path)
+        refseq_name = df['genome'][0]
+        break
+    return refseq_name
 
 
 def get_depth(basedir: Path) -> Dict[str, List]:
