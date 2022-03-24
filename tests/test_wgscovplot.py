@@ -27,7 +27,8 @@ def test_cli():
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--output-html', out_html,
                                           '--genbank', str(input_genbank.absolute()),
-                                          '--gene-feature'])
+                                          '--gene-feature',
+                                          '--no-amplicon'])
         assert test_result.exit_code == 0
         assert exists(out_html)
 
@@ -36,7 +37,8 @@ def test_cli():
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature'])
+                                          '--gene-feature',
+                                          '--no-amplicon'])
         assert test_result.exit_code == 1
 
     with runner.isolated_filesystem():
