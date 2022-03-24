@@ -37,7 +37,8 @@ def main(
         genbank: Path = typer.Option(None, help="Genbank file contains gene features"),
         ncbi_accession_id: str = typer.Option(default="", help="NCBI accession id to fetch gene features "
                                                                "and/or reference sequences"),
-        amplicon: bool = typer.Option(default=False, help="Plot Amplicon Coverage Depth"),
+        low_coverage_threshold: int = typer.Option(default=10, help="Low Coverage Threshold"),
+        amplicon: bool = typer.Option(default=True, help="Plot Amplicon Coverage Depth"),
         gene_feature: bool = typer.Option(default=True, help="Plot Gene Features"),
         gene_misc_feature: bool = typer.Option(default=False, help="Plot Miscellaneous Features"),
         verbose: bool = typer.Option(default=False, help="Verbose logs"),
@@ -55,7 +56,7 @@ def main(
         level=logging.INFO if not verbose else logging.DEBUG,
         handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
     )
-    run(input_dir, ref_seq, genbank, ncbi_accession_id, amplicon, gene_feature, gene_misc_feature, output_html)
+    run(input_dir, ref_seq, genbank, ncbi_accession_id, low_coverage_threshold, amplicon, gene_feature, gene_misc_feature, output_html)
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ import {graphic} from "echarts/core";
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true or false)
  * @returns {Array<Object>}
  */
-function getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
+function getRegionAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
     var ampliconDepthSeries = [];
     if (amplicon){
         for (var [i, sample] of samples.entries()) {
@@ -62,4 +62,4 @@ function getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
     return ampliconDepthSeries;
 }
 
-export {getAmpliconDepthSeries};
+export {getRegionAmpliconDepthSeries};

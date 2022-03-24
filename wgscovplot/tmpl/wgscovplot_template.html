@@ -32,66 +32,45 @@
          * @type {Object}
          * {sample_name: Array<number>}
          */
-        window.depths = {{ depth_data }};
+        window.depths = {{ depths_data }};
 
         /**
          * Object of variant data
          * @type {Object}
          * {sample_name: Array<Object>}
          */
-        window.variants = {{ variant_data }};
+        window.variants = {{ variants_data }};
         /**
          * Dict of gene or amplicon features
          * @type {Dict[]}
          */
-        const geneFeatureAmpliconData = {{ gene_feature_data }}
+        const geneAmpliconFeatureData = {{ gene_amplicon_feature_data }};
 
         /**
          * Dict of Amplicon Depth Coverage
          * @type {Object}
          */
-        const ampliconDepthBarData = {{ amplicon_data }}
+        const regionAmpliconDepthData = {{ region_amplicon_depth_data }};
 
-        window.variantMatrix = {{ variant_matrix }}
-        window.mutations = {{ mutation }}
+        window.variantMatrix = {{ variant_matrix_data }};
+        window.mutations = {{ mutation }};
 
         /**
          * Whether to plot gene feature or not
          * @type {boolean}
-         * Get from Python Boolean which is True or False
          */
-        var geneFeature = {{ gene_feature|tojson }}
+        const geneFeature = {{ gene_feature|tojson }};
 
         /**
          * Whether amplicon coverage plot or not
          * @type {boolean}
-         * Get from Python Boolean which is True or False
          */
-        var amplicon = {{ amplicon|tojson }}
+
+        var amplicon = {{ amplicon|tojson }};
 
         const refSeqLength = window.refSeq.length;
 
-        /**
-         * A closure lastYAxisScale is used to keep track the scale settings of a last sample on the chart before it was remove
-         * @type {function(): string}
-         */
-        var lastYAxisScale = (function (){
-            var yAxisScale;
-            return function (){
-                return yAxisScale;
-            };
-        })();
-
-        /**
-         * A closure lastYAxisMax is used to keep track the scale settings of a last sample on the chart before it was remove
-         * @type {function(): number}
-         */
-        var lastYAxisMax = (function (){
-            var yAxisMax;
-            return function (){
-                return yAxisMax;
-            };
-        })();
+        const lowCoverageThresholdSet = {{ low_coverage_threshold }}
 
         /**
          * The max value is set for y-Axis

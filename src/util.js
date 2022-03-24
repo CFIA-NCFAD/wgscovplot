@@ -5,7 +5,7 @@ const map = require('lodash/map');
 
 /**
  * Define properties for gene/amplicon feature plot which is in the last index of grid
- * @type {{max_grid_height: number, rec_items_height: number, grid_height: string}}
+ * @type {max_grid_height: number, rec_items_height: number, grid_height: string}
  */
 export const geneFeaturePlotProperties = {
     'max_grid_height': 80,

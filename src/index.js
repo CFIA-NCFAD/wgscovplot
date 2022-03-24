@@ -16,13 +16,13 @@ import * as echarts from 'echarts/core';
 
 import {LineChart, BarChart, CustomChart, HeatmapChart} from 'echarts/charts';
 import {TooltipComponent, GridComponent, DataZoomComponent,
-      DatasetComponent, ToolboxComponent, VisualMapComponent} from 'echarts/components';
+      DatasetComponent, ToolboxComponent, VisualMapComponent, TitleComponent} from 'echarts/components';
 import {SVGRenderer, CanvasRenderer } from 'echarts/renderers';
 
 echarts.use(
   [TooltipComponent, GridComponent,
       LineChart, BarChart, ToolboxComponent,HeatmapChart,
-      DataZoomComponent, CustomChart,VisualMapComponent,
+      DataZoomComponent, CustomChart,VisualMapComponent,TitleComponent,
       DatasetComponent, SVGRenderer, CanvasRenderer]
 );
 

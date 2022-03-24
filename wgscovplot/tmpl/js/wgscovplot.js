@@ -46,7 +46,7 @@ function updateCoverageChartOption(samples) {
     var isShowMutation = document.getElementById("toggle-mutation").checked;
     var isShowXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
     var isHideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
-    var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+    var updateOption = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
         isNonVariantSites=isNonVarianSites, isInfoComparison=isVariantComparison,
@@ -87,8 +87,7 @@ function updateCoverageChartOption(samples) {
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
 
     //set chart option
-    chart.setOption(option = updateOption, notMerge = true);
-
+    chart.setOption(option=updateOption, notMerge=true);
     // Update control menu
     updateControlMenu();
 }
@@ -167,15 +166,12 @@ function initWgscovplotEvent(){
         /**
          * Toggle to Amplicon Depth Label
          */
-        $("#toggle-amplicon-depthlabel").change(function () {
-            var seriesOption = chart.getOption().series;
-            var isChecked = $(this).prop("checked");
-            seriesOption.forEach(element => {
-                if (element.type === 'custom') {
-                    element.label.show = isChecked
-                }
-            });
-            chart.setOption({series: [...seriesOption]});
+        $("#toggle-amplicon").change(function () {;
+            amplicon = $(this).prop("checked");
+            var chartOption = chart.getOption();
+            var seriesOption = chartOption.series;
+            var samples = getCurrentSamples(chartOption);
+            updateCoverageChartOption(samples);
         });
 
         /**
@@ -216,8 +212,8 @@ function initWgscovplotEvent(){
          */
         $("#toggle-genelabel").change(function () {
             var seriesOption = chart.getOption().series;
-            var  showGeneLabel = $(this).prop("checked");
-            seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData); // Re-update Gene Feature Chart Only
+            var showGeneLabel = $(this).prop("checked");
+            seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneAmpliconFeatureData); // Re-update Gene Feature Chart Only
             chart.setOption({series: [...seriesOption]});
         });
 
@@ -391,7 +387,7 @@ function initWgscovplotRenderEnv() {
     const [plotDepths, plotVariants] = getDepthsVariants(plotSamples, window.depths, window.variants);
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
-        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
         variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(window.samples, window.mutations, window.variantMatrix, window.variants));
     } else {
@@ -407,7 +403,7 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        var chartOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+        var chartOption = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon)
         // Keep grid option
         chartOption.grid = gridOption;
@@ -498,10 +494,10 @@ const applyFeatureView = async () => {
     var start = [], end = [];
     var minStart, maxEnd;
     featureName.forEach(x => {
-        for (var i = 0; i < geneFeatureAmpliconData.length; i++){
-            if (x.text == geneFeatureAmpliconData[i].name){
-                start.push(geneFeatureAmpliconData[i].value.start);
-                end.push(geneFeatureAmpliconData[i].value.end);
+        for (var i = 0; i < geneAmpliconFeatureData.length; i++){
+            if (x.text == geneAmpliconFeatureData[i].name){
+                start.push(geneAmpliconFeatureData[i].value.start);
+                end.push(geneAmpliconFeatureData[i].value.end);
                 break;
             }
         }
@@ -658,9 +654,8 @@ function resetGridDisplay(){
     var chartOption = chart.getOption();
     var currentSamples = getCurrentSamples(chartOption);
     var doubleStrand = false;
-    console.log(chart.getOption().series[6].renderItem)
-    for (var i = 0; i < geneFeatureAmpliconData.length; i++){
-        if (geneFeatureAmpliconData[i].value.strand === -1){
+    for (var i = 0; i < geneAmpliconFeatureData.length; i++){
+        if (geneAmpliconFeatureData[i].value.strand === -1){
             doubleStrand = true;
             break;
         }

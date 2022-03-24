@@ -8,8 +8,8 @@
     "test": "tests"
   },
   "scripts": {
-    "start:js": "webpack --config webpack.dev.js",
-    "build:js": "webpack --config webpack.prod.js",
+    "dev:js": "webpack --config webpack.dev.js",
+    "prod:js": "webpack --config webpack.prod.js",
     "test": "jest --env=jsdom",
     "test:ci": "jest --env=jsdom"
   },

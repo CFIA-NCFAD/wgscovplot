@@ -31,7 +31,7 @@ PER_BASE_PATTERNS = [
 ]
 
 REGIONS_PATTERNS = [
-    '**/mosdepth/**/*.genome.regions.bed.gz',
+    '**/mosdepth/**/*.amplicon.regions.bed.gz',
     '**/mosdepth/**/*.regions.bed.gz'
 ]
 
@@ -144,7 +144,6 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
     for sample, bed_path in sample_beds.items():
-        logger.info(f'Sample "{sample}" has region depth file "{bed_path}"')
         df = read_mosdepth_region_bed(bed_path)
         out[sample] = []
         for row in df.itertuples():
