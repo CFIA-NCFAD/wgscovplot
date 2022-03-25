@@ -70,11 +70,12 @@ Options:
   --genbank PATH                  Genbank file contains gene features
   --ncbi-accession-id TEXT        NCBI accession id to fetch gene features
                                   and/or reference sequences
-  --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default: no-
+  --low-coverage-threshold INTEGER
+                                  Low Coverage Threshold  [default: 10]
+  --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default:
                                   amplicon]
   --gene-feature / --no-gene-feature
-                                  Plot Gene Features  [default: no-gene-
-                                  feature]
+                                  Plot Gene Features  [default: gene-feature]
   --gene-misc-feature / --no-gene-misc-feature
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]
