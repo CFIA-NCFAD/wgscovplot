@@ -245,6 +245,7 @@ function initWgscovplotEvent(){
                 element.right = $("#chart-right-input").val() + "%";;
             })
             chart.setOption({series: [...seriesOption], grid: [...gridOption]});
+            updateControlMenu();
         });
 
         /**
