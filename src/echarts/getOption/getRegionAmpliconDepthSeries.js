@@ -1,6 +1,43 @@
 import {graphic} from "echarts/core";
 
 /**
+ * Renders the amplicon features shape
+ * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
+ * @returns The shape of gene feature and/or amplicon feature
+ */
+function getRegionAmpliconDepthRenderer (amplicon){
+    /**
+     *
+     * @param params - Echarts params
+     * @param api - Echarts api
+     */
+    function renderRegionAmpliconDepth(params, api){
+        var start = api.coord([api.value(0), api.value(2)]);
+        var end = api.coord([api.value(1), 1]);
+        var rectShape = graphic.clipRectByRect(
+            {
+                x: start[0],
+                y: start[1],
+                width: end[0] - start[0],
+                height: end[1] - start[1]
+            },
+            {
+                x: params.coordSys.x,
+                y: params.coordSys.y,
+                width: params.coordSys.width,
+                height: params.coordSys.height
+            }
+        );
+        return rectShape && {
+            type: "rect",
+            shape: rectShape,
+            style: api.style({}),
+            invisible: !amplicon
+        };
+    }
+    return renderRegionAmpliconDepth;
+}
+/**
  * Define options for amplicon depth coverage bars
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Object>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
@@ -15,29 +52,7 @@ function getRegionAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
                 type: "custom",
                 xAxisIndex: i,
                 yAxisIndex: i,
-                renderItem: function (params, api) {
-                    var start = api.coord([api.value(0), api.value(2)]);
-                    var end = api.coord([api.value(1), 1]);
-                    var rectShape = graphic.clipRectByRect(
-                        {
-                            x: start[0],
-                            y: start[1],
-                            width: end[0] - start[0],
-                            height: end[1] - start[1]
-                        },
-                        {
-                            x: params.coordSys.x,
-                            y: params.coordSys.y,
-                            width: params.coordSys.width,
-                            height: params.coordSys.height
-                        }
-                    );
-                    return rectShape && {
-                        type: "rect",
-                        shape: rectShape,
-                        style: api.style({})
-                    };
-                },
+                renderItem: getRegionAmpliconDepthRenderer(amplicon),
                 label: {
                     show: false,
                     position: "top",
@@ -62,4 +77,4 @@ function getRegionAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
     return ampliconDepthSeries;
 }
 
-export {getRegionAmpliconDepthSeries};
+export {getRegionAmpliconDepthSeries, getRegionAmpliconDepthRenderer};

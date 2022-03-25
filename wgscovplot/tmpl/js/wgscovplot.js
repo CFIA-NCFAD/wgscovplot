@@ -68,12 +68,6 @@ function updateCoverageChartOption(samples) {
     var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
     updateOption.tooltip[0]["position"] = tooltipPosition(isFixTooltipPostion);
 
-    // Reserve grid option
-    updateOption.grid.forEach(element => {
-        element.left = $("#chart-left-input").val() + "%";;
-        element.right = $("#chart-right-input").val() + "%";;
-    })
-
     // Reserve datzoom
     var oldDataZoom = chartOption.dataZoom;
     updateOption.dataZoom = oldDataZoom;
@@ -85,6 +79,29 @@ function updateCoverageChartOption(samples) {
     scaleType = $("#scale").val();
     yAxisMax = $("#ymax").val();
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
+
+    //Toggle amplicon
+    if (amplicon){
+        var isShowAmplicon = document.getElementById("toggle-amplicon").checked;
+        for (var i = 0; i < seriesOption.length - 1; i++){
+            if (seriesOption[i].type === "custom"){
+                seriesOption[i].renderItem = wgscovplot.getRegionAmpliconDepthRenderer(isShowAmplicon);
+            }
+        }
+        updateOption.grid = updateGrid(geneFeature, isShowAmplicon)
+    }
+
+    if (geneFeature){
+        var isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
+        seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(document.getElementById("toggle-genelabel").checked,
+            geneAmpliconFeatureData, isShowAmplicon);
+    }
+
+        // Reserve grid option
+    updateOption.grid.forEach(element => {
+        element.left = $("#chart-left-input").val() + "%";;
+        element.right = $("#chart-right-input").val() + "%";;
+    })
 
     //set chart option
     chart.setOption(option=updateOption, notMerge=true);
@@ -164,17 +181,6 @@ function initWgscovplotEvent(){
         });
 
         /**
-         * Toggle to Amplicon Depth Label
-         */
-        $("#toggle-amplicon").change(function () {;
-            amplicon = $(this).prop("checked");
-            var chartOption = chart.getOption();
-            var seriesOption = chartOption.series;
-            var samples = getCurrentSamples(chartOption);
-            updateCoverageChartOption(samples);
-        });
-
-        /**
          * Jquery actions to make the list of samples is not forced in alphabetical order
          */
         $("#selectedsamples").select2({
@@ -213,8 +219,32 @@ function initWgscovplotEvent(){
         $("#toggle-genelabel").change(function () {
             var seriesOption = chart.getOption().series;
             var showGeneLabel = $(this).prop("checked");
-            seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneAmpliconFeatureData); // Re-update Gene Feature Chart Only
+            var isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
+            seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneAmpliconFeatureData, isShowAmplicon);
             chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to Amplicon Depth Plot
+         */
+        $("#toggle-amplicon").change(function () {;
+            var isChecked = $(this).prop("checked");
+            var seriesOption = chart.getOption().series;
+            for (var i = 0; i <seriesOption.length - 1; i++){
+                if (seriesOption[i].type === "custom"){
+                    seriesOption[i].renderItem = wgscovplot.getRegionAmpliconDepthRenderer(isChecked);
+                }
+            }
+            if (geneFeature){
+                var isShowGeneLabel = document.getElementById("toggle-genelabel").checked;
+                seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(isShowGeneLabel, geneAmpliconFeatureData, isChecked);
+            }
+            var gridOption = updateGrid(geneFeature, isChecked);
+            gridOption.forEach(element => {
+                element.left = $("#chart-left-input").val() + "%";;
+                element.right = $("#chart-right-input").val() + "%";;
+            })
+            chart.setOption({series: [...seriesOption], grid: [...gridOption]});
         });
 
         /**
@@ -648,9 +678,12 @@ function setDataZoom(zoomStart, zoomEnd){
 }
 
 /**
- * Reset Grid Dislay to optimal configuration
+ * Update grid configuration for chart
+ * @param geneFeature
+ * @param amplicon
+ * @returns {Array<Object>} grid configuration for the charts
  */
-function resetGridDisplay(){
+function updateGrid(geneFeature, amplicon){
     var chartOption = chart.getOption();
     var currentSamples = getCurrentSamples(chartOption);
     var doubleStrand = false;
@@ -661,6 +694,15 @@ function resetGridDisplay(){
         }
     }
     var gridOption = wgscovplot.getGrids(currentSamples, geneFeature, amplicon, doubleStrand);
+    return gridOption;
+}
+
+/**
+ * Reset Grid Dislay to optimal configuration
+ */
+function resetGridDisplay(){
+    var isShowAmplicon = document.getElementById("toggle-amplicon").checked
+    var gridOption = updateGrid(geneFeature, isShowAmplicon)
     chart.setOption({grid: gridOption});
     updateControlMenu();
 }

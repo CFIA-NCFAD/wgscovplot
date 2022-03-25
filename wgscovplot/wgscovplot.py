@@ -46,6 +46,8 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         if not (region_amplicon_depth_data and region_amplicon_data):
             logging.warning('No amplicon data found')
             amplicon = False
+            region_amplicon_depth_data = {}
+            region_amplicon_data = {}
     else:
         region_amplicon_depth_data = {}
         region_amplicon_data = {}

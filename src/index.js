@@ -2,6 +2,7 @@ import {median, meanCoverage, medianCoverage, genomeCoverage} from "./coverageSt
 import {getCoverageChartOption} from "./echarts/getOption/getCoverageChartOption";
 import {getVariantHeatmapOption} from "./echarts/getOption/getVariantHeatmapOption";
 import {getGeneFeatureRenderer} from "./echarts/geneFeatures/getGeneFeatureRenderer";
+import {getRegionAmpliconDepthRenderer} from "./echarts/getOption/getRegionAmpliconDepthSeries";
 import {getTooltips} from "./echarts/getOption/getTooltips";
 import {getGrids} from "./echarts/getOption/getGrids";
 import "bootstrap/dist/css/bootstrap.css";
@@ -27,4 +28,4 @@ echarts.use(
 );
 
 export {getCoverageChartOption, getVariantHeatmapOption, median, meanCoverage, medianCoverage, genomeCoverage,
-      getGeneFeatureRenderer, getTooltips, getGrids, echarts};
+      getGeneFeatureRenderer, getRegionAmpliconDepthRenderer, getTooltips, getGrids, echarts};

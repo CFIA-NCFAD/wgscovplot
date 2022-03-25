@@ -16,7 +16,7 @@ function getGeneFeatureSeries(geneAmpliconFeatureData, index, geneFeature, ampli
             type: "custom",
             xAxisIndex: index,
             yAxisIndex: index,
-            renderItem: getGeneFeatureRenderer(true, geneAmpliconFeatureData),
+            renderItem: getGeneFeatureRenderer(true, geneAmpliconFeatureData, amplicon),
             labelLayout: {
                 hideOverlap: false,
             },
