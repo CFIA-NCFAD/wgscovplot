@@ -1,7 +1,7 @@
 import {defaultTo} from "lodash/util";
 import {genomeCoverage, meanCoverage, medianCoverage} from "./coverageStat";
-const join = require('lodash/join');
-const map = require('lodash/map');
+import {find, map} from "lodash/collection";
+import {join} from "lodash/array";
 
 /**
  * Define properties for gene/amplicon feature plot which is in the last index of grid
@@ -64,12 +64,19 @@ function getVariantComparison(samples, variants, depths, position, currentSample
     for (var [i, element] of variants.entries()) {
         if (element.length){
             var isPOSExist = false;
+            var foundObj = find(Object.values(element), {"POS": position});
+            if (foundObj !== undefined && foundObj !== null){
+                isPOSExist = true;
+                variantArr.push(foundObj);
+            }
+            /*
             Object.values(element). forEach(values => {
                 if (values['POS'] === position){
                     isPOSExist = true;
                     variantArr.push(values);
                 }
             });
+             */
             if (!isPOSExist){
                 variantArr.push({"sample": samples[i], "POS":position}); // sample has variant infor but no variant infor at this position
             }

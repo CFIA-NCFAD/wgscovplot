@@ -83,6 +83,7 @@ Options:
   --gene-misc-feature / --no-gene-misc-feature
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]
+  --dev / --no-dev                Run tool with debug mode  [default: no-dev]
   --verbose / --no-verbose        Verbose logs  [default: no-verbose]
   --version / --no-version        Print wgscovplot version and exit
   --install-completion [bash|zsh|fish|powershell|pwsh]
@@ -91,6 +92,7 @@ Options:
                                   Show completion for the specified shell, to
                                   copy it or customize the installation.
   --help                          Show this message and exit.
+
 ```
 
 ## Dependencies

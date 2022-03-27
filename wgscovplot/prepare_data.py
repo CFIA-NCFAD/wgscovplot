@@ -157,11 +157,10 @@ def write_html_coverage_plot(samples_name: List[str],
                              about_html: str,
                              output_html: Path,
                              region_amplicon_depth_data: Dict[str, List],
-                             variant_matrix_data: List[List],
-                             mutation: List[str],
                              amplicon: bool = False,
                              gene_feature: bool = False,
                              low_coverage_threshold: int = 10,
+                             dev: bool = False
                              ) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -169,7 +168,10 @@ def write_html_coverage_plot(samples_name: List[str],
         lstrip_blocks=True,
         loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
     )
-    template_file = render_env.get_template("wgscovplot_template.html")
+    if dev:
+        template_file = render_env.get_template("wgscovplot_dev_template.html")
+    else:
+        template_file = render_env.get_template("wgscovplot_prod_template.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
         fout.write(template_file.render(samples_name=samples_name,
                                         depths_data=depths_data,
@@ -180,8 +182,6 @@ def write_html_coverage_plot(samples_name: List[str],
                                         gene_feature_name=gene_feature_name,
                                         about_html=about_html,
                                         region_amplicon_depth_data=region_amplicon_depth_data,
-                                        variant_matrix_data=variant_matrix_data,
-                                        mutation=mutation,
                                         amplicon=amplicon,
                                         gene_feature=gene_feature,
                                         ref_seq_length=len(ref_seq),

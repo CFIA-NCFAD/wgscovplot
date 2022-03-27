@@ -12,7 +12,7 @@ Entrez.email = "wgscovplot@github.com"
 
 def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, low_coverage_threshold: int,
         amplicon: bool, gene_feature: bool,
-        gene_misc_feature: bool, output_html: Path) -> None:
+        gene_misc_feature: bool, dev: bool, output_html: Path) -> None:
     ref_name = mosdepth.get_refseq_name(input_dir)
     if ref_name != '' and ncbi_accession_id == "" and ref_seq is None:
         ncbi_accession_id = ref_name
@@ -71,24 +71,8 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
     mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
     sample_stat_info = stat_info(mosdepth_info, low_coverage_threshold=low_coverage_threshold)
 
-    # Get Variant matrix using for Variant Heatmap
-    #
-    mutation = []
-    variant_matrix_data = []
-    samples_variants_info = variants.get_info(input_dir)
-    if samples_variants_info:
-        df_variants = variants.to_dataframe(samples_variants_info.values())
-        if 'Mutation' in df_variants.columns:
-            df_varmap = variants.to_variant_pivot_table(df_variants)
-            for i, sample in enumerate(samples_name):
-                for j, mutation_name in enumerate(df_varmap.columns):
-                    if sample in df_varmap.index:
-                        variant_matrix_data.append([j, i, df_varmap.loc[sample, mutation_name]])
-                    else:
-                        variant_matrix_data.append([j, i, 0.0])
-            mutation = df_varmap.columns.tolist()
-
     # Get Variant data
+    samples_variants_info = variants.get_info(input_dir)
     variants_data = {}
     for sample, df_variants in samples_variants_info.items():
         variants_data[sample] = df_variants.to_dict(orient='records')
@@ -118,8 +102,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
                              about_html=about_html,
                              output_html=output_html,
                              region_amplicon_depth_data=region_amplicon_depth_data,
-                             variant_matrix_data=variant_matrix_data,
-                             mutation=mutation,
                              amplicon=amplicon,
                              gene_feature=gene_feature,
-                             low_coverage_threshold=low_coverage_threshold)
+                             low_coverage_threshold=low_coverage_threshold,
+                             dev=dev)

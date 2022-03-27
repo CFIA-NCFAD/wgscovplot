@@ -107,6 +107,7 @@ function updateCoverageChartOption(samples) {
     chart.setOption(option=updateOption, notMerge=true);
     // Update control menu
     updateControlMenu();
+    variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(samples, window.variants));
 }
 
 /**
@@ -402,7 +403,18 @@ function initWgscovplotEvent(){
                         xAxisIndex: isChecked ? [...Array(numChart).keys()] : null,
                     },
                 ],
-            })
+            });
+            variantHeatmap.setOption({
+                dataZoom: [
+            {
+                type: "inside"
+            },
+            {
+                type: "slider",
+                show: isChecked
+            }
+        ]
+            });
         });
     });
 }
@@ -420,7 +432,7 @@ function initWgscovplotRenderEnv() {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
-        variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(window.samples, window.mutations, window.variantMatrix, window.variants));
+        variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(plotSamples, window.variants));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
