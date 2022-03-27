@@ -2,7 +2,8 @@ include CONTRIBUTING.md
 include HISTORY.md
 include LICENSE
 include README.md
-include wgscovplot/tmpl/wgscovplot_template.html
+include wgscovplot/tmpl/wgscovplot_dev_template.html
+include wgscovplot/tmpl/wgscovplot_prod_template.html
 include wgscovplot/tmpl/wgscovplot_controlmenu_gui.html
 include wgscovplot/readme/README.md
 
