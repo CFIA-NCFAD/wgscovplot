@@ -46,7 +46,7 @@ function updateCoverageChartOption(samples) {
     var isShowMutation = document.getElementById("toggle-mutation").checked;
     var isShowXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
     var isHideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
-    var updateOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+    var updateOption = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
         triggerOnType= triggerOnType, isVariantSites=isVariantSites,
         isNonVariantSites=isNonVarianSites, isInfoComparison=isVariantComparison,
@@ -68,12 +68,6 @@ function updateCoverageChartOption(samples) {
     var isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
     updateOption.tooltip[0]["position"] = tooltipPosition(isFixTooltipPostion);
 
-    // Reserve grid option
-    updateOption.grid.forEach(element => {
-        element.left = $("#chart-left-input").val() + "%";;
-        element.right = $("#chart-right-input").val() + "%";;
-    })
-
     // Reserve datzoom
     var oldDataZoom = chartOption.dataZoom;
     updateOption.dataZoom = oldDataZoom;
@@ -86,11 +80,34 @@ function updateCoverageChartOption(samples) {
     yAxisMax = $("#ymax").val();
     updateOption.yAxis = updateYAxisOption(updateOption.yAxis, scaleType, yAxisMax);
 
-    //set chart option
-    chart.setOption(option = updateOption, notMerge = true);
+    //Toggle amplicon
+    if (amplicon){
+        var isShowAmplicon = document.getElementById("toggle-amplicon").checked;
+        for (var i = 0; i < seriesOption.length - 1; i++){
+            if (seriesOption[i].type === "custom"){
+                seriesOption[i].renderItem = wgscovplot.getRegionAmpliconDepthRenderer(isShowAmplicon);
+            }
+        }
+        updateOption.grid = updateGrid(geneFeature, isShowAmplicon)
+    }
 
+    if (geneFeature){
+        var isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
+        seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(document.getElementById("toggle-genelabel").checked,
+            geneAmpliconFeatureData, isShowAmplicon);
+    }
+
+        // Reserve grid option
+    updateOption.grid.forEach(element => {
+        element.left = $("#chart-left-input").val() + "%";;
+        element.right = $("#chart-right-input").val() + "%";;
+    })
+
+    //set chart option
+    chart.setOption(option=updateOption, notMerge=true);
     // Update control menu
     updateControlMenu();
+    variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(samples, window.variants));
 }
 
 /**
@@ -165,20 +182,6 @@ function initWgscovplotEvent(){
         });
 
         /**
-         * Toggle to Amplicon Depth Label
-         */
-        $("#toggle-amplicon-depthlabel").change(function () {
-            var seriesOption = chart.getOption().series;
-            var isChecked = $(this).prop("checked");
-            seriesOption.forEach(element => {
-                if (element.type === 'custom') {
-                    element.label.show = isChecked
-                }
-            });
-            chart.setOption({series: [...seriesOption]});
-        });
-
-        /**
          * Jquery actions to make the list of samples is not forced in alphabetical order
          */
         $("#selectedsamples").select2({
@@ -216,9 +219,34 @@ function initWgscovplotEvent(){
          */
         $("#toggle-genelabel").change(function () {
             var seriesOption = chart.getOption().series;
-            var  showGeneLabel = $(this).prop("checked");
-            seriesOption[seriesOption.length - 1]["renderItem"] = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData); // Re-update Gene Feature Chart Only
+            var showGeneLabel = $(this).prop("checked");
+            var isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
+            seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(showGeneLabel, geneAmpliconFeatureData, isShowAmplicon);
             chart.setOption({series: [...seriesOption]});
+        });
+
+        /**
+         * Toggle to Amplicon Depth Plot
+         */
+        $("#toggle-amplicon").change(function () {;
+            var isChecked = $(this).prop("checked");
+            var seriesOption = chart.getOption().series;
+            for (var i = 0; i <seriesOption.length - 1; i++){
+                if (seriesOption[i].type === "custom"){
+                    seriesOption[i].renderItem = wgscovplot.getRegionAmpliconDepthRenderer(isChecked);
+                }
+            }
+            if (geneFeature){
+                var isShowGeneLabel = document.getElementById("toggle-genelabel").checked;
+                seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(isShowGeneLabel, geneAmpliconFeatureData, isChecked);
+            }
+            var gridOption = updateGrid(geneFeature, isChecked);
+            gridOption.forEach(element => {
+                element.left = $("#chart-left-input").val() + "%";;
+                element.right = $("#chart-right-input").val() + "%";;
+            })
+            chart.setOption({series: [...seriesOption], grid: [...gridOption]});
+            updateControlMenu();
         });
 
         /**
@@ -375,7 +403,18 @@ function initWgscovplotEvent(){
                         xAxisIndex: isChecked ? [...Array(numChart).keys()] : null,
                     },
                 ],
-            })
+            });
+            variantHeatmap.setOption({
+                dataZoom: [
+            {
+                type: "inside"
+            },
+            {
+                type: "slider",
+                show: isChecked
+            }
+        ]
+            });
         });
     });
 }
@@ -391,9 +430,9 @@ function initWgscovplotRenderEnv() {
     const [plotDepths, plotVariants] = getDepthsVariants(plotSamples, window.depths, window.variants);
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
-        chart.setOption(option = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
-        variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(window.samples, window.mutations, window.variantMatrix, window.variants));
+        variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(plotSamples, window.variants));
     } else {
         var renderEnv = document.getElementById("render-env").value;
         var isChecked = document.getElementById("toggle-darkmode").checked;
@@ -407,7 +446,7 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        var chartOption = wgscovplot.getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData, window.refSeq,
+        var chartOption = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon)
         // Keep grid option
         chartOption.grid = gridOption;
@@ -498,10 +537,10 @@ const applyFeatureView = async () => {
     var start = [], end = [];
     var minStart, maxEnd;
     featureName.forEach(x => {
-        for (var i = 0; i < geneFeatureAmpliconData.length; i++){
-            if (x.text == geneFeatureAmpliconData[i].name){
-                start.push(geneFeatureAmpliconData[i].value.start);
-                end.push(geneFeatureAmpliconData[i].value.end);
+        for (var i = 0; i < geneAmpliconFeatureData.length; i++){
+            if (x.text == geneAmpliconFeatureData[i].name){
+                start.push(geneAmpliconFeatureData[i].value.start);
+                end.push(geneAmpliconFeatureData[i].value.end);
                 break;
             }
         }
@@ -652,20 +691,31 @@ function setDataZoom(zoomStart, zoomEnd){
 }
 
 /**
- * Reset Grid Dislay to optimal configuration
+ * Update grid configuration for chart
+ * @param geneFeature
+ * @param amplicon
+ * @returns {Array<Object>} grid configuration for the charts
  */
-function resetGridDisplay(){
+function updateGrid(geneFeature, amplicon){
     var chartOption = chart.getOption();
     var currentSamples = getCurrentSamples(chartOption);
     var doubleStrand = false;
-    console.log(chart.getOption().series[6].renderItem)
-    for (var i = 0; i < geneFeatureAmpliconData.length; i++){
-        if (geneFeatureAmpliconData[i].value.strand === -1){
+    for (var i = 0; i < geneAmpliconFeatureData.length; i++){
+        if (geneAmpliconFeatureData[i].value.strand === -1){
             doubleStrand = true;
             break;
         }
     }
     var gridOption = wgscovplot.getGrids(currentSamples, geneFeature, amplicon, doubleStrand);
+    return gridOption;
+}
+
+/**
+ * Reset Grid Dislay to optimal configuration
+ */
+function resetGridDisplay(){
+    var isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
+    var gridOption = updateGrid(geneFeature, isShowAmplicon)
     chart.setOption({grid: gridOption});
     updateControlMenu();
 }

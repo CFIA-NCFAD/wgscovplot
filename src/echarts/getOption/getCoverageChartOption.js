@@ -2,7 +2,7 @@ import {getDatasets} from "./getDataSets";
 import {getXAxes, getYAxes} from "./getAxes";
 import {getDepthSeries} from "./getDepthSeries";
 import {getVariantsSeries} from "./getVariantSeries";
-import {getAmpliconDepthSeries} from "./getAmpliconDepthSeries";
+import {getRegionAmpliconDepthSeries} from "./getRegionAmpliconDepthSeries";
 import {getGeneFeatureSeries} from "../geneFeatures/getGeneFeaturesSeries";
 import {getGrids} from "./getGrids";
 import {getTooltips} from "./getTooltips";
@@ -10,8 +10,8 @@ import {getTooltips} from "./getTooltips";
 
 /**
  * Define all options for coverage chart
- * @param {Array<Object>} geneFeatureAmpliconData - Array of dictionary geneFeature or amplicon data
- * @param {Array<Object>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} geneAmpliconFeatureData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} regionAmpliconDepthData - Array of region amplicon depth data
  * @param {string} refSeq - Reference seq
  * @param {number} yAxisMax - Max of Y Axis
  * @param {Array<string>} samples - An array of samples name
@@ -52,7 +52,7 @@ import {getTooltips} from "./getTooltips";
  *        1:{sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 25300}]
  *    ]
  */
-function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,refSeq,
+function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData,refSeq,
                                 yAxisMax, samples, depths, variants,
                                 geneFeature=false, amplicon=false,
                                 triggerOnType="mousemove", isVariantSites=true,
@@ -63,7 +63,7 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
                                 isHideOverlapMutation=true) {
     var positions = [...Array(refSeq.length + 1).keys()];
     var doubleStrand = false;
-    Object.values(geneFeatureAmpliconData).forEach(x => {
+    Object.values(geneAmpliconFeatureData).forEach(x => {
         if (x.value.strand === -1)
             doubleStrand = true
     })
@@ -77,8 +77,8 @@ function getCoverageChartOption(geneFeatureAmpliconData, ampliconDepthBarData,re
         series: [
             ...getDepthSeries(samples, isNonVariantSites),
             ...getVariantsSeries(variants, depths, refSeq, isVariantSites, isShowMutation, isHideOverlapMutation),
-            ...getAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon),
-            ...getGeneFeatureSeries(geneFeatureAmpliconData, samples.length, geneFeature, amplicon)
+            ...getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon),
+            ...getGeneFeatureSeries(geneAmpliconFeatureData, samples.length, geneFeature, amplicon)
         ],
         tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isInfoComparison, isCovergateStatView),
         toolbox: {

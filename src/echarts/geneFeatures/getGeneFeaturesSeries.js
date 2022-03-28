@@ -3,24 +3,24 @@ import {toTableHtml} from "../../util";
 
 /**
  * Define options for gene features charts
- * @param {Array<Object>} geneFeatureData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} geneAmpliconFeatureData - Array of dictionary geneFeature or amplicon data
  * @param {number} index - gene feature is displayed in the last index of grid
  * @param {boolean} geneFeature - whether to plot gene feature or not (true for false)
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
  * @returns {Array<Object>}
  */
-function getGeneFeatureSeries(geneFeatureAmpliconData, index, geneFeature, amplicon) {
+function getGeneFeatureSeries(geneAmpliconFeatureData, index, geneFeature, amplicon) {
     var featureSeries = [];
     if (amplicon || geneFeature){
         featureSeries.push({
             type: "custom",
             xAxisIndex: index,
             yAxisIndex: index,
-            renderItem: getGeneFeatureRenderer(true, geneFeatureAmpliconData),
+            renderItem: getGeneFeatureRenderer(true, geneAmpliconFeatureData, amplicon),
             labelLayout: {
                 hideOverlap: false,
             },
-            data: geneFeatureAmpliconData,
+            data: geneAmpliconFeatureData,
             tooltip: {
                 trigger: "item",
                 enterable: true,

@@ -21,13 +21,15 @@ def test_cli():
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
     assert 'Show this message and exit.' in help_result.output
+
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_gene_feature.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--output-html', out_html,
                                           '--genbank', str(input_genbank.absolute()),
-                                          '--gene-feature'])
+                                          '--gene-feature',
+                                          '--no-amplicon'])
         assert test_result.exit_code == 0
         assert exists(out_html)
 
@@ -36,11 +38,13 @@ def test_cli():
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature'])
+                                          '--gene-feature',
+                                          '--no-amplicon'])
         assert test_result.exit_code == 1
 
     with runner.isolated_filesystem():
+        out_html = 'wgscovplot.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
-                                          '--ref-seq', str(input_ref.absolute())])
+                                          '--output-html', out_html,])
         assert test_result.exit_code == 0
         assert exists('wgscovplot.html')

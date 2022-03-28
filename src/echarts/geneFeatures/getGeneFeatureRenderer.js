@@ -17,9 +17,10 @@ var yStart = (function (){
  * Renders the gene/amplicon features shape
  * @param {boolean} isShowGeneLabel - Whether to show gene label or not
  * @param {Array<Object>} geneFeatureAmpliconData - Array of dictionary geneFeature or amplicon data
+ * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
  * @returns The shape of gene feature and/or amplicon feature
  */
-function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
+function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplicon) {
     /**
      *
      * @param params - Echarts params
@@ -74,7 +75,6 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
                         text: feature.name,
                         fill: feature.itemStyle.color,
                         fontStyle: "normal",
-                        //borderWidth: 1.5,
                         fontSize: 12,
                         fontWeight: "bolder",
                     },
@@ -83,7 +83,6 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
                     position: "top",
                     distance: 18,
                     rotation: rotateAngle,
-                    //outsideStroke: feature.itemStyle.color,
                     offset: "center",
                     local: true,
                 },
@@ -103,6 +102,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData) {
                 style: api.style(),
                 textContent: {},
                 textConfig: {},
+                invisible: !amplicon
             };
         } else {
             return null;

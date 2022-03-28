@@ -1,5 +1,6 @@
 import {meanCoverage, genomeCoverage, medianCoverage} from "../../coverageStat";
 import {toTableHtml, getVariantComparison, getCoverageStatComparison} from "../../util";
+import {find} from "lodash/collection";
 
 
 /**
@@ -60,6 +61,17 @@ function getTooltips(samples, depths, variants, refSeq,
                             ["Position", position.toLocaleString()],
                             ["Coverage Depth", depth.toLocaleString()],
                         ];
+                        var foundObj = find(Object.values(variants[i]), {"POS": position});
+                        if (foundObj !== undefined && foundObj !== null){
+                            for (const [key, value] of Object.entries(foundObj)) {
+                                if (key !== 'POS' && key !== 'sample') {
+                                    positionRows.push(
+                                        ...[[key, value]]
+                                    );
+                                }
+                            }
+                        };
+                        /*
                         Object.values(variants[i]).forEach(values => {
                             if (values['POS'] === position) {
                                 for (const [key, value] of Object.entries(values)) {
@@ -71,6 +83,7 @@ function getTooltips(samples, depths, variants, refSeq,
                                 }
                             }
                         })
+                         */
                     }
                 } else {
                     positionRows = [

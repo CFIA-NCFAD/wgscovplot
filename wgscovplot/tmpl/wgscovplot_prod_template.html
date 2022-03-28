@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WGS Coverage Plot</title>
+    <script type="text/javascript">
+        {% include "js/wgscovplot.prod.bundle.js" %}
+    </script>
+</head>
+<body>
+
+    {% block content%}
+        {% include "wgscovplot_controlmenu_gui.html" %}
+    {% endblock %}
+    <script type="text/javascript">
+        {% include "js/wgscovplot.js" %}
+    </script>
+    <script>
+        /**
+         * Reference Sequence
+         * @type {string}
+         */
+        window.refSeq = "{{ ref_seq }}";
+
+        /**
+         * List of samples name
+         */
+        window.samples = {{ samples_name }}
+
+        /**
+         * Object of depth data
+         * @type {Object}
+         * {sample_name: Array<number>}
+         */
+        window.depths = {{ depths_data }};
+
+        /**
+         * Object of variant data
+         * @type {Object}
+         * {sample_name: Array<Object>}
+         */
+        window.variants = {{ variants_data }};
+        /**
+         * Dict of gene or amplicon features
+         * @type {Dict[]}
+         */
+        const geneAmpliconFeatureData = {{ gene_amplicon_feature_data }};
+
+        /**
+         * Dict of Amplicon Depth Coverage
+         * @type {Object}
+         */
+        const regionAmpliconDepthData = {{ region_amplicon_depth_data }};
+
+        /**
+         * Whether to plot gene feature or not
+         * @type {boolean}
+         */
+        const geneFeature = {{ gene_feature|tojson }};
+
+        /**
+         * Whether amplicon coverage plot or not
+         * @type {boolean}
+         */
+
+        var amplicon = {{ amplicon|tojson }};
+
+        const refSeqLength = window.refSeq.length;
+
+        const lowCoverageThresholdSet = {{ low_coverage_threshold }}
+
+        /**
+         * The max value is set for y-Axis
+         * @type {number}
+         */
+        const maxDepth = {{ max_depth }}
+
+        function updateChartDivSize() {
+            let BOTTOM_PADDING = 20;
+            let top = $chart.getBoundingClientRect().top;
+            let height = window.innerHeight - top - BOTTOM_PADDING;
+            if (height < 300) {
+                height = 300;
+            }
+            $chart.style.height = height + 'px';
+            $chart.style.width = window.innerWidth + 'px';
+            chart.resize();
+            $variantHeatmap.style.height = height + 'px';
+            $variantHeatmap.style.width = window.innerWidth + 'px';
+            variantHeatmap.resize();
+        }
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var $chart = document.getElementById("chart");
+            var $variantHeatmap = document.getElementById("varmap-chart");
+            window.$chart = $chart;
+            window.$variantHeatmap = $variantHeatmap;
+            var chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
+            var variantHeatmap = wgscovplot.echarts.init($variantHeatmap, "white", {renderer:"canvas"})
+            window.chart = chart;
+            window.variantHeatmap = variantHeatmap;
+            updateChartDivSize();
+            initWgscovplotRenderEnv();
+        })
+        window.addEventListener("resize", updateChartDivSize);
+        initWgscovplotEvent();
+    </script>
+</body>
+</html>

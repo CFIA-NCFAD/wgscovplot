@@ -31,7 +31,7 @@ PER_BASE_PATTERNS = [
 ]
 
 REGIONS_PATTERNS = [
-    '**/mosdepth/**/*.genome.regions.bed.gz',
+    '**/mosdepth/**/*.amplicon.regions.bed.gz',
     '**/mosdepth/**/*.regions.bed.gz'
 ]
 
@@ -103,11 +103,16 @@ def depth_array(df: pd.DataFrame) -> np.ndarray:
     return arr
 
 
-def read_regular_depths(fpath: Path) -> pd.DataFrame:
-    df = pd.read_table(fpath,
-                       names=['sample_name', 'reference', 'pos', 'depth'],
-                       header=None)
-    return df
+def get_refseq_name(basedir: Path) -> str:
+    sample_beds = find_file_for_each_sample(basedir,
+                                            glob_patterns=PER_BASE_PATTERNS,
+                                            sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    refseq_name = ''
+    for sample, bed_path in sample_beds.items():
+        df = read_mosdepth_bed(bed_path)
+        refseq_name = df['genome'][0]
+        break
+    return refseq_name
 
 
 def get_depth(basedir: Path) -> Dict[str, List]:
@@ -138,21 +143,24 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
                                             glob_patterns=REGIONS_PATTERNS,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
-    for sample, bed_path in sample_beds.items():
-        logger.info(f'Sample "{sample}" has region depth file "{bed_path}"')
-        df = read_mosdepth_region_bed(bed_path)
-        out[sample] = []
-        for row in df.itertuples():
-            pool_id = int(row.amplicon.split('_')[-1])
-            if pool_id % 2:  # pool 2
-                out[sample].append(dict(
-                    value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
-                    itemStyle={"color": AmpliconColour.pool2.value}))
-            else:  # pool 1
-                out[sample].append(dict(
-                    value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
-                    itemStyle={"color": AmpliconColour.pool1.value}))
-    return out
+    try:
+        for sample, bed_path in sample_beds.items():
+            df = read_mosdepth_region_bed(bed_path)
+            out[sample] = []
+            for row in df.itertuples():
+                pool_id = int(row.amplicon.split('_')[-1])
+                if pool_id % 2:  # pool 2
+                    out[sample].append(dict(
+                        value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
+                        itemStyle={"color": AmpliconColour.pool2.value}))
+                else:  # pool 1
+                    out[sample].append(dict(
+                        value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
+                        itemStyle={"color": AmpliconColour.pool1.value}))
+        return out
+    except:
+        logging.warning('No Region Amplicon Depth Found')
+        return {}
 
 
 def get_region_amplicon(basedir: Path) -> Dict[str, List]:
@@ -160,13 +168,17 @@ def get_region_amplicon(basedir: Path) -> Dict[str, List]:
                                             glob_patterns=REGIONS_PATTERNS,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = {}
-    for sample, bed_path in sample_beds.items():
-        df_amplicon = pd.read_table(bed_path,
-                                    names=['reference', 'start', 'end', 'amplicon', 'depth'],
-                                    header=None)
-        out = {row.amplicon: [row.start, row.end] for row in df_amplicon.itertuples()}
-        break
-    return out
+    try:
+        for sample, bed_path in sample_beds.items():
+            df_amplicon = pd.read_table(bed_path,
+                                        names=['reference', 'start', 'end', 'amplicon', 'depth'],
+                                        header=None)
+            out = {row.amplicon: [row.start, row.end] for row in df_amplicon.itertuples()}
+            break
+        return out
+    except:
+        logging.warning('No Region Amplicon Found')
+        return {}
 
 
 def get_info(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, MosdepthDepthInfo]:

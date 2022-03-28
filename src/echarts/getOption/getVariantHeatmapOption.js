@@ -1,4 +1,6 @@
 import {toTableHtml} from "../../util";
+import {map, filter, orderBy, find} from "lodash/collection";
+import {union, uniq, reverse} from "lodash/array";
 
 /**
  * Get tooltip for variant heatmap
@@ -26,13 +28,12 @@ function getTooltipHeatmap(samples, mutations, variants) {
                 }
                 var rows = [];
                 if (variants[sample] !== undefined && variants[sample] !== null) {
-                    Object.values(variants[sample]).forEach(element => {
-                        if (element["mutation"] === mutationName) {
-                            for (const [key, value] of Object.entries(element)) {
-                                rows.push(...[[key, value]])
-                            }
+                    var foundObj = find(Object.values(variants[sample]), {"mutation": mutationName})
+                    if (foundObj !== undefined && foundObj !== null) {
+                        for (const [key, value] of Object.entries(foundObj)) {
+                            rows.push(...[[key, value]])
                         }
-                    })
+                    };
                     if (rows.length) {
                         output += toTableHtml(["", ""], rows, "table small");
                     } else {
@@ -47,6 +48,33 @@ function getTooltipHeatmap(samples, mutations, variants) {
     ]
 }
 
+/**
+ * Prepare data for Variant heatmap
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<Array<Object>>} variants - The object of variants data
+ * @returns {Array<>} - Array of mutation name and array of alt frequency matrix
+ */
+function getMutationMatrix(samples, variants) {
+    var samplesObject = [];
+    samples.forEach(sample => {
+        var sampleInfo = variants[sample];
+        samplesObject = union(samplesObject, filter(sampleInfo, "mutation"));
+    })
+    var samplesObjectSorted = orderBy(samplesObject, "POS", "asc");
+    var mutation = uniq(map(samplesObjectSorted, "mutation"));
+    var altFreqMatrix = [];
+    for (var i = 0; i < samples.length; i++){
+         for (var j = 0;  j < mutation.length; j++){
+              var foundObj = find(samplesObjectSorted, {"sample": samples[i], "mutation": mutation[j]});
+              if (foundObj !== undefined && foundObj !=null){
+                 altFreqMatrix.push([j, samples.length - 1 - i, foundObj.ALT_FREQ]);
+              }else{
+                 altFreqMatrix.push([j, samples.length - 1 - i, 0]);
+              }
+         }
+    }
+    return [mutation, altFreqMatrix]
+}
 /**
  * Define all options for variant heatmap
  * @param {Array<string>} samples - An array of samples name
@@ -122,22 +150,23 @@ function getTooltipHeatmap(samples, mutations, variants) {
  SRR17230680: (43) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}
  */
 
-function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
+function getVariantHeatmapOption(samples, variants) {
+    var mutationMatrixInfo = getMutationMatrix(samples, variants);
     var chartOptions = {
         xAxis: {
             type: "category",
-            data: mutations,
+            data: mutationMatrixInfo[0],
             splitArea: {
                 show: true
             },
             position: "bottom",
             axisLabel: {
                 rotate: -45,
-            }
+            },
         },
         yAxis: {
             type: "category",
-            data: samples,
+            data: reverse(samples),
             splitArea: {
                 show: true
             },
@@ -147,7 +176,8 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
                 type: "inside"
             },
             {
-                type: "slider"
+                type: "slider",
+                show: true
             }
         ],
         visualMap: {
@@ -172,7 +202,7 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
         series: [
             {
                 type: "heatmap",
-                data: variantMatrix,
+                data: mutationMatrixInfo[1],
                 label: {
                     show: false
                 },
@@ -184,7 +214,7 @@ function getVariantHeatmapOption(samples, mutations, variantMatrix, variants) {
                 }
             }
         ],
-        tooltip: getTooltipHeatmap(samples, mutations, variants),
+        tooltip: getTooltipHeatmap(samples, mutationMatrixInfo[0], variants),
         toolbox: {
             show: "true",
             feature: {

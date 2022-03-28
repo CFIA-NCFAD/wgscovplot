@@ -74,14 +74,16 @@ Options:
   --genbank PATH                  Genbank file contains gene features
   --ncbi-accession-id TEXT        NCBI accession id to fetch gene features
                                   and/or reference sequences
-  --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default: no-
+  --low-coverage-threshold INTEGER
+                                  Low Coverage Threshold  [default: 10]
+  --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default:
                                   amplicon]
   --gene-feature / --no-gene-feature
-                                  Plot Gene Features  [default: no-gene-
-                                  feature]
+                                  Plot Gene Features  [default: gene-feature]
   --gene-misc-feature / --no-gene-misc-feature
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]
+  --dev / --no-dev                Run tool with debug mode  [default: no-dev]
   --verbose / --no-verbose        Verbose logs  [default: no-verbose]
   --version / --no-version        Print wgscovplot version and exit
   --install-completion [bash|zsh|fish|powershell|pwsh]
@@ -90,6 +92,7 @@ Options:
                                   Show completion for the specified shell, to
                                   copy it or customize the installation.
   --help                          Show this message and exit.
+
 ```
 
 ## Dependencies
