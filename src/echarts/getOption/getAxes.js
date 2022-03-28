@@ -10,8 +10,8 @@ import {geneFeaturePlotProperties} from "../../util";
  * @returns {Array<Object>}
  */
 function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
-    var axes = [];
-    for (var [i, sample] of samples.entries()) {
+    let axes = [];
+    for (let i = 0; i < samples.length; i++) {
         axes.push({
             type: "value",
             gridIndex: i,
@@ -47,8 +47,8 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
  * @returns {Array<Object>}
  */
 function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
-    var axes = [];
-    for (var [i, sample] of samples.entries()) {
+    let axes = [];
+    for (let [i, sample] of samples.entries()) {
         axes.push({
             type: scaleType,
             gridIndex: i,
@@ -69,7 +69,7 @@ function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
     }
     if (amplicon || geneFeature){
         axes.push({
-            max: geneFeaturePlotProperties["max_grid_height"],
+            max: geneFeaturePlotProperties.max_grid_height,
             gridIndex: samples.length,
             show: false,
         });

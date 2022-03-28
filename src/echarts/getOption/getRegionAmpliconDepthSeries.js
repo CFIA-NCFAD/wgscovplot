@@ -12,9 +12,9 @@ function getRegionAmpliconDepthRenderer (amplicon){
      * @param api - Echarts api
      */
     function renderRegionAmpliconDepth(params, api){
-        var start = api.coord([api.value(0), api.value(2)]);
-        var end = api.coord([api.value(1), 1]);
-        var rectShape = graphic.clipRectByRect(
+        let start = api.coord([api.value(0), api.value(2)]);
+        let end = api.coord([api.value(1), 1]);
+        let rectShape = graphic.clipRectByRect(
             {
                 x: start[0],
                 y: start[1],
@@ -31,7 +31,7 @@ function getRegionAmpliconDepthRenderer (amplicon){
         return rectShape && {
             type: "rect",
             shape: rectShape,
-            style: api.style({}),
+            style: api.style(),
             invisible: !amplicon
         };
     }
@@ -45,9 +45,9 @@ function getRegionAmpliconDepthRenderer (amplicon){
  * @returns {Array<Object>}
  */
 function getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon) {
-    var ampliconDepthSeries = [];
+    let ampliconDepthSeries = [];
     if (amplicon){
-        for (var [i, sample] of samples.entries()) {
+        for (let [i, sample] of samples.entries()) {
             ampliconDepthSeries.push({
                 type: "custom",
                 xAxisIndex: i,

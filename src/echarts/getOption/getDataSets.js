@@ -5,8 +5,8 @@
  * @returns {Array<Object>}
  */
 function getDatasets(depths, positions) {
-    var datasets = [];
-    for (var [i, depthArray] of depths.entries()) {
+    let datasets = [];
+    for (let [i, depthArray] of depths.entries()) {
         datasets.push({
             dimensions: [
                 {name: "depth", type: "float"},

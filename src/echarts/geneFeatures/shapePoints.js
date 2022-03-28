@@ -9,7 +9,7 @@
  * @returns {Array<Array<number>>} - Coordinate of 5 points for gene feature or 4 points for amplicon feature
  */
 function shapePoints(x, y, width, height, strand, feature) {
-    var taperOffset;
+    let taperOffset;
     if (width < 10) { // Element width is too small
         taperOffset = width/2;
     }else{

@@ -17,7 +17,7 @@ import {find} from "lodash/collection";
 function getTooltips(samples, depths, variants, refSeq,
                      triggerOnType="mousemove", isInfoComparison=true,
                      isCovergateStatView=false) {
-    return [
+    let toolTips = [
         {
             trigger: "axis",
             enterable: true,
@@ -31,21 +31,23 @@ function getTooltips(samples, depths, variants, refSeq,
                 type: 'line'
             },
             formatter: function (params) {
-                var output = "";
-                var param = params[0];
-                var i = param.axisIndex;
+                let output = "";
+                let param = params[0];
+                let i = param.axisIndex;
                 if (i > samples.length) {
                     return output;
                 }
-                var sample = samples[i];
-                var position = param.axisValue;
-                var depth = depths[i][position-1];
+                let sample = samples[i];
+                let position = param.axisValue;
+                let depth = depths[i][position-1];
+                let zoomStart = 1;
+                let zoomEnd = refSeq.length;
                 if (isCovergateStatView){
-                    var zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
-                    var zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
+                    zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+                    zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
                 }
-                var positionRows = [];
-                var coverageStatRows = [];
+                let positionRows = [];
+                let coverageStatRows = [];
                 const isVariantBar = params.find(element => {
                     if (element.componentSubType === "bar") {
                         return true;
@@ -61,7 +63,7 @@ function getTooltips(samples, depths, variants, refSeq,
                             ["Position", position.toLocaleString()],
                             ["Coverage Depth", depth.toLocaleString()],
                         ];
-                        var foundObj = find(Object.values(variants[i]), {"POS": position});
+                        let foundObj = find(Object.values(variants[i]), {"POS": position});
                         if (foundObj !== undefined && foundObj !== null){
                             for (const [key, value] of Object.entries(foundObj)) {
                                 if (key !== 'POS' && key !== 'sample') {
@@ -70,7 +72,7 @@ function getTooltips(samples, depths, variants, refSeq,
                                     );
                                 }
                             }
-                        };
+                        }
                         /*
                         Object.values(variants[i]).forEach(values => {
                             if (values['POS'] === position) {
@@ -100,9 +102,9 @@ function getTooltips(samples, depths, variants, refSeq,
                             coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample, position);
                         }
                         else{
-                            var meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
-                            var medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
-                            var genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);
+                            let meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
+                            let medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
+                            let genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);
                             coverageStatRows = [
                                 [
                                     "Range",
@@ -120,6 +122,7 @@ function getTooltips(samples, depths, variants, refSeq,
             },
         },
     ];
+    return toolTips;
 }
 
 export {getTooltips};

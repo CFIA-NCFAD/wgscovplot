@@ -9,10 +9,10 @@ import {geneFeaturePlotProperties} from "../../util";
  * @returns {Array<Object>}
  */
 function getGrids(samples, geneFeature, amplicon, doubleStrand) {
-    var padTop = 4.0; // Percentage
-    var heightOffset = 6.0;
-    var featureHeight;
-    var subPlotHeight;
+    let padTop = 4.0; // Percentage
+    let heightOffset = 6.0;
+    let featureHeight;
+    let subPlotHeight;
     if (amplicon && geneFeature){
         featureHeight = 15.0;
     } else if (amplicon || geneFeature){
@@ -22,9 +22,9 @@ function getGrids(samples, geneFeature, amplicon, doubleStrand) {
     }
     featureHeight = (doubleStrand && featureHeight > 0) ? (featureHeight + 6.0) : featureHeight;
     subPlotHeight = 90.0 - featureHeight;
-    var grids = [];
-    var sampleHeight = (subPlotHeight - padTop) / samples.length - heightOffset;
-    for (var idx = 0; idx < samples.length; idx++){
+    let grids = [];
+    let sampleHeight = (subPlotHeight - padTop) / samples.length - heightOffset;
+    for (let idx = 0; idx < samples.length; idx++){
         grids.push({
             show: true,
             height: parseFloat(sampleHeight).toFixed(1) + "%",
