@@ -35,4 +35,8 @@ jobs:
       run: |
         pwd
         ls
+<<<<<<< HEAD
         pytest -v
+=======
+        python3 -m pytest -v
+>>>>>>> 3261a2c8dee417df9613cf70bdcc905b0ad9be36
