@@ -40,11 +40,11 @@ function getRegionAmpliconDepthRenderer (amplicon){
 /**
  * Define options for amplicon depth coverage bars
  * @param {Array<string>} samples - An array of samples name
- * @param {Array<Object>} ampliconDepthBarData - Array of dictionary geneFeature or amplicon data
+ * @param {Array<Object>} regionAmpliconDepthData - Array of dictionary geneFeature or amplicon data
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true or false)
  * @returns {Array<Object>}
  */
-function getRegionAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
+function getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon) {
     var ampliconDepthSeries = [];
     if (amplicon){
         for (var [i, sample] of samples.entries()) {
@@ -70,7 +70,7 @@ function getRegionAmpliconDepthSeries(samples, ampliconDepthBarData, amplicon) {
                     trigger: "none"
                 },
                 silent: true,
-                data: ampliconDepthBarData[sample],
+                data: regionAmpliconDepthData[sample],
             });
         }
     }

@@ -714,7 +714,7 @@ function updateGrid(geneFeature, amplicon){
  * Reset Grid Dislay to optimal configuration
  */
 function resetGridDisplay(){
-    var isShowAmplicon = document.getElementById("toggle-amplicon").checked
+    var isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
     var gridOption = updateGrid(geneFeature, isShowAmplicon)
     chart.setOption({grid: gridOption});
     updateControlMenu();

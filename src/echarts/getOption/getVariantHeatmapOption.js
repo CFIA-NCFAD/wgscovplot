@@ -63,13 +63,13 @@ function getMutationMatrix(samples, variants) {
     var samplesObjectSorted = orderBy(samplesObject, "POS", "asc");
     var mutation = uniq(map(samplesObjectSorted, "mutation"));
     var altFreqMatrix = [];
-    for (var i = samples.length - 1; i >=0; i--){
+    for (var i = 0; i < samples.length; i++){
          for (var j = 0;  j < mutation.length; j++){
               var foundObj = find(samplesObjectSorted, {"sample": samples[i], "mutation": mutation[j]});
               if (foundObj !== undefined && foundObj !=null){
-                 altFreqMatrix.push([j, i, foundObj.ALT_FREQ]);
+                 altFreqMatrix.push([j, samples.length - 1 - i, foundObj.ALT_FREQ]);
               }else{
-                 altFreqMatrix.push([j, i, 0]);
+                 altFreqMatrix.push([j, samples.length - 1 - i, 0]);
               }
          }
     }
@@ -151,8 +151,7 @@ function getMutationMatrix(samples, variants) {
  */
 
 function getVariantHeatmapOption(samples, variants) {
-    var mutationMatrixInfo = getMutationMatrix(samples, variants)
-    console.log(variants)
+    var mutationMatrixInfo = getMutationMatrix(samples, variants);
     var chartOptions = {
         xAxis: {
             type: "category",
