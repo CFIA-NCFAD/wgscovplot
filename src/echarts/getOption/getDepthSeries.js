@@ -5,8 +5,8 @@
  * @returns {Array<Object>}
  */
 function getDepthSeries(samples, isNonVariantSites) {
-    var depthSeries = [];
-    for (var [i, sample] of samples.entries()) {
+    let depthSeries = [];
+    for (let i = 0; i < samples.length; i++) {
         depthSeries.push({
             type: "line",
             xAxisIndex: i,

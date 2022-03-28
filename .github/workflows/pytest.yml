@@ -2,9 +2,9 @@ name: CI_Pytest
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev_asfv ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, dev_asfv ]
 
 jobs:
   build:
@@ -35,4 +35,8 @@ jobs:
       run: |
         pwd
         ls
-        pytest
+<<<<<<< HEAD
+        pytest -v
+=======
+        python3 -m pytest -v
+>>>>>>> 3261a2c8dee417df9613cf70bdcc905b0ad9be36

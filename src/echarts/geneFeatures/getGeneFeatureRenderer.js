@@ -6,9 +6,9 @@ import {graphic} from "echarts/core";
  * A closure is used for initial y_start for rendering gene/amplicon features
  * @type {function(): number}
  */
-var yStart = (function (){
-    var start;
-    return function (){
+let yStart = (function () {
+    let start;
+    return function () {
         return start;
     };
 })();
@@ -27,10 +27,10 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
      * @param api - Echarts api
      */
     function renderGeneFeatures(params, api) {
-        var points, shape, rotateAngle;
-        var start, end, height, width, x, y, leftCoord, rightCoord;
-        var categoryIndex = params.dataIndex;
-        var feature = geneFeatureAmpliconData[categoryIndex];
+        let points, shape, rotateAngle;
+        let start, end, height, width, x, y, leftCoord, rightCoord;
+        const categoryIndex = params.dataIndex;
+        const feature = geneFeatureAmpliconData[categoryIndex];
         leftCoord = params.coordSys.x;
         rightCoord = params.coordSys.width + params.coordSys.x;
         start = api.coord([feature.value.start, categoryIndex]);
@@ -38,12 +38,12 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
             yStart = start[1];
         }
         end = api.coord([feature.value.end, categoryIndex]);
-        height = geneFeaturePlotProperties["rec_items_height"];
+        height = geneFeaturePlotProperties.rec_items_height;
         width = end[0] - start[0];
         x = start[0];
         y = yStart - height / 2 - feature.value.level;
         points = shapePoints(x, y, width, height, feature.value.strand, feature.value.type);
-        var invisible = false;
+        let invisible = false;
         if (feature.value.type === 'gene_feature') {
             rotateAngle = (feature.value.strand === 1) ? 0.5 : -0.5;
             if (isShowGeneLabel){
@@ -67,7 +67,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
                 shape: {
                     points: shape,
                 },
-                style: api.style({}),
+                style: api.style(),
                 textContent: {
                     type: "text",
                     invisible: invisible,

@@ -61,14 +61,15 @@ function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData
                                 isShowMutation=false,
                                 isShowXAxisLabel=true,
                                 isHideOverlapMutation=true) {
-    var positions = [...Array(refSeq.length + 1).keys()];
-    var doubleStrand = false;
+    let positions = [...Array(refSeq.length + 1).keys()];
+    let doubleStrand = false;
     Object.values(geneAmpliconFeatureData).forEach(x => {
-        if (x.value.strand === -1)
-            doubleStrand = true
-    })
+        if (x.value.strand === -1){
+            doubleStrand = true;
+        }
+    });
     positions.shift();
-    var chartOptions = {
+    let chartOptions = {
         title: {},
         dataset: getDatasets(depths, positions),
         xAxis: getXAxes(samples, positions.length, geneFeature, amplicon, isShowXAxisLabel),

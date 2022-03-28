@@ -8,9 +8,10 @@ from wgscovplot.cli import app
 runner = CliRunner()
 
 dirpath = Path(__file__).parent
-input_ref = dirpath/ 'data/nCoV-2019.reference.fasta'
-input_genbank = dirpath/ 'data/sequence_sars_cov2.gb'
-input_dir = dirpath/'data/tools'
+input_ref = dirpath / 'data/nCoV-2019.reference.fasta'
+input_genbank = dirpath / 'data/sequence_sars_cov2.gb'
+input_dir = dirpath / 'data/tools'
+
 
 def test_cli():
     assert input_ref.exists()
@@ -43,8 +44,17 @@ def test_cli():
         assert test_result.exit_code == 1
 
     with runner.isolated_filesystem():
-        out_html = 'wgscovplot.html'
+        out_html = 'wgscovplot_gene_feature.html'
+        ncbi_accession_id = 'MN908947.3'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
-                                          '--output-html', out_html,])
+                                          '--ncbi-accession-id', str(ncbi_accession_id),
+                                          '--output-html', out_html,
+                                          '--gene-feature',
+                                          '--no-amplicon'])
+        assert test_result.exit_code == 0
+        assert exists(out_html)
+
+    with runner.isolated_filesystem():
+        test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute())])
         assert test_result.exit_code == 0
         assert exists('wgscovplot.html')

@@ -1,8 +1,6 @@
-// Select methods for smaller webpack bundles
-const slice = require('lodash/slice');
-const filter = require('lodash/filter');
-const sortBy = require('lodash/sortBy');
-const mean = require('lodash/mean');
+import {slice} from "lodash/array";
+import {filter, sortBy} from "lodash/collection";
+import {mean} from "lodash/math";
 
 /**
  * Calculate mean coverage for a genome region
@@ -12,7 +10,7 @@ const mean = require('lodash/mean');
  * @returns {number} - Returns the mean
  */
 function meanCoverage(depths, start, end) {
-    var subArray = slice(depths, start - 1, end);
+    let subArray = slice(depths, start - 1, end);
     return mean(subArray);
 }
 
@@ -25,8 +23,8 @@ function meanCoverage(depths, start, end) {
  * @returns {number} - Returns the genome coverage
  */
 function genomeCoverage(depths, start, end, low) {
-    var subArray = slice(depths, start - 1, end);
-    var filetedArray = filter(subArray, function (x) {
+    let subArray = slice(depths, start - 1, end);
+    let filetedArray = filter(subArray, function (x) {
         return x >= low;
     });
     return (filetedArray.length / (end - start + 1)) * 100;
@@ -38,10 +36,13 @@ function genomeCoverage(depths, start, end, low) {
  * @returns {number} - Returns the median
  */
 function median(arr) {
-    var sortedArr = sortBy(arr)
-    var half = Math.floor(sortedArr.length / 2);
-    if (sortedArr.length % 2) return sortedArr[half];
-    else return (sortedArr[half - 1] + sortedArr[half]) / 2.0;
+    let sortedArr = sortBy(arr);
+    let half = Math.floor(sortedArr.length / 2);
+    if (sortedArr.length % 2) {
+        return sortedArr[half];
+    } else{
+        return (sortedArr[half - 1] + sortedArr[half]) / 2.0;
+    }
 }
 
 /**
@@ -52,7 +53,7 @@ function median(arr) {
  * @returns {number} - Returns the median
  */
 function medianCoverage(depths, start, end) {
-    var subArray = slice(depths, start - 1, end);
+    let subArray = slice(depths, start - 1, end);
     return median(subArray);
 }
 

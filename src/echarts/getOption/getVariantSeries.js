@@ -12,19 +12,19 @@ import {ntColor} from "../../util";
  */
 function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                            isShowMutation, isHideOverlapMutation) {
-    var variantSeries = [];
-    for (var [i, varMap] of variants.entries()) {
+    let variantSeries = [];
+    for (let [i, varMap] of variants.entries()) {
         (function (i, varMap) {
             variantSeries.push({
                 type: "bar",
                 xAxisIndex: i,
                 yAxisIndex: i,
-                data: Object.values(varMap).map((x) => [parseInt(x['POS']), depths[i][x['POS']]]),
+                data: Object.values(varMap).map((x) => [parseInt(x.POS), depths[i][x.POS]]),
                 barWidth: 2,
                 itemStyle: {
                     color: function (params) {
-                        var pos = params.data[0];
-                        var nt = refSeq[pos-1]
+                        let pos = params.data[0];
+                        let nt = refSeq[pos-1];
                         if (ntColor.hasOwnProperty(nt)) {
                             return ntColor[nt];
                         }
@@ -40,11 +40,11 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                     color: "inherit",
                     rotate: -30,
                     formatter: function (params){
-                        var pos = params.data[0];
-                        var output = "";
+                        let pos = params.data[0];
+                        let output = "";
                         Object.values(variants[i]).forEach(values => {
-                            if (values['POS'] === pos) {
-                                output += (values["REF"] + values["POS"] + values["ALT"]);
+                            if (values.POS === pos) {
+                                output += (values.REF + values.POS + values.ALT);
                             }
                         });
                         return output;

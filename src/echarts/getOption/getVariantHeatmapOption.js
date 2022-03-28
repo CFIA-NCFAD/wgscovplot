@@ -10,7 +10,8 @@ import {union, uniq, reverse} from "lodash/array";
  * @returns Array<Object>
  */
 function getTooltipHeatmap(samples, mutations, variants) {
-    return [
+
+    let toolTips = [
         {
             enterable: true,
             appendToBody: true,
@@ -18,34 +19,35 @@ function getTooltipHeatmap(samples, mutations, variants) {
             showContent: true,
             confine: true,
             formatter: function (params) {
-                var output = '';
-                var mutationName = '';
-                var sample = '';
+                let output = '';
+                let mutationName = '';
+                let sample = '';
                 // values may be undefined when mouse move and zoom/in out heat map (causing error log)
                 if (params.value !== undefined && params.value !== null) {
                     mutationName = mutations[params.value[0]];
                     sample = samples[params.value[1]];
                 }
-                var rows = [];
+                let rows = [];
                 if (variants[sample] !== undefined && variants[sample] !== null) {
-                    var foundObj = find(Object.values(variants[sample]), {"mutation": mutationName})
+                    let foundObj = find(Object.values(variants[sample]), {"mutation": mutationName});
                     if (foundObj !== undefined && foundObj !== null) {
                         for (const [key, value] of Object.entries(foundObj)) {
-                            rows.push(...[[key, value]])
+                            rows.push(...[[key, value]]);
                         }
-                    };
+                    }
                     if (rows.length) {
                         output += toTableHtml(["", ""], rows, "table small");
                     } else {
-                        output += ("Not detected mutation " + mutationName.bold() + " in sample " + sample.bold())
+                        output += ("Not detected mutation " + mutationName.bold() + " in sample " + sample.bold());
                     }
                 } else {
                     output += "Sample " + sample.bold() + " has no variant information";
                 }
-                return output
+                return output;
             }
         }
-    ]
+    ];
+    return toolTips;
 }
 
 /**
@@ -55,25 +57,25 @@ function getTooltipHeatmap(samples, mutations, variants) {
  * @returns {Array<>} - Array of mutation name and array of alt frequency matrix
  */
 function getMutationMatrix(samples, variants) {
-    var samplesObject = [];
+    let samplesObject = [];
     samples.forEach(sample => {
-        var sampleInfo = variants[sample];
+        let sampleInfo = variants[sample];
         samplesObject = union(samplesObject, filter(sampleInfo, "mutation"));
-    })
-    var samplesObjectSorted = orderBy(samplesObject, "POS", "asc");
-    var mutation = uniq(map(samplesObjectSorted, "mutation"));
-    var altFreqMatrix = [];
-    for (var i = 0; i < samples.length; i++){
-         for (var j = 0;  j < mutation.length; j++){
-              var foundObj = find(samplesObjectSorted, {"sample": samples[i], "mutation": mutation[j]});
-              if (foundObj !== undefined && foundObj !=null){
+    });
+    let samplesObjectSorted = orderBy(samplesObject, "POS", "asc");
+    let mutation = uniq(map(samplesObjectSorted, "mutation"));
+    let altFreqMatrix = [];
+    for (let i = 0; i < samples.length; i++){
+         for (let j = 0;  j < mutation.length; j++){
+              let foundObj = find(samplesObjectSorted, {"sample": samples[i], "mutation": mutation[j]});
+              if (foundObj !== undefined && foundObj !== null){
                  altFreqMatrix.push([j, samples.length - 1 - i, foundObj.ALT_FREQ]);
               }else{
                  altFreqMatrix.push([j, samples.length - 1 - i, 0]);
               }
          }
     }
-    return [mutation, altFreqMatrix]
+    return [mutation, altFreqMatrix];
 }
 /**
  * Define all options for variant heatmap
@@ -151,8 +153,8 @@ function getMutationMatrix(samples, variants) {
  */
 
 function getVariantHeatmapOption(samples, variants) {
-    var mutationMatrixInfo = getMutationMatrix(samples, variants);
-    var chartOptions = {
+    let mutationMatrixInfo = getMutationMatrix(samples, variants);
+    let chartOptions = {
         xAxis: {
             type: "category",
             data: mutationMatrixInfo[0],

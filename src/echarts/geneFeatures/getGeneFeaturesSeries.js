@@ -10,7 +10,7 @@ import {toTableHtml} from "../../util";
  * @returns {Array<Object>}
  */
 function getGeneFeatureSeries(geneAmpliconFeatureData, index, geneFeature, amplicon) {
-    var featureSeries = [];
+    let featureSeries = [];
     if (amplicon || geneFeature){
         featureSeries.push({
             type: "custom",
@@ -36,8 +36,8 @@ function getGeneFeatureSeries(geneAmpliconFeatureData, index, geneFeature, ampli
                     fontWeight: "bolder",
                 },
                 formatter: function (params) {
-                    var output = "";
-                    var rows = [
+                    let output = "";
+                    let rows = [
                         [
                             "Range",
                             params.value.start.toLocaleString() + " - " + params.value.end.toLocaleString(),

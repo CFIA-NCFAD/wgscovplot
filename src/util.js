@@ -11,7 +11,7 @@ export const geneFeaturePlotProperties = {
     'max_grid_height': 80,
     'rec_items_height': 12,
     'grid_height': "15%"
-}
+};
 
 /**
  * Dict of color for coloring variant position in the chart
@@ -22,7 +22,7 @@ export const ntColor = {
     "C": "#eaca48",
     "G": "#6ad82b",
     "T": "#2b87d8",
-}
+};
 
 /**
  * Function get Coverage Stat comparison across samples
@@ -35,15 +35,15 @@ export const ntColor = {
  * @returns <Array<Array<string>> - Coverage Stat comparison across samples
  */
 function getCoverageStatComparison (samples, depths, start, end, currentSample, position){
-    var rows = []
-    var tableHeader = ["Sample", "Depth at position "+ position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
+    let rows = [];
+    let tableHeader = ["Sample", "Depth at position "+ position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
     rows.push(...[tableHeader]);
     for (var[i, sample] of samples.entries()){
-        var meanCov = meanCoverage(depths[i], start, end).toFixed(2);
-        var medianCov = medianCoverage(depths[i], start, end).toFixed(2);
-        var genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
-        var coverageDepth = depths[i][position-1];
-        var row = [sample, coverageDepth.toLocaleString(), start.toLocaleString() + " - " + end.toLocaleString(), meanCov, medianCov, genomeCov]
+        let meanCov = meanCoverage(depths[i], start, end).toFixed(2);
+        let medianCov = medianCoverage(depths[i], start, end).toFixed(2);
+        let genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
+        let coverageDepth = depths[i][position-1];
+        let row = [sample, coverageDepth.toLocaleString(), start.toLocaleString() + " - " + end.toLocaleString(), meanCov, medianCov, genomeCov];
         rows.push(...[row]);
     }
     return rows;
@@ -59,12 +59,12 @@ function getCoverageStatComparison (samples, depths, start, end, currentSample, 
  * @returns <Array<Array<string>> - Variant comparison across samples
  */
 function getVariantComparison(samples, variants, depths, position, currentSample=""){
-    var rows = [];
-    var variantArr = [];
-    for (var [i, element] of variants.entries()) {
+    let rows = [];
+    let variantArr = [];
+    for (let [i, element] of variants.entries()) {
         if (element.length){
-            var isPOSExist = false;
-            var foundObj = find(Object.values(element), {"POS": position});
+            let isPOSExist = false;
+            let foundObj = find(Object.values(element), {"POS": position});
             if (foundObj !== undefined && foundObj !== null){
                 isPOSExist = true;
                 variantArr.push(foundObj);
@@ -86,20 +86,20 @@ function getVariantComparison(samples, variants, depths, position, currentSample
         }
     }
     var unionKeys = [...new Set(variantArr.reduce((r, e) => [...r, ...Object.keys(e)], []))];
-    unionKeys.push("Coverage Depth") // Add Coverage Depth row
+    unionKeys.push("Coverage Depth"); // Add Coverage Depth row
     unionKeys.forEach(key => {
-        var row = [];
+        let row = [];
         row.push(key);
         if (key === "Coverage Depth"){
-            for (var [i, depthEle] of depths.entries()){
+            for (let [i, depthEle] of depths.entries()){
                 row.push(depths[i][position-1].toLocaleString());
             }
         }else{
             variantArr.forEach(element => {
                 if (element[key] !== undefined && element[key] !== null){
-                    if (key === 'sample' && element[key] === currentSample) // Bold highlight selected sample
+                    if (key === 'sample' && element[key] === currentSample) {// Bold highlight selected sample
                         row.push(element[key].bold());
-                    else{
+                    }else{
                         row.push(element[key]);
                     }
                 }else {
@@ -114,14 +114,14 @@ function getVariantComparison(samples, variants, depths, position, currentSample
 
 /**
  * Write tooltip information to HTML table
- * @param {string} headers - Header of table
+ * @param {string[]} headers - Header of table
  * @param {Array<Array<string>>} rows - Rows of table
  * @param {string} classes - Classes defined for table
  * @returns {string}
  */
 function toTableHtml(headers, rows, classes) {
-    var classTable = defaultTo(classes, "table");
-    var out = '<table class="' + classTable + '"><thead>';
+    let classTable = defaultTo(classes, "table");
+    let out = '<table class="' + classTable + '"><thead>';
     out += join(
         map(headers, function (x) {
             return "<strong>" + x + "</strong>";
