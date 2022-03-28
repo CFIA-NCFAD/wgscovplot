@@ -5,6 +5,7 @@
 - Automatically detect amplicon data and option to toggle amplicon bar
 - Variant heat map is updated according to selected samples
 - Downgrade and use Echarts v5.2.2 to fix the problem of amplicon plot (https://github.com/nhhaidee/wgscovplot/issues/36)
+- Clean up code.
 
 
 ## 0.1.1 (2022-03-18)

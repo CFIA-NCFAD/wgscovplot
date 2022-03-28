@@ -42,3 +42,19 @@ def test_cli():
                                           '--gene-feature',
                                           '--no-amplicon'])
         assert test_result.exit_code == 1
+
+    with runner.isolated_filesystem():
+        out_html = 'wgscovplot_gene_feature.html'
+        ncbi_accession_id = 'MN908947.3'
+        test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
+                                          '--ncbi-accession-id', str(ncbi_accession_id),
+                                          '--output-html', out_html,
+                                          '--gene-feature',
+                                          '--no-amplicon'])
+        assert test_result.exit_code == 0
+        assert exists(out_html)
+
+    with runner.isolated_filesystem():
+        test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute())])
+        assert test_result.exit_code == 0
+        assert exists('wgscovplot.html')
