@@ -24,7 +24,7 @@ def test_cli():
     assert 'Show this message and exit.' in help_result.output
 
     with runner.isolated_filesystem():
-        out_html = 'wgscovplot_gene_feature.html'
+        out_html = 'wgscovplot_test1.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--output-html', out_html,
@@ -35,7 +35,17 @@ def test_cli():
         assert exists(out_html)
 
     with runner.isolated_filesystem():
-        out_html = 'wgscovplot_gene_feature.html'
+        out_html = 'wgscovplot_test2.html'
+        test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
+                                          '--ref-seq', str(input_ref.absolute()),
+                                          '--output-html', out_html,
+                                          '--genbank', str(input_genbank.absolute()),
+                                          '--gene-feature'])
+        assert test_result.exit_code == 0
+        assert exists(out_html)
+
+    with runner.isolated_filesystem():
+        out_html = 'wgscovplot_test3.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ref-seq', str(input_ref.absolute()),
                                           '--output-html', out_html,
@@ -44,7 +54,7 @@ def test_cli():
         assert test_result.exit_code == 1
 
     with runner.isolated_filesystem():
-        out_html = 'wgscovplot_gene_feature.html'
+        out_html = 'wgscovplot_test4.html'
         ncbi_accession_id = 'MN908947.3'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
                                           '--ncbi-accession-id', str(ncbi_accession_id),

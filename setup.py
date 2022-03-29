@@ -12,6 +12,7 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 requirements = [
+    'click==8.0.4',
     'typer',
     'rich',
     'jinja2',
