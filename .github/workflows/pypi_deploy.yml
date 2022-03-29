@@ -8,8 +8,8 @@ jobs:
   pypi_deploy:
     name: PyPI Deploy
     runs-on: ubuntu-latest
-    # Only run for the nhhaidee/sequencing_coverage_plot repo, for releases and pushes to master
-    if: ${{ github.repository == 'nhhaidee/sequencing_coverage_plot' }}
+    # Only run for the nhhaidee/wgscovplot repo, for releases and pushes to master
+    if: ${{ github.repository == 'nhhaidee/wgscovplot' }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
