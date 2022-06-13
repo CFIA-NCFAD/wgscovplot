@@ -13,9 +13,6 @@ function getFluGrids(samples, segments) {
     let plotHeight = 90.0;
     let samplePlotHeight = (plotHeight - padTop)/samples.length - verticalOffset;
     let samplePlotWidth = (100.0 - padLeft)/segments.length - horizontalOffset;
-    //if (samplePlotWidth < 15.0){
-    //    samplePlotWidth = 15.0
-    //}
     for (let i = 0; i < samples.length; i++){
         for (let j = 0; j < segments.length; j++){
             grids.push({

@@ -90,8 +90,8 @@ function getCurrentSamplesSegments(chartOption) {
     let segments = [];
     // If the chart is not initialized yet, get 3 first samples from window.samples
     if (chartOption === undefined || chartOption === null){
-        samples = window.samples.slice(0, 5);
-        segments = window.segments.slice(0, 8);
+        samples = window.samples.slice(0, 3);
+        segments = window.segments.slice(0, 3);
     } else{
         let selectData1 = $("#selectedsamples").select2("data");
         let selectData2 = $("#selectedsegments").select2("data");

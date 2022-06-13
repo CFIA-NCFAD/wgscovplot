@@ -1,3 +1,4 @@
+import {getFluGrids} from "./getFluGrids";
 
 function getFluXAxes(samples, segments, depths) {
     let axes = [];
@@ -16,6 +17,21 @@ function getFluXAxes(samples, segments, depths) {
     }
     return axes;
 }
+
+function getYAxisName(samples, segments, samplesIndex, segmentsIndex){
+
+   let yAxisName = '';
+   let horizontalOffset = 4.0;
+   let padLeft = 4.0;
+   let samplePlotWidth = (100.0 - padLeft)/segments.length - horizontalOffset;
+   if (samplePlotWidth > 10){
+       yAxisName = samples[samplesIndex] + ' - Segment ' + segments[segmentsIndex];
+   }else{
+       yAxisName =  samples[samplesIndex].substring(0,10) + '...';
+   }
+   return yAxisName;
+}
+
 function getFluYAxes(samples, segments) {
     let axes = [];
     let gridIndex = 0;
@@ -24,14 +40,11 @@ function getFluYAxes(samples, segments) {
             axes.push({
                 type: 'log',
                 gridIndex: gridIndex,
-                name: samples[i] + ' - Segment ' + segments[j],
+                name: getYAxisName(samples, segments, i, j),
                 nameTextStyle: {
                     fontStyle: "normal",
                     fontWeight: "normal",
-                    fontSize: 13,
-                    width: 50,
-                    overflow: 'truncate',
-                    ellipsis: '...'
+                    fontSize: 10,
                 },
                 nameLocation: "end",
                 nameRotate: 0.01,
