@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WGS Coverage Plot</title>
+    <script type="text/javascript">
+        {% include "js/wgscovplot.prod.bundle.js" %}
+    </script>
+</head>
+<body>
+    {% block content%}
+        {% include "wgscovplot_flu_controlmenu_gui.html" %}
+    {% endblock %}
+
+    <style>
+        #chart-pane{
+            overflow-x: scroll;
+        }
+    </style>
+
+    <script type="text/javascript">
+        {% include "js/wgscovplot_flu.js" %}
+    </script>
+    <script>
+        window.samples = {{ samples_name }}
+        window.segments = {{ segments_name }}
+        window.depths = {{ depths_data }}
+
+        function updateChartDivSize() {
+            let BOTTOM_PADDING = 20;
+            let top = $chart.getBoundingClientRect().top;
+            let height = window.innerHeight - top - BOTTOM_PADDING;
+            if (height < 300) {
+                height = 300;
+            }
+            $chart.style.height = height + 'px';
+            $chart.style.width = window.innerWidth + 'px';
+            chart.resize();
+        }
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var $chart = document.getElementById("chart");
+            window.$chart = $chart;
+            var chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
+            window.chart = chart;
+            updateChartDivSize();
+            initWgscovplotRenderEnv();
+        })
+
+        //window.addEventListener("resize", updateChartDivSize);
+        initWgscovplotEvent();
+
+    </script>
+</body>
+</html>

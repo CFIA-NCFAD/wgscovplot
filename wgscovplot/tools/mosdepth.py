@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 from typing import Dict, List
+from Bio import SeqIO
 
 import numpy as np
 import pandas as pd
@@ -21,13 +22,17 @@ SAMPLE_NAME_CLEANUP = [
     '-depths.tsv',
     '.trim',
     '.mkD',
-
+    '.topsegments.csv'
 ]
 
 PER_BASE_PATTERNS = [
     '**/mosdepth/**/*.genome.per-base.bed.gz',
     '**/mosdepth/**/*.per-base.bed.gz',
     '**/mosdepth/**/*-depths.tsv',
+]
+
+TOP_REFERENCE_PATTERNS = [
+    '**/reference_sequences/**/*.topsegments.csv',
 ]
 
 REGIONS_PATTERNS = [
@@ -128,9 +133,60 @@ def get_depth(basedir: Path) -> Dict[str, List]:
     return out
 
 
-def get_samples_name(basedir: Path) -> List:
+def get_segment_depth(basedir: Path) -> Dict[str, List]:
+    segment_references = find_file_for_each_sample(basedir,
+                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    for sample, top_refid_path in segment_references.items():
+        out[sample] = {}
+        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
+                                                                   'blastn_bitscore', 'ref_sequence_id'])
+        for row in df.itertuples():
+            bed_files = basedir.glob(f'**/mosdepth/**/'
+                                     f'{row.sample}.Segment_{row.segment_number}.{row.ncbi_id}.per-base.bed.gz')
+            for p in bed_files:
+                df_mosdepth = read_mosdepth_bed(p)
+                arr = depth_array(df_mosdepth)
+                arr[arr == 0] = 1E-20
+                out[sample][row.segment_number] = arr.tolist()
+    return out
+
+
+def get_segment_references(basedir: Path) -> Dict[str, List]:
+    segment_references = find_file_for_each_sample(basedir,
+                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    for sample, top_refid_path in segment_references.items():
+        out[sample] = {}
+        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
+                                                                   'blastn_bitscore', 'ref_sequence_id'])
+        for row in df.itertuples():
+            ref_files = basedir.glob(f'**/reference_sequences/**/'
+                                     f'{row.sample}.Segment_{row.segment_number}.{row.ncbi_id}.*')
+            for p in ref_files:
+                for record in SeqIO.parse(open(p), 'fasta'):
+                    out[sample][row.segment_number] = str(record.seq)
+    return out
+
+
+def get_segments_name(basedir: Path) -> List:
+    segment_references = find_file_for_each_sample(basedir,
+                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    segments = []
+    for sample, top_refid_path in segment_references.items():
+        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
+                                                                   'blastn_bitscore', 'ref_sequence_id'])
+        segments = set(segments) | set(df['segment_number'])
+    return sorted(list(segments))
+
+
+def get_samples_name(basedir: Path, segment_virus: bool) -> List:
+    glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
     sample_beds = find_file_for_each_sample(basedir,
-                                            glob_patterns=PER_BASE_PATTERNS,
+                                            glob_patterns=glob_patterns,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     out = []
     for sample, bed_path in sample_beds.items():

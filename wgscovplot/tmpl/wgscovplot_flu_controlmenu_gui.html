@@ -1,0 +1,109 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">WGSCOVPLOT</span>
+        <div class="navbar-nav nav me-auto mb-2 mb-lg-0">
+            <a type="button" class="nav-link active" aria-current="page" data-bs-toggle="tab"
+               data-bs-target="#chart-pane" aria-selected="true">Coverage Plot</a>
+            <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#summary-table"
+               aria-selected="false">Summary Information</a>
+            <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#about"
+               aria-selected="false">About</a>
+        </div>
+        <button type="button" class="btn btn-outline-secondary ms-auto large" data-bs-toggle="offcanvas"
+                data-bs-target="#control-menu" title="Options">⚙
+        </button>
+    </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane show active" id="chart-pane" role="tabpanel">
+        <div class="container-fluid" id="chart"></div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="control-menu">
+        <div class="offcanvas-header">
+            <h5>Plotting Options</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"
+                    aria-labelledby="controlmenu"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#plot-sample" aria-expanded="true" aria-controls="plot-sample">Samples
+                        </button>
+                    </h2>
+                    <div id="plot-sample" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <select id="selectedsamples" class="selected-samples" multiple="multiple">
+                                    {% for sample in samples_name %}
+                                        <option value={{sample}}>{{sample}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#plot-segments" aria-expanded="true" aria-controls="plot-segments">Segments
+                        </button>
+                    </h2>
+                    <div id="plot-segments" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <select id="selectedsegments" class="selected-segments" multiple="multiple">
+                                    {% for segment in segments_name %}
+                                        <option value={{segment}}>{{segment}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#renderer-env" aria-expanded="false" aria-controls="renderer-env">
+                            Renderer Environment
+                        </button>
+                    </h2>
+                    <div id="renderer-env" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <label for="render-env" class="col-sm-4 col-form-label">Renderer</label>
+                                <div class="col-sm-8">
+                                    <select id="render-env" class="form-select" onchange="initWgscovplotRenderEnv()">
+                                        <option value="svg">svg</option>
+                                        <option value="canvas" selected>canvas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="about" role="tabpanel">
+        <div class="container">
+            {{ about_html }}
+        </div>
+    </div>
+
+    <div class="tab-pane" id="summary-table" role="tabpanel">
+        <div class="" container-fluid>
+            {{ coverage_stat }}
+        </div>
+    </div>
+</div>

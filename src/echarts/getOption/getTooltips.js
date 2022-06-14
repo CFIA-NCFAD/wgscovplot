@@ -73,19 +73,6 @@ function getTooltips(samples, depths, variants, refSeq,
                                 }
                             }
                         }
-                        /*
-                        Object.values(variants[i]).forEach(values => {
-                            if (values['POS'] === position) {
-                                for (const [key, value] of Object.entries(values)) {
-                                    if (key !== 'POS' && key !== 'sample') {
-                                        positionRows.push(
-                                            ...[[key, value]]
-                                        )
-                                    }
-                                }
-                            }
-                        })
-                         */
                     }
                 } else {
                     positionRows = [

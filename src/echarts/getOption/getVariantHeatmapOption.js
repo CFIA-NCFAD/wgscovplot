@@ -154,6 +154,7 @@ function getMutationMatrix(samples, variants) {
 
 function getVariantHeatmapOption(samples, variants) {
     let mutationMatrixInfo = getMutationMatrix(samples, variants);
+    let dataSamples = [...samples].reverse();
     let chartOptions = {
         xAxis: {
             type: "category",
@@ -168,7 +169,7 @@ function getVariantHeatmapOption(samples, variants) {
         },
         yAxis: {
             type: "category",
-            data: reverse(samples),
+            data: dataSamples,
             splitArea: {
                 show: true
             },
@@ -216,7 +217,7 @@ function getVariantHeatmapOption(samples, variants) {
                 }
             }
         ],
-        tooltip: getTooltipHeatmap(samples, mutationMatrixInfo[0], variants),
+        tooltip: getTooltipHeatmap(dataSamples, mutationMatrixInfo[0], variants),
         toolbox: {
             show: "true",
             feature: {
