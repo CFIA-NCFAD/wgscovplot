@@ -187,3 +187,23 @@ def write_html_coverage_plot(samples_name: List[str],
                                         ref_seq_length=len(ref_seq),
                                         max_depth=max_depth(depths_data),
                                         low_coverage_threshold=low_coverage_threshold))
+
+
+def write_html_coverage_plot_segment_virus(samples_name: List[str],
+                                           segments_name: List[str],
+                                           depths_data: Dict[str, Dict[str, List]],
+                                           ref_seq: Dict[str, Dict[str, str]],
+                                           output_html: Path,
+                                           ) -> None:
+    render_env = Environment(
+        keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
+        loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
+    )
+    template_file = render_env.get_template("wgscovplot_flu_template.html")
+    with open(output_html, "w+", encoding="utf-8") as fout:
+        fout.write(template_file.render(samples_name=samples_name,
+                                        segments_name=segments_name,
+                                        depths_data=depths_data,
+                                        ref_seq=ref_seq))

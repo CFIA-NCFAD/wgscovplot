@@ -69,14 +69,6 @@ function getVariantComparison(samples, variants, depths, position, currentSample
                 isPOSExist = true;
                 variantArr.push(foundObj);
             }
-            /*
-            Object.values(element). forEach(values => {
-                if (values['POS'] === position){
-                    isPOSExist = true;
-                    variantArr.push(values);
-                }
-            });
-             */
             if (!isPOSExist){
                 variantArr.push({"sample": samples[i], "POS":position}); // sample has variant infor but no variant infor at this position
             }

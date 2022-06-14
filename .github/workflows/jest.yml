@@ -12,4 +12,5 @@ jobs:
         yarn
         yarn add --dev jest
         yarn add --dev lodash
+        yarn add --dev jest-environment-jsdom
         yarn run test:ci
