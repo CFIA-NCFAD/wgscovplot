@@ -117,6 +117,7 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
                              "end": end_pos,
                              "level": level,
                              "strand": strand,
+                             "rotate": 0.5 if strand == 1 else -0.5,
                              "type": "gene_feature"
                          },
                          itemStyle={"color": next(colour_cycle)})
@@ -140,6 +141,7 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
                          "end": region[1],
                          "level": level,
                          "strand": '',
+                         "rotate": 0,
                          "type": "amplicon_feature"
                      },
                      itemStyle={"color": amplicon_color})

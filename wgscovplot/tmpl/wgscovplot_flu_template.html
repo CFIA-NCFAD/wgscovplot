@@ -8,20 +8,15 @@
     </script>
 </head>
 <body>
+
     {% block content%}
-        {% include "wgscovplot_flu_controlmenu_gui.html" %}
+        {% include "wgscovplot_flu_gui.html" %}
     {% endblock %}
-
-    <style>
-        #chart-pane{
-            overflow-x: scroll;
-        }
-    </style>
-
     <script type="text/javascript">
         {% include "js/wgscovplot_flu.js" %}
     </script>
     <script>
+
         window.samples = {{ samples_name }}
         window.segments = {{ segments_name }}
         window.depths = {{ depths_data }}
@@ -46,10 +41,8 @@
             updateChartDivSize();
             initWgscovplotRenderEnv();
         })
-
-        //window.addEventListener("resize", updateChartDivSize);
+        window.addEventListener("resize", updateChartDivSize);
         initWgscovplotEvent();
-
     </script>
 </body>
 </html>

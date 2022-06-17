@@ -1,33 +1,69 @@
 import {getFluDatasets} from "./getFluDataSets";
-import {getFluYAxes} from "./getFluAxes";
+import {getGrids} from "../getGrids";
+import {getYAxes} from "../getAxes";
 import {getFluXAxes} from "./getFluAxes";
-import {getFluGrids} from "./getFluGrids";
 import {getFluDepthSeries} from "./getFluDepthSeries";
+import {getMaxSegmentsLength, getSegmentsRange} from "./getFluSegmentsInfo";
+import {getFluGeneFeature} from "./getFluSegmentsInfo";
+import {sum} from "lodash/math";
+import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeaturesSeries";
+import {getFluTooltips} from "./getFluTooltips";
+import {getYAxisMax} from "./getFluSegmentsInfo";
 
+/**
+ * Get Coverage Chart options
+ * @param {Array<string>} samples - An array of samples name
+ * @param {Array<string>} segments - An array of segments name
+ * @param {Object} depths - Object of depths array
+ * @returns {Object} - Coverage Chart Option
+ *
+ * depths: { 'SAMPLE_NAME':{
+ *                  'SEGMENT_NAME': []
+ *              }
+ *          }
+ */
 function getFluCoverageChartOption(samples, segments, depths) {
-    let chartOptions = {
+
+    let chartOptions = {};
+    if (samples.length == 0 || segments.length == 0){
+        return chartOptions; // Plot nothing
+    }
+    let maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
+    let segmentsRange = getSegmentsRange(maxSegmentsLength);
+    let geneFeatureData = getFluGeneFeature(segments, segmentsRange);
+    let yMax = getYAxisMax(samples, segments, depths);
+    let position = [...Array(sum(maxSegmentsLength) + 1).keys()];
+    position.shift();
+    chartOptions = {
         title: {},
-        dataset: getFluDatasets(depths),
-        xAxis: getFluXAxes(samples, segments, depths),
-        yAxis: getFluYAxes(samples, segments),
+        dataset: getFluDatasets(samples, segments, depths, position),
+        xAxis: getFluXAxes(samples, segments, position.length, true, segmentsRange),
+        yAxis: getYAxes(samples, 'log', yMax, true, false),
         series: [
-            ...getFluDepthSeries(samples, segments)
+            ...getFluDepthSeries(samples, segments),
+            ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
-        tooltip:{
-            trigger: "axis",
-            enterable: true,
-            appendToBody: true,
-            renderMode: "html",
-            showContent: true,
-            confine: true,
-            position: "cursor",
-            axisPointer: {
-                type: 'line'
+        tooltip: getFluTooltips(samples, segments, depths, segmentsRange),
+        dataZoom: [
+            {
+                type: "inside",
+                filterMode: "none",
+                xAxisIndex: [...Array(samples.length + 1).keys()],
+                zoomLock: false,
             },
-        },
-        grid: getFluGrids(samples, segments)
+            {
+                show: true,
+                filterMode: "none",
+                xAxisIndex: [...Array(samples.length + 1).keys()],
+                type: "slider",
+                zoomLock: false,
+                showDataShadow: false
+            },
+        ],
+        grid: getGrids(samples, true, false, false)
     };
     return chartOptions;
+
 }
 
 export {getFluCoverageChartOption};

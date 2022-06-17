@@ -22,7 +22,7 @@ function initWgscovplotEvent(){
         $("#selectedsegments").select2({
             tags: true,
         });
-
+        /*
         $("#selectedsegments").on("select2:select", function (evt) {
             let element = evt.params.data.element;
             let $element = $(element);
@@ -30,6 +30,8 @@ function initWgscovplotEvent(){
             $(this).append($element);
             $(this).trigger("change");
         });
+
+         */
 
         $("#selectedsamples").on("change", function () {
             updateFluCoverageChartOption(chart.getOption());
@@ -55,8 +57,7 @@ function getFluDepths (samples, segments){
 
 function updateFluCoverageChartOption(charOption){
     const [plotSamples, plotSegments] = getCurrentSamplesSegments(charOption)
-    let plotDepths = getFluDepths(plotSamples, plotSegments);
-    let updateOption = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, plotDepths)
+    let updateOption = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths)
     chart.setOption(option=updateOption, {notMerge:true})
     chart.resize({
         width: 'auto'
@@ -91,7 +92,7 @@ function getCurrentSamplesSegments(chartOption) {
     // If the chart is not initialized yet, get 3 first samples from window.samples
     if (chartOption === undefined || chartOption === null){
         samples = window.samples.slice(0, 3);
-        segments = window.segments.slice(0, 3);
+        segments = window.segments.slice(0, 8);
     } else{
         let selectData1 = $("#selectedsamples").select2("data");
         let selectData2 = $("#selectedsegments").select2("data");
@@ -112,7 +113,7 @@ function initWgscovplotRenderEnv(){
     let plotDepths = getFluDepths(plotSamples, plotSegments)
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamplesSegments(plotSamples, plotSegments);
-        chart.setOption(option=wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, plotDepths))
+        chart.setOption(option=wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths))
     }
     chart.setOption(option=option)
 }

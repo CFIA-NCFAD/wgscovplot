@@ -1,7 +1,7 @@
 
 function getFluDepthSeries(samples, segments) {
     let depthSeries = [];
-    for (let i = 0; i < samples.length * segments.length; i++) {
+    for (let i = 0; i < samples.length; i++) {
         depthSeries.push({
             type: "line",
             xAxisIndex: i,
@@ -22,6 +22,7 @@ function getFluDepthSeries(samples, segments) {
             large: true,
         });
     }
+    console.log(depthSeries)
     return depthSeries;
 }
 

@@ -25,6 +25,20 @@ export const ntColor = {
 };
 
 /**
+ * Define color for flu gene segments
+ */
+export const segmentsColor = {
+    "1_PB2": "#A6CEE3",
+    "2_PB1": "#1F78B4",
+    "3_PA" : "#B2DF8A",
+    "4_HA" : "#33A02C",
+    "5_NP" : "#FB9A99",
+    "6_NA" : "#E31A1C",
+    "7_M"  : "#FDBF6F",
+    "8_NS" : "#FF7F00"
+};
+
+/**
  * Function get Coverage Stat comparison across samples
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<Array<number>>} depths - Array of depths

@@ -1,0 +1,443 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">WGSCOVPLOT</span>
+        <div class="navbar-nav nav me-auto mb-2 mb-lg-0">
+            <a type="button" class="nav-link active" aria-current="page" data-bs-toggle="tab"
+               data-bs-target="#chart-pane" aria-selected="true">Coverage Plot</a>
+            <a type="button" class="nav-link" aria-current="page" data-bs-toggle="tab"
+               data-bs-target="#varmap-chart-pane" aria-selected="true">Variant Heatmap</a>
+            <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#summary-table"
+               aria-selected="false">Summary Information</a>
+            <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#about"
+               aria-selected="false">About</a>
+        </div>
+        <button type="button" class="btn btn-outline-secondary ms-auto large" data-bs-toggle="offcanvas"
+                data-bs-target="#control-menu" title="Options">⚙
+        </button>
+    </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane show active" id="chart-pane" role="tabpanel">
+        <div class="container-fluid" id="chart"></div>
+    </div>
+    <div class="tab-pane" id="varmap-chart-pane" role="tabpanel">
+        <div class="container-fluid" id="varmap-chart"></div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="control-menu">
+        <div class="offcanvas-header">
+            <h5>Plotting Options</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"
+                    aria-labelledby="controlmenu"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#plot-sample" aria-expanded="true" aria-controls="plot-sample">Samples
+                        </button>
+                    </h2>
+                    <div id="plot-sample" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <select id="selectedsamples" class="selected-samples" multiple="multiple">
+                                    {% for sample in samples_name %}
+                                        <option value={{sample}}>{{sample}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#yaxis" aria-expanded="false" aria-controls="yaxis">Y-axis
+                        </button>
+                    </h2>
+                    <div id="yaxis" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="mb-3 row">
+                                <label for="scale" class="col-sm-4 col-form-label">Scaling</label>
+                                <div class="col-sm-8">
+                                    <select class="form-select" id="scale" onchange="setScale()">
+                                        <option value="value">Linear</option>
+                                        <option value="log" selected>Log</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="ymax" class="col-sm-4 col-form-label">Y-axis Limit</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <input class="form-control" type="number" id="ymax" value={{ max_depth }}
+                                               style="width: 30%">
+                                        <button class="btn btn-primary" type="button" type="button" onclick="setYMax()">
+                                            Set
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#xaxis" aria-expanded="false" aria-controls="xaxis">X-axis
+                        </button>
+                    </h2>
+                    <div id="xaxis" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="mb-3 row">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-xaxis-label">Show X-axis Label</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-xaxis-label" checked>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#tooltips" aria-expanded="false" aria-controls="axis">Tooltips
+                        </button>
+                    </h2>
+                    <div id="tooltips" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip">Enable</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-tooltip" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="fix-tooltip-postion">Fix Tooltip
+                                            Position</label>
+                                        <input class="form-check-input" type="checkbox" id="fix-tooltip-postion"
+                                               unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip-trigger-click">Trigger On
+                                            Click</label>
+                                        <input class="form-check-input" type="checkbox"
+                                               id="toggle-tooltip-trigger-click" unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip-variant-sites">Variant
+                                            Sites</label>
+                                        <input class="form-check-input" type="checkbox"
+                                               id="toggle-tooltip-variant-sites" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-tooltip-non-variant-sites">Non
+                                            Variant Sites</label>
+                                        <input class="form-check-input" type="checkbox"
+                                               id="toggle-tooltip-non-variant-sites" unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-variant-comparison">Variant
+                                            Sites/Coverage Stat Comparison</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-variant-comparison"
+                                               checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-coverage-stat">Coverage Statistics</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-coverage-stat"
+                                               unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#datazoom" aria-expanded="false" aria-controls="datazoom">Data Zoom
+                        </button>
+                    </h2>
+                    <div id="datazoom" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-slider">Show Slider</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-slider" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="start-pos" class="col-form-label col-sm-4">Zoom start</label>
+                                <div class="col-sm-8">
+                                    <input type="number" id="start-pos" class="form-control" value=1><br>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="end-pos" class="col-form-label col-sm-4">Zoom end</label>
+                                <div class="col-sm-8">
+                                    <input type="number" id="end-pos" class="form-control" value={{ref_seq_length}}>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md">
+                                    <button class="btn btn-outline-primary" onclick="setDataZoom(0, 0)">Set zoom</button>
+                                </div>
+                                <div class="col-md">
+                                    <button class="btn btn-outline-secondary" onclick="setDataZoom(1, {{ref_seq_length}})">Reset zoom
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if gene_feature == true or amplicon == true %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#genefeatures" aria-expanded="false" aria-controls="genefeatures">
+                            Genetic Features
+                        </button>
+                    </h2>
+                    <div id="genefeatures" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <label class="form-label">Feature Plot Height</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <input type="range" id="genefeature-height-input" class="form-range" value="15.0" min="1.0"
+                                       max="50.0" step="0.1" onchange="updateGeneFeatureHeight(this.value);">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <output style="display: block; text-align:center;" type="text"
+                                        id="genefeature-height-output">15.0<span>%</span></output>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if gene_feature == true %}
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label class="col-sm-5">Feature Name</label>
+                                <div class="col-sm-7">
+                                    <select id="selected-gene-feature-name" class="selected-gene-feature-name" multiple="multiple">
+                                        {% for feature_name in gene_feature_name %}
+                                            <option value={{sample}}>{{feature_name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="d-grid gap-2 col-4 mx-auto">
+                                    <button class="btn btn-outline-primary" onclick="applyFeatureView()">Apply</button>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if amplicon == True %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#amplicon" aria-expanded="false" aria-controls="amplicon">
+                            Amplicon
+                        </button>
+                    </h2>
+                    <div id="amplicon" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="toggle-amplicon">Show Amplicon</label>
+                                <input class="form-check-input" type="checkbox" id="toggle-amplicon" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#grid-display" aria-expanded="false" aria-controls="grid-display">
+                            Grid Configurations
+                        </button>
+                    </h2>
+                    <div id="grid-display" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="chart-height-input" class="form-label">Subplot Height</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-height-input" class="form-range" value="19.0"
+                                                   min="1.0" max="70.0" step="0.1" onchange="updateSubPlotHeight(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="chart-height-output">19.0<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="chart-left-input" class="form-label">Left Margin</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-left-input" class="form-range" value="4.0" min="1.0"
+                                           max="50.0" step="0.1" onchange="updateChartLeftMargin(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="chart-left-output">4.0<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label for="chart-right-input" class="form-label">Right Margin</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-right-input" class="form-range" value="4.0" min="1.0"
+                                           max="50.0" step="0.1" onchange="updateChartRightMargin(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="chart-right-output">4.0<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <label class="form-label"> Subplot Top Margin</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="chart-top-input" class="form-range" value="6.5" min="0.0"
+                                           max="25.0" step="0.1" onchange="updateSubPlotTopMargin(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text" id="chart-top-output">6.5<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md">
+                                    <button class="btn btn-outline-secondary" onclick="resetGridDisplay()">Reset Grid Display</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#renderer-env" aria-expanded="false" aria-controls="renderer-env">
+                            Renderer Environment
+                        </button>
+                    </h2>
+                    <div id="renderer-env" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <label for="render-env" class="col-sm-4 col-form-label">Renderer</label>
+                                <div class="col-sm-8">
+                                    <select id="render-env" class="form-select" onchange="initWgscovplotRenderEnv()">
+                                        <option value="svg">svg</option>
+                                        <option value="canvas" selected>canvas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
+                                        <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Options
+                        </button>
+                    </h2>
+                    <div id="varmap" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-mutation">Show Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation" checked>
+                                </div>
+                                <div>
+                                    <label for="varmap-height-input" class="form-label">Variant Heatmap Height</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="range" id="varmap-height-input" class="form-range" value="50" min="5"
+                                           max="90" step="1" onchange="updateVarMapHeight(this.value);">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <output style="display: block; text-align:center;" type="text"
+                                            id="varmap-height-output">50<span>%</span></output>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="about" role="tabpanel">
+        <div class="container">
+            {{ about_html }}
+        </div>
+    </div>
+
+    <div class="tab-pane" id="summary-table" role="tabpanel">
+        <div class="" container-fluid>
+            {{ coverage_stat }}
+        </div>
+    </div>
+</div>
