@@ -15,6 +15,7 @@ import {getYAxisMax} from "./getFluSegmentsInfo";
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<string>} segments - An array of segments name
  * @param {Object} depths - Object of depths array
+ * @param {String} scaleType - The scale set for yAXis either 'log' or 'linear'
  * @returns {Object} - Coverage Chart Option
  *
  * depths: { 'SAMPLE_NAME':{
@@ -22,7 +23,7 @@ import {getYAxisMax} from "./getFluSegmentsInfo";
  *              }
  *          }
  */
-function getFluCoverageChartOption(samples, segments, depths) {
+function getFluCoverageChartOption(samples, segments, depths, scaleType="log") {
 
     let chartOptions = {};
     if (samples.length == 0 || segments.length == 0){
@@ -38,7 +39,7 @@ function getFluCoverageChartOption(samples, segments, depths) {
         title: {},
         dataset: getFluDatasets(samples, segments, depths, position),
         xAxis: getFluXAxes(samples, segments, position.length, true, segmentsRange),
-        yAxis: getYAxes(samples, 'log', yMax, true, false),
+        yAxis: getYAxes(samples, scaleType, yMax, true, false),
         series: [
             ...getFluDepthSeries(samples, segments),
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)

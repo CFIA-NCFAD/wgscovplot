@@ -29,9 +29,7 @@ function getFluTooltips(samples, segments, depths, segmentsRange) {
                         segment = segments[i];
                     }
                 }
-                if (coverageDepth == 1E-20){
-                    coverageDepth = 0
-                } else if (coverageDepth == 1E-10){
+                if (coverageDepth == 1E-10){
                     return 'Out of Range'
                 }
                 let segmentLength = depths[samples[params[0].axisIndex]][segment].length;
