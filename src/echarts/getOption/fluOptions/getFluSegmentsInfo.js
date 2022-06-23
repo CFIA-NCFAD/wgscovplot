@@ -28,6 +28,8 @@ function getMaxSegmentsLength (samples, segments, depths){
     return  maxSegmentsLength;
 }
 
+
+
 /**
  * Get range [start, end] for each segment
  * @param {Array<number>} maxSegmentsLength - An array of maximum length
@@ -39,6 +41,23 @@ function getXAxisMax (maxSegmentsLength){
     xAxisMax = sum(maxSegmentsLength);
     return xAxisMax;
 }
+
+/**
+ * Get range [start, end] for each segment
+ * @param {Array<number>} maxSegmentsLength - An array of maximum length
+ * @returns {number}
+ *
+ */
+function getSegmentsIndex (pos, segmentsRange){
+    let index = 0 ;
+    for (let i=0; i < segmentsRange.length; i ++){
+        if (pos >= segmentsRange[i][0] && pos <= segmentsRange[i][1]){
+            index = i;
+        }
+    }
+    return index;
+}
+
 
 /**
  * Get max depth among samples/segments
@@ -80,8 +99,6 @@ function getSegmentsRange (maxSegmentsLength){
         }
         segmentsRange.push([segmentsStart, segmentsEnd]);
     }
-    console.log("maxSegmentsLength", maxSegmentsLength);
-    console.log("segmentsRange",segmentsRange)
     return segmentsRange;
 }
 
@@ -113,4 +130,4 @@ function getFluGeneFeature(segments, segmentsRange){
     }
     return geneFeature;
 }
-export {getMaxSegmentsLength, getSegmentsRange, getFluGeneFeature, getYAxisMax, getXAxisMax}
+export {getMaxSegmentsLength, getSegmentsRange, getFluGeneFeature, getYAxisMax, getXAxisMax, getSegmentsIndex}

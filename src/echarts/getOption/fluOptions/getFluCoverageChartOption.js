@@ -9,6 +9,7 @@ import {sum} from "lodash/math";
 import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeaturesSeries";
 import {getFluTooltips} from "./getFluTooltips";
 import {getYAxisMax} from "./getFluSegmentsInfo";
+import {getFluVariantSeries} from "./getFluVariantSeries";
 
 /**
  * Get Coverage Chart options
@@ -23,7 +24,7 @@ import {getYAxisMax} from "./getFluSegmentsInfo";
  *              }
  *          }
  */
-function getFluCoverageChartOption(samples, segments, depths, scaleType="log") {
+function getFluCoverageChartOption(samples, segments, depths, variants, refSeq, scaleType="log") {
 
     let chartOptions = {};
     if (samples.length == 0 || segments.length == 0){
@@ -42,6 +43,7 @@ function getFluCoverageChartOption(samples, segments, depths, scaleType="log") {
         yAxis: getYAxes(samples, scaleType, yMax, true, false),
         series: [
             ...getFluDepthSeries(samples, segments),
+            ...getFluVariantSeries(samples, segments, depths, variants, segmentsRange, refSeq),
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
         tooltip: getFluTooltips(samples, segments, depths, segmentsRange),

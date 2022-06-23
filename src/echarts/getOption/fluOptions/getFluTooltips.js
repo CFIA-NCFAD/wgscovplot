@@ -1,5 +1,6 @@
 import {getSegmentsRange} from "./getFluSegmentsInfo";
 import {toTableHtml} from "../../../util";
+import {getSegmentsIndex} from "./getFluSegmentsInfo";
 
 
 function getFluTooltips(samples, segments, depths, segmentsRange) {
@@ -23,12 +24,9 @@ function getFluTooltips(samples, segments, depths, segmentsRange) {
                 let coverageDepth = params[0].data[0];
                 let pos = params[0].data[1];
                 let segment = '';
-                for (let i=0; i < segmentsRange.length; i ++){
-                    if (pos >= segmentsRange[i][0] && pos <= segmentsRange[i][1]){
-                        pos = pos - segmentsRange[i][0] + 1;
-                        segment = segments[i];
-                    }
-                }
+                let segmentIndex = getSegmentsIndex(pos, segmentsRange);
+                pos = pos - segmentsRange[segmentIndex][0] + 1;
+                segment = segments[segmentIndex];
                 if (coverageDepth == 1E-10){
                     return 'Out of Range'
                 }

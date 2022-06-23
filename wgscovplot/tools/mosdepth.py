@@ -133,7 +133,7 @@ def get_depth(basedir: Path) -> Dict[str, List]:
     return out
 
 
-def get_segment_depth(basedir: Path) -> Dict[str, List]:
+def get_segments_depth(basedir: Path) -> Dict[str, List]:
     segment_references = find_file_for_each_sample(basedir,
                                                    glob_patterns=TOP_REFERENCE_PATTERNS,
                                                    sample_name_cleanup=SAMPLE_NAME_CLEANUP)
@@ -153,7 +153,7 @@ def get_segment_depth(basedir: Path) -> Dict[str, List]:
     return out
 
 
-def get_segment_references(basedir: Path) -> Dict[str, List]:
+def get_segments_references(basedir: Path) -> Dict[str, List]:
     segment_references = find_file_for_each_sample(basedir,
                                                    glob_patterns=TOP_REFERENCE_PATTERNS,
                                                    sample_name_cleanup=SAMPLE_NAME_CLEANUP)

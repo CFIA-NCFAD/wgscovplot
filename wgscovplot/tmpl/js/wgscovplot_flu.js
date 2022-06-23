@@ -38,7 +38,7 @@ function initWgscovplotEvent(){
 
 function updateFluCoverageChartOption(charOption){
     const [plotSamples, plotSegments] = getCurrentSamplesSegments(charOption)
-    let updateOption = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths)
+    let updateOption = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants, window.ref_seq)
     chart.setOption(option=updateOption, {notMerge:true})
     chart.resize({
         width: 'auto'
@@ -93,7 +93,7 @@ function initWgscovplotRenderEnv(){
     const [plotSamples, plotSegments] = getCurrentSamplesSegments(chartOption);
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamplesSegments(plotSamples, plotSegments);
-        chart.setOption(option=wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths))
+        chart.setOption(option=wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants, window.ref_seq))
     }
     chart.setOption(option=option)
     onChartDataZoomActions()
@@ -106,7 +106,7 @@ function setScale() {
     let scaleType = document.getElementById("scale").value;
     let yAxisOption = chart.getOption().yAxis;
     yAxisOption.forEach(element => {
-        if (element.gridIndex < yAxisOption.length) {
+        if (element.gridIndex < yAxisOption.length -1) {
             element.type = scaleType;
         }
     });
@@ -120,7 +120,7 @@ function setYMax() {
     let yMax = document.getElementById("ymax").value;
     let yAxisOption = chart.getOption().yAxis;
     yAxisOption.forEach(element => {
-        if (element.gridIndex < yAxisOption.length) {
+        if (element.gridIndex < yAxisOption.length - 1) {
             element.max = yMax;
         }
     });

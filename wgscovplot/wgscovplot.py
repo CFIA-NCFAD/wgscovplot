@@ -19,12 +19,13 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
     if segment_virus:
         samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
         segments_name = mosdepth.get_segments_name(input_dir)
-        ref_seq = mosdepth.get_segment_references(input_dir)
-        depths_data = mosdepth.get_segment_depth(input_dir)
-
+        ref_seq = mosdepth.get_segments_references(input_dir)
+        depths_data = mosdepth.get_segments_depth(input_dir)
+        variants_data = variants.get_segments_variants(input_dir)
         write_html_coverage_plot_segment_virus(samples_name=samples_name,
                                                segments_name=segments_name,
                                                depths_data=depths_data,
+                                               variants_data=variants_data,
                                                ref_seq=ref_seq,
                                                output_html=output_html)
     else:

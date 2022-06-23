@@ -169,6 +169,10 @@ class VariantCaller(Enum):
     Medaka = 'medaka'
 
 
+TOP_REFERENCE_PATTERNS = [
+    '**/reference_sequences/**/*.topsegments.csv',
+]
+
 VCF_GLOB_PATTERNS = [
     '**/nanopolish/*.pass.vcf.gz',
     '**/ivar/*.vcf.gz',
@@ -185,6 +189,7 @@ VCF_SAMPLE_NAME_CLEANUP = [
     re.compile(r'\.longshot'),
     re.compile(r'\.snpeff'),
     re.compile(r'\.no_fs'),
+    re.compile(r'\.topsegments.csv'),
 ]
 
 SNPSIFT_GLOB_PATTERNS = [
@@ -507,6 +512,18 @@ def parse_nanopolish_vcf(df: pd.DataFrame, sample_name: str = None) -> Optional[
     return df_merge.loc[:, cols_to_keep]
 
 
+def parse_clair3_vcf(df: pd.DataFrame, sample_name: str = None, segment_name: str = None) -> Optional[pd.DataFrame]:
+    if df.empty:
+        return []
+    df_clair3_info = df
+    df_clair3_info['sample'] = sample_name
+    df_clair3_info['segment'] = segment_name
+    df_clair3_info['ALT_FREQ'] = df_clair3_info['SAMPLE'].apply(lambda x: x.split(':')[-1])
+    df_clair3_info.drop(columns=['ID', 'INFO', 'QUAL', 'FILTER', 'INFO', 'FORMAT','SAMPLE'], inplace=True)
+    df_clair3_info = df_clair3_info.reindex(columns=["sample", "segment", "CHROM", "POS", "REF", "ALT", "ALT_FREQ"])
+    return df_clair3_info.to_dict(orient='records')
+
+
 def parse_vcf_info(s: str) -> dict:
     out = {}
     for x in s.split(';'):
@@ -514,6 +531,24 @@ def parse_vcf_info(s: str) -> dict:
             continue
         key, val_str = x.split('=', maxsplit=1)
         out[key] = try_parse_number(val_str)
+    return out
+
+
+def get_segments_variants(basedir: Path) -> Dict[str, pd.DataFrame]:
+    sample_vcf = find_file_for_each_sample(basedir,
+                                           glob_patterns=TOP_REFERENCE_PATTERNS,
+                                           sample_name_cleanup=VCF_SAMPLE_NAME_CLEANUP)
+    out = {}
+    for sample, top_refid_path in sample_vcf.items():
+        out[sample] = {}
+        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
+                                                                   'blastn_bitscore', 'ref_sequence_id'])
+        for row in df.itertuples():
+            vcf_files = basedir.glob(f'**/variants/**/'
+                                     f'{row.sample}.Segment_{row.segment_number}.{row.ncbi_id}.no_frameshifts.vcf')
+            for p in vcf_files:
+                variants_caller, df_vcf = read_vcf(p)
+                out[sample][row.segment_number] = parse_clair3_vcf(df_vcf, sample, row.segment_number)
     return out
 
 
@@ -550,7 +585,8 @@ def get_info(basedir: Path, min_coverage: int = 10) -> Dict[str, pd.DataFrame]:
             else:
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         else:
-            logger.warning(f'Sample "{sample}" VCF file "{vcf_path}" with variant_caller={variant_caller} not supported. Skipping...')
+            logger.warning(
+                f'Sample "{sample}" VCF file "{vcf_path}" with variant_caller={variant_caller} not supported. Skipping...')
 
     sample_snpsift = find_file_for_each_sample(basedir=basedir,
                                                glob_patterns=SNPSIFT_GLOB_PATTERNS,
