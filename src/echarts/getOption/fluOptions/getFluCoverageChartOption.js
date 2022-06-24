@@ -24,7 +24,15 @@ import {getFluVariantSeries} from "./getFluVariantSeries";
  *              }
  *          }
  */
-function getFluCoverageChartOption(samples, segments, depths, variants, refSeq, scaleType="log") {
+function getFluCoverageChartOption(samples, segments, depths, variants,
+                                   refSeq, scaleType="log",
+                                   triggerOnType="mousemove", isVariantSites=true,
+                                   isNonVariantSites=true, isInfoComparison=true,
+                                   isCovergateStatView=false,
+                                   isShowMutation=false,
+                                   isShowXAxisLabel=true,
+                                   isHideOverlapMutation=true)
+{
 
     let chartOptions = {};
     if (samples.length == 0 || segments.length == 0){
@@ -42,11 +50,13 @@ function getFluCoverageChartOption(samples, segments, depths, variants, refSeq, 
         xAxis: getFluXAxes(samples, segments, position.length, true, segmentsRange),
         yAxis: getYAxes(samples, scaleType, yMax, true, false),
         series: [
-            ...getFluDepthSeries(samples, segments),
-            ...getFluVariantSeries(samples, segments, depths, variants, segmentsRange, refSeq),
+            ...getFluDepthSeries(samples, segments, isNonVariantSites),
+            ...getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
+                refSeq, isVariantSites, isShowMutation, isHideOverlapMutation),
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
-        tooltip: getFluTooltips(samples, segments, depths, segmentsRange),
+        tooltip: getFluTooltips(samples, segments, depths, variants, refSeq, segmentsRange,
+                                triggerOnType, isInfoComparison, isCovergateStatView),
         dataZoom: [
             {
                 type: "inside",

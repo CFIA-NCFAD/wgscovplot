@@ -2,7 +2,8 @@ import {ntColor} from "../../../util";
 import {getSegmentsIndex} from "./getFluSegmentsInfo";
 
 
-function getFluVariantSeries(samples, segments, depths, variants, segmentsRange, refSeq) {
+function getFluVariantSeries(samples, segments, depths, variants, segmentsRange, refSeq,
+                             isVariantSites, isShowMutation, isHideOverlapMutation) {
     let variantSeries = [];
     let pos;
     for (let i = 0; i < samples.length; i++) {
@@ -10,7 +11,7 @@ function getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
         for (let j = 0; j < segments.length; j++) {
             for (let [k, varMap] of variants[samples[i]][segments[j]].entries()){
                 pos = parseInt(varMap.POS);
-                data.push([pos + segmentsRange[j][0] - 1, depths[samples[i]][segments[j]][pos]]);
+                data.push([pos + segmentsRange[j][0] - 1, depths[samples[i]][segments[j]][pos -1]]);
             }
         }
         variantSeries.push({
@@ -21,8 +22,9 @@ function getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
             barWidth: 2,
             itemStyle: {
                 color: function (params) {
-                    let segmentIndex = getSegmentsIndex(params.data[0], segmentsRange);
-                    let nt = refSeq[samples[i]][segments[segmentIndex]][params.data[0] - segmentsRange[segmentIndex][0]];
+                    let axisValue = params.data[0];
+                    let segmentIndex = getSegmentsIndex(axisValue, segmentsRange);
+                    let nt = refSeq[samples[i]][segments[segmentIndex]][axisValue- segmentsRange[segmentIndex][0]];
                     if (ntColor.hasOwnProperty(nt)) {
                         return ntColor[nt];
                     }
@@ -30,6 +32,9 @@ function getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
                 }
             },
             large: true,
+            tooltip:{
+                trigger: isVariantSites ? "axis" : "none"
+            }
         });
     }
     return variantSeries;

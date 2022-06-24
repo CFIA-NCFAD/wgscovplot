@@ -1,5 +1,5 @@
 
-function getFluDepthSeries(samples, segments) {
+function getFluDepthSeries(samples, segments, isNonVariantSites) {
     let depthSeries = [];
     for (let i = 0; i < samples.length; i++) {
         depthSeries.push({
@@ -19,10 +19,13 @@ function getFluDepthSeries(samples, segments) {
                 color: "#666",
                 opacity: 0,
             },
+            tooltip:{
+                trigger: isNonVariantSites ? "axis" : "none"
+            },
+            silent: true,
             large: true,
         });
     }
-    console.log(depthSeries)
     return depthSeries;
 }
 

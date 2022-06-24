@@ -16,15 +16,14 @@ function getFluDatasets(samples, segments, depths, position) {
     }
     for (let k = 0; k < samples.length; k++) {
         let depthArray = [];
-        for (let m=0; m <segments.length; m++){
+        for (let m = 0; m <segments.length; m++){
             let temp = depths[samples[k]][segments[m]];
             if (temp.length < maxSegmentsLength[m]){
-                let temp1 = times(maxSegmentsLength[m] - temp.length, constant(1E-10));
+                let temp1 = times(maxSegmentsLength[m] - temp.length, constant(1E-10)); // padding value 1E-10
                 temp = concat(depths[samples[k]][segments[m]], temp1)
             }
             depthArray = concat(depthArray, temp)
         }
-        //console.log(samples[k], position.length, depthArray.length, depthArray);
         datasets.push({
             dimensions: [
                 {name: "depth", type: "float"},
@@ -36,7 +35,6 @@ function getFluDatasets(samples, segments, depths, position) {
             },
         });
     }
-    console.log(datasets)
     return datasets;
 }
 
