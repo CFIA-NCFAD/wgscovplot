@@ -1,5 +1,17 @@
-
-function getFluDepthSeries(samples, segments, isNonVariantSites) {
+/**
+ * Define options for depth coverage charts
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
+ * @param {Object} depths - Object of depths array
+ * @param {boolean} nonVariantSites - whether to show non-variant sites information (tooltips options)
+ * @returns {Object} - Coverage Chart Option
+ *
+ * depths: { 'SAMPLE_NAME':{
+ *                  'SEGMENT_NAME': []
+ *              }
+ *          }
+ */
+function getFluDepthSeries(samples, segments, nonVariantSites) {
     let depthSeries = [];
     for (let i = 0; i < samples.length; i++) {
         depthSeries.push({
@@ -20,7 +32,7 @@ function getFluDepthSeries(samples, segments, isNonVariantSites) {
                 opacity: 0,
             },
             tooltip:{
-                trigger: isNonVariantSites ? "axis" : "none"
+                trigger: nonVariantSites ? "axis" : "none"
             },
             silent: true,
             large: true,

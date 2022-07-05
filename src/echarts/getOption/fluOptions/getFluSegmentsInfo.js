@@ -2,23 +2,18 @@ import {segmentsColor} from "../../../util";
 import {max, sum} from "lodash/math";
 
 /**
- * Get maximum length for each segment
- * @param {Array<string>} samples - An array of samples name
- * @param {Array<string>} segments - An array of segments name
+ * Get maximum length for a segment among samples
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
  * @param {Object} depths - Object of depths array
  * @returns {Array<number>}
  *
- * depths: { 'SAMPLE_NAME':{
- *                  'SEGMENT_NAME': []
- *              }
- *          }
  */
 function getMaxSegmentsLength (samples, segments, depths){
     let maxSegmentsLength = [];
     for (let i = 0; i < segments.length; i++){
         let maxLength = depths[samples[0]][segments[i]].length;
         for (let j = 0; j < samples.length; j++){
-            // Find max depths.length for each segment
             if (maxLength <= depths[samples[j]][segments[i]].length){
                 maxLength = depths[samples[j]][segments[i]].length;
             }
@@ -28,13 +23,10 @@ function getMaxSegmentsLength (samples, segments, depths){
     return  maxSegmentsLength;
 }
 
-
-
 /**
- * Get range [start, end] for each segment
+ * Get maxXAxis value
  * @param {Array<number>} maxSegmentsLength - An array of maximum length
  * @returns {number}
- *
  */
 function getXAxisMax (maxSegmentsLength){
     let xAxisMax = 0;
@@ -43,26 +35,9 @@ function getXAxisMax (maxSegmentsLength){
 }
 
 /**
- * Get range [start, end] for each segment
- * @param {Array<number>} maxSegmentsLength - An array of maximum length
- * @returns {number}
- *
- */
-function getSegmentsIndex (pos, segmentsRange){
-    let index = 0 ;
-    for (let i=0; i < segmentsRange.length; i ++){
-        if (pos >= segmentsRange[i][0] && pos <= segmentsRange[i][1]){
-            index = i;
-        }
-    }
-    return index;
-}
-
-
-/**
- * Get max depth among samples/segments
- * @param {Array<string>} samples - An array of samples name
- * @param {Array<string>} segments - An array of segments name
+ * Get maxYAxis value
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
  * @param {Object} depths - Object of depths array
  * @returns {number}
  *
@@ -76,11 +51,27 @@ function getYAxisMax (samples, segments, depths){
             }
         }
     }
-    return yAxisMax * 1.5; // set max value for yAxis
+    return parseInt(yAxisMax * 1.5); // set max value for yAxis
 }
 
 /**
- * Get range [start, end] for each segment
+ * Get segment index which a position belongs to
+ * @param {number} xAxisValue - xAxis value
+ * @param {Array<Array<number>>} segmentsRange - An array segment start, end
+ * @returns {number}
+ */
+function getSegmentsIndex (xAxisValue, segmentsRange){
+    let index = 0;
+    for (let i = 0; i < segmentsRange.length; i ++){
+        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]){
+            index = i;
+        }
+    }
+    return index;
+}
+
+/**
+ * Get [start, end] for each segment
  * @param {Array<number>} maxSegmentsLength - An array of maximum length
  * @returns {Array<Array<number>>}
  *
@@ -90,7 +81,7 @@ function getSegmentsRange (maxSegmentsLength){
     for (let m = 0; m < maxSegmentsLength.length; m++){
         let segmentsStart;
         let segmentsEnd;
-        if (m==0){
+        if (m == 0){
             segmentsStart = 1;
             segmentsEnd = maxSegmentsLength[m];
         }else{
@@ -104,7 +95,7 @@ function getSegmentsRange (maxSegmentsLength){
 
 /**
  * Get flu gene feature
- * @param {Array<string>} segments - An array of segments name
+ * @param {Array<string>} segments - An array of segments names
  * @param {Array<Array<number>>} segmentsRange - An array of maximum length
  * @returns {Array<Object>}
  *

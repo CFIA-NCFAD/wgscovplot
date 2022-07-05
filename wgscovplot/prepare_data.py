@@ -196,6 +196,7 @@ def write_html_coverage_plot_segment_virus(samples_name: List[str],
                                            depths_data: Dict[str, Dict[str, List]],
                                            variants_data: Dict[str, Dict[str, Dict]],
                                            ref_seq: Dict[str, Dict[str, str]],
+                                           ref_id: Dict[str, Dict[str, str]],
                                            output_html: Path,
                                            ) -> None:
     render_env = Environment(
@@ -210,4 +211,5 @@ def write_html_coverage_plot_segment_virus(samples_name: List[str],
                                         segments_name=segments_name,
                                         depths_data=depths_data,
                                         variants_data=variants_data,
-                                        ref_seq=ref_seq))
+                                        ref_seq=ref_seq,
+                                        ref_id=ref_id))

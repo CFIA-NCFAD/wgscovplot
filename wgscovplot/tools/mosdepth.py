@@ -133,7 +133,7 @@ def get_depth(basedir: Path) -> Dict[str, List]:
     return out
 
 
-def get_segments_depth(basedir: Path) -> Dict[str, List]:
+def get_segments_depth(basedir: Path) -> Dict[str, Dict[str, List]]:
     segment_references = find_file_for_each_sample(basedir,
                                                    glob_patterns=TOP_REFERENCE_PATTERNS,
                                                    sample_name_cleanup=SAMPLE_NAME_CLEANUP)
@@ -168,6 +168,20 @@ def get_segments_references(basedir: Path) -> Dict[str, List]:
             for p in ref_files:
                 for record in SeqIO.parse(open(p), 'fasta'):
                     out[sample][row.segment_number] = str(record.seq)
+    return out
+
+
+def get_segments_ref_id(basedir: Path) -> Dict[str, Dict[str, str]]:
+    segment_references = find_file_for_each_sample(basedir,
+                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    for sample, top_refid_path in segment_references.items():
+        out[sample] = {}
+        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
+                                                                   'blastn_bitscore', 'ref_sequence_id'])
+        for row in df.itertuples():
+            out[sample][row.segment_number] = row.ncbi_id
     return out
 
 

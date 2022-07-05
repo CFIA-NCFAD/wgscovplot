@@ -8,7 +8,6 @@
     </script>
 </head>
 <body>
-
     {% block content%}
         {% include "wgscovplot_flu_gui.html" %}
     {% endblock %}
@@ -21,7 +20,8 @@
         window.segments = {{ segments_name }}
         window.depths = {{ depths_data }}
         window.variants = {{ variants_data }}
-        window.ref_seq = {{ ref_seq }}
+        window.refSeq = {{ ref_seq }}
+        window.refID = {{ ref_id }}
 
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;
@@ -36,9 +36,9 @@
         }
 
         document.addEventListener("DOMContentLoaded", function(event) {
-            var $chart = document.getElementById("chart");
+            let $chart = document.getElementById("chart");
             window.$chart = $chart;
-            var chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
+            let chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
             window.chart = chart;
             updateChartDivSize();
             initWgscovplotRenderEnv();

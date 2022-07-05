@@ -3,24 +3,29 @@ import {concat} from "lodash/array";
 import {getMaxSegmentsLength} from "./getFluSegmentsInfo";
 
 /**
- * Get dataset information
- * @param {Array<Array<number>>} depths - Array of depths
+ * Get Flu Datasets
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
+ * @param {Object} depths - Object of depths array
+ * @param {Array<number>} position - Array position for xAxis
  * @returns {Array<Object>}
+ *
+ * depths: { 'SAMPLE_NAME':{
+ *                  'SEGMENT_NAME': []
+ *              }
+ *          }
  */
 function getFluDatasets(samples, segments, depths, position) {
 
     let datasets = [];
-    const maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths)
-    if (maxSegmentsLength.length == 0){
-        return  datasets;
-    }
-    for (let k = 0; k < samples.length; k++) {
+    const maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
+    for (let i = 0; i < samples.length; i++) {
         let depthArray = [];
-        for (let m = 0; m <segments.length; m++){
-            let temp = depths[samples[k]][segments[m]];
-            if (temp.length < maxSegmentsLength[m]){
-                let temp1 = times(maxSegmentsLength[m] - temp.length, constant(1E-10)); // padding value 1E-10
-                temp = concat(depths[samples[k]][segments[m]], temp1)
+        for (let j = 0; j < segments.length; j++){
+            let temp = depths[samples[i]][segments[j]];
+            if (temp.length < maxSegmentsLength[j]){
+                let temp1 = times(maxSegmentsLength[j] - temp.length, constant(1E-10)); // padding value 1E-10
+                temp = concat(depths[samples[i]][segments[j]], temp1)
             }
             depthArray = concat(depthArray, temp)
         }

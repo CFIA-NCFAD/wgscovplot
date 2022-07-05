@@ -75,8 +75,7 @@
                                 <label for="ymax" class="col-sm-4 col-form-label">Y-axis Limit</label>
                                 <div class="col-sm-8">
                                     <div class="input-group">
-                                        <input class="form-control" type="number" id="ymax" value={{ max_depth }}
-                                               style="width: 30%">
+                                        <input class="form-control" type="number" id="ymax" value={{ max_depth }}>
                                         <button class="btn btn-primary" type="button" type="button" onclick="setYMax()">
                                             Set
                                         </button>
@@ -97,7 +96,7 @@
                             <div class="mb-3 row">
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-xaxis-label">Show X-axis Label</label>
-                                    <input class="form-check-input" type="checkbox" id="toggle-xaxis-label" checked>
+                                    <input class="form-check-input" type="checkbox" id="toggle-xaxis-label" unchecked>
                                 </div>
                             </div>
                         </div>
@@ -252,6 +251,27 @@
                             <div class="row mb-3">
                                 <div class="col-md">
                                     <button class="btn btn-outline-secondary" onclick="resetGridDisplay()">Reset Grid Display</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#varmap" aria-expanded="false" aria-controls="varmap">Variant Options
+                        </button>
+                    </h2>
+                    <div id="varmap" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row mb-3">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-mutation">Show Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation" checked>
                                 </div>
                             </div>
                         </div>

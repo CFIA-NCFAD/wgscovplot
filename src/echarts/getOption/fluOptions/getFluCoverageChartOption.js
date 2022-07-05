@@ -13,25 +13,46 @@ import {getFluVariantSeries} from "./getFluVariantSeries";
 
 /**
  * Get Coverage Chart options
- * @param {Array<string>} samples - An array of samples name
- * @param {Array<string>} segments - An array of segments name
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
  * @param {Object} depths - Object of depths array
- * @param {String} scaleType - The scale set for yAXis either 'log' or 'linear'
+ * @param {Object} variants - The object of variants data
+ * @param {Object} refSeq - The object of reference sequences of each segment
+ * @param {Object} refID - The object of reference ID of each segment
+ * @param {string} triggerOnType - mousemove or click (tooltips options)
+ * @param {boolean} variantSites- whether to show variant sites information (tooltips options)
+ * @param {boolean} nonVariantSites - whether to show non-variant sites information (tooltips options)
+ * @param {boolean} coverageStatView - whether to show coverage statistics (tooltips options)
+ * @param {boolean} infoComparison - whether to compare variants/coverage stat across samples (tooltips options)
+ * @param {boolean} showMutation - whether to show mutation below variant sites
+ * @param {boolean} showXAxisLabel - whether to show xAxis label
+ * @param {boolean} hideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Object} - Coverage Chart Option
  *
  * depths: { 'SAMPLE_NAME':{
  *                  'SEGMENT_NAME': []
  *              }
  *          }
+ *  variants: { 'SAMPLE_NAME':{
+ *                'SEGMENT_NAME': {}
+ *              }
+ *          }
+ *  refSeq: { 'SAMPLE_NAME':{
+ *                'SEGMENT_NAME': ref_seq
+ *              }
+ *          }
+ *   refID: { 'SAMPLE_NAME':{
+ *                'SEGMENT_NAME': ref_id
+ *              }
+ *          }
  */
-function getFluCoverageChartOption(samples, segments, depths, variants,
-                                   refSeq, scaleType="log",
-                                   triggerOnType="mousemove", isVariantSites=true,
-                                   isNonVariantSites=true, isInfoComparison=true,
-                                   isCovergateStatView=false,
-                                   isShowMutation=false,
-                                   isShowXAxisLabel=true,
-                                   isHideOverlapMutation=true)
+function getFluCoverageChartOption(samples, segments,
+                                   depths, variants,
+                                   refSeq, refID,
+                                   triggerOnType="mousemove", variantSites=true,
+                                   nonVariantSites=false, infoComparison=true,
+                                   coverageStatView=false, showMutation=false,
+                                   showXAxisLabel=false, hideOverlapMutation=true)
 {
 
     let chartOptions = {};
@@ -47,16 +68,28 @@ function getFluCoverageChartOption(samples, segments, depths, variants,
     chartOptions = {
         title: {},
         dataset: getFluDatasets(samples, segments, depths, position),
-        xAxis: getFluXAxes(samples, segments, position.length, true, segmentsRange),
-        yAxis: getYAxes(samples, scaleType, yMax, true, false),
+        xAxis: getFluXAxes(samples, segments, position.length, showXAxisLabel, segmentsRange),
+        yAxis: getYAxes(samples, "log", yMax, true, false),
         series: [
-            ...getFluDepthSeries(samples, segments, isNonVariantSites),
+            ...getFluDepthSeries(samples, segments, nonVariantSites),
             ...getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
-                refSeq, isVariantSites, isShowMutation, isHideOverlapMutation),
+                refSeq, variantSites, showMutation, hideOverlapMutation),
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
-        tooltip: getFluTooltips(samples, segments, depths, variants, refSeq, segmentsRange,
-                                triggerOnType, isInfoComparison, isCovergateStatView),
+        tooltip: getFluTooltips(samples, segments, depths, variants, refSeq, refID,
+                                triggerOnType, infoComparison, coverageStatView),
+        toolbox: {
+            show: "true",
+            feature: {
+                dataView: {
+                    readOnly: false,
+                },
+                restore: {},
+                saveAsImage: {
+                    name: "wgscovplot",
+                },
+            },
+        },
         dataZoom: [
             {
                 type: "inside",
