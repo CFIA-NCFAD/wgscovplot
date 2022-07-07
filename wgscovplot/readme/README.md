@@ -59,8 +59,6 @@ wgscovplot \
 Show help info with `$ wgscovplot --help`:
 
 ```
-Usage: wgscovplot [OPTIONS]
-
 Options:
   --input-dir PATH                Nextflow workflow results directory
                                   [required]
@@ -76,6 +74,9 @@ Options:
                                   amplicon]
   --gene-feature / --no-gene-feature
                                   Plot Gene Features  [default: gene-feature]
+  --segment-virus / --no-segment-virus
+                                  Generate Coverage plot for segments virus
+                                  [default: no-segment-virus]
   --gene-misc-feature / --no-gene-misc-feature
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]

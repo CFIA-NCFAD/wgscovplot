@@ -7,7 +7,6 @@ from wgscovplot.tools import variants, mosdepth
 from wgscovplot.prepare_data import get_gene_amplicon_feature, write_html_coverage_plot, \
     write_html_coverage_plot_segment_virus, stat_info
 
-
 logger = logging.getLogger(__name__)
 Entrez.email = "wgscovplot@github.com"
 
@@ -16,6 +15,13 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         amplicon: bool, gene_feature: bool, segment_virus: bool,
         gene_misc_feature: bool, dev: bool, output_html: Path) -> None:
 
+    # Read README.md
+    dirpath = Path(__file__).parent
+    readme = dirpath / 'readme/README.md'
+    with open(readme, "r", encoding="utf-8") as input_file:
+        text = input_file.read()
+    about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
+
     if segment_virus:
         samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
         segments_name = mosdepth.get_segments_name(input_dir)
@@ -23,12 +29,15 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         ref_id = mosdepth.get_segments_ref_id(input_dir)
         depths_data = mosdepth.get_segments_depth(input_dir)
         variants_data = variants.get_segments_variants(input_dir)
+        coverage_stat = mosdepth.get_flu_info(input_dir, samples_name, segments_name, low_coverage_threshold)
         write_html_coverage_plot_segment_virus(samples_name=samples_name,
                                                segments_name=segments_name,
                                                depths_data=depths_data,
                                                variants_data=variants_data,
                                                ref_seq=ref_seq,
                                                ref_id=ref_id,
+                                               coverage_stat=coverage_stat,
+                                               about_html=about_html,
                                                output_html=output_html)
     else:
         ref_name = mosdepth.get_refseq_name(input_dir)
@@ -46,7 +55,8 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         else:
             try:
                 logger.info(f'Fetching reference sequence with accession_id "{ncbi_accession_id}" from NCBI database')
-                with Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=ncbi_accession_id) as fasta_handle:
+                with Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text",
+                                   id=ncbi_accession_id) as fasta_handle:
                     for name, seq in SeqIO.FastaIO.SimpleFastaParser(fasta_handle):
                         ref_seq = seq
             except:
@@ -98,17 +108,11 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         # Get Depths data
         depths_data = mosdepth.get_depth(input_dir)
 
-        # Get Coverage stat for summary inforamtion
+        # Get Coverage stat for summary information
         coverage_stat = {}
         for sample, coverage_info in mosdepth_info.items():
             coverage_stat[sample] = coverage_info.dict()
 
-        # Read README.md
-        dirpath = Path(__file__).parent
-        readme = dirpath / 'readme/README.md'
-        with open(readme, "r", encoding="utf-8") as input_file:
-            text = input_file.read()
-        about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
         # Write coverage plot to HTML file
         write_html_coverage_plot(samples_name=samples_name,
                                  depths_data=depths_data,

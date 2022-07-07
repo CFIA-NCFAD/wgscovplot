@@ -80,6 +80,9 @@ Options:
                                   amplicon]
   --gene-feature / --no-gene-feature
                                   Plot Gene Features  [default: gene-feature]
+  --segment-virus / --no-segment-virus
+                                  Generate Coverage plot for segments virus
+                                  [default: no-segment-virus]
   --gene-misc-feature / --no-gene-misc-feature
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]
@@ -92,7 +95,6 @@ Options:
                                   Show completion for the specified shell, to
                                   copy it or customize the installation.
   --help                          Show this message and exit.
-
 ```
 
 ## Dependencies

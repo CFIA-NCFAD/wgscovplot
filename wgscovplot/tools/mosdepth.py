@@ -133,70 +133,6 @@ def get_depth(basedir: Path) -> Dict[str, List]:
     return out
 
 
-def get_segments_depth(basedir: Path) -> Dict[str, Dict[str, List]]:
-    segment_references = find_file_for_each_sample(basedir,
-                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    out = {}
-    for sample, top_refid_path in segment_references.items():
-        out[sample] = {}
-        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
-                                                                   'blastn_bitscore', 'ref_sequence_id'])
-        for row in df.itertuples():
-            bed_files = basedir.glob(f'**/mosdepth/**/'
-                                     f'{row.sample}.Segment_{row.segment_number}.{row.ncbi_id}.per-base.bed.gz')
-            for p in bed_files:
-                df_mosdepth = read_mosdepth_bed(p)
-                arr = depth_array(df_mosdepth)
-                arr[arr == 0] = 1E-20
-                out[sample][row.segment_number] = arr.tolist()
-    return out
-
-
-def get_segments_references(basedir: Path) -> Dict[str, List]:
-    segment_references = find_file_for_each_sample(basedir,
-                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    out = {}
-    for sample, top_refid_path in segment_references.items():
-        out[sample] = {}
-        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
-                                                                   'blastn_bitscore', 'ref_sequence_id'])
-        for row in df.itertuples():
-            ref_files = basedir.glob(f'**/reference_sequences/**/'
-                                     f'{row.sample}.Segment_{row.segment_number}.{row.ncbi_id}.*')
-            for p in ref_files:
-                for record in SeqIO.parse(open(p), 'fasta'):
-                    out[sample][row.segment_number] = str(record.seq)
-    return out
-
-
-def get_segments_ref_id(basedir: Path) -> Dict[str, Dict[str, str]]:
-    segment_references = find_file_for_each_sample(basedir,
-                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    out = {}
-    for sample, top_refid_path in segment_references.items():
-        out[sample] = {}
-        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
-                                                                   'blastn_bitscore', 'ref_sequence_id'])
-        for row in df.itertuples():
-            out[sample][row.segment_number] = row.ncbi_id
-    return out
-
-
-def get_segments_name(basedir: Path) -> List:
-    segment_references = find_file_for_each_sample(basedir,
-                                                   glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                   sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    segments = []
-    for sample, top_refid_path in segment_references.items():
-        df = pd.read_csv(top_refid_path, sep=',', header=0, names=['sample', 'segment_number', 'ncbi_id',
-                                                                   'blastn_bitscore', 'ref_sequence_id'])
-        segments = set(segments) | set(df['segment_number'])
-    return sorted(list(segments))
-
-
 def get_samples_name(basedir: Path, segment_virus: bool) -> List:
     glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
     sample_beds = find_file_for_each_sample(basedir,
@@ -273,3 +209,120 @@ def get_info(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, Mosdep
                                        ref_seq_length=get_genome_length(df))
         out[sample] = depth_info
     return out
+
+
+def read_top_references_table(basedir: Path) -> pd.DataFrame:
+    return pd.read_csv(basedir, sep=',', header=0, names=['sample', 'segment', 'ncbi_id',
+                                                          'blastn_bitscore', 'ref_sequence_id'])
+
+
+def get_segments_depth(basedir: Path) -> Dict[str, Dict[str, List]]:
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    segments_name = get_segments_name(basedir)
+    for sample, top_references_path in sample_top_references.items():
+        out[sample] = {}
+        df = read_top_references_table(top_references_path)
+        for segment in segments_name:
+            out[sample][segment] = []
+        for row in df.itertuples():
+            bed_files = basedir.glob(f'**/mosdepth/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.per-base.bed.gz')
+            for p in bed_files:
+                df_mosdepth = read_mosdepth_bed(p)
+                arr = depth_array(df_mosdepth)
+                arr[arr == 0] = 1E-20
+                out[sample][row.segment] = arr.tolist()
+    return out
+
+
+def get_segments_references(basedir: Path) -> Dict[str, List]:
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    segments_name = get_segments_name(basedir)
+    for sample, top_references_path in sample_top_references.items():
+        out[sample] = {}
+        df = read_top_references_table(top_references_path)
+        for segment in segments_name:
+            out[sample][segment] = ''
+        for row in df.itertuples():
+            ref_files = basedir.glob(f'**/reference_sequences/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.*')
+            for p in ref_files:
+                for record in SeqIO.parse(open(p), 'fasta'):
+                    out[sample][row.segment] = str(record.seq)
+    return out
+
+
+def get_segments_ref_id(basedir: Path) -> Dict[str, Dict[str, str]]:
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    segments_name = get_segments_name(basedir)
+    for sample, top_references_path in sample_top_references.items():
+        out[sample] = {}
+        df = read_top_references_table(top_references_path)
+        for segment in segments_name:
+            out[sample][segment] = ''
+        for row in df.itertuples():
+            out[sample][row.segment] = row.ncbi_id
+    return out
+
+
+def get_segments_name(basedir: Path) -> List:
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    segments = []
+    for sample, top_references_path in sample_top_references.items():
+        df = read_top_references_table(top_references_path)
+        segments = set(segments) | set(df['segment'])
+    return sorted(list(segments))
+
+
+def get_flu_info(basedir: Path, samples: List, segments: List, low_coverage_threshold: int = 5) -> str:
+    headers = ['Sample', 'Segment', '# 0 Coverage Positions', '0 Coverage Regions',
+               '# Low Coverage Positions (< ' + str(low_coverage_threshold) + 'X)',
+               'Low Coverage Regions (< ' + str(low_coverage_threshold) + 'X)',
+               '% Genome Coverage >= ' + str(low_coverage_threshold) + 'X',
+               'Mean Coverage Depth (X)',
+               'Median Coverage Depth (X)', 'Ref Sequence Length (bp)']
+    df_flu_info = pd.DataFrame(columns=headers, index=list(range(0, len(samples) * len(segments))))
+    for i, sample in enumerate(samples):
+        for j, segment in enumerate(segments):
+            df_flu_info.loc[i + i * (len(segments) - 1) + j, ['Sample', 'Segment']] = [sample, segment]
+    df_flu_info = df_flu_info.sort_values(
+        by=["Sample", "Segment"], ascending=[True, True])
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    for sample, top_references_path in sample_top_references.items():
+        df = read_top_references_table(top_references_path)
+        for row in df.itertuples():
+            bed_files = basedir.glob(f'**/mosdepth/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.per-base.bed.gz')
+            for p in bed_files:
+                df_mosdepth = read_mosdepth_bed(p)
+                arr = depth_array(df_mosdepth)
+                mean_cov = arr.mean()
+                median_cov = pd.Series(arr).median()
+                depth_info = [row.sample,
+                              row.segment,
+                              count_positions(df_mosdepth[df_mosdepth.depth == 0]),
+                              get_interval_coords_bed(df_mosdepth),
+                              count_positions(df_mosdepth[df_mosdepth.depth < low_coverage_threshold]),
+                              get_interval_coords_bed(df_mosdepth, low_coverage_threshold),
+                              get_genome_coverage(df_mosdepth, low_coverage_threshold) * 100,
+                              mean_cov,
+                              median_cov,
+                              get_genome_length(df_mosdepth)]
+                df_flu_info.loc[
+                    (df_flu_info['Sample'] == row.sample) & (df_flu_info['Segment'] == row.segment)] = depth_info
+    df_flu_info.fillna('No result reported', inplace=True)
+    return df_flu_info.to_html(classes="table table-striped table-hover table-bordered table-responsive-md",
+                               float_format=lambda x: f'{x:0.2f}')

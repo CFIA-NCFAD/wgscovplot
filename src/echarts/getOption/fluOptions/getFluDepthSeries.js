@@ -2,7 +2,6 @@
  * Define options for depth coverage charts
  * @param {Array<string>} samples - An array of samples names
  * @param {Array<string>} segments - An array of segments names
- * @param {Object} depths - Object of depths array
  * @param {boolean} nonVariantSites - whether to show non-variant sites information (tooltips options)
  * @returns {Object} - Coverage Chart Option
  *
@@ -34,6 +33,21 @@ function getFluDepthSeries(samples, segments, nonVariantSites) {
             tooltip:{
                 trigger: nonVariantSites ? "axis" : "none"
             },
+            /*
+            markArea: {
+                itemStyle:{
+                    color: 'rgba(255, 173, 177, 0.4)'
+                },
+                data:[
+                    {
+                        name: 'Segment',
+                        xAxis:1
+                    },
+                    {
+                        xAxis:1000
+                    }
+                ]
+            },*/
             silent: true,
             large: true,
         });

@@ -44,15 +44,18 @@ function getFluVariantComparison(samples, segments,
         row.push(key);
         if (key === "Coverage Depth"){
             for (let j = 0; j < samples.length; j++){
-                let dp  = depths[samples[j]][segments[segmentIndex]][position-1];
-                if (dp !== undefined && dp !== null){
-                    row.push(depths[samples[j]][segments[segmentIndex]][position-1].toLocaleString());
-                }else{ //Out of range when segment length < padding array
-                    row.push('No sequence at this position. Reference sequence ' +
-                        refID[samples[j]][segments[segmentIndex]] + ' is only '+
-                        depths[samples[j]][segments[segmentIndex]].length + 'bp');
+                let depth  = depths[samples[j]][segments[segmentIndex]];
+                if (depth.length == 0){
+                    row.push(`No result reported for segment ${segments[segmentIndex]}`);
+                }else {
+                    if (position <= depth.length){
+                        row.push(depths[samples[j]][segments[segmentIndex]][position-1].toLocaleString());
+                    }else{ //Out of range when segment length < padding array
+                        row.push(`No sequence at this position. Reference sequence 
+                            ${refID[samples[j]][segments[segmentIndex]]} is only 
+                            ${depths[samples[j]][segments[segmentIndex]].length} bp`);
+                    }
                 }
-
             }
         }else {
             variantArr.forEach(element => {
@@ -84,7 +87,7 @@ function getFluVariantComparison(samples, segments,
 function getFluCoverageStatComparison (samples, segments, depths, position, segmentIndex){
     let rows = [];
     let tableHeader = ["Sample", "Depth at position "+ position.toLocaleString(), "Segment",
-        "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
+        "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10X) (%)"];
     rows.push(...[tableHeader]);
     for (let [i, sample] of samples.entries()){
         let depthArr = depths[samples[i]][segments[segmentIndex]]
@@ -94,7 +97,10 @@ function getFluCoverageStatComparison (samples, segments, depths, position, segm
         let coverageDepth
         if (position <= depthArr.length){
             coverageDepth = depthArr[position-1].toLocaleString();
-        }else {
+        } else if (depthArr.length == 0){
+            coverageDepth = `No result reported for segment ${segments[segmentIndex]}`
+        }
+        else {
             coverageDepth = "No sequence at this position"
         }
         let row = [sample, coverageDepth, segments[segmentIndex] ,1 + " - " + depthArr.length.toLocaleString(),
@@ -165,12 +171,16 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 let segmentLength = refSeq[sample][segments[segmentIndex]].length; // get segment length
                 position = position - segmentsRange[segmentIndex][0] + 1; // convert to pos in segment
                 let coverageDepth;
-                if (position <= segmentLength){
-                    coverageDepth = depths[sample][segments[segmentIndex]][position-1].toLocaleString(); // get coverage depth for pos
+                if (segmentLength == 0){
+                    coverageDepth = `No result reported for segment ${segments[segmentIndex]}`
                 }else{
-                    coverageDepth = 'No sequence at this position. Reference sequence ' +
-                        refID[samples[i]][segments[segmentIndex]] + ' is only '+
-                        depths[samples[i]][segments[segmentIndex]].length + 'bp'
+                    if (position <= segmentLength) {
+                        coverageDepth = depths[sample][segments[segmentIndex]][position-1].toLocaleString(); // get coverage depth for pos
+                    }else{
+                        coverageDepth = `No sequence at this position. 
+                        Reference sequence ${refID[samples[i]][segments[segmentIndex]]} 
+                        is only ${depths[samples[i]][segments[segmentIndex]].length} bp`
+                    }
                 }
                 const variantBar = params.find(element => { // check if current position is variant sites
                     if (element.componentSubType === "bar") {
@@ -231,7 +241,7 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                             coverageStatRows = [
                                 ["Mean Coverage", meanCov + "X"],
                                 ["Median Coverage", medianCov + "X"],
-                                ["Genome Coverage ( >= 10x)", genomeCov + "%"],
+                                ["Genome Coverage ( >= 10X)", genomeCov + "%"],
                             ];
                         }
                         output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");

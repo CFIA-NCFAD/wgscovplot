@@ -1,6 +1,7 @@
 import {ntColor} from "../../../util";
 import {getSegmentsIndex} from "./getFluSegmentsInfo";
 import {find} from "lodash/collection";
+import {isEmpty} from "lodash/lang";
 
 /**
  * Define variant sites bar
@@ -34,10 +35,16 @@ function getFluVariantSeries(samples, segments,
     for (let i = 0; i < samples.length; i++) {
         let data = []
         for (let j = 0; j < segments.length; j++) {
-            for (let [k, varMap] of variants[samples[i]][segments[j]].entries()){
-                pos = parseInt(varMap.POS);
-                data.push([pos + segmentsRange[j][0] - 1, depths[samples[i]][segments[j]][pos - 1]]);
+            if (!isEmpty(variants[samples[i]][segments[j]])){
+                for (let [k, varMap] of variants[samples[i]][segments[j]].entries()){
+                    pos = parseInt(varMap.POS);
+                    data.push([pos + segmentsRange[j][0] - 1, depths[samples[i]][segments[j]][pos - 1]]);
+                }
             }
+            else{
+                data.push([])
+            }
+
         }
         variantSeries.push({
             type: "bar",

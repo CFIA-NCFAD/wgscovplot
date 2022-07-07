@@ -10,6 +10,7 @@ import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeaturesSeries";
 import {getFluTooltips} from "./getFluTooltips";
 import {getYAxisMax} from "./getFluSegmentsInfo";
 import {getFluVariantSeries} from "./getFluVariantSeries";
+import {getFluMarkAreaSeries} from "./getFluMarkAreaSeries";
 
 /**
  * Get Coverage Chart options
