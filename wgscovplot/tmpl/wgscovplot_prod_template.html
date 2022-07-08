@@ -6,6 +6,17 @@
     <script type="text/javascript">
         {% include "js/wgscovplot.prod.bundle.js" %}
     </script>
+    <style>
+        #nav-tabContent {
+            padding-top: 56px;
+        }
+        /*Freeze Table Header*/
+        #summary-coverage-stat thead tr th{
+            position: sticky;
+            top: 56px;
+            background: #cccccc;
+        }
+    </style>
 </head>
 <body>
 

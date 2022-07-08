@@ -33,8 +33,8 @@ def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo], low_cove
                '# Low Coverage Positions (< ' + str(low_coverage_threshold) + 'X)',
                'Low Coverage Regions (< ' + str(low_coverage_threshold) + 'X)',
                '% Genome Coverage >= ' + str(low_coverage_threshold) + 'X',
-               'Mean Coverage Depth',
-               'Median Coverage Depth', 'Ref Sequence Length']
+               'Mean Coverage Depth (X)',
+               'Median Coverage Depth (X)', 'Ref Sequence Length (bp)']
     df.columns = headers
     df.drop(columns=['Low Coverage Threshold'], inplace=True)
     for index in df.index:
@@ -44,8 +44,9 @@ def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo], low_cove
                 df.loc[index, col][1]
     df.sort_values(by=['Sample'], inplace=True)
     df.reset_index(drop=True, inplace=True)
+    df.index = df.index + 1
     return df.to_html(classes="table table-striped table-hover table-bordered table-responsive-md",
-                      float_format=lambda x: f'{x:0.2f}')
+                      float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
 
 
 def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annotation: Path, ncbi_accession_id: str,

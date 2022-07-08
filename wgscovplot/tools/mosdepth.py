@@ -324,5 +324,6 @@ def get_flu_info(basedir: Path, samples: List, segments: List, low_coverage_thre
                 df_flu_info.loc[
                     (df_flu_info['Sample'] == row.sample) & (df_flu_info['Segment'] == row.segment)] = depth_info
     df_flu_info.fillna('No result reported', inplace=True)
+    df_flu_info.index = df_flu_info.index + 1
     return df_flu_info.to_html(classes="table table-striped table-hover table-bordered table-responsive-md",
-                               float_format=lambda x: f'{x:0.2f}')
+                               float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
