@@ -10,7 +10,6 @@ import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeaturesSeries";
 import {getFluTooltips} from "./getFluTooltips";
 import {getYAxisMax} from "./getFluSegmentsInfo";
 import {getFluVariantSeries} from "./getFluVariantSeries";
-import {getFluMarkAreaSeries} from "./getFluMarkAreaSeries";
 
 /**
  * Get Coverage Chart options
@@ -20,6 +19,7 @@ import {getFluMarkAreaSeries} from "./getFluMarkAreaSeries";
  * @param {Object} variants - The object of variants data
  * @param {Object} refSeq - The object of reference sequences of each segment
  * @param {Object} refID - The object of reference ID of each segment
+ * @param {Object} lowCoverageRegion - The object of low coverage regions
  * @param {string} triggerOnType - mousemove or click (tooltips options)
  * @param {boolean} variantSites- whether to show variant sites information (tooltips options)
  * @param {boolean} nonVariantSites - whether to show non-variant sites information (tooltips options)
@@ -50,6 +50,7 @@ import {getFluMarkAreaSeries} from "./getFluMarkAreaSeries";
 function getFluCoverageChartOption(samples, segments,
                                    depths, variants,
                                    refSeq, refID,
+                                   lowCoverageRegion = {},
                                    triggerOnType="mousemove", variantSites=true,
                                    nonVariantSites=false, infoComparison=true,
                                    coverageStatView=false, showMutation=false,
@@ -72,7 +73,7 @@ function getFluCoverageChartOption(samples, segments,
         xAxis: getFluXAxes(samples, segments, position.length, showXAxisLabel, segmentsRange),
         yAxis: getYAxes(samples, "log", yMax, true, false),
         series: [
-            ...getFluDepthSeries(samples, segments, nonVariantSites),
+            ...getFluDepthSeries(samples, segments, lowCoverageRegion, segmentsRange, nonVariantSites),
             ...getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
                 refSeq, variantSites, showMutation, hideOverlapMutation),
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)

@@ -6,8 +6,8 @@
  * @returns {string}
  */
 function getCustomXAxisLabel (xAxisValue, segments, segmentsRange){
-    let segment;
-    let pos;
+    let segment = '';
+    let pos = 1;
     for (let i = 0; i < segmentsRange.length; i ++){
         if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]){
             pos = xAxisValue - segmentsRange[i][0] + 1;

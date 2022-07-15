@@ -86,7 +86,7 @@ function getFluVariantComparison(samples, segments,
  */
 function getFluCoverageStatComparison (samples, segments, depths, position, segmentIndex){
     let rows = [];
-    let tableHeader = ["Sample", "Depth at position "+ position.toLocaleString(), "Segment",
+    let tableHeader = ["Sample", "Depth at position "+ position, "Segment",
         "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10X) (%)"];
     rows.push(...[tableHeader]);
     for (let [i, sample] of samples.entries()){
@@ -103,8 +103,8 @@ function getFluCoverageStatComparison (samples, segments, depths, position, segm
         else {
             coverageDepth = "No sequence at this position"
         }
-        let row = [sample, coverageDepth, segments[segmentIndex] ,1 + " - " + depthArr.length.toLocaleString(),
-            depthArr.length.toLocaleString(), meanCov, medianCov, genomeCov];
+        let row = [sample, coverageDepth, segments[segmentIndex] ,1 + " - " + depthArr.length,
+            depthArr.length, meanCov, medianCov, genomeCov];
         rows.push(...[row]);
     }
     return rows;
@@ -218,9 +218,9 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                     } // Pos within segment length
                     positionRows = [
                         ['Segment', segmentName],
-                        ['Segment Length', segmentLength.toLocaleString()],
+                        ['Segment Length', segmentLength],
                         ['REF_ID', refID[samples[param.axisIndex]][segments[segmentIndex]]],
-                        ['POS', position.toLocaleString()],
+                        ['POS', position],
                         ['REF_SEQ', refSeq[samples[param.axisIndex]][segments[segmentIndex]][position-1]],
                         ['ALT_SEQ',''],
                         ['ALT_FREQ',''],

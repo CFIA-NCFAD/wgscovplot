@@ -327,3 +327,23 @@ def get_flu_info(basedir: Path, samples: List, segments: List, low_coverage_thre
     df_flu_info.index = df_flu_info.index + 1
     return df_flu_info.to_html(classes="table table-striped table-hover table-bordered table-responsive-md",
                                float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
+
+
+def get_low_coverage_regions(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, Dict[str, str]]:
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = {}
+    segments_name = get_segments_name(basedir)
+    for sample, top_references_path in sample_top_references.items():
+        out[sample] = {}
+        df = read_top_references_table(top_references_path)
+        for segment in segments_name:
+            out[sample][segment] = ''
+        for row in df.itertuples():
+            bed_files = basedir.glob(f'**/mosdepth/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.per-base.bed.gz')
+            for p in bed_files:
+                df_mosdepth = read_mosdepth_bed(p)
+                out[sample][row.segment] = get_interval_coords_bed(df_mosdepth, low_coverage_threshold)
+    return out

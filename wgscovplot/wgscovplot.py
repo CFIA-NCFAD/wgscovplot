@@ -30,6 +30,8 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         depths_data = mosdepth.get_segments_depth(input_dir)
         variants_data = variants.get_segments_variants(input_dir)
         coverage_stat = mosdepth.get_flu_info(input_dir, samples_name, segments_name, low_coverage_threshold)
+        low_coverage_regions = mosdepth.get_low_coverage_regions(input_dir, low_coverage_threshold)
+        print (low_coverage_regions)
         write_html_coverage_plot_segment_virus(samples_name=samples_name,
                                                segments_name=segments_name,
                                                depths_data=depths_data,
@@ -37,6 +39,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
                                                ref_seq=ref_seq,
                                                ref_id=ref_id,
                                                coverage_stat=coverage_stat,
+                                               low_coverage_regions=low_coverage_regions,
                                                about_html=about_html,
                                                output_html=output_html)
     else:
