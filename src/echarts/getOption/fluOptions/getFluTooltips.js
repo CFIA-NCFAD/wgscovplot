@@ -82,18 +82,20 @@ function getFluVariantComparison(samples, segments,
  * @param {Object} depths - Object of depths array
  * @param {number} position - Position in xAxis
  * @param {number} segmentIndex - Segment Index
+ * @param {number} low - low coverage threshold
  * @returns {Array<Array<string>>}
  */
-function getFluCoverageStatComparison (samples, segments, depths, position, segmentIndex){
+function getFluCoverageStatComparison (samples, segments, depths,
+                                       position, segmentIndex, low){
     let rows = [];
     let tableHeader = ["Sample", "Depth at position "+ position, "Segment",
-        "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10X) (%)"];
+        "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", `Genome Coverage (>=${low}X) (%)`];
     rows.push(...[tableHeader]);
     for (let [i, sample] of samples.entries()){
         let depthArr = depths[samples[i]][segments[segmentIndex]]
         let meanCov = meanCoverage(depthArr, 1, depthArr.length).toFixed(2);
         let medianCov = medianCoverage(depthArr, 1, depthArr.length).toFixed(2);
-        let genomeCov = genomeCoverage(depthArr, 1, depthArr.length, 10).toFixed(2);
+        let genomeCov = genomeCoverage(depthArr, 1, depthArr.length, low).toFixed(2);
         let coverageDepth
         if (position <= depthArr.length){
             coverageDepth = depthArr[position-1].toLocaleString();
@@ -121,6 +123,7 @@ function getFluCoverageStatComparison (samples, segments, depths, position, segm
  * @param {string} triggerOnType - mousemove or click (tooltips options)
  * @param {boolean} coverageStatView - whether to show coverage statistics (tooltips options)
  * @param {boolean} infoComparison - whether to compare variants/coverage stat across samples (tooltips options)
+ * @param {number} low - low coverage threshold
  * @returns {Array<Object>} - tooltips Option
  *
  * depths: { 'SAMPLE_NAME':{
@@ -141,7 +144,7 @@ function getFluCoverageStatComparison (samples, segments, depths, position, segm
  *          }
  */
 function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
-                        triggerOnType, infoComparison, coverageStatView) {
+                        triggerOnType, infoComparison, coverageStatView, low) {
 
     let maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
     let segmentsRange = getSegmentsRange(maxSegmentsLength);
@@ -232,16 +235,16 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                     output += toTableHtml(["Position Info", ""], positionRows, "table small");
                     if (coverageStatView){
                         if (infoComparison){
-                            coverageStatRows = getFluCoverageStatComparison (samples, segments, depths, position, segmentIndex);
+                            coverageStatRows = getFluCoverageStatComparison (samples, segments, depths, position, segmentIndex, low);
                         }
                         else{
                             let meanCov = meanCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength).toFixed(2);
                             let medianCov = medianCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength).toFixed(2);
-                            let genomeCov = genomeCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength, 10).toFixed(2);
+                            let genomeCov = genomeCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength, low).toFixed(2);
                             coverageStatRows = [
                                 ["Mean Coverage", meanCov + "X"],
                                 ["Median Coverage", medianCov + "X"],
-                                ["Genome Coverage ( >= 10X)", genomeCov + "%"],
+                                [`Genome Coverage (>= ${low}X)`, genomeCov + "%"],
                             ];
                         }
                         output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");

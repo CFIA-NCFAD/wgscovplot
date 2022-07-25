@@ -40,6 +40,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
                                                ref_id=ref_id,
                                                coverage_stat=coverage_stat,
                                                low_coverage_regions=low_coverage_regions,
+                                               low_coverage_threshold=low_coverage_threshold,
                                                about_html=about_html,
                                                output_html=output_html)
     else:

@@ -200,6 +200,7 @@ def write_html_coverage_plot_segment_virus(samples_name: List[str],
                                            ref_id: Dict[str, Dict[str, str]],
                                            coverage_stat: str,
                                            low_coverage_regions: Dict[str, Dict[str, str]],
+                                           low_coverage_threshold: int,
                                            about_html: str,
                                            output_html: Path,
                                            ) -> None:
@@ -219,4 +220,5 @@ def write_html_coverage_plot_segment_virus(samples_name: List[str],
                                         ref_id=ref_id,
                                         coverage_stat=coverage_stat,
                                         low_coverage_regions=low_coverage_regions,
+                                        low_coverage_threshold=low_coverage_threshold,
                                         about_html=about_html))

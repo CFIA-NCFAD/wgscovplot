@@ -51,10 +51,12 @@ function getFluCoverageChartOption(samples, segments,
                                    depths, variants,
                                    refSeq, refID,
                                    lowCoverageRegion = {},
+                                   lowCoverageThreshold = 10,
                                    triggerOnType="mousemove", variantSites=true,
                                    nonVariantSites=false, infoComparison=true,
                                    coverageStatView=false, showMutation=false,
-                                   showXAxisLabel=false, hideOverlapMutation=true)
+                                   showXAxisLabel=false, hideOverlapMutation=true,
+                                   )
 {
 
     let chartOptions = {};
@@ -79,7 +81,7 @@ function getFluCoverageChartOption(samples, segments,
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
         tooltip: getFluTooltips(samples, segments, depths, variants, refSeq, refID,
-                                triggerOnType, infoComparison, coverageStatView),
+            triggerOnType, infoComparison, coverageStatView, lowCoverageThreshold),
         toolbox: {
             show: "true",
             feature: {
