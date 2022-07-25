@@ -33,7 +33,7 @@ function shapePoints(x, y, width, height, strand, feature) {
                 [x + taperOffset, y - height],
             ];
         }
-    } else if (feature === 'amplicon_feature') {
+    } else if (feature === 'amplicon_feature' || feature === 'segment_feature') {
         return [
             [x, y],
             [x + width, y],

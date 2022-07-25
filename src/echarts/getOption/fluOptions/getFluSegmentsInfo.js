@@ -110,9 +110,9 @@ function getFluGeneFeature(segments, segmentsRange){
                  "start": segmentsRange[i][0],
                  "end": segmentsRange[i][1],
                  "level": 0,
-                 "strand": 1,
+                 "strand": '',
                  "rotate": 0.0,
-                 "type": "gene_feature"
+                 "type": "segment_feature"
             },
             itemStyle:{
                 "color": segmentsColor[segments[i]]
