@@ -22,6 +22,7 @@ requirements = [
     'requests',
     'pydantic',
     'markdown',
+    'edlib'
 ]
 
 setup_requirements = ['pytest-runner', ]

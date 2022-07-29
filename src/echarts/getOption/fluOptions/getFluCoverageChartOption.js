@@ -10,6 +10,7 @@ import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeaturesSeries";
 import {getFluTooltips} from "./getFluTooltips";
 import {getYAxisMax} from "./getFluSegmentsInfo";
 import {getFluVariantSeries} from "./getFluVariantSeries";
+import {getFluPrimerSeries} from "./getFluPrimerSeries";
 
 /**
  * Get Coverage Chart options
@@ -52,6 +53,7 @@ function getFluCoverageChartOption(samples, segments,
                                    refSeq, refID,
                                    lowCoverageRegion = {},
                                    lowCoverageThreshold = 10,
+                                   primerData = {},
                                    triggerOnType="mousemove", variantSites=true,
                                    nonVariantSites=false, infoComparison=true,
                                    coverageStatView=false, showMutation=false,
@@ -78,6 +80,7 @@ function getFluCoverageChartOption(samples, segments,
             ...getFluDepthSeries(samples, segments, lowCoverageRegion, segmentsRange, nonVariantSites),
             ...getFluVariantSeries(samples, segments, depths, variants, segmentsRange,
                 refSeq, variantSites, showMutation, hideOverlapMutation),
+            ...getFluPrimerSeries(samples, segments, primerData, segmentsRange),
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
         tooltip: getFluTooltips(samples, segments, depths, variants, refSeq, refID,

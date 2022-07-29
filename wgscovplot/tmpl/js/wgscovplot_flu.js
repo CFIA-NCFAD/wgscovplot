@@ -265,7 +265,7 @@ function updateFluCoverageChartOption(samples, segments){
     let hideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     let showXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
     let updateOption = wgscovplot.getFluCoverageChartOption(samples, segments, window.depths, window.variants,
-        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold,
+        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, primerData,
         triggerOnType= triggerOnType, variantSites=variantSites,
         nonVariantSites=nonVariantSites, infoComparison=variantComparison,
         coverageStatView=coverageStatView, showMutation=showMutation,
@@ -303,6 +303,7 @@ function updateFluCoverageChartOption(samples, segments){
     chart.setOption(option=updateOption, {notMerge:true})
     document.getElementById("ymax").value = chart.getOption().yAxis[0].max;
     updateControlMenu()
+    console.log("update", chart.getOption())
 }
 
 /**
@@ -382,7 +383,7 @@ function initWgscovplotRenderEnv(){
         setDefaultSamplesSegments(plotSamples, plotSegments);
         chart.setOption(option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths,
             window.variants, window.refSeq,
-            window.refID, window.lowCoverageRegions, window.lowCoverageThreshold))
+            window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, primerData))
     }else{
         let renderEnv = document.getElementById("render-env").value;
         let isChecked = document.getElementById("toggle-darkmode").checked;
@@ -397,7 +398,7 @@ function initWgscovplotRenderEnv(){
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
         let option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants,
-        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold)
+        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, primerData)
         // Keep grid option
         option.grid = gridOption;
         // Keep data zoom option
