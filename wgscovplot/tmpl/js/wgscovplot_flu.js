@@ -222,7 +222,7 @@ function updateTooltipOption(samples, segments, depths, variants, seriesOption,
                                                   window.refSeq, window.refID,
                                                   triggerOnType=triggerOnType, isInfoComparison=isInfoComparison,
                                                   isCoverageStatView=isCoverageStatView,
-                                                  low = window.lowCoverageThreshold);
+                                                  low = window.lowCoverageThreshold, primerData=window.primerData);
     let isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
     tooltipOption[0].position = tooltipPosition(isFixTooltipPostion);
     tooltipOption[0].triggerOn = triggerOnType;
@@ -265,7 +265,7 @@ function updateFluCoverageChartOption(samples, segments){
     let hideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     let showXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
     let updateOption = wgscovplot.getFluCoverageChartOption(samples, segments, window.depths, window.variants,
-        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, primerData,
+        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData,
         triggerOnType= triggerOnType, variantSites=variantSites,
         nonVariantSites=nonVariantSites, infoComparison=variantComparison,
         coverageStatView=coverageStatView, showMutation=showMutation,
@@ -383,7 +383,7 @@ function initWgscovplotRenderEnv(){
         setDefaultSamplesSegments(plotSamples, plotSegments);
         chart.setOption(option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths,
             window.variants, window.refSeq,
-            window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, primerData))
+            window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData))
     }else{
         let renderEnv = document.getElementById("render-env").value;
         let isChecked = document.getElementById("toggle-darkmode").checked;
@@ -398,7 +398,7 @@ function initWgscovplotRenderEnv(){
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
         let option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants,
-        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, primerData)
+        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData)
         // Keep grid option
         option.grid = gridOption;
         // Keep data zoom option

@@ -3,6 +3,7 @@ import math
 import pandas as pd
 from typing import Dict, List, Any
 from pathlib import Path
+from itertools import product
 import edlib
 
 from Bio.SeqFeature import SeqFeature
@@ -15,6 +16,7 @@ from wgscovplot.tools import mosdepth
 
 logger = logging.getLogger(__name__)
 
+'''
 BASES_EQUALITIES = [("U", "U"), ("W", "A"), ("W", "T"),
                     ("S", "C"), ("S", "G"),
                     ("M", "A"), ("M", "C"),
@@ -26,6 +28,29 @@ BASES_EQUALITIES = [("U", "U"), ("W", "A"), ("W", "T"),
                     ("H", "A"), ("H", "C"), ("H", "T"),
                     ("V", "A"), ("V", "C"), ("V", "G"),
                     ("N", "A"), ("N", "C"), ("N", "G"), ("N", "T")]
+'''
+
+NT_MAP = {
+    'A': ['A'],
+    'C': ['C'],
+    'G': ['G'],
+    'T': ['T'],
+    'R': ['A', 'G'],
+    'Y': ['C', 'T'],
+    'S': ['G', 'C'],
+    'W': ['A', 'T'],
+    'K': ['G', 'T'],
+    'M': ['A', 'C'],
+    'B': ['C', 'G', 'T'],
+    'D': ['A', 'G', 'T'],
+    'H': ['A', 'C', 'T'],
+    'V': ['A', 'C', 'G'],
+    'N': ['A', 'C', 'G', 'T'],
+}
+
+
+def expand_degenerate_bases(seq: str) -> List[str]:
+    return list(map("".join, product(*map(NT_MAP.get, seq))))
 
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
@@ -163,9 +188,17 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
     return feature_data
 
 
-def get_primer_data(primer_seq: Path, edit_distance_threshold: int, ref_seq: Dict[str, Dict[str, str]]):
+def get_primer_data(primer_seq: Path, edit_distance: int, ref_seq: Dict[str, Dict[str, str]]):
     primer_data = {}
     primer_seq_record = []
+    test_query = "TCAGGCCCCCTCAAAGCCGA"
+    test_target = "TCAATTATATTCAATATGGAAAGAATAAAAGAACTAAGAAATCTAATGTCGCAGTCTCGCACCCGCGAGATACTCACAAAAACCACCGTGGACCATATGGCCATAATCAAGAAGTACACATCAGGAAGACAGGAGAAGAACCCAGCACTTAGGATGAAATGGATGATGGCAATGAAATATCCAATTACAGCAGACAAGAGGATAACGGAAATGATTCCTGAGAGAAATGAGCAAGGACAAACTTTATGGAGTAAAATGAATGATGCCGGATCAGACCGAGTGATGGTATCACCTCTGGCTGTGACATGGTGGAATAGGAATGGACCAATGACAAATACAGTTCATTATCCAAAAATCTACAAAACTTATTTTGAAAGAGTCGAAAGGCTAAAGCATGGAACCTTTGGCCCTGTCCATTTTAGAAACCAAGTCAAAATACGTCGGAGAGTTGACATAAATCCTGGTCATGCAGATCTCAGTGCCAAGGAGGCACAGGATGTAATCATGGAAGTTGTTTTCCCTAACGAAGTGGGAGCCAGGATACTAACATCGGAATCGCAACTAACGATAACCAAAGAGAAGAAAGAAGAACTCCAGGATTGCAAAATTTCTCCTTTGATGGTTGCATACATGTTGGAGAGAGAACTGGTCCGCAAAACGAGATTCCTCCCAGTGGCTGGTGGAACAAGCAGTGTGTACATTGAAGTGTTGCATTTGACTCAAGGAACATGCTGGGAACAGATGTATACTCCAGGAGGGGAAGTGAAGAATGATGATGTTGATCAAAGCTTGATTATTGCTGCTAGGAACATAGTGAGAAGAGCTGCAGTATCAGCAGACCCACTAGCATCTTTATTGGAGATGTGCCACAGCACACAGATTGGTGGAATTAGGATGGTAGACATCCTTAAGCAGAACCCAACAGAAGAGCAAGCCGTGGATATATGCAAGGCTGCAATGGGACTGAGAATTAGCTCATCCTTCAGTTTTGGTGGATTCACATTTAAGAGAACAAGCGGATCATCAGTCAAGAGAGAGGAAGAGGTGCTTACGGGCAATCTTCAAACATTGAAGATAAGAGTGCATGAGGGATCTGAAGAGTTCACAATGGTTGGGAGAAGAGCAACAGCCATACTCAGAAAAGCAACCAGGAGATTGATTCAGCTGATAGTGAGTGGGAGAGACGAACAGTCGATTGCCGAAGCAATAATTGTGGCCATGGTATTTTCACAAGAGGATTGTATGATAAAAGCAGTTAGAGGTGATCTGAATTTCGTCAATAGGGCGAATCAGCGACTGAATCCTATGCATCAACTTTTAAGACATTTTCAGAAGGATGCGAAAGTGCTTTTTCAAAATTGGGGAGTTGAACCTATCGACAATGTGATGGGAATGATTGGGATATTGCCCGACATGACTCCAAGCATCGAGATGTCAATGAGAGGAGTGAGAATCAGCAAAATGGGTGTAGATGAGTACTCCAGCACGGAGAGGGTAGTGGTGAGCATTGACCGGTTCTTGAGAGTCAGGGACCAACGAGGAAATGTACTACTGTCTCCCGAGGAGGTCAGTGAAACACAGGGAACAGAGAAACTGACAATAACTTACTCATCGTCAATGATGTGGGAGATTAATGGTCCTGAATCAGTGTTGGTCAATACCTATCAATGGATCATCAGAAACTGGGAAACTGTTAAAATTCAGTGGTCCCAGAACCCTACAATGCTATACAATAAAATGGAATTTGAACCATTTCAGTCTTTAGTACCTAAGGCCATTAGAGGCCAATACAGTGGGTTTGTAAGAACTCTGTTCCAACAAATGAGGGATGTGCTTGGGACATTTGATACCGCACAGATAATAAAACTTCTTCCCTTCGCAGCCGCTCCACCAAAGCAAAGTAGAATGCAGTTCTCCTCATTTACTGTGAATGTGAGGGGATCAGGAATGAGAATACTTGTAAGGGGCAATTCTCCTGTATTCAACTACAACAAGGCCACGAAGAGACTCACAGTTCTCGGAAAGGATGCTGGCACTTTAACCGAAGACCCAGATGAAGGCACAGCTGGAGTGGAGTCCGCTGTTCTGAGGGGATTCCTCATTCTGGGCAAAGAAGACAGGAGATATGGGCCAGCATTAAGCATCAATGAACTGAGCAACCTTGCGAAAGGAGAGAAGGCTAATGTGCTAATTGGGCAAGGAGACGTGGTGTTGGTAATGAAACGAAAACGGGACTCTAGCATACTTACTGACAGCCAGACAGCGACCAAAAGAATTCGGATGGCCATCAATTAGTGTCGAATAGTTTAAAAACGA"
+    align1 = edlib.align(test_query, test_target,
+                         mode="HW", task="path", k=edit_distance)
+    viz_result1 = edlib.getNiceAlignment(align1, test_query, test_target)
+    print(align1)
+    print(viz_result1)
+    print("\n".join(viz_result1.values()))
     for record in SeqIO.parse(open(primer_seq), 'fasta'):
         primer_seq_record.append([record.id, record.seq])
     for sample_key in ref_seq.keys():
@@ -174,22 +207,39 @@ def get_primer_data(primer_seq: Path, edit_distance_threshold: int, ref_seq: Dic
             primer_data[sample_key][segment_key] = []
             if ref_seq[sample_key][segment_key] != '':
                 for idx, record in enumerate(primer_seq_record):
-                    align_result = edlib.align(record[1], ref_seq[sample_key][segment_key],
-                                               mode="HW", task="path",
-                                               additionalEqualities=BASES_EQUALITIES)
-                    viz_result = edlib.getNiceAlignment(align_result, record[1],
-                                                        ref_seq[sample_key][segment_key])
-                    if align_result['editDistance'] <= edit_distance_threshold:
-                        print(align_result)
-                        print(viz_result)
+                    seqs = expand_degenerate_bases(record[1])
+                    align_result = []
+                    for seq in seqs:
+                        align = edlib.align(seq, ref_seq[sample_key][segment_key],
+                                            mode="HW", task="path", k=edit_distance)
+                        align['query_seq'] = seq
+                        if align['editDistance'] != -1:  # keep sequence has alignment result
+                            align_result.append(align)
+                    if len(align_result):
+                        align_min_ed = min(align_result, key=lambda x: x['editDistance'])
+                        other_locations = []
+                        for location in align_min_ed['locations'][1:]:
+                            loc_start = location[0]
+                            loc_end = location[1]
+                            # covert to 1-based index
+                            if loc_start is not None:
+                                loc_start = loc_start + 1
+                            if loc_end is not None:
+                                loc_end = loc_end + 1
+                            other_locations.append((loc_start, loc_end))
+                        viz_result = edlib.getNiceAlignment(align_min_ed, align_min_ed['query_seq'],
+                                                            ref_seq[sample_key][segment_key])
                         primer_data[sample_key][segment_key].append(dict(name=record[0],
                                                                          query_aligned=str(viz_result['query_aligned']),
                                                                          target_aligned=viz_result['target_aligned'],
                                                                          matched_aligned=viz_result['matched_aligned'],
-                                                                         cigar=align_result['cigar'],
-                                                                         edit_distance=align_result['editDistance'],
-                                                                         start=align_result['locations'][0][0],
-                                                                         end=align_result['locations'][0][1]))
+                                                                         # nice_viz="\n".join(viz_result.values()),
+                                                                         cigar=align_min_ed['cigar'],
+                                                                         edit_distance=align_min_ed['editDistance'],
+                                                                         start=align_min_ed['locations'][0][0],
+                                                                         end=align_min_ed['locations'][0][1],
+                                                                         other_locations=", ".join(
+                                                                             map(str, other_locations))))
     return primer_data
 
 

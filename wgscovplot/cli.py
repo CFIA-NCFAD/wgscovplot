@@ -44,7 +44,8 @@ def main(
         segment_virus: bool = typer.Option(default=False, help="Generate Coverage plot for segments virus"),
         gene_misc_feature: bool = typer.Option(default=False, help="Plot Miscellaneous Features"),
         dev: bool = typer.Option(default=False, help="Run tool with debug mode"),
-        edit_distance_threshold: int = typer.Option(default=0, help="Edit Distance Threshold"),
+        edit_distance: int = typer.Option(default=0, help="Maximum k errors allowed for primer sequence alignment ("
+                                                          "use this option when --primer-seq provided"),
         verbose: bool = typer.Option(default=False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(None,
                                                callback=version_callback,
@@ -61,7 +62,7 @@ def main(
         handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
     )
     run(input_dir, ref_seq, genbank, ncbi_accession_id, low_coverage_threshold, amplicon, gene_feature, segment_virus,
-        gene_misc_feature, primer_seq, edit_distance_threshold, dev, output_html)
+        gene_misc_feature, primer_seq, edit_distance, dev, output_html)
 
 
 if __name__ == "__main__":

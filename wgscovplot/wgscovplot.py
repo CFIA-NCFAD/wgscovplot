@@ -14,7 +14,7 @@ Entrez.email = "wgscovplot@github.com"
 
 def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, low_coverage_threshold: int,
         amplicon: bool, gene_feature: bool, segment_virus: bool,
-        gene_misc_feature: bool, primer_seq: Path, edit_distance_threshold: int, dev: bool, output_html: Path) -> None:
+        gene_misc_feature: bool, primer_seq: Path, edit_distance: int, dev: bool, output_html: Path) -> None:
     # Read README.md
     dirpath = Path(__file__).parent
     readme = dirpath / 'readme/README.md'
@@ -31,8 +31,9 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         variants_data = variants.get_segments_variants(input_dir)
         coverage_stat = mosdepth.get_flu_info(input_dir, samples_name, segments_name, low_coverage_threshold)
         low_coverage_regions = mosdepth.get_low_coverage_regions(input_dir, low_coverage_threshold)
+        primer_data = {}
         if primer_seq is not None:
-            primer_data = get_primer_data(primer_seq, edit_distance_threshold, ref_seq)
+            primer_data = get_primer_data(primer_seq, edit_distance, ref_seq)
         write_html_coverage_plot_segment_virus(samples_name=samples_name,
                                                segments_name=segments_name,
                                                depths_data=depths_data,

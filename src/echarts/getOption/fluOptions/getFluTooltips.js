@@ -144,7 +144,7 @@ function getFluCoverageStatComparison (samples, segments, depths,
  *          }
  */
 function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
-                        triggerOnType, infoComparison, coverageStatView, low) {
+                        triggerOnType, infoComparison, coverageStatView, low, primerData) {
 
     let maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
     let segmentsRange = getSegmentsRange(maxSegmentsLength);
@@ -162,12 +162,14 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 type: 'line'
             },
             formatter: function (params) {
+                //console.log(params)
                 let param = params[0]
                 let output = ''
                 let position = param.axisValue; // pos of xAxis in full scale
                 let i = param.axisIndex;
                 let positionRows = [];
                 let coverageStatRows = [];
+                let primerInfoRows = []
                 let sample = samples[i]
                 let segmentIndex = getSegmentsIndex(position, segmentsRange); // find segment index which pos belongs to
                 let segmentName = segments[segmentIndex];
@@ -248,6 +250,26 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                             ];
                         }
                         output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");
+                    }
+                    let primerInfo = primerData[sample][segmentName];
+                    for (let i = 0; i < primerInfo.length; i++){
+                        if (position >= primerInfo[i]['start'] && position <= primerInfo[i]['end']){
+                            primerInfoRows = [
+                                ['Primer Name', primerInfo[i]['name']],
+                                ['Primer Sequence', primerInfo[i]['query_aligned']],
+                                ['Match Aligned', primerInfo[i]['matched_aligned']],
+                                //['Alignment', primerInfo[i]['nice_viz']],
+                                ['Ref Sequence', primerInfo[i]['target_aligned']],
+                                ['Cigar', primerInfo[i]['cigar']],
+                                ['Start', primerInfo[i]['start'] + 1],
+                                ['End', primerInfo[i]['end'] + 1],
+                                ['Edit Distance', primerInfo[i]['edit_distance']],
+                                ['Other Locations', primerInfo[i]['other_locations']]
+                            ]
+                        }
+                    }
+                    if (primerInfoRows.length){
+                        output += toTableHtml(["Primer Info", ""], primerInfoRows, "table small");
                     }
                     return output;
                 }

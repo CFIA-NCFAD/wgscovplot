@@ -84,7 +84,7 @@ function getFluCoverageChartOption(samples, segments,
             ...getGeneFeatureSeries(geneFeatureData, samples.length, true, false)
         ],
         tooltip: getFluTooltips(samples, segments, depths, variants, refSeq, refID,
-            triggerOnType, infoComparison, coverageStatView, lowCoverageThreshold),
+            triggerOnType, infoComparison, coverageStatView, lowCoverageThreshold, primerData),
         toolbox: {
             show: "true",
             feature: {
