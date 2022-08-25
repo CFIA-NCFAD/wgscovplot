@@ -73,7 +73,8 @@ def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo], low_cove
                       float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
 
 
-def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annotation: Path, ncbi_accession_id: str,
+def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
+                              annotation: Path, ncbi_accession_id: str,
                               region_amplicon_data: Dict[str, List]) -> List[Dict[str, Any]]:
     feature_data = []
     if gene_feature:
@@ -86,9 +87,11 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
             try:
                 logger.info(f'Fetching Genbank file with accession_id "{ncbi_accession_id}" from NCBI database')
                 genbank_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ncbi_accession_id)
-            except:
+            except Exception as e:
+                logger.error(e, exc_info=True)
                 logger.error(
-                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by providing option --ncbi-accession-id OR '
+                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id '
+                    f'by providing option --ncbi-accession-id OR '
                     f'provide option --genbank /path/to/genbank.gb ')
 
                 exit(1)

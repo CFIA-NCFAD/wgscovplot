@@ -1,7 +1,6 @@
 import logging
 import markdown
 from pathlib import Path
-import edlib
 
 from Bio import SeqIO, Entrez
 from wgscovplot.tools import variants, mosdepth
@@ -51,8 +50,8 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
         if ref_name != '' and ncbi_accession_id == "" and ref_seq is None:
             ncbi_accession_id = ref_name
         if ref_seq is None and ncbi_accession_id == "":
-            logger.error('Please provide reference sequence --ref-seq /path/to/reference_sequence.fasta '
-                         'OR provide correct NCBI Accession ID with option --ncbi-accession-id')
+            logger.error(f'Please provide reference sequence --ref-seq /path/to/reference_sequence.fasta '
+                         f'OR provide correct NCBI Accession ID with option --ncbi-accession-id')
             exit(1)
         # Parse reference sequence
         elif ref_seq is not None:
@@ -66,9 +65,11 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
                                    id=ncbi_accession_id) as fasta_handle:
                     for name, seq in SeqIO.FastaIO.SimpleFastaParser(fasta_handle):
                         ref_seq = seq
-            except:
+            except Exception as e:
+                logger.error(e, exc_info=True)
                 logger.error(
-                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by provding option --ncbi-accession-id OR '
+                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by providing option '
+                    f'--ncbi-accession-id OR '
                     f'provide option --ref-seq /path/to/reference_sequence.fasta ')
                 exit(1)
         # Get the list of samples name
@@ -79,7 +80,7 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
             region_amplicon_depth_data = mosdepth.get_depth_amplicon(input_dir)
             region_amplicon_data = mosdepth.get_region_amplicon(input_dir)
             if not (region_amplicon_depth_data and region_amplicon_data):
-                logging.warning('No amplicon data found')
+                logging.warning(f'No amplicon data found')
                 amplicon = False
                 region_amplicon_depth_data = {}
                 region_amplicon_data = {}
@@ -89,8 +90,10 @@ def run(input_dir: Path, ref_seq: Path, genbank: Path, ncbi_accession_id: str, l
 
         # Get gene/amplicon feature
         if gene_feature and genbank is None and ncbi_accession_id == "":
-            logger.error('If you want to plot gene features, please provide genbank file for gene features, '
-                         'option --genbank /path/to/genbank.gb OR provide NCBI Accession ID with option --ncbi-accession-id')
+            logger.error(f'If you want to plot gene features, '
+                         f'please provide genbank file for gene features, '
+                         f'option --genbank /path/to/genbank.gb '
+                         f'OR provide NCBI Accession ID with option --ncbi-accession-id')
             exit(1)
         gene_amplicon_feature_data = get_gene_amplicon_feature(gene_feature, gene_misc_feature,
                                                                genbank, ncbi_accession_id, region_amplicon_data)

@@ -2,7 +2,7 @@ import logging
 import re
 from collections import defaultdict
 from pathlib import Path
-from typing import Union, List, Optional, Mapping, Callable, Tuple
+from typing import Union, List, Optional, Mapping, Callable
 
 import numpy as np
 
