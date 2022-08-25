@@ -164,7 +164,8 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
                         value=[row.start_idx, row.end_idx, row.depth, row.amplicon],
                         itemStyle={"color": AmpliconColour.pool1.value}))
         return out
-    except:
+    except Exception as e:
+        logger.warning(e)
         logging.warning('No Region Amplicon Depth Found')
         return {}
 
@@ -182,7 +183,8 @@ def get_region_amplicon(basedir: Path) -> Dict[str, List]:
             out = {row.amplicon: [row.start, row.end] for row in df_amplicon.itertuples()}
             break
         return out
-    except:
+    except Exception as e:
+        logger.warning(e)
         logging.warning('No Region Amplicon Found')
         return {}
 
