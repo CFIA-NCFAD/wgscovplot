@@ -13,16 +13,19 @@ input_genbank = dirpath / 'data/sequence_sars_cov2.gb'
 input_dir = dirpath / 'data/tools'
 
 
-def test_cli():
-    assert input_ref.exists()
-    assert input_genbank.exists()
+def test_basic_cli():
     result = runner.invoke(app)
+    print(result.output)
     assert result.exit_code != 0
-    #assert 'Error: Missing option' in result.output
+    assert 'Error: Missing option2' in result.output
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
     assert 'Show this message and exit.' in help_result.output
 
+
+def test_cli():
+    assert input_ref.exists()
+    assert input_genbank.exists()
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test1.html'
         test_result = runner.invoke(app, ['--input-dir', str(input_dir.resolve().absolute()),
