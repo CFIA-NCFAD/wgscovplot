@@ -16,7 +16,7 @@ input_dir = dirpath / 'data/tools'
 def test_basic_cli():
     result = runner.invoke(app)
     assert result.exit_code != 0
-    assert 'Error: Missing option' in result.stdout
+    assert 'Missing option' in result.stdout
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
     assert 'Show this message and exit.' in help_result.stdout
