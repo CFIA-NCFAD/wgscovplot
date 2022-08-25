@@ -1,4 +1,5 @@
 import {graphic} from "echarts/core";
+import {isEmpty} from "lodash/lang";
 
 function getFluPrimerData(sample, segments, primerData, segmentsRanges){
     let primerFeature = [];
@@ -24,6 +25,9 @@ function getFluPrimerData(sample, segments, primerData, segmentsRanges){
 
 function getFluPrimerSeries(samples, segments, primerData, segmentsRanges) {
     let primerSeries = [];
+    if (isEmpty(primerData)){
+        return primerSeries;
+    }
     for (let [i, sample] of samples.entries()) {
         let data = getFluPrimerData(sample, segments, primerData, segmentsRanges);
         primerSeries.push({

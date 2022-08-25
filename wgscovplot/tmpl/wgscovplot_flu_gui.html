@@ -37,7 +37,7 @@
                         <div class="accordion-body">
                             <div class="row mb-3">
                                 <label>Samples</label>
-                                <select id="selectedsamples" class="selected-samples" multiple="multiple">
+                                <select id="selected-samples" class="selected-samples" multiple="multiple">
                                     {% for sample in samples_name %}
                                         <option value={{sample}}>{{sample}}</option>
                                     {% endfor %}
@@ -45,7 +45,7 @@
                             </div>
                             <div class="row mb-3">
                                 <label>Segments</label>
-                                <select id="selectedsegments" class="selected-segments" multiple="multiple">
+                                <select id="selected-segments" class="selected-segments" multiple="multiple">
                                     {% for segment in segments_name %}
                                         <option value={{segment}}>{{segment}}</option>
                                     {% endfor %}
@@ -121,9 +121,9 @@
                             <div class="row mb-3">
                                 <div>
                                     <div class="form-check form-switch">
-                                        <label class="form-check-label" for="fix-tooltip-postion">Fix Tooltip
+                                        <label class="form-check-label" for="fix-tooltip-position">Fix Tooltip
                                             Position</label>
-                                        <input class="form-check-input" type="checkbox" id="fix-tooltip-postion"
+                                        <input class="form-check-input" type="checkbox" id="fix-tooltip-position"
                                                unchecked>
                                     </div>
                                 </div>

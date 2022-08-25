@@ -21,6 +21,8 @@ import {getFluPrimerSeries} from "./getFluPrimerSeries";
  * @param {Object} refSeq - The object of reference sequences of each segment
  * @param {Object} refID - The object of reference ID of each segment
  * @param {Object} lowCoverageRegion - The object of low coverage regions
+ * @param {number} lowCoverageThreshold - Low coverage threshold
+ * @param {Object} primerData - The object of primer alignment of each segment
  * @param {string} triggerOnType - mousemove or click (tooltips options)
  * @param {boolean} variantSites- whether to show variant sites information (tooltips options)
  * @param {boolean} nonVariantSites - whether to show non-variant sites information (tooltips options)
@@ -47,18 +49,21 @@ import {getFluPrimerSeries} from "./getFluPrimerSeries";
  *                'SEGMENT_NAME': ref_id
  *              }
  *          }
+ *   primerData: { 'SAMPLE_NAME':{
+ *                'SEGMENT_NAME': {}
+ *              }
+ *          }
  */
 function getFluCoverageChartOption(samples, segments,
                                    depths, variants,
                                    refSeq, refID,
-                                   lowCoverageRegion = {},
+                                   lowCoverageRegion= {},
                                    lowCoverageThreshold = 10,
                                    primerData = {},
-                                   triggerOnType="mousemove", variantSites=true,
-                                   nonVariantSites=false, infoComparison=true,
-                                   coverageStatView=false, showMutation=false,
-                                   showXAxisLabel=false, hideOverlapMutation=true,
-                                   )
+                                   triggerOnType= "mousemove", variantSites= true,
+                                   nonVariantSites= false, infoComparison= true,
+                                   coverageStatView= false, showMutation= false,
+                                   showXAxisLabel= false, hideOverlapMutation= true)
 {
 
     let chartOptions = {};

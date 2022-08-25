@@ -1,6 +1,7 @@
 import {toTableHtml} from "../../../util";
 import {getMaxSegmentsLength, getSegmentsIndex, getSegmentsRange} from "./getFluSegmentsInfo";
 import {find} from "lodash/collection";
+import {isEmpty} from "lodash/lang";
 import {genomeCoverage, meanCoverage, medianCoverage} from "../../../coverageStat";
 
 /**
@@ -124,6 +125,7 @@ function getFluCoverageStatComparison (samples, segments, depths,
  * @param {boolean} coverageStatView - whether to show coverage statistics (tooltips options)
  * @param {boolean} infoComparison - whether to compare variants/coverage stat across samples (tooltips options)
  * @param {number} low - low coverage threshold
+ * @param {Object} primerData - The object of primer alignment of each segment
  * @returns {Array<Object>} - tooltips Option
  *
  * depths: { 'SAMPLE_NAME':{
@@ -162,7 +164,6 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 type: 'line'
             },
             formatter: function (params) {
-                //console.log(params)
                 let param = params[0]
                 let output = ''
                 let position = param.axisValue; // pos of xAxis in full scale
@@ -176,7 +177,7 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 let segmentLength = refSeq[sample][segments[segmentIndex]].length; // get segment length
                 position = position - segmentsRange[segmentIndex][0] + 1; // convert to pos in segment
                 let coverageDepth;
-                if (segmentLength == 0){
+                if (segmentLength === 0){
                     coverageDepth = `No result reported for segment ${segments[segmentIndex]}`
                 }else{
                     if (position <= segmentLength) {
@@ -251,25 +252,27 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                         }
                         output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");
                     }
-                    let primerInfo = primerData[sample][segmentName];
-                    for (let i = 0; i < primerInfo.length; i++){
-                        if (position >= primerInfo[i]['start'] && position <= primerInfo[i]['end']){
-                            primerInfoRows = [
-                                ['Primer Name', primerInfo[i]['name']],
-                                ['Primer Sequence', primerInfo[i]['query_aligned']],
-                                ['Match Aligned', primerInfo[i]['matched_aligned']],
-                                //['Alignment', primerInfo[i]['nice_viz']],
-                                ['Ref Sequence', primerInfo[i]['target_aligned']],
-                                ['Cigar', primerInfo[i]['cigar']],
-                                ['Start', primerInfo[i]['start'] + 1],
-                                ['End', primerInfo[i]['end'] + 1],
-                                ['Edit Distance', primerInfo[i]['edit_distance']],
-                                ['Other Locations', primerInfo[i]['other_locations']]
-                            ]
+                    if (!isEmpty(primerData)){
+                        let primerInfo = primerData[sample][segmentName];
+                        for (let i = 0; i < primerInfo.length; i++){
+                            if (position >= primerInfo[i]['start'] && position <= primerInfo[i]['end']){
+                                primerInfoRows = [
+                                    ['Primer Name', primerInfo[i]['name']],
+                                    ['Primer Sequence', primerInfo[i]['query_aligned']],
+                                    ['Match Aligned', primerInfo[i]['matched_aligned']],
+                                    //['Alignment', primerInfo[i]['nice_viz']],
+                                    ['Ref Sequence', primerInfo[i]['target_aligned']],
+                                    ['Cigar', primerInfo[i]['cigar']],
+                                    ['Start', primerInfo[i]['start'] + 1],
+                                    ['End', primerInfo[i]['end'] + 1],
+                                    ['Edit Distance', primerInfo[i]['edit_distance']],
+                                    ['Other Locations', primerInfo[i]['other_locations']]
+                                ]
+                            }
                         }
-                    }
-                    if (primerInfoRows.length){
-                        output += toTableHtml(["Primer Info", ""], primerInfoRows, "table small");
+                        if (primerInfoRows.length){
+                            output += toTableHtml(["Primer Info", ""], primerInfoRows, "table small");
+                        }
                     }
                     return output;
                 }
