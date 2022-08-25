@@ -15,12 +15,11 @@ input_dir = dirpath / 'data/tools'
 
 def test_basic_cli():
     result = runner.invoke(app)
-    print(result.output)
     assert result.exit_code != 0
-    assert "Error: Missing option '--input-dir'" in result.output
+    assert 'Error: Missing option' in result.stdout
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
-    assert 'Show this message and exit.' in help_result.output
+    assert 'Show this message and exit.' in help_result.stdout
 
 
 def test_cli():
