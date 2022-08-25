@@ -5,9 +5,6 @@ from os.path import exists
 from pathlib import Path
 from typer.testing import CliRunner
 from wgscovplot.cli import app
-import logging
-
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 runner = CliRunner()
 
@@ -23,7 +20,8 @@ def test_basic_cli():
     assert 'Missing option' in result.output
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
-    assert 'Show this message and exit.' in help_result.output
+    print(help_result.stdout)
+    assert 'wgscovplot version' in help_result.output
 
 
 def test_cli():
