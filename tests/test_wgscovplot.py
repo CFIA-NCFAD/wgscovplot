@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
 from os.path import exists
 from pathlib import Path
 from typer.testing import CliRunner
 from wgscovplot.cli import app
+import logging
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 runner = CliRunner()
 
@@ -16,10 +20,10 @@ input_dir = dirpath / 'data/tools'
 def test_basic_cli():
     result = runner.invoke(app)
     assert result.exit_code != 0
-    assert 'Missing option' in result.stdout
+    assert 'Missing option' in result.output
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
-    assert 'Show this message and exit.' in help_result.stdout
+    assert 'Show this message and exit.' in help_result.output
 
 
 def test_cli():
