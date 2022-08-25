@@ -151,6 +151,7 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
     out = {}
     try:
         for sample, bed_path in sample_beds.items():
+            logger.info(f'Region bed {bed_path}')
             df = read_mosdepth_region_bed(bed_path)
             out[sample] = []
             for row in df.itertuples():
@@ -165,8 +166,8 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
                         itemStyle={"color": AmpliconColour.pool1.value}))
         return out
     except Exception as e:
-        logger.warning(e)
-        logging.warning('No Region Amplicon Depth Found')
+        logger.error(e, exc_info=True)
+        logger.warning(f'{sample} No Region Amplicon Depth Found')
         return {}
 
 
@@ -181,11 +182,10 @@ def get_region_amplicon(basedir: Path) -> Dict[str, List]:
                                         names=['reference', 'start', 'end', 'amplicon', 'depth'],
                                         header=None)
             out = {row.amplicon: [row.start, row.end] for row in df_amplicon.itertuples()}
-            break
+            break  # get depth regions from one file
         return out
-    except Exception as e:
-        logger.warning(e)
-        logging.warning('No Region Amplicon Found')
+    except Warning:
+        logger.warning('No Region Amplicon Found')
         return {}
 
 
