@@ -1,4 +1,8 @@
 # History
+## 0.3.0 (2022-08-26)
+
+- Add support for segment virus (AIV) 
+
 ## 0.2.1 (2022-06-14)
 
 - Fixed issues of tooltips displayed incorrectly due to samples list being reversed 
