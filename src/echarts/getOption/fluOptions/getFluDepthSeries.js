@@ -46,6 +46,7 @@ function getMarkArea(sample, segments, segmentsRange, lowCoverageRegion){
             show:false,
             position: 'insideTop',
             fontSize: 10,
+            rotate: 30,
             overflow: 'truncate',
             ellipsis:'...'
         },

@@ -1,0 +1,3 @@
+chrom	length	bases	mean	min	max
+EF190976	1413	967261	684.54	0	701
+total	1413	967261	684.54	0	701

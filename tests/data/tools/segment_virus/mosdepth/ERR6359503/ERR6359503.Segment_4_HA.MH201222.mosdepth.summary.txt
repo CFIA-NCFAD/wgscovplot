@@ -1,0 +1,3 @@
+chrom	length	bases	mean	min	max
+MH201222	1753	1888550	1077.32	1	1111
+total	1753	1888550	1077.32	0	1111

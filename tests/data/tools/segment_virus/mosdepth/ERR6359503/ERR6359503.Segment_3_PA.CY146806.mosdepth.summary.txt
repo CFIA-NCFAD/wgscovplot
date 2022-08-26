@@ -1,0 +1,3 @@
+chrom	length	bases	mean	min	max
+CY146806	2208	42536	19.26	0	87
+total	2208	42536	19.26	0	87

@@ -1,0 +1,27 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=LowQual,Description="Low quality variant">
+##FILTER=<ID=RefCall,Description="Reference call">
+##INFO=<ID=P,Number=0,Type=Flag,Description="Result from pileup calling">
+##INFO=<ID=F,Number=0,Type=Flag,Description="Result from full-alignment calling">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Read depth for each allele">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Phred-scaled genotype likelihoods rounded to the closest integer">
+##FORMAT=<ID=AF,Number=1,Type=Float,Description="Estimated allele frequency in the range of [0,1]">
+##contig=<ID=MH085254,length=1561>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+MH085254	201	.	A	.	19.81	RefCall	P	GT:GQ:DP:AF	0/0:19:208:0.8125
+MH085254	379	.	C	.	18.31	RefCall	P	GT:GQ:DP:AF	0/0:18:234:0.7051
+MH085254	558	.	T	.	19.33	RefCall	P	GT:GQ:DP:AF	0/0:19:256:0.6836
+MH085254	665	.	A	.	17.31	RefCall	P	GT:GQ:DP:AF	0/0:17:267:0.6255
+MH085254	721	.	C	.	19.36	RefCall	P	GT:GQ:DP:AF	0/0:19:280:0.8071
+MH085254	724	.	A	.	22.12	RefCall	P	GT:GQ:DP:AF	0/0:22:280:0.8107
+MH085254	768	.	T	.	14.89	RefCall	P	GT:GQ:DP:AF	0/0:14:287:0.7875
+MH085254	825	.	G	.	20.09	RefCall	P	GT:GQ:DP:AF	0/0:20:291:0.8144
+MH085254	924	.	A	.	17.76	RefCall	P	GT:GQ:DP:AF	0/0:17:300:0.7200
+MH085254	1108	.	A	.	28.20	RefCall	P	GT:GQ:DP:AF	0/0:28:329:0.6322
+MH085254	1222	.	A	.	22.02	RefCall	P	GT:GQ:DP:AF	0/0:22:365:0.7616
+MH085254	1344	.	A	.	20.60	RefCall	P	GT:GQ:DP:AF	0/0:20:402:0.6244
+MH085254	1424	.	C	.	25.48	RefCall	P	GT:GQ:DP:AF	0/0:25:415:0.6723
