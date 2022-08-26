@@ -1,3 +1,0 @@
-chrom	length	bases	mean	min	max
-MH085256	886	770412	869.54	0	944
-total	886	770412	869.54	0	944
