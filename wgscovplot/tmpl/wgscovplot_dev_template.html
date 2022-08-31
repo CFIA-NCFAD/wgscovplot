@@ -6,11 +6,22 @@
     <script type="text/javascript">
         {% include "js/wgscovplot.dev.bundle.js" %}
     </script>
+    <style>
+        #nav-tabContent {
+            padding-top: 56px;
+        }
+        /*Freeze Table Header*/
+        #summary-coverage-stat thead tr th{
+            position: sticky;
+            top: 56px;
+            background: #cccccc;
+        }
+    </style>
 </head>
 <body>
 
     {% block content%}
-        {% include "wgscovplot_controlmenu_gui.html" %}
+        {% include "wgscovplot_gui.html" %}
     {% endblock %}
     <script type="text/javascript">
         {% include "js/wgscovplot.js" %}

@@ -19,7 +19,7 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                 type: "bar",
                 xAxisIndex: i,
                 yAxisIndex: i,
-                data: Object.values(varMap).map((x) => [parseInt(x.POS), depths[i][x.POS]]),
+                data: Object.values(varMap).map((x) => [parseInt(x.POS), depths[i][parseInt(x.POS) - 1]]),
                 barWidth: 2,
                 itemStyle: {
                     color: function (params) {

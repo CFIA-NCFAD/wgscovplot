@@ -45,7 +45,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
         points = shapePoints(x, y, width, height, feature.value.strand, feature.value.type);
         let invisible = false;
         if (feature.value.type === 'gene_feature') {
-            rotateAngle = (feature.value.strand === 1) ? 0.5 : -0.5;
+            rotateAngle = feature.value.rotate;
             if (isShowGeneLabel){
                 // Element width is too small and hide label at the edges
                 if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord){
@@ -104,7 +104,45 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
                 textConfig: {},
                 invisible: !amplicon
             };
-        } else {
+        } else if (feature.value.type === 'segment_feature'){
+            if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord){
+                invisible = true;
+            }else{
+                invisible = false;
+            }
+            shape = graphic.clipPointsByRect(points, {
+                x: params.coordSys.x,
+                y: params.coordSys.y,
+                width: params.coordSys.width,
+                height: params.coordSys.height,
+            });
+            return {
+                type: "polygon",
+                shape: {
+                    points: shape,
+                },
+                style: api.style(),
+                textContent: {
+                    type: "text",
+                    invisible: invisible,
+                    style: {
+                        text: feature.name,
+                        fill: feature.itemStyle.color,
+                        fontStyle: "normal",
+                        fontSize: 12,
+                        fontWeight: "bolder",
+                    },
+                },
+                textConfig: {
+                    position: "top",
+                    distance: 18,
+                    rotation: feature.value.rotate,
+                    offset: "center",
+                    local: true,
+                },
+            };
+        }
+        else {
             return null;
         }
     }

@@ -1,0 +1,9 @@
+Sample,Sample Genome Segment Number,Reference NCBI Accession,BLASTN Bitscore,Reference Sequence ID
+ERR6359502,1_PB2,MH201221,4156.0,"MH201221 Influenza A virus (A/PR/8_RGCDC-4,6/34(H1N1)) segment 1 polymerase PB2 (PB2) gene, complete cds"
+ERR6359502,2_PB1,CY147460,4120.0,"CY147460 Influenza A virus (A/Puerto Rico/8-LVD2/1934(H1N1)) polymerase PB1 (PB1) and PB1-F2 protein (PB1-F2) genes, complete cds"
+ERR6359502,3_PA,CY146806,2428.0,"CY146806 Influenza A virus (A/Texas/JY2/unknown(H3N2)) polymerase PA (PA) and PA-X protein (PA-X) genes, complete cds"
+ERR6359502,4_HA,MH201222,3120.0,"MH201222 Influenza A virus (A/PR/8_RGCDC-4,6/34(H1N1)) segment 4 hemagglutinin (HA) gene, complete cds"
+ERR6359502,5_NP,MH085254,2764.0,"MH085254 Influenza A virus (A/Puerto Rico/8/1934(H1N1)) clone PR8-RKI segment 5 nucleocapsid protein (NP) gene, complete cds"
+ERR6359502,6_NA,EF190976,2494.0,"EF190976 Influenza A virus (A/hvPR8/34(H1N1)) segment 6, complete sequence"
+ERR6359502,7_M,MH085255,1814.0,"MH085255 Influenza A virus (A/Puerto Rico/8/1934(H1N1)) clone PR8-RKI segment 7 matrix protein 2 (M2) and matrix protein 1 (M1) genes, complete cds"
+ERR6359502,8_NS,MH085256,1570.0,"MH085256 Influenza A virus (A/Puerto Rico/8/1934(H1N1)) clone PR8-RKI segment 8 nuclear export protein (NEP) and nonstructural protein 1 (NS1) genes, complete cds"

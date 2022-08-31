@@ -6,25 +6,37 @@
     <script type="text/javascript">
         {% include "js/wgscovplot.prod.bundle.js" %}
     </script>
+    <style>
+        /* nav fixed-top: add padding top to avoid hiding content*/
+        #nav-tabContent {
+            padding-top: 56px;
+        }
+        /*Freeze Table Header*/
+        #summary-coverage-stat thead tr th{
+            position: sticky;
+            top: 56px;
+            background: #cccccc;
+        }
+    </style>
 </head>
 <body>
     {% block content%}
-        {% include "wgscovplot_flu_controlmenu_gui.html" %}
+        {% include "wgscovplot_flu_gui.html" %}
     {% endblock %}
-
-    <style>
-        #chart-pane{
-            overflow-x: scroll;
-        }
-    </style>
-
     <script type="text/javascript">
         {% include "js/wgscovplot_flu.js" %}
     </script>
     <script>
+
         window.samples = {{ samples_name }}
         window.segments = {{ segments_name }}
         window.depths = {{ depths_data }}
+        window.variants = {{ variants_data }}
+        window.refSeq = {{ ref_seq }}
+        window.refID = {{ ref_id }}
+        window.lowCoverageRegions = {{ low_coverage_regions }}
+        window.lowCoverageThreshold = {{ low_coverage_threshold }}
+        window.primerData = {{ primer_data }}
 
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;
@@ -39,17 +51,15 @@
         }
 
         document.addEventListener("DOMContentLoaded", function(event) {
-            var $chart = document.getElementById("chart");
+            let $chart = document.getElementById("chart");
             window.$chart = $chart;
-            var chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
+            let chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
             window.chart = chart;
             updateChartDivSize();
             initWgscovplotRenderEnv();
         })
-
-        //window.addEventListener("resize", updateChartDivSize);
+        window.addEventListener("resize", updateChartDivSize);
         initWgscovplotEvent();
-
     </script>
 </body>
 </html>

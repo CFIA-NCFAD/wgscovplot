@@ -1,0 +1,25 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=LowQual,Description="Low quality variant">
+##FILTER=<ID=RefCall,Description="Reference call">
+##INFO=<ID=P,Number=0,Type=Flag,Description="Result from pileup calling">
+##INFO=<ID=F,Number=0,Type=Flag,Description="Result from full-alignment calling">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Read depth for each allele">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Phred-scaled genotype likelihoods rounded to the closest integer">
+##FORMAT=<ID=AF,Number=1,Type=Float,Description="Estimated allele frequency in the range of [0,1]">
+##contig=<ID=CY147460,length=2316>
+##bcftools_normVersion=1.15.1+htslib-1.15.1
+##bcftools_normCommand=norm -Ov -m- -f ERR6359502.Segment_2_PB1.CY147460.reference.fasta ERR6359502.Segment_2_PB1.CY147460.clair3.vcf.gz; Date=Tue Jun 14 14:50:20 2022
+##bcftools_filterVersion=1.15.1+htslib-1.15.1
+##bcftools_filterCommand=filter -e '%FILTER='RefCall' | AF < 0.75' -Ov -o ERR6359502.Segment_2_PB1.CY147460.bcftools_filt.vcf norm.vcf; Date=Tue Jun 14 14:50:20 2022
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+CY147460	478	.	A	G	15.71	PASS	P	GT:GQ:DP:AF	1:15:14:0.8571
+CY147460	567	.	T	C	16.6	PASS	F	GT:GQ:DP:AF	1:16:12:0.75
+CY147460	595	.	A	G	9.27	PASS	F	GT:GQ:DP:AF	1:9:4:1
+CY147460	1018	.	G	A	8.61	PASS	F	GT:GQ:DP:AF	1:8:4:1
+CY147460	1140	.	C	T	7.92	PASS	F	GT:GQ:DP:AF	1:7:4:1
+CY147460	1141	.	A	G	9.91	PASS	P	GT:GQ:DP:AF	1:9:4:1
+CY147460	1780	.	C	T	12.17	PASS	P	GT:GQ:DP:AF	1:12:8:0.75

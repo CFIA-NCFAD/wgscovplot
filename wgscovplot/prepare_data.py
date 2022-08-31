@@ -3,6 +3,8 @@ import math
 import pandas as pd
 from typing import Dict, List, Any
 from pathlib import Path
+from itertools import product
+import edlib
 
 from Bio.SeqFeature import SeqFeature
 from jinja2 import Environment, FileSystemLoader
@@ -13,6 +15,28 @@ from .colors import color_pallete, AmpliconColour
 from wgscovplot.tools import mosdepth
 
 logger = logging.getLogger(__name__)
+
+NT_MAP = {
+    'A': ['A'],
+    'C': ['C'],
+    'G': ['G'],
+    'T': ['T'],
+    'R': ['A', 'G'],
+    'Y': ['C', 'T'],
+    'S': ['G', 'C'],
+    'W': ['A', 'T'],
+    'K': ['G', 'T'],
+    'M': ['A', 'C'],
+    'B': ['C', 'G', 'T'],
+    'D': ['A', 'G', 'T'],
+    'H': ['A', 'C', 'T'],
+    'V': ['A', 'C', 'G'],
+    'N': ['A', 'C', 'G', 'T'],
+}
+
+
+def expand_degenerate_bases(seq: str) -> List[str]:
+    return list(map("".join, product(*map(NT_MAP.get, seq))))
 
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
@@ -33,8 +57,8 @@ def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo], low_cove
                '# Low Coverage Positions (< ' + str(low_coverage_threshold) + 'X)',
                'Low Coverage Regions (< ' + str(low_coverage_threshold) + 'X)',
                '% Genome Coverage >= ' + str(low_coverage_threshold) + 'X',
-               'Mean Coverage Depth',
-               'Median Coverage Depth', 'Ref Sequence Length']
+               'Mean Coverage Depth (X)',
+               'Median Coverage Depth (X)', 'Ref Sequence Length (bp)']
     df.columns = headers
     df.drop(columns=['Low Coverage Threshold'], inplace=True)
     for index in df.index:
@@ -44,11 +68,13 @@ def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo], low_cove
                 df.loc[index, col][1]
     df.sort_values(by=['Sample'], inplace=True)
     df.reset_index(drop=True, inplace=True)
+    df.index = df.index + 1
     return df.to_html(classes="table table-striped table-hover table-bordered table-responsive-md",
-                      float_format=lambda x: f'{x:0.2f}')
+                      float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
 
 
-def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annotation: Path, ncbi_accession_id: str,
+def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
+                              annotation: Path, ncbi_accession_id: str,
                               region_amplicon_data: Dict[str, List]) -> List[Dict[str, Any]]:
     feature_data = []
     if gene_feature:
@@ -61,9 +87,11 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
             try:
                 logger.info(f'Fetching Genbank file with accession_id "{ncbi_accession_id}" from NCBI database')
                 genbank_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ncbi_accession_id)
-            except:
+            except Exception as e:
+                logger.error(e, exc_info=True)
                 logger.error(
-                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by providing option --ncbi-accession-id OR '
+                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id '
+                    f'by providing option --ncbi-accession-id OR '
                     f'provide option --genbank /path/to/genbank.gb ')
 
                 exit(1)
@@ -117,6 +145,7 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
                              "end": end_pos,
                              "level": level,
                              "strand": strand,
+                             "rotate": 0.5 if strand == 1 else -0.5,
                              "type": "gene_feature"
                          },
                          itemStyle={"color": next(colour_cycle)})
@@ -140,11 +169,60 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool, annot
                          "end": region[1],
                          "level": level,
                          "strand": '',
+                         "rotate": 0,
                          "type": "amplicon_feature"
                      },
                      itemStyle={"color": amplicon_color})
             )
     return feature_data
+
+
+def get_primer_data(primer_seq: Path, edit_distance: int, ref_seq: Dict[str, Dict[str, str]]) -> \
+        Dict[str, Dict[str, Dict]]:
+    primer_data = {}
+    primer_seq_record = []
+    for record in SeqIO.parse(open(primer_seq), 'fasta'):
+        primer_seq_record.append([record.id, record.seq])
+    for sample_key in ref_seq.keys():
+        primer_data[sample_key] = {}
+        for segment_key in ref_seq[sample_key].keys():
+            primer_data[sample_key][segment_key] = []
+            if ref_seq[sample_key][segment_key] != '':
+                for idx, record in enumerate(primer_seq_record):
+                    seqs = expand_degenerate_bases(record[1])
+                    align_result = []
+                    for seq in seqs:
+                        align = edlib.align(seq, ref_seq[sample_key][segment_key],
+                                            mode="HW", task="path", k=edit_distance)
+                        align['query_seq'] = seq
+                        if align['editDistance'] != -1:  # keep sequence has alignment result
+                            align_result.append(align)
+                    if len(align_result):
+                        align_min_ed = min(align_result, key=lambda x: x['editDistance'])
+                        other_locations = []
+                        for location in align_min_ed['locations'][1:]:
+                            loc_start = location[0]
+                            loc_end = location[1]
+                            # covert to 1-based index
+                            if loc_start is not None:
+                                loc_start = loc_start + 1
+                            if loc_end is not None:
+                                loc_end = loc_end + 1
+                            other_locations.append((loc_start, loc_end))
+                        viz_result = edlib.getNiceAlignment(align_min_ed, align_min_ed['query_seq'],
+                                                            ref_seq[sample_key][segment_key])
+                        primer_data[sample_key][segment_key].append(dict(name=record[0],
+                                                                         query_aligned=str(viz_result['query_aligned']),
+                                                                         target_aligned=viz_result['target_aligned'],
+                                                                         matched_aligned=viz_result['matched_aligned'],
+                                                                         # nice_viz="\n".join(viz_result.values()),
+                                                                         cigar=align_min_ed['cigar'],
+                                                                         edit_distance=align_min_ed['editDistance'],
+                                                                         start=align_min_ed['locations'][0][0],
+                                                                         end=align_min_ed['locations'][0][1],
+                                                                         other_locations=", ".join(
+                                                                             map(str, other_locations))))
+    return primer_data
 
 
 def write_html_coverage_plot(samples_name: List[str],
@@ -192,7 +270,14 @@ def write_html_coverage_plot(samples_name: List[str],
 def write_html_coverage_plot_segment_virus(samples_name: List[str],
                                            segments_name: List[str],
                                            depths_data: Dict[str, Dict[str, List]],
+                                           variants_data: Dict[str, Dict[str, Dict]],
                                            ref_seq: Dict[str, Dict[str, str]],
+                                           ref_id: Dict[str, Dict[str, str]],
+                                           coverage_stat: str,
+                                           low_coverage_regions: Dict[str, Dict[str, str]],
+                                           low_coverage_threshold: int,
+                                           primer_data: Dict[str, Dict[str, Dict]],
+                                           about_html: str,
                                            output_html: Path,
                                            ) -> None:
     render_env = Environment(
@@ -206,4 +291,11 @@ def write_html_coverage_plot_segment_virus(samples_name: List[str],
         fout.write(template_file.render(samples_name=samples_name,
                                         segments_name=segments_name,
                                         depths_data=depths_data,
-                                        ref_seq=ref_seq))
+                                        variants_data=variants_data,
+                                        ref_seq=ref_seq,
+                                        ref_id=ref_id,
+                                        coverage_stat=coverage_stat,
+                                        low_coverage_regions=low_coverage_regions,
+                                        low_coverage_threshold=low_coverage_threshold,
+                                        primer_data=primer_data,
+                                        about_html=about_html))

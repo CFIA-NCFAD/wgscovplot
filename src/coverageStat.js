@@ -23,11 +23,11 @@ function meanCoverage(depths, start, end) {
  * @returns {number} - Returns the genome coverage
  */
 function genomeCoverage(depths, start, end, low) {
-    let subArray = slice(depths, start - 1, end);
-    let filetedArray = filter(subArray, function (x) {
+    let subArr = slice(depths, start - 1, end);
+    let filteredArr = filter(subArr, function (x) {
         return x >= low;
     });
-    return (filetedArray.length / (end - start + 1)) * 100;
+    return (filteredArr.length / (end - start + 1)) * 100;
 }
 
 /**

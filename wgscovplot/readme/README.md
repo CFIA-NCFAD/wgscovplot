@@ -37,7 +37,7 @@ python setup.py install
 
 - Compare sequencing coverage across multiple samples
 - Fully-interactive plots with informative tooltips highlighting variant calling results and coverage statistics across all samples being shown  
-- Easy-to-use: Simply provide a [nf-core/viralrecon], [peterk87/nf-virontus] Nextflow workflow results directory as input (`wgscovplot --input-dir /path/to/viralrecon/results`) and `wgscovplot` will figure out what files it needs to generate its interactive sequencing coverage plots 
+- Easy-to-use: Simply provide a [nf-core/viralrecon], [peterk87/nf-virontus], [CFIA-NCFAD/nf-flu] Nextflow workflow results directory as input (`wgscovplot --input-dir /path/to/viralrecon/results`) and `wgscovplot` will figure out what files it needs to generate its interactive sequencing coverage plots 
 - Annotate coverage plots with variant calling results from multiple different variant callers ([iVar](https://github.com/andersen-lab/ivar), [Nanopolish](https://github.com/jts/nanopolish), [Longshot](https://github.com/pjedge/longshot), [Medaka](https://github.com/nanoporetech/medaka)) and variant effect results from [SnpEff]/[SnpSift]
 
 ## Usage
@@ -59,8 +59,6 @@ wgscovplot \
 Show help info with `$ wgscovplot --help`:
 
 ```
-Usage: wgscovplot [OPTIONS]
-
 Options:
   --input-dir PATH                Nextflow workflow results directory
                                   [required]
@@ -76,6 +74,9 @@ Options:
                                   amplicon]
   --gene-feature / --no-gene-feature
                                   Plot Gene Features  [default: gene-feature]
+  --segment-virus / --no-segment-virus
+                                  Generate Coverage plot for segments virus
+                                  [default: no-segment-virus]
   --gene-misc-feature / --no-gene-misc-feature
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]
@@ -130,4 +131,5 @@ Unless required by applicable law or agreed to in writing, software distributed 
 [Mosdepth]: https://github.com/brentp/mosdepth
 [nf-core/viralrecon]: https://github.com/nf-core/viralrecon
 [peterk87/nf-virontus]: https://github.com/peterk87/nf-virontus/
+[CFIA-NCFAD/nf-flu]: https://github.com/CFIA-NCFAD/nf-flu/
 [Canadian Food Inspection Agency of Canada]: https://inspection.canada.ca/science-and-research/our-laboratories/ncfad-winnipeg/eng/1549576575939/1549576643836

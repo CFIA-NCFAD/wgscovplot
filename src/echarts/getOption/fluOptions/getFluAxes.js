@@ -1,63 +1,62 @@
-import {getFluGrids} from "./getFluGrids";
+/**
+ * Custom xAxis label
+ * @param {number} xAxisValue - xAxis value
+ * @param {Array<string>} segments - An array of segments names
+ * @param {Array<Array<number>>} segmentsRange - An array of segment start, end
+ * @returns {string}
+ */
+function getCustomXAxisLabel (xAxisValue, segments, segmentsRange){
+    let segment = '';
+    let pos = 1;
+    for (let i = 0; i < segmentsRange.length; i ++){
+        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]){
+            pos = xAxisValue - segmentsRange[i][0] + 1;
+            segment = segments[i];
+        }
+    }
+    return segment + ' - ' + pos.toLocaleString();
+}
 
-function getFluXAxes(samples, segments, depths) {
+/**
+ * Define options for x Axis
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
+ * @param {number} xAxisMax - Max value is set for xAxis
+ * @param {boolean} showXAxisLabel - whether to show X Axis label
+ * @param {Array<Array<number>>} segmentsRange - An array of segment start, end
+ * @returns {Array<Object>}
+ */
+function getFluXAxes(samples, segments, xAxisMax,
+                     showXAxisLabel, segmentsRange) {
     let axes = [];
-    for (let i = 0; i < samples.length * segments.length; i++) {
+    for (let i = 0; i < samples.length; i++) {
         axes.push({
             type: "value",
             gridIndex: i,
             min: 1,
-            max: depths[i].length,
+            max: xAxisMax,
             axisLabel: {
-                show:true,
+                show:showXAxisLabel,
                 interval: "auto",
-                hideOverlap: true
+                formatter: function (value){
+                    return getCustomXAxisLabel(value, segments, segmentsRange);
+                }
             }
         });
     }
+    axes.push({ // For gene feature plot
+        type: "value",
+        gridIndex: samples.length,
+        min: 1,
+        max: xAxisMax,
+        axisLabel: {
+            interval: "auto",
+            formatter: function (value){
+                return getCustomXAxisLabel(value, segments, segmentsRange);
+            }
+        },
+    });
     return axes;
 }
 
-function getYAxisName(samples, segments, samplesIndex, segmentsIndex){
-
-   let yAxisName = '';
-   let horizontalOffset = 4.0;
-   let padLeft = 4.0;
-   let samplePlotWidth = (100.0 - padLeft)/segments.length - horizontalOffset;
-   if (samplePlotWidth > 10){
-       yAxisName = samples[samplesIndex] + ' - Segment ' + segments[segmentsIndex];
-   }else{
-       yAxisName =  samples[samplesIndex].substring(0,10) + '...';
-   }
-   return yAxisName;
-}
-
-function getFluYAxes(samples, segments) {
-    let axes = [];
-    let gridIndex = 0;
-    for (let i = 0; i < samples.length; i++) {
-        for (let j = 0; j < segments.length; j++) {
-            axes.push({
-                type: 'log',
-                gridIndex: gridIndex,
-                name: getYAxisName(samples, segments, i, j),
-                nameTextStyle: {
-                    fontStyle: "normal",
-                    fontWeight: "normal",
-                    fontSize: 10,
-                },
-                nameLocation: "end",
-                nameRotate: 0.01,
-                min: 1,
-                max: 100000,
-                minorSplitLine: {
-                    show: true,
-                },
-            });
-            gridIndex = gridIndex + 1;
-        }
-    }
-    return axes;
-}
-
-export {getFluXAxes, getFluYAxes};
+export {getFluXAxes}

@@ -6,6 +6,8 @@ from enum import Enum
 from operator import itemgetter
 from pathlib import Path
 from typing import Dict, Tuple, List, Optional, Iterable, Union
+from Bio import SeqIO
+from wgscovplot.tools import mosdepth
 
 import pandas as pd
 from pydantic import BaseModel
@@ -169,6 +171,10 @@ class VariantCaller(Enum):
     Medaka = 'medaka'
 
 
+TOP_REFERENCE_PATTERNS = [
+    '**/reference_sequences/**/*.topsegments.csv',
+]
+
 VCF_GLOB_PATTERNS = [
     '**/nanopolish/*.pass.vcf.gz',
     '**/ivar/*.vcf.gz',
@@ -185,6 +191,7 @@ VCF_SAMPLE_NAME_CLEANUP = [
     re.compile(r'\.longshot'),
     re.compile(r'\.snpeff'),
     re.compile(r'\.no_fs'),
+    re.compile(r'\.topsegments.csv'),
 ]
 
 SNPSIFT_GLOB_PATTERNS = [
@@ -517,6 +524,47 @@ def parse_vcf_info(s: str) -> dict:
     return out
 
 
+def parse_clair3_vcf(df: pd.DataFrame, sample: str, segment: str, ref_seq_len: int) -> Optional[pd.DataFrame]:
+    if df.empty:
+        return []
+    df_clair3_info = df
+    df_clair3_info['Sample'] = sample
+    df_clair3_info['Segment'] = segment
+    df_clair3_info['Segment Length'] = ref_seq_len
+    df_clair3_info['ALT_FREQ'] = df_clair3_info['SAMPLE'].apply(lambda x: x.split(':')[-1])
+    df_clair3_info.drop(columns=['ID', 'INFO', 'QUAL', 'FILTER', 'INFO', 'FORMAT', 'SAMPLE'], inplace=True)
+    df_clair3_info = df_clair3_info.reindex(columns=['Sample', 'Segment', 'Segment Length',
+                                                     'CHROM', 'POS', 'REF', 'ALT', 'ALT_FREQ'])
+    df_clair3_info.rename(columns={'CHROM': 'REF_ID', 'ALT': 'ALT_SEQ', 'REF': 'REF_SEQ'}, inplace=True)
+    return df_clair3_info.to_dict(orient='records')
+
+
+def get_segments_variants(basedir: Path) -> Dict[str, pd.DataFrame]:
+    sample_top_references = find_file_for_each_sample(basedir,
+                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
+                                                      sample_name_cleanup=VCF_SAMPLE_NAME_CLEANUP)
+    out = {}
+    segments_name = mosdepth.get_segments_name(basedir)
+    for sample, top_references_path in sample_top_references.items():
+        out[sample] = {}
+        df = mosdepth.read_top_references_table(top_references_path)
+        for segment in segments_name:
+            out[sample][segment] = {}
+        for row in df.itertuples():
+            vcf_files = basedir.glob(f'**/variants/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.no_frameshifts.vcf')
+            ref_files = basedir.glob(f'**/reference_sequences/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.*')
+            ref_seq_len = 0
+            for p1 in ref_files:
+                for record in SeqIO.parse(open(p1), 'fasta'):
+                    ref_seq_len = len(record.seq)
+            for p2 in vcf_files:
+                variants_caller, df_vcf = read_vcf(p2)
+                out[sample][row.segment] = parse_clair3_vcf(df_vcf, sample, row.segment, ref_seq_len)
+    return out
+
+
 def get_info(basedir: Path, min_coverage: int = 10) -> Dict[str, pd.DataFrame]:
     sample_vcf = find_file_for_each_sample(basedir=basedir,
                                            glob_patterns=VCF_GLOB_PATTERNS,
@@ -550,7 +598,8 @@ def get_info(basedir: Path, min_coverage: int = 10) -> Dict[str, pd.DataFrame]:
             else:
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         else:
-            logger.warning(f'Sample "{sample}" VCF file "{vcf_path}" with variant_caller={variant_caller} not supported. Skipping...')
+            logger.warning(
+                f'Sample "{sample}" VCF file "{vcf_path}" with variant_caller={variant_caller} not supported. Skipping...')
 
     sample_snpsift = find_file_for_each_sample(basedir=basedir,
                                                glob_patterns=SNPSIFT_GLOB_PATTERNS,

@@ -35,4 +35,4 @@ jobs:
       run: |
         pwd
         ls
-        pytest -v
+        pytest --no-header --tb=auto -v -s

@@ -6,6 +6,8 @@ import {getRegionAmpliconDepthRenderer} from "./echarts/getOption/getRegionAmpli
 import {getTooltips} from "./echarts/getOption/getTooltips";
 import {getGrids} from "./echarts/getOption/getGrids";
 import {getFluCoverageChartOption} from "./echarts/getOption/fluOptions/getFluCoverageChartOption";
+import {getXAxisMax, getMaxSegmentsLength} from "./echarts/getOption/fluOptions/getFluSegmentsInfo";
+import {getFluTooltips} from "./echarts/getOption/fluOptions/getFluTooltips";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import $ from "jquery";
@@ -17,16 +19,20 @@ import "select2/dist/css/select2.css";
 import * as echarts from 'echarts/core';
 
 import {LineChart, BarChart, CustomChart, HeatmapChart} from 'echarts/charts';
-import {TooltipComponent, GridComponent, DataZoomComponent,
-      DatasetComponent, ToolboxComponent, VisualMapComponent, TitleComponent} from 'echarts/components';
+import {
+      TooltipComponent, GridComponent, DataZoomComponent,
+      DatasetComponent, ToolboxComponent, VisualMapComponent, TitleComponent, MarkAreaComponent, MarkLineComponent
+} from 'echarts/components';
 import {SVGRenderer, CanvasRenderer } from 'echarts/renderers';
 
 echarts.use(
   [TooltipComponent, GridComponent,
-      LineChart, BarChart, ToolboxComponent,HeatmapChart,
-      DataZoomComponent, CustomChart,VisualMapComponent,TitleComponent,
-      DatasetComponent, SVGRenderer, CanvasRenderer]
+      LineChart, BarChart, ToolboxComponent, HeatmapChart,
+      DataZoomComponent, CustomChart, VisualMapComponent, TitleComponent,
+      DatasetComponent, SVGRenderer, CanvasRenderer, MarkAreaComponent, MarkLineComponent]
 );
 
-export {getCoverageChartOption, getFluCoverageChartOption, getVariantHeatmapOption, median, meanCoverage, medianCoverage, genomeCoverage,
-      getGeneFeatureRenderer, getRegionAmpliconDepthRenderer, getTooltips, getGrids, echarts};
+export {getCoverageChartOption, getFluCoverageChartOption, getVariantHeatmapOption,
+      median, meanCoverage, medianCoverage, genomeCoverage,
+      getGeneFeatureRenderer, getRegionAmpliconDepthRenderer,
+      getTooltips, getGrids, getXAxisMax, getMaxSegmentsLength, getFluTooltips, echarts};
