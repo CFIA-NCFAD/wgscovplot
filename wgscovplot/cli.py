@@ -30,12 +30,12 @@ def check_dir_exists_callback(path: Path) -> Path:
     epilog=f"wgscovplot version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
 )
 def main(
-        input_dir: Path = typer.Option(..., callback=check_dir_exists_callback, help="Nextflow workflow results "
+        input_dir: Path = typer.Argument(..., callback=check_dir_exists_callback, help="Nextflow workflow results "
                                                                                      "directory"),
         output_html: Path = typer.Option("wgscovplot.html", help="Output File of Interactive HTML Coverage Plot"),
-        ref_seq: Path = typer.Option(None, help="Path to reference sequences (Fasta"),
-        primer_seq: Path = typer.Option(None, help="Path to primer sequences (Fasta)"),
-        genbank: Path = typer.Option(None, help="Genbank file contains gene features"),
+        ref_seq_path: Path = typer.Option(None, help="Path to reference sequences (Fasta)"),
+        primer_seq_path: Path = typer.Option(None, help="Path to primer sequences (Fasta)"),
+        gene_feature_path: Path = typer.Option(None, help="Gene feature file contains gene features"),
         ncbi_accession_id: str = typer.Option(default="", help="NCBI accession id to fetch gene features "
                                                                "and/or reference sequences"),
         low_coverage_threshold: int = typer.Option(default=10, help="Low Coverage Threshold"),
@@ -61,8 +61,8 @@ def main(
         level=logging.INFO if not verbose else logging.DEBUG,
         handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
     )
-    run(input_dir, ref_seq, genbank, ncbi_accession_id, low_coverage_threshold, amplicon, gene_feature, segment_virus,
-        gene_misc_feature, primer_seq, edit_distance, dev, output_html)
+    run(input_dir, ref_seq_path, gene_feature_path, ncbi_accession_id, low_coverage_threshold, amplicon, gene_feature,
+        segment_virus, gene_misc_feature, primer_seq_path, edit_distance, dev, output_html)
 
 
 if __name__ == "__main__":
