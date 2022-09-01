@@ -6,7 +6,7 @@ import {getFluDepthSeries} from "./getFluDepthSeries";
 import {getMaxSegmentsLength, getSegmentsRange} from "./getFluSegmentsInfo";
 import {getFluGeneFeature} from "./getFluSegmentsInfo";
 import {sum} from "lodash/math";
-import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeaturesSeries";
+import {getGeneFeatureSeries} from "../../geneFeatures/getGeneFeatureSeries";
 import {getFluTooltips} from "./getFluTooltips";
 import {getYAxisMax} from "./getFluSegmentsInfo";
 import {getFluVariantSeries} from "./getFluVariantSeries";
@@ -57,17 +57,16 @@ import {getFluPrimerSeries} from "./getFluPrimerSeries";
 function getFluCoverageChartOption(samples, segments,
                                    depths, variants,
                                    refSeq, refID,
-                                   lowCoverageRegion= {},
+                                   lowCoverageRegion = {},
                                    lowCoverageThreshold = 10,
                                    primerData = {},
-                                   triggerOnType= "mousemove", variantSites= true,
-                                   nonVariantSites= false, infoComparison= true,
-                                   coverageStatView= false, showMutation= false,
-                                   showXAxisLabel= false, hideOverlapMutation= true)
-{
+                                   triggerOnType = "mousemove", variantSites = true,
+                                   nonVariantSites = false, infoComparison = true,
+                                   coverageStatView = false, showMutation = false,
+                                   showXAxisLabel = false, hideOverlapMutation = true) {
 
     let chartOptions = {};
-    if (samples.length == 0 || segments.length == 0){
+    if (samples.length === 0 || segments.length === 0) {
         return chartOptions; // Plot nothing
     }
     let maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);

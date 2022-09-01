@@ -1,4 +1,4 @@
-import {ntColor} from "../../../util";
+import {ntColor} from "../../util";
 import {getSegmentsIndex} from "./getFluSegmentsInfo";
 import {find} from "lodash/collection";
 import {isEmpty} from "lodash/lang";
@@ -33,16 +33,15 @@ function getFluVariantSeries(samples, segments,
     let variantSeries = [];
     let pos;
     for (let i = 0; i < samples.length; i++) {
-        let data = []
+        let data = [];
         for (let j = 0; j < segments.length; j++) {
-            if (!isEmpty(variants[samples[i]][segments[j]])){
-                for (let [k, varMap] of variants[samples[i]][segments[j]].entries()){
+            if (!isEmpty(variants[samples[i]][segments[j]])) {
+                for (let [k, varMap] of variants[samples[i]][segments[j]].entries()) {
                     pos = parseInt(varMap.POS);
                     data.push([pos + segmentsRange[j][0] - 1, depths[samples[i]][segments[j]][pos - 1]]);
                 }
-            }
-            else{
-                data.push([])
+            } else {
+                data.push([]);
             }
 
         }
@@ -56,7 +55,7 @@ function getFluVariantSeries(samples, segments,
                 color: function (params) {
                     let axisValue = params.data[0];
                     let segmentIndex = getSegmentsIndex(axisValue, segmentsRange);
-                    let nt = refSeq[samples[i]][segments[segmentIndex]][axisValue- segmentsRange[segmentIndex][0]];
+                    let nt = refSeq[samples[i]][segments[segmentIndex]][axisValue - segmentsRange[segmentIndex][0]];
                     if (ntColor.hasOwnProperty(nt)) {
                         return ntColor[nt];
                     }
@@ -71,22 +70,22 @@ function getFluVariantSeries(samples, segments,
                 distance: 10,
                 color: "inherit",
                 rotate: -30,
-                formatter: function (params){
+                formatter: function (params) {
                     let output = "";
                     let segmentIndex = getSegmentsIndex(params.data[0], segmentsRange);
                     let foundObj = find(variants[samples[i]][segments[segmentIndex]],
                         {"POS": params.data[0] - segmentsRange[segmentIndex][0] + 1});
-                    if (foundObj !== undefined && foundObj !== null){
-                        output += foundObj.REF_SEQ + foundObj.POS + foundObj.ALT_SEQ
+                    if (foundObj !== undefined && foundObj !== null) {
+                        output += foundObj.REF_SEQ + foundObj.POS + foundObj.ALT_SEQ;
                     }
                     return output;
                 }
             },
-            labelLayout:{
+            labelLayout: {
                 hideOverlap: hideOverlapMutation
             },
             large: true,
-            tooltip:{
+            tooltip: {
                 trigger: variantSites ? "axis" : "none"
             }
         });

@@ -1,5 +1,5 @@
 import {getGeneFeatureRenderer} from "./getGeneFeatureRenderer";
-import {toTableHtml} from "../../util";
+import {toTableHtml} from "../util";
 
 /**
  * Define options for gene features charts
@@ -11,7 +11,7 @@ import {toTableHtml} from "../../util";
  */
 function getGeneFeatureSeries(geneAmpliconFeatureData, index, geneFeature, amplicon) {
     let featureSeries = [];
-    if (amplicon || geneFeature){
+    if (amplicon || geneFeature) {
         featureSeries.push({
             type: "custom",
             xAxisIndex: index,

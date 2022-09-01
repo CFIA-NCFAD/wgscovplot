@@ -30,12 +30,12 @@ export const ntColor = {
 export const segmentsColor = {
     "1_PB2": "#A6CEE3",
     "2_PB1": "#1F78B4",
-    "3_PA" : "#B2DF8A",
-    "4_HA" : "#33A02C",
-    "5_NP" : "#FB9A99",
-    "6_NA" : "#E31A1C",
-    "7_M"  : "#FDBF6F",
-    "8_NS" : "#FF7F00"
+    "3_PA": "#B2DF8A",
+    "4_HA": "#33A02C",
+    "5_NP": "#FB9A99",
+    "6_NA": "#E31A1C",
+    "7_M": "#FDBF6F",
+    "8_NS": "#FF7F00"
 };
 
 /**
@@ -48,15 +48,15 @@ export const segmentsColor = {
  * @param {number} position - Selected position
  * @returns <Array<Array<string>> - Coverage Stat comparison across samples
  */
-function getCoverageStatComparison (samples, depths, start, end, currentSample, position){
+function getCoverageStatComparison(samples, depths, start, end, currentSample, position) {
     let rows = [];
-    let tableHeader = ["Sample", "Depth at position "+ position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
+    let tableHeader = ["Sample", "Depth at position " + position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
     rows.push(...[tableHeader]);
-    for (var[i, sample] of samples.entries()){
+    for (var [i, sample] of samples.entries()) {
         let meanCov = meanCoverage(depths[i], start, end).toFixed(2);
         let medianCov = medianCoverage(depths[i], start, end).toFixed(2);
         let genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
-        let coverageDepth = depths[i][position-1];
+        let coverageDepth = depths[i][position - 1];
         let row = [sample, coverageDepth.toLocaleString(), start.toLocaleString() + " - " + end.toLocaleString(), meanCov, medianCov, genomeCov];
         rows.push(...[row]);
     }
@@ -72,23 +72,22 @@ function getCoverageStatComparison (samples, depths, start, end, currentSample, 
  * @param {string} currentSample - selected sample
  * @returns <Array<Array<string>> - Variant comparison across samples
  */
-function getVariantComparison(samples, variants, depths, position, currentSample=""){
+function getVariantComparison(samples, variants, depths, position, currentSample = "") {
     let rows = [];
     let variantArr = [];
     for (let [i, element] of variants.entries()) {
-        if (element.length){
+        if (element.length) {
             let isPOSExist = false;
             let foundObj = find(Object.values(element), {"POS": position});
-            if (foundObj !== undefined && foundObj !== null){
+            if (foundObj !== undefined && foundObj !== null) {
                 isPOSExist = true;
                 variantArr.push(foundObj);
             }
-            if (!isPOSExist){
-                variantArr.push({"sample": samples[i], "POS":position}); // sample has variant infor but no variant infor at this position
+            if (!isPOSExist) {
+                variantArr.push({"sample": samples[i], "POS": position}); // sample has variant infor but no variant infor at this position
             }
-        }
-        else{
-            variantArr.push({"sample": samples[i], "POS":position}); // sample has no variant information
+        } else {
+            variantArr.push({"sample": samples[i], "POS": position}); // sample has no variant information
         }
     }
     var unionKeys = [...new Set(variantArr.reduce((r, e) => [...r, ...Object.keys(e)], []))];
@@ -96,19 +95,19 @@ function getVariantComparison(samples, variants, depths, position, currentSample
     unionKeys.forEach(key => {
         let row = [];
         row.push(key);
-        if (key === "Coverage Depth"){
-            for (let [i, depthEle] of depths.entries()){
-                row.push(depths[i][position-1].toLocaleString());
+        if (key === "Coverage Depth") {
+            for (let [i, depthEle] of depths.entries()) {
+                row.push(depths[i][position - 1].toLocaleString());
             }
-        }else{
+        } else {
             variantArr.forEach(element => {
-                if (element[key] !== undefined && element[key] !== null){
+                if (element[key] !== undefined && element[key] !== null) {
                     if (key === 'sample' && element[key] === currentSample) {// Bold highlight selected sample
                         row.push(element[key].bold());
-                    }else{
+                    } else {
                         row.push(element[key]);
                     }
-                }else {
+                } else {
                     row.push("");
                 }
             });

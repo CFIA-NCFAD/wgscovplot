@@ -30,7 +30,8 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#plot-sample" aria-expanded="true" aria-controls="plot-sample">Samples Selection
+                                data-bs-target="#plot-sample" aria-expanded="true" aria-controls="plot-sample">Samples
+                            Selection
                         </button>
                     </h2>
                     <div id="plot-sample" class="accordion-collapse collapse show">
@@ -39,7 +40,7 @@
                                 <label>Samples</label>
                                 <select id="selected-samples" class="selected-samples" multiple="multiple">
                                     {% for sample in samples_name %}
-                                        <option value={{sample}}>{{sample}}</option>
+                                    <option value={{sample}}>{{sample}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -47,7 +48,7 @@
                                 <label>Segments</label>
                                 <select id="selected-segments" class="selected-segments" multiple="multiple">
                                     {% for segment in segments_name %}
-                                        <option value={{segment}}>{{segment}}</option>
+                                    <option value={{segment}}>{{segment}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -171,7 +172,8 @@
                             <div class="row mb-3">
                                 <div>
                                     <div class="form-check form-switch">
-                                        <label class="form-check-label" for="toggle-coverage-stat">Coverage Statistics</label>
+                                        <label class="form-check-label" for="toggle-coverage-stat">Coverage
+                                            Statistics</label>
                                         <input class="form-check-input" type="checkbox" id="toggle-coverage-stat"
                                                unchecked>
                                     </div>
@@ -195,11 +197,12 @@
                                     <div class="row">
                                         <div class="col-md-10">
                                             <input type="range" id="chart-height-input" class="form-range" value="19.0"
-                                                   min="1.0" max="70.0" step="0.1" onchange="updateSubPlotHeight(this.value);">
+                                                   min="1.0" max="70.0" step="0.1"
+                                                   onchange="updateSubPlotHeight(this.value);">
                                         </div>
                                         <div class="col-md-2">
                                             <output style="display: block; text-align:center;" type="text"
-                                            id="chart-height-output">19.0<span>%</span></output>
+                                                    id="chart-height-output">19.0<span>%</span></output>
                                         </div>
                                     </div>
                                 </div>
@@ -209,12 +212,13 @@
                                     <label for="chart-left-input" class="form-label">Left Margin</label>
                                     <div class="row">
                                         <div class="col-md-10">
-                                            <input type="range" id="chart-left-input" class="form-range" value="4.0" min="1.0"
-                                           max="50.0" step="0.1" onchange="updateChartLeftMargin(this.value);">
+                                            <input type="range" id="chart-left-input" class="form-range" value="4.0"
+                                                   min="1.0"
+                                                   max="50.0" step="0.1" onchange="updateChartLeftMargin(this.value);">
                                         </div>
                                         <div class="col-md-2">
                                             <output style="display: block; text-align:center;" type="text"
-                                            id="chart-left-output">4.0<span>%</span></output>
+                                                    id="chart-left-output">4.0<span>%</span></output>
                                         </div>
                                     </div>
                                 </div>
@@ -224,12 +228,13 @@
                                     <label for="chart-right-input" class="form-label">Right Margin</label>
                                     <div class="row">
                                         <div class="col-md-10">
-                                            <input type="range" id="chart-right-input" class="form-range" value="4.0" min="1.0"
-                                           max="50.0" step="0.1" onchange="updateChartRightMargin(this.value);">
+                                            <input type="range" id="chart-right-input" class="form-range" value="4.0"
+                                                   min="1.0"
+                                                   max="50.0" step="0.1" onchange="updateChartRightMargin(this.value);">
                                         </div>
                                         <div class="col-md-2">
                                             <output style="display: block; text-align:center;" type="text"
-                                            id="chart-right-output">4.0<span>%</span></output>
+                                                    id="chart-right-output">4.0<span>%</span></output>
                                         </div>
                                     </div>
                                 </div>
@@ -239,18 +244,22 @@
                                     <label class="form-label"> Subplot Top Margin</label>
                                     <div class="row">
                                         <div class="col-md-10">
-                                            <input type="range" id="chart-top-input" class="form-range" value="6.5" min="0.0"
-                                           max="25.0" step="0.1" onchange="updateSubPlotTopMargin(this.value);">
+                                            <input type="range" id="chart-top-input" class="form-range" value="6.5"
+                                                   min="0.0"
+                                                   max="25.0" step="0.1" onchange="updateSubPlotTopMargin(this.value);">
                                         </div>
                                         <div class="col-md-2">
-                                            <output style="display: block; text-align:center;" type="text" id="chart-top-output">6.5<span>%</span></output>
+                                            <output style="display: block; text-align:center;" type="text"
+                                                    id="chart-top-output">6.5<span>%</span></output>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md">
-                                    <button class="btn btn-outline-secondary" onclick="resetGridDisplay()">Reset Grid Display</button>
+                                    <button class="btn btn-outline-secondary" onclick="resetGridDisplay()">Reset Grid
+                                        Display
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -270,12 +279,16 @@
                                     <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
                                 </div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-mutation">Low Coverage Regions Label </label>
-                                    <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions" unchecked>
+                                    <label class="form-check-label" for="toggle-mutation">Low Coverage Regions
+                                        Label </label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions"
+                                           unchecked>
                                 </div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping Mutations</label>
-                                    <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation" checked>
+                                    <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping
+                                        Mutations</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation"
+                                           checked>
                                 </div>
                             </div>
                         </div>
@@ -320,7 +333,7 @@
     </div>
 
     <div class="tab-pane" id="summary-table" role="tabpanel">
-        <div class="container-fluid" >
+        <div class="container-fluid">
             {{ coverage_stat }}
         </div>
     </div>

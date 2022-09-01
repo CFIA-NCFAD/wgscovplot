@@ -8,7 +8,6 @@
 
 - [Live example output](https://nhhaidee.github.io)
 
-![](https://raw.githubusercontent.com/nhhaidee/nhhaidee.github.io/master/wgscovplot.png)
 
 ## Installation
 
@@ -49,29 +48,23 @@ python setup.py install
 Basic usage will output a `wgscovplot.html` file in the current directory:
 
 ```bash
-wgscovplot --input-dir /path/to/viralrecon/results
-```
-
-Specify an NCBI Accession ID
-
-```bash
-wgscovplot \
-  --input-dir /path/to/viralrecon/results \
-  --ncbi-accession-id MN908947.3
+wgscovplot /path/to/results_folder
 ```
 
 Show help info with `$ wgscovplot --help`:
 
 ```
-Usage: wgscovplot [OPTIONS]
+Usage: wgscovplot [OPTIONS] INPUT_DIR
+
+Arguments:
+  INPUT_DIR  Nextflow workflow results directory  [required]
 
 Options:
-  --input-dir PATH                Nextflow workflow results directory
-                                  [required]
   --output-html PATH              Output File of Interactive HTML Coverage
                                   Plot  [default: wgscovplot.html]
-  --ref-seq PATH                  Path to reference sequences
-  --genbank PATH                  Genbank file contains gene features
+  --ref-seq-path PATH             Path to reference sequences (Fasta)
+  --primer-seq-path PATH          Path to primer sequences (Fasta)
+  --gene-feature-path PATH        Gene feature file contains gene features
   --ncbi-accession-id TEXT        NCBI accession id to fetch gene features
                                   and/or reference sequences
   --low-coverage-threshold INTEGER
@@ -87,6 +80,9 @@ Options:
                                   Plot Miscellaneous Features  [default: no-
                                   gene-misc-feature]
   --dev / --no-dev                Run tool with debug mode  [default: no-dev]
+  --edit-distance INTEGER         Maximum k errors allowed for primer sequence
+                                  alignment (use this option when --primer-seq
+                                  provided  [default: 0]
   --verbose / --no-verbose        Verbose logs  [default: no-verbose]
   --version / --no-version        Print wgscovplot version and exit
   --install-completion [bash|zsh|fish|powershell|pwsh]

@@ -177,11 +177,11 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
     return feature_data
 
 
-def get_primer_data(primer_seq: Path, edit_distance: int, ref_seq: Dict[str, Dict[str, str]]) -> \
+def get_primer_data(primer_seq_path: Path, edit_distance: int, ref_seq: Dict[str, Dict[str, str]]) -> \
         Dict[str, Dict[str, Dict]]:
     primer_data = {}
     primer_seq_record = []
-    for record in SeqIO.parse(open(primer_seq), 'fasta'):
+    for record in SeqIO.parse(open(primer_seq_path), 'fasta'):
         primer_seq_record.append([record.id, record.seq])
     for sample_key in ref_seq.keys():
         primer_data[sample_key] = {}

@@ -1,4 +1,4 @@
-import {segmentsColor} from "../../../util";
+import {segmentsColor} from "../../util";
 import {max, sum} from "lodash/math";
 
 /**
@@ -9,18 +9,18 @@ import {max, sum} from "lodash/math";
  * @returns {Array<number>}
  *
  */
-function getMaxSegmentsLength (samples, segments, depths){
+function getMaxSegmentsLength(samples, segments, depths) {
     let maxSegmentsLength = [];
-    for (let i = 0; i < segments.length; i++){
+    for (let i = 0; i < segments.length; i++) {
         let maxLength = depths[samples[0]][segments[i]].length;
-        for (let j = 0; j < samples.length; j++){
-            if (maxLength <= depths[samples[j]][segments[i]].length){
+        for (let j = 0; j < samples.length; j++) {
+            if (maxLength <= depths[samples[j]][segments[i]].length) {
                 maxLength = depths[samples[j]][segments[i]].length;
             }
         }
-        maxSegmentsLength.push(maxLength)
+        maxSegmentsLength.push(maxLength);
     }
-    return  maxSegmentsLength;
+    return maxSegmentsLength;
 }
 
 /**
@@ -28,7 +28,7 @@ function getMaxSegmentsLength (samples, segments, depths){
  * @param {Array<number>} maxSegmentsLength - An array of maximum length
  * @returns {number}
  */
-function getXAxisMax (maxSegmentsLength){
+function getXAxisMax(maxSegmentsLength) {
     let xAxisMax = 0;
     xAxisMax = sum(maxSegmentsLength);
     return xAxisMax;
@@ -42,12 +42,12 @@ function getXAxisMax (maxSegmentsLength){
  * @returns {number}
  *
  */
-function getYAxisMax (samples, segments, depths){
+function getYAxisMax(samples, segments, depths) {
     let yAxisMax = 0;
-    for (let i = 0; i < segments.length; i++){
-        for (let j = 0; j < samples.length; j++){
-            if (yAxisMax <= max(depths[samples[j]][segments[i]])){
-                yAxisMax = max(depths[samples[j]][segments[i]])
+    for (let i = 0; i < segments.length; i++) {
+        for (let j = 0; j < samples.length; j++) {
+            if (yAxisMax <= max(depths[samples[j]][segments[i]])) {
+                yAxisMax = max(depths[samples[j]][segments[i]]);
             }
         }
     }
@@ -60,10 +60,10 @@ function getYAxisMax (samples, segments, depths){
  * @param {Array<Array<number>>} segmentsRange - An array segment start, end
  * @returns {number}
  */
-function getSegmentsIndex (xAxisValue, segmentsRange){
+function getSegmentsIndex(xAxisValue, segmentsRange) {
     let index = 0;
-    for (let i = 0; i < segmentsRange.length; i ++){
-        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]){
+    for (let i = 0; i < segmentsRange.length; i++) {
+        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]) {
             index = i;
         }
     }
@@ -76,15 +76,15 @@ function getSegmentsIndex (xAxisValue, segmentsRange){
  * @returns {Array<Array<number>>}
  *
  */
-function getSegmentsRange (maxSegmentsLength){
+function getSegmentsRange(maxSegmentsLength) {
     let segmentsRange = [];
-    for (let m = 0; m < maxSegmentsLength.length; m++){
+    for (let m = 0; m < maxSegmentsLength.length; m++) {
         let segmentsStart;
         let segmentsEnd;
-        if (m == 0){
+        if (m === 0) {
             segmentsStart = 1;
             segmentsEnd = maxSegmentsLength[m];
-        }else{
+        } else {
             segmentsStart = segmentsRange.at(-1)[1] + 1;
             segmentsEnd = segmentsStart + maxSegmentsLength[m] - 1;
         }
@@ -100,25 +100,26 @@ function getSegmentsRange (maxSegmentsLength){
  * @returns {Array<Object>}
  *
  */
-function getFluGeneFeature(segments, segmentsRange){
+function getFluGeneFeature(segments, segmentsRange) {
     let geneFeature = [];
-    for (let i = 0; i < segments.length; i++){
+    for (let i = 0; i < segments.length; i++) {
         geneFeature.push({
             name: 'Segment ' + segments[i],
             value: {
-                 "idx": i,
-                 "start": segmentsRange[i][0],
-                 "end": segmentsRange[i][1],
-                 "level": 0,
-                 "strand": '',
-                 "rotate": 0.0,
-                 "type": "segment_feature"
+                "idx": i,
+                "start": segmentsRange[i][0],
+                "end": segmentsRange[i][1],
+                "level": 0,
+                "strand": '',
+                "rotate": 0.0,
+                "type": "segment_feature"
             },
-            itemStyle:{
+            itemStyle: {
                 "color": segmentsColor[segments[i]]
             }
         });
     }
     return geneFeature;
 }
-export {getMaxSegmentsLength, getSegmentsRange, getFluGeneFeature, getYAxisMax, getXAxisMax, getSegmentsIndex}
+
+export {getMaxSegmentsLength, getSegmentsRange, getFluGeneFeature, getYAxisMax, getXAxisMax, getSegmentsIndex};

@@ -40,7 +40,7 @@ function median(arr) {
     let half = Math.floor(sortedArr.length / 2);
     if (sortedArr.length % 2) {
         return sortedArr[half];
-    } else{
+    } else {
         return (sortedArr[half - 1] + sortedArr[half]) / 2.0;
     }
 }

@@ -1,21 +1,21 @@
 import {graphic} from "echarts/core";
 import {isEmpty} from "lodash/lang";
 
-function getFluPrimerData(sample, segments, primerData, segmentsRanges){
+function getFluPrimerData(sample, segments, primerData, segmentsRanges) {
     let primerFeature = [];
-    for (let i = 0; i < segments.length; i++){
-        let temp = primerData[sample][segments[i]]
-        for(let j = 0; j < temp.length; j++){
+    for (let i = 0; i < segments.length; i++) {
+        let temp = primerData[sample][segments[i]];
+        for (let j = 0; j < temp.length; j++) {
             primerFeature.push({
-                value: [temp[j]['start'] + segmentsRanges[i][0],
-                        temp[j]['end'] + segmentsRanges[i][0],
-                        10,
-                        temp[j]['name'],
-                        temp[j]['query_aligned'],
-                        temp[j]['target_aligned'],
-                        temp[j]['matched_aligned'],
-                        temp[j]['cigar'],
-                        temp[j]['edit_distance']],
+                value: [temp[j].start + segmentsRanges[i][0],
+                    temp[j].end + segmentsRanges[i][0],
+                    10,
+                    temp[j].name,
+                    temp[j].query_aligned,
+                    temp[j].target_aligned,
+                    temp[j].matched_aligned,
+                    temp[j].cigar,
+                    temp[j].edit_distance],
                 itemStyle: {"color": "#b71ae3"}
             });
         }
@@ -25,7 +25,7 @@ function getFluPrimerData(sample, segments, primerData, segmentsRanges){
 
 function getFluPrimerSeries(samples, segments, primerData, segmentsRanges) {
     let primerSeries = [];
-    if (isEmpty(primerData)){
+    if (isEmpty(primerData)) {
         return primerSeries;
     }
     for (let [i, sample] of samples.entries()) {
@@ -61,7 +61,7 @@ function getFluPrimerSeries(samples, segments, primerData, segmentsRanges) {
                 show: true,
                 position: "top",
                 distance: 20,
-                rotate:45
+                rotate: 45
             },
             encode: {
                 x: [0, 1],
@@ -74,4 +74,4 @@ function getFluPrimerSeries(samples, segments, primerData, segmentsRanges) {
     return primerSeries;
 }
 
-export {getFluPrimerSeries}
+export {getFluPrimerSeries};

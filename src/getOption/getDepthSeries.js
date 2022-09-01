@@ -1,7 +1,7 @@
 /**
  * Define options for depth coverage charts
  * @param {Array<string>} samples - An array of samples name
- * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
+ * @param {boolean} isNonVariantSites - whether to show tooltips for non-variant sites
  * @returns {Array<Object>}
  */
 function getDepthSeries(samples, isNonVariantSites) {
@@ -24,7 +24,7 @@ function getDepthSeries(samples, isNonVariantSites) {
                 color: "#666",
                 opacity: 0,
             },
-            tooltip:{
+            tooltip: {
                 trigger: isNonVariantSites ? "axis" : "none"
             },
             silent: true,
@@ -34,4 +34,4 @@ function getDepthSeries(samples, isNonVariantSites) {
     return depthSeries;
 }
 
-export {getDepthSeries}
+export {getDepthSeries};

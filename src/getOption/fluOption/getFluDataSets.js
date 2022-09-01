@@ -1,4 +1,4 @@
-import {times,constant} from "lodash/util";
+import {times, constant} from "lodash/util";
 import {concat} from "lodash/array";
 import {getMaxSegmentsLength} from "./getFluSegmentsInfo";
 
@@ -21,13 +21,13 @@ function getFluDatasets(samples, segments, depths, position) {
     const maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
     for (let i = 0; i < samples.length; i++) {
         let depthArray = [];
-        for (let j = 0; j < segments.length; j++){
+        for (let j = 0; j < segments.length; j++) {
             let temp = depths[samples[i]][segments[j]];
-            if (temp.length < maxSegmentsLength[j]){
+            if (temp.length < maxSegmentsLength[j]) {
                 let temp1 = times(maxSegmentsLength[j] - temp.length, constant(1E-10)); // padding value 1E-10
-                temp = concat(depths[samples[i]][segments[j]], temp1)
+                temp = concat(depths[samples[i]][segments[j]], temp1);
             }
-            depthArray = concat(depthArray, temp)
+            depthArray = concat(depthArray, temp);
         }
         datasets.push({
             dimensions: [

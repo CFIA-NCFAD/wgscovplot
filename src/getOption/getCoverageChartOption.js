@@ -3,7 +3,7 @@ import {getXAxes, getYAxes} from "./getAxes";
 import {getDepthSeries} from "./getDepthSeries";
 import {getVariantsSeries} from "./getVariantSeries";
 import {getRegionAmpliconDepthSeries} from "./getRegionAmpliconDepthSeries";
-import {getGeneFeatureSeries} from "../geneFeatures/getGeneFeaturesSeries";
+import {getGeneFeatureSeries} from "../geneFeatures/getGeneFeatureSeries";
 import {getGrids} from "./getGrids";
 import {getTooltips} from "./getTooltips";
 
@@ -52,19 +52,19 @@ import {getTooltips} from "./getTooltips";
  *        1:{sample: 'sample2', CHROM: 'MN908947.3',mutation: 'C15480A(orf1ab:P5072H)',POS: 25300}]
  *    ]
  */
-function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData,refSeq,
+function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, refSeq,
                                 yAxisMax, samples, depths, variants,
-                                geneFeature=false, amplicon=false,
-                                triggerOnType="mousemove", isVariantSites=true,
-                                isNonVariantSites=false, isInfoComparison=true,
-                                isCovergateStatView=false,
-                                isShowMutation=false,
-                                isShowXAxisLabel=true,
-                                isHideOverlapMutation=true) {
+                                geneFeature = false, amplicon = false,
+                                triggerOnType = "mousemove", isVariantSites = true,
+                                isNonVariantSites = false, isInfoComparison = true,
+                                isCoverageStatView = false,
+                                isShowMutation = false,
+                                isShowXAxisLabel = true,
+                                isHideOverlapMutation = true) {
     let positions = [...Array(refSeq.length + 1).keys()];
     let doubleStrand = false;
     Object.values(geneAmpliconFeatureData).forEach(x => {
-        if (x.value.strand === -1){
+        if (x.value.strand === -1) {
             doubleStrand = true;
         }
     });
@@ -81,7 +81,7 @@ function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData
             ...getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon),
             ...getGeneFeatureSeries(geneAmpliconFeatureData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isInfoComparison, isCovergateStatView),
+        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isInfoComparison, isCoverageStatView),
         toolbox: {
             show: "true",
             feature: {

@@ -5,11 +5,11 @@
  * @param {Array<Array<number>>} segmentsRange - An array of segment start, end
  * @returns {string}
  */
-function getCustomXAxisLabel (xAxisValue, segments, segmentsRange){
+function getCustomXAxisLabel(xAxisValue, segments, segmentsRange) {
     let segment = '';
     let pos = 1;
-    for (let i = 0; i < segmentsRange.length; i ++){
-        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]){
+    for (let i = 0; i < segmentsRange.length; i++) {
+        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]) {
             pos = xAxisValue - segmentsRange[i][0] + 1;
             segment = segments[i];
         }
@@ -36,9 +36,9 @@ function getFluXAxes(samples, segments, xAxisMax,
             min: 1,
             max: xAxisMax,
             axisLabel: {
-                show:showXAxisLabel,
+                show: showXAxisLabel,
                 interval: "auto",
-                formatter: function (value){
+                formatter: function (value) {
                     return getCustomXAxisLabel(value, segments, segmentsRange);
                 }
             }
@@ -51,7 +51,7 @@ function getFluXAxes(samples, segments, xAxisMax,
         max: xAxisMax,
         axisLabel: {
             interval: "auto",
-            formatter: function (value){
+            formatter: function (value) {
                 return getCustomXAxisLabel(value, segments, segmentsRange);
             }
         },
@@ -59,4 +59,4 @@ function getFluXAxes(samples, segments, xAxisMax,
     return axes;
 }
 
-export {getFluXAxes}
+export {getFluXAxes};

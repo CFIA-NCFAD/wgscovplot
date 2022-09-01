@@ -1,17 +1,6 @@
 import {shapePoints} from "./shapePoints";
-import {geneFeaturePlotProperties} from "../../util";
+import {geneFeaturePlotProperties} from "../util";
 import {graphic} from "echarts/core";
-
-/**
- * A closure is used for initial y_start for rendering gene/amplicon features
- * @type {function(): number}
- */
-let yStart = (function () {
-    let start;
-    return function () {
-        return start;
-    };
-})();
 
 /**
  * Renders the gene/amplicon features shape
@@ -26,6 +15,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
      * @param params - Echarts params
      * @param api - Echarts api
      */
+    let yStart;
     function renderGeneFeatures(params, api) {
         let points, shape, rotateAngle;
         let start, end, height, width, x, y, leftCoord, rightCoord;
@@ -46,14 +36,14 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
         let invisible = false;
         if (feature.value.type === 'gene_feature') {
             rotateAngle = feature.value.rotate;
-            if (isShowGeneLabel){
+            if (isShowGeneLabel) {
                 // Element width is too small and hide label at the edges
-                if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord){
+                if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord) {
                     invisible = true;
-                }else{
+                } else {
                     invisible = false;
                 }
-            }else{
+            } else {
                 invisible = true;
             }
             shape = graphic.clipPointsByRect(points, {
@@ -104,10 +94,10 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
                 textConfig: {},
                 invisible: !amplicon
             };
-        } else if (feature.value.type === 'segment_feature'){
-            if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord){
+        } else if (feature.value.type === 'segment_feature') {
+            if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord) {
                 invisible = true;
-            }else{
+            } else {
                 invisible = false;
             }
             shape = graphic.clipPointsByRect(points, {
@@ -141,11 +131,11 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
                     local: true,
                 },
             };
-        }
-        else {
+        } else {
             return null;
         }
     }
+
     return renderGeneFeatures;
 }
 

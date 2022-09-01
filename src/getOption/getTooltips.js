@@ -1,5 +1,5 @@
-import {meanCoverage, genomeCoverage, medianCoverage} from "../../coverageStat";
-import {toTableHtml, getVariantComparison, getCoverageStatComparison} from "../../util";
+import {meanCoverage, genomeCoverage, medianCoverage} from "../coverageStat";
+import {toTableHtml, getVariantComparison, getCoverageStatComparison} from "../util";
 import {find} from "lodash/collection";
 
 
@@ -11,12 +11,12 @@ import {find} from "lodash/collection";
  * @param {string} refSeq - Reference seq
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
- * @param {boolean} isCovergateStatView - whether to show Coverage stat
+ * @param {boolean} isCoverageStatView - whether to show Coverage stat
  * @returns {Array<Object>}
  */
 function getTooltips(samples, depths, variants, refSeq,
-                     triggerOnType="mousemove", isInfoComparison=true,
-                     isCovergateStatView=false) {
+                     triggerOnType = "mousemove", isInfoComparison = true,
+                     isCoverageStatView = false) {
     let toolTips = [
         {
             trigger: "axis",
@@ -39,10 +39,10 @@ function getTooltips(samples, depths, variants, refSeq,
                 }
                 let sample = samples[i];
                 let position = param.axisValue;
-                let depth = depths[i][position-1];
+                let depth = depths[i][position - 1];
                 let zoomStart = 1;
                 let zoomEnd = refSeq.length;
-                if (isCovergateStatView){
+                if (isCoverageStatView) {
                     zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
                     zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
                 }
@@ -55,16 +55,15 @@ function getTooltips(samples, depths, variants, refSeq,
                     return false;
                 });
                 if (isVariantBar) {
-                    if (isInfoComparison){
+                    if (isInfoComparison) {
                         positionRows = getVariantComparison(samples, variants, depths, position, sample);
-                    }
-                    else {
+                    } else {
                         positionRows = [
                             ["Position", position.toLocaleString()],
                             ["Coverage Depth", depth.toLocaleString()],
                         ];
                         let foundObj = find(Object.values(variants[i]), {"POS": position});
-                        if (foundObj !== undefined && foundObj !== null){
+                        if (foundObj !== undefined && foundObj !== null) {
                             for (const [key, value] of Object.entries(foundObj)) {
                                 if (key !== 'POS' && key !== 'sample') {
                                     positionRows.push(
@@ -79,16 +78,15 @@ function getTooltips(samples, depths, variants, refSeq,
                         ["Position", position.toLocaleString()],
                         ["Coverage Depth", depth.toLocaleString()],
                     ];
-                    positionRows.push(["Sequence", refSeq[position-1]]);
+                    positionRows.push(["Sequence", refSeq[position - 1]]);
                 }
-                if (positionRows.length){
+                if (positionRows.length) {
                     output += "<h5>" + "Sample: " + sample + "</h5>";
                     output += toTableHtml(["Position Info", ""], positionRows, "table small");
-                    if (isCovergateStatView){
-                        if (isInfoComparison){
+                    if (isCoverageStatView) {
+                        if (isInfoComparison) {
                             coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample, position);
-                        }
-                        else{
+                        } else {
                             let meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
                             let medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
                             let genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);

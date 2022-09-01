@@ -1,4 +1,4 @@
-import {geneFeaturePlotProperties} from "../../util";
+import {geneFeaturePlotProperties} from "../util";
 
 /**
  * Define options for x Axis
@@ -18,12 +18,12 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
             min: 1,
             max: xAxisMax,
             axisLabel: {
-                show:isShowXAxisLabel,
+                show: isShowXAxisLabel,
                 interval: "auto",
             }
         });
     }
-    if (amplicon || geneFeature){
+    if (amplicon || geneFeature) {
         axes.push({
             type: "value",
             gridIndex: samples.length,
@@ -67,7 +67,7 @@ function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
             },
         });
     }
-    if (amplicon || geneFeature){
+    if (amplicon || geneFeature) {
         axes.push({
             max: geneFeaturePlotProperties.max_grid_height,
             gridIndex: samples.length,

@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 Entrez.email = "wgscovplot@github.com"
 
 
-def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_accession_id: str, low_coverage_threshold: int,
-        amplicon: bool, gene_feature: bool, segment_virus: bool,
+def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_accession_id: str,
+        low_coverage_threshold: int, amplicon: bool, gene_feature: bool, segment_virus: bool,
         gene_misc_feature: bool, primer_seq_path: Path, edit_distance: int, dev: bool, output_html: Path) -> None:
     # Read README.md
-    dirpath = Path(__file__).parent
-    readme = dirpath / 'readme/README.md'
+    dirpath = Path(__file__).parent.parent
+    readme = dirpath / 'README.md'
     with open(readme, "r", encoding="utf-8") as input_file:
         text = input_file.read()
     about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])

@@ -1,4 +1,4 @@
-import {geneFeaturePlotProperties} from "../../util";
+import {geneFeaturePlotProperties} from "../util";
 
 /**
  *  Define grid for the whole charts
@@ -13,18 +13,18 @@ function getGrids(samples, geneFeature, amplicon, doubleStrand) {
     let heightOffset = 6.0;
     let featureHeight;
     let subPlotHeight;
-    if (amplicon && geneFeature){
+    if (amplicon && geneFeature) {
         featureHeight = 15.0;
-    } else if (amplicon || geneFeature){
+    } else if (amplicon || geneFeature) {
         featureHeight = 6.0;
-    } else{
+    } else {
         featureHeight = -5.0; // make subplot full
     }
     featureHeight = (doubleStrand && featureHeight > 0) ? (featureHeight + 6.0) : featureHeight;
     subPlotHeight = 90.0 - featureHeight;
     let grids = [];
     let sampleHeight = (subPlotHeight - padTop) / samples.length - heightOffset;
-    for (let idx = 0; idx < samples.length; idx++){
+    for (let idx = 0; idx < samples.length; idx++) {
         grids.push({
             show: true,
             height: parseFloat(sampleHeight).toFixed(1) + "%",

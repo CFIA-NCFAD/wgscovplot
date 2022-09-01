@@ -1,8 +1,8 @@
-import {toTableHtml} from "../../../util";
+import {toTableHtml} from "../../util";
 import {getMaxSegmentsLength, getSegmentsIndex, getSegmentsRange} from "./getFluSegmentsInfo";
 import {find} from "lodash/collection";
 import {isEmpty} from "lodash/lang";
-import {genomeCoverage, meanCoverage, medianCoverage} from "../../../coverageStat";
+import {genomeCoverage, meanCoverage, medianCoverage} from "../../coverageStat";
 
 /**
  * Get Variant sites comparison among samples
@@ -23,19 +23,20 @@ function getFluVariantComparison(samples, segments,
                                  position, segmentIndex, sample) {
     let rows = [];
     let variantArr = [];
-    for (let i = 0; i < samples.length; i++){
+    for (let i = 0; i < samples.length; i++) {
         let foundObj = find(variants[samples[i]][segments[segmentIndex]],
-        {"POS": position});
-        if (foundObj !== undefined && foundObj !== null){
+            {"POS": position});
+        if (foundObj !== undefined && foundObj !== null) {
             variantArr.push(foundObj);
         } else {
-            variantArr.push({"Sample": samples[i],
-                             "POS": position,
-                             "REF_ID": refID[samples[i]][segments[segmentIndex]],
-                             "Segment": segments[segmentIndex],
-                             "Segment Length": depths[samples[i]][segments[segmentIndex]].length,
-                             "REF_SEQ": refSeq[samples[i]][segments[segmentIndex]][position-1]
-                            });
+            variantArr.push({
+                "Sample": samples[i],
+                "POS": position,
+                "REF_ID": refID[samples[i]][segments[segmentIndex]],
+                "Segment": segments[segmentIndex],
+                "Segment Length": depths[samples[i]][segments[segmentIndex]].length,
+                "REF_SEQ": refSeq[samples[i]][segments[segmentIndex]][position - 1]
+            });
         }
     }
     let unionKeys = [...new Set(variantArr.reduce((r, e) => [...r, ...Object.keys(e)], []))];
@@ -43,30 +44,30 @@ function getFluVariantComparison(samples, segments,
     unionKeys.forEach(key => {
         let row = [];
         row.push(key);
-        if (key === "Coverage Depth"){
-            for (let j = 0; j < samples.length; j++){
-                let depth  = depths[samples[j]][segments[segmentIndex]];
-                if (depth.length == 0){
+        if (key === "Coverage Depth") {
+            for (let j = 0; j < samples.length; j++) {
+                let depth = depths[samples[j]][segments[segmentIndex]];
+                if (depth.length === 0) {
                     row.push(`No result reported for segment ${segments[segmentIndex]}`);
-                }else {
-                    if (position <= depth.length){
-                        row.push(depths[samples[j]][segments[segmentIndex]][position-1].toLocaleString());
-                    }else{ //Out of range when segment length < padding array
+                } else {
+                    if (position <= depth.length) {
+                        row.push(depths[samples[j]][segments[segmentIndex]][position - 1].toLocaleString());
+                    } else { //Out of range when segment length < padding array
                         row.push(`No sequence at this position. Reference sequence 
                             ${refID[samples[j]][segments[segmentIndex]]} is only 
                             ${depths[samples[j]][segments[segmentIndex]].length} bp`);
                     }
                 }
             }
-        }else {
+        } else {
             variantArr.forEach(element => {
-                if (element[key] !== undefined && element[key] !== null){
+                if (element[key] !== undefined && element[key] !== null) {
                     if (key === "Sample" && element[key] === sample) {// Bold highlight selected sample
                         row.push(element[key].bold());
-                    }else{
+                    } else {
                         row.push(element[key]);
                     }
-                }else {
+                } else {
                     row.push(""); // No information
                 }
             });
@@ -86,27 +87,26 @@ function getFluVariantComparison(samples, segments,
  * @param {number} low - low coverage threshold
  * @returns {Array<Array<string>>}
  */
-function getFluCoverageStatComparison (samples, segments, depths,
-                                       position, segmentIndex, low){
+function getFluCoverageStatComparison(samples, segments, depths,
+                                      position, segmentIndex, low) {
     let rows = [];
-    let tableHeader = ["Sample", "Depth at position "+ position, "Segment",
+    let tableHeader = ["Sample", "Depth at position " + position, "Segment",
         "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", `Genome Coverage (>=${low}X) (%)`];
     rows.push(...[tableHeader]);
-    for (let [i, sample] of samples.entries()){
-        let depthArr = depths[samples[i]][segments[segmentIndex]]
+    for (let [i, sample] of samples.entries()) {
+        let depthArr = depths[samples[i]][segments[segmentIndex]];
         let meanCov = meanCoverage(depthArr, 1, depthArr.length).toFixed(2);
         let medianCov = medianCoverage(depthArr, 1, depthArr.length).toFixed(2);
         let genomeCov = genomeCoverage(depthArr, 1, depthArr.length, low).toFixed(2);
-        let coverageDepth
-        if (position <= depthArr.length){
-            coverageDepth = depthArr[position-1].toLocaleString();
-        } else if (depthArr.length == 0){
-            coverageDepth = `No result reported for segment ${segments[segmentIndex]}`
+        let coverageDepth;
+        if (position <= depthArr.length) {
+            coverageDepth = depthArr[position - 1].toLocaleString();
+        } else if (depthArr.length === 0) {
+            coverageDepth = `No result reported for segment ${segments[segmentIndex]}`;
+        } else {
+            coverageDepth = "No sequence at this position";
         }
-        else {
-            coverageDepth = "No sequence at this position"
-        }
-        let row = [sample, coverageDepth, segments[segmentIndex] ,1 + " - " + depthArr.length,
+        let row = [sample, coverageDepth, segments[segmentIndex], 1 + " - " + depthArr.length,
             depthArr.length, meanCov, medianCov, genomeCov];
         rows.push(...[row]);
     }
@@ -150,7 +150,8 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
 
     let maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
     let segmentsRange = getSegmentsRange(maxSegmentsLength);
-    let toolTips = [
+    let toolTips;
+    toolTips= [
         {
             trigger: "axis",
             enterable: true,
@@ -164,28 +165,28 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 type: 'line'
             },
             formatter: function (params) {
-                let param = params[0]
-                let output = ''
+                let param = params[0];
+                let output = '';
                 let position = param.axisValue; // pos of xAxis in full scale
                 let i = param.axisIndex;
                 let positionRows = [];
                 let coverageStatRows = [];
-                let primerInfoRows = []
-                let sample = samples[i]
+                let primerInfoRows = [];
+                let sample = samples[i];
                 let segmentIndex = getSegmentsIndex(position, segmentsRange); // find segment index which pos belongs to
                 let segmentName = segments[segmentIndex];
                 let segmentLength = refSeq[sample][segments[segmentIndex]].length; // get segment length
                 position = position - segmentsRange[segmentIndex][0] + 1; // convert to pos in segment
                 let coverageDepth;
-                if (segmentLength === 0){
-                    coverageDepth = `No result reported for segment ${segments[segmentIndex]}`
-                }else{
+                if (segmentLength === 0) {
+                    coverageDepth = `No result reported for segment ${segments[segmentIndex]}`;
+                } else {
                     if (position <= segmentLength) {
-                        coverageDepth = depths[sample][segments[segmentIndex]][position-1].toLocaleString(); // get coverage depth for pos
-                    }else{
+                        coverageDepth = depths[sample][segments[segmentIndex]][position - 1].toLocaleString(); // get coverage depth for pos
+                    } else {
                         coverageDepth = `No sequence at this position. 
                         Reference sequence ${refID[samples[i]][segments[segmentIndex]]} 
-                        is only ${depths[samples[i]][segments[segmentIndex]].length} bp`
+                        is only ${depths[samples[i]][segments[segmentIndex]].length} bp`;
                     }
                 }
                 const variantBar = params.find(element => { // check if current position is variant sites
@@ -194,14 +195,14 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                     }
                     return false;
                 });
-                if (variantBar){ //tooltips at Variant sites
-                    if (infoComparison){
+                if (variantBar) { //tooltips at Variant sites
+                    if (infoComparison) {
                         positionRows = getFluVariantComparison(samples, segments, depths, variants,
-                            refSeq, refID, position, segmentIndex , sample);
-                    }else {
+                            refSeq, refID, position, segmentIndex, sample);
+                    } else {
                         let foundObj = find(variants[samples[param.axisIndex]][segments[segmentIndex]],
                             {"POS": position});
-                        if (foundObj !== undefined && foundObj !== null){
+                        if (foundObj !== undefined && foundObj !== null) {
                             for (const [key, value] of Object.entries(foundObj)) {
                                 if (key !== 'Sample') { // do not write row for sample name
                                     positionRows.push(
@@ -210,37 +211,36 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                                 }
                             }
                         }
-                        positionRows.push(["Coverage Depth", coverageDepth])
+                        positionRows.push(["Coverage Depth", coverageDepth]);
                     }
                 } else { // tooltips for Non-Variant Sites
-                    if (position > segmentLength){ //Out of range when segment length < padding array
+                    if (position > segmentLength) { //Out of range when segment length < padding array
                         positionRows = [
                             ['Position', position],
                             [coverageDepth, '']
-                        ]
+                        ];
                         output += "<h5>" + "Sample: " + samples[params[0].axisIndex] + "</h5>";
                         output += toTableHtml(["Position Info", ""], positionRows, "table small");
-                        return output
+                        return output;
                     } // Pos within segment length
                     positionRows = [
                         ['Segment', segmentName],
                         ['Segment Length', segmentLength],
                         ['REF_ID', refID[samples[param.axisIndex]][segments[segmentIndex]]],
                         ['POS', position],
-                        ['REF_SEQ', refSeq[samples[param.axisIndex]][segments[segmentIndex]][position-1]],
-                        ['ALT_SEQ',''],
-                        ['ALT_FREQ',''],
+                        ['REF_SEQ', refSeq[samples[param.axisIndex]][segments[segmentIndex]][position - 1]],
+                        ['ALT_SEQ', ''],
+                        ['ALT_FREQ', ''],
                         ['Coverage Depth', coverageDepth]
-                    ]
+                    ];
                 }
-                if (positionRows.length){ // write rows to table
+                if (positionRows.length) { // write rows to table
                     output += "<h5>" + "Sample: " + samples[params[0].axisIndex] + "</h5>";
                     output += toTableHtml(["Position Info", ""], positionRows, "table small");
-                    if (coverageStatView){
-                        if (infoComparison){
-                            coverageStatRows = getFluCoverageStatComparison (samples, segments, depths, position, segmentIndex, low);
-                        }
-                        else{
+                    if (coverageStatView) {
+                        if (infoComparison) {
+                            coverageStatRows = getFluCoverageStatComparison(samples, segments, depths, position, segmentIndex, low);
+                        } else {
                             let meanCov = meanCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength).toFixed(2);
                             let medianCov = medianCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength).toFixed(2);
                             let genomeCov = genomeCoverage(depths[sample][segments[segmentIndex]], 1, segmentLength, low).toFixed(2);
@@ -252,25 +252,24 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                         }
                         output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");
                     }
-                    if (!isEmpty(primerData)){
+                    if (!isEmpty(primerData)) {
                         let primerInfo = primerData[sample][segmentName];
-                        for (let i = 0; i < primerInfo.length; i++){
-                            if (position >= primerInfo[i]['start'] && position <= primerInfo[i]['end']){
+                        for (let i = 0; i < primerInfo.length; i++) {
+                            if (position >= primerInfo[i].start && position <= primerInfo[i].end) {
                                 primerInfoRows = [
-                                    ['Primer Name', primerInfo[i]['name']],
-                                    ['Primer Sequence', primerInfo[i]['query_aligned']],
-                                    ['Match Aligned', primerInfo[i]['matched_aligned']],
-                                    //['Alignment', primerInfo[i]['nice_viz']],
-                                    ['Ref Sequence', primerInfo[i]['target_aligned']],
-                                    ['Cigar', primerInfo[i]['cigar']],
-                                    ['Start', primerInfo[i]['start'] + 1],
-                                    ['End', primerInfo[i]['end'] + 1],
-                                    ['Edit Distance', primerInfo[i]['edit_distance']],
-                                    ['Other Locations', primerInfo[i]['other_locations']]
-                                ]
+                                    ['Primer Name', primerInfo[i].name],
+                                    ['Primer Sequence', primerInfo[i].query_aligned],
+                                    ['Match Aligned', primerInfo[i].matched_aligned],
+                                    ['Ref Sequence', primerInfo[i].target_aligned],
+                                    ['Cigar', primerInfo[i].cigar],
+                                    ['Start', primerInfo[i].start + 1],
+                                    ['End', primerInfo[i].end + 1],
+                                    ['Edit Distance', primerInfo[i].edit_distance],
+                                    ['Other Locations', primerInfo[i].other_locations]
+                                ];
                             }
                         }
-                        if (primerInfoRows.length){
+                        if (primerInfoRows.length) {
                             output += toTableHtml(["Primer Info", ""], primerInfoRows, "table small");
                         }
                     }

@@ -8,50 +8,49 @@
  *  @returns {Object} - Options for Mark Area
  *
  * */
-function getMarkArea(sample, segments, segmentsRange, lowCoverageRegion){
-    let data = []
-    for (let i = 0; i < segments.length; i++){
-        if (lowCoverageRegion[sample][segments[i]] != ''){
-            let coords= lowCoverageRegion[sample][segments[i]].split("; ")
-            for (let j = 0; j < coords.length; j++){
-                let coord = coords[j].split("-")
+function getMarkArea(sample, segments, segmentsRange, lowCoverageRegion) {
+    let data = [];
+    for (let i = 0; i < segments.length; i++) {
+        if (lowCoverageRegion[sample][segments[i]] !== '') {
+            let coords = lowCoverageRegion[sample][segments[i]].split("; ");
+            for (let j = 0; j < coords.length; j++) {
+                let coord = coords[j].split("-");
                 let start;
                 let end;
-                if (coord.length > 1){
-                    start = coord[0]
-                    end = coord[1]
-                }
-                else { // single position
-                    start = coord[0]
-                    end = coord[0]
+                if (coord.length > 1) {
+                    start = coord[0];
+                    end = coord[1];
+                } else { // single position
+                    start = coord[0];
+                    end = coord[0];
                 }
                 data.push([
                     {
                         name: `Region: ${start} - ${end}`,
-                        xAxis: parseInt(start)+ segmentsRange[i][0] - 1
+                        xAxis: parseInt(start) + segmentsRange[i][0] - 1
                     },
                     {
                         xAxis: parseInt(end) + segmentsRange[i][0] - 1
                     }
-                ])
+                ]);
             }
         }
     }
     return {
-        itemStyle:{
+        itemStyle: {
             color: 'yellow',
             opacity: 0.4
         },
         label: {
-            show:false,
+            show: false,
             position: 'insideTop',
             fontSize: 10,
             rotate: 30,
             overflow: 'truncate',
-            ellipsis:'...'
+            ellipsis: '...'
         },
         data: data
-    }
+    };
 }
 
 /**
@@ -59,16 +58,16 @@ function getMarkArea(sample, segments, segmentsRange, lowCoverageRegion){
  *  @param {Array<Array<number>>} segmentsRange - An array of segment start, end
  *
  * */
-function getMarkLine(segmentsRange){
-    let data = []
-    for (let i = 0; i < segmentsRange.length; i++){
-        if (i==0){
-            data.push({xAxis: segmentsRange[i][1]})
-        } else if (i == segmentsRange.length - 1){
-            data.push({xAxis: segmentsRange[i][0]})
-        } else{
-            data.push({xAxis: segmentsRange[i][0]})
-            data.push({xAxis: segmentsRange[i][1]})
+function getMarkLine(segmentsRange) {
+    let data = [];
+    for (let i = 0; i < segmentsRange.length; i++) {
+        if (i === 0) {
+            data.push({xAxis: segmentsRange[i][1]});
+        } else if (i === segmentsRange.length - 1) {
+            data.push({xAxis: segmentsRange[i][0]});
+        } else {
+            data.push({xAxis: segmentsRange[i][0]});
+            data.push({xAxis: segmentsRange[i][1]});
         }
     }
     return {
@@ -77,14 +76,14 @@ function getMarkLine(segmentsRange){
         label: {
             show: false,
         },
-        lineStyle:{
+        lineStyle: {
             color: "#000",
             width: 1,
             type: 'dashed',
             opacity: 0.5
         },
         data: data
-    }
+    };
 }
 
 /**
@@ -123,7 +122,7 @@ function getFluDepthSeries(samples, segments, lowCoverageRegion, segmentsRange, 
                 color: "#666",
                 opacity: 0,
             },
-            tooltip:{
+            tooltip: {
                 trigger: nonVariantSites ? "axis" : "none"
             },
             silent: true,
@@ -133,4 +132,4 @@ function getFluDepthSeries(samples, segments, lowCoverageRegion, segmentsRange, 
     return depthSeries;
 }
 
-export {getFluDepthSeries}
+export {getFluDepthSeries};

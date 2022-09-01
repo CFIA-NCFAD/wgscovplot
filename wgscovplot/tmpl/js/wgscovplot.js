@@ -5,23 +5,24 @@
  * @param {Object} variantsData - Variants data
  * @returns [Array<Array<number>>, Array<Array<Object>>]
  */
-function getDepthsVariants(samples, depthsData, variantsData){
+function getDepthsVariants(samples, depthsData, variantsData) {
     let depths = [];
     let variants = [];
     samples.forEach(sample => {
         if (depthsData[sample] !== undefined && depthsData[sample] !== null) {
             depths.push(depthsData[sample]);
-        } else{
+        } else {
             depths.push([]);
         }
-        if (variantsData[sample] !== undefined && variantsData[sample] !== null){
+        if (variantsData[sample] !== undefined && variantsData[sample] !== null) {
             variants.push(variantsData[sample]);
-        }else{
+        } else {
             variants.push({});
         }
     });
     return [depths, variants];
 }
+
 /**
  * Updates options for coverage charts.
  * Whenever the selected samples changed, chart options such as y Axis scale, yMax, DataZoom are reserved
@@ -36,10 +37,10 @@ function updateCoverageChartOption(samples) {
     // Reserver Tooltip option
     let isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     let triggerOnType;
-    if (isTooltipEnable){
+    if (isTooltipEnable) {
         triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
-    }else{
-        triggerOnType ="none";
+    } else {
+        triggerOnType = "none";
     }
     let isVariantSites = document.getElementById("toggle-tooltip-variant-sites").checked;
     let isNonVarianSites = document.getElementById("toggle-tooltip-non-variant-sites").checked;
@@ -50,25 +51,24 @@ function updateCoverageChartOption(samples) {
     let isHideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     let updateOption = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
         yAxisMax, samples, depths, variants, geneFeature, amplicon,
-        triggerOnType= triggerOnType, isVariantSites=isVariantSites,
-        isNonVariantSites=isNonVarianSites, isInfoComparison=isVariantComparison,
-        isCovergateStatView=isCoverageStatView,
-        isShowMutation=isShowMutation,
-        isShowXAxisLabel=isShowXAxisLabel,
-        isHideOverlapMutation=isHideOverlapMutation);
+        triggerOnType = triggerOnType, isVariantSites = isVariantSites,
+        isNonVariantSites = isNonVarianSites, isInfoComparison = isVariantComparison,
+        isCoverageStatView = isCoverageStatView,
+        isShowMutation = isShowMutation,
+        isShowXAxisLabel = isShowXAxisLabel,
+        isHideOverlapMutation = isHideOverlapMutation);
 
     // Reserve tooltip in series option
     let seriesOption = updateOption.series;
     seriesOption.forEach(element => {
-        if (element.type === 'line'){
+        if (element.type === 'line') {
             element.tooltip.trigger = isNonVariantSites ? "axis" : "none";
-        }
-        else if (element.type === 'bar'){
+        } else if (element.type === 'bar') {
             element.tooltip.trigger = isVariantSites ? "axis" : "none";
         }
     });
-    let isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
-    updateOption.tooltip[0].position = tooltipPosition(isFixTooltipPostion);
+    let isFixTooltipPosition = document.getElementById("fix-tooltip-position").checked;
+    updateOption.tooltip[0].position = tooltipPosition(isFixTooltipPosition);
 
     // Reserve datzoom
     let oldDataZoom = chartOption.dataZoom;
@@ -84,33 +84,33 @@ function updateCoverageChartOption(samples) {
 
     //Toggle amplicon
     let isShowAmplicon;
-    if (amplicon){
+    if (amplicon) {
         isShowAmplicon = document.getElementById("toggle-amplicon").checked;
-        for (var i = 0; i < seriesOption.length - 1; i++){
-            if (seriesOption[i].type === "custom"){
+        for (var i = 0; i < seriesOption.length - 1; i++) {
+            if (seriesOption[i].type === "custom") {
                 seriesOption[i].renderItem = wgscovplot.getRegionAmpliconDepthRenderer(isShowAmplicon);
             }
         }
         updateOption.grid = updateGrid(geneFeature, isShowAmplicon);
     }
 
-    if (geneFeature){
+    if (geneFeature) {
         isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
         seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(document.getElementById("toggle-genelabel").checked,
             geneAmpliconFeatureData, isShowAmplicon);
     }
 
-        // Reserve grid option
+    // Reserve grid option
     updateOption.grid.forEach(element => {
         element.left = $("#chart-left-input").val() + "%";
         element.right = $("#chart-right-input").val() + "%";
     });
 
     //set chart option
-    chart.setOption(option=updateOption, {notMerge:true});
+    chart.setOption(option = updateOption, {notMerge: true});
     // Update control menu
     updateControlMenu();
-    variantHeatmap.setOption(option=wgscovplot.getVariantHeatmapOption(samples, window.variants));
+    variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(samples, window.variants));
 }
 
 /**
@@ -120,7 +120,7 @@ function updateCoverageChartOption(samples) {
  * @param {number} yAxisMax - Max value is set for Y Axis
  * @returns {Object} Returns the updated options (Scale type or ymax) for yAxis
  */
-function updateYAxisOption(yAxisOption, scaleType, yAxisMax){
+function updateYAxisOption(yAxisOption, scaleType, yAxisMax) {
     let len = (amplicon || geneFeature) ? yAxisOption.length - 1 : yAxisOption.length;
     if (scaleType === "value") {
         yAxisOption.forEach(element => {
@@ -141,6 +141,7 @@ function updateYAxisOption(yAxisOption, scaleType, yAxisMax){
     }
     return yAxisOption;
 }
+
 /**
  * When the chart is initialized, the first 3 samples are plotted
  * @param {Array<string>} samples - An array of samples name
@@ -160,9 +161,9 @@ function setDefaultSamples(samples) {
 function getCurrentSamples(chartOption) {
     let samples = [];
     // If the chart is not initalizaed yet, get 3 first samples from window.samples
-    if (chartOption === undefined || chartOption === null){
+    if (chartOption === undefined || chartOption === null) {
         samples = window.samples.slice(0, 3);
-    } else{
+    } else {
         let selectData = $("#selectedsamples").select2("data");
         for (let [key, entries] of selectData.entries()) {
             samples.push(selectData[key].text);
@@ -174,7 +175,7 @@ function getCurrentSamples(chartOption) {
 /**
  * Initialize the events handler for chart
  */
-function initWgscovplotEvent(){
+function initWgscovplotEvent() {
     $(document).ready(function () {
         /**
          * Toggle dark mode, the entire chart will be disposed and re-initialized
@@ -234,12 +235,12 @@ function initWgscovplotEvent(){
         $("#toggle-amplicon").change(function () {
             let isChecked = $(this).prop("checked");
             let seriesOption = chart.getOption().series;
-            for (var i = 0; i <seriesOption.length - 1; i++){
-                if (seriesOption[i].type === "custom"){
+            for (var i = 0; i < seriesOption.length - 1; i++) {
+                if (seriesOption[i].type === "custom") {
                     seriesOption[i].renderItem = wgscovplot.getRegionAmpliconDepthRenderer(isChecked);
                 }
             }
-            if (geneFeature){
+            if (geneFeature) {
                 let isShowGeneLabel = document.getElementById("toggle-genelabel").checked;
                 seriesOption[seriesOption.length - 1].renderItem = wgscovplot.getGeneFeatureRenderer(isShowGeneLabel, geneAmpliconFeatureData, isChecked);
             }
@@ -287,8 +288,8 @@ function initWgscovplotEvent(){
             let xAxisOption = chart.getOption().xAxis;
             let showAxisLabel = $(this).prop("checked");
             let gridLength = (amplicon || geneFeature) ? xAxisOption.length - 1 : xAxisOption.length;
-            for (let i = 0; i < gridLength; i++){
-                xAxisOption[i].axisLabel.show= showAxisLabel;
+            for (let i = 0; i < gridLength; i++) {
+                xAxisOption[i].axisLabel.show = showAxisLabel;
             }
             chart.setOption({xAxis: [...xAxisOption]});
         });
@@ -300,18 +301,18 @@ function initWgscovplotEvent(){
             let isChecked = $(this).prop("checked");
             let triggerType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
             chart.setOption({
-                tooltip: {triggerOn: isChecked ? triggerType: "none"},
+                tooltip: {triggerOn: isChecked ? triggerType : "none"},
             });
         });
 
-                /**
+        /**
          * Fix tooltip position on the charts
          * If it is fixed: tooltip will be on the right if mouse hovering on the left and vice versa
          * Default tooltip follows cursor
          */
-        $("#fix-tooltip-postion").change(function () {
+        $("#fix-tooltip-position").change(function () {
             let isChecked = $(this).prop("checked");
-            let tooltipOption  = chart.getOption().tooltip;
+            let tooltipOption = chart.getOption().tooltip;
             tooltipOption[0].position = tooltipPosition(isChecked);
             chart.setOption({tooltip: tooltipOption});
         });
@@ -322,12 +323,11 @@ function initWgscovplotEvent(){
         $("#toggle-tooltip-trigger-click").change(function () {
             let isChecked = $(this).prop("checked");
             let isTooltipEnable = document.getElementById("toggle-tooltip").checked;
-            if (isTooltipEnable){
+            if (isTooltipEnable) {
                 chart.setOption({
                     tooltip: {triggerOn: isChecked ? "click" : "mousemove"}
                 });
-            }
-            else{
+            } else {
                 chart.setOption({
                     tooltip: {triggerOn: "none"}
                 });
@@ -337,7 +337,7 @@ function initWgscovplotEvent(){
         /**
          * Toggle turn tooltip display for variant sites only
          */
-        $("#toggle-tooltip-variant-sites").change(function (){
+        $("#toggle-tooltip-variant-sites").change(function () {
             let isChecked = $(this).prop("checked");
             let chartOption = chart.getOption();
             let seriesOption = chartOption.series;
@@ -349,7 +349,7 @@ function initWgscovplotEvent(){
                 document.getElementById("toggle-coverage-stat").checked);
         });
 
-        $("#toggle-tooltip-non-variant-sites").change(function (){
+        $("#toggle-tooltip-non-variant-sites").change(function () {
             let isChecked = $(this).prop("checked");
             let chartOption = chart.getOption();
             let seriesOption = chartOption.series;
@@ -362,7 +362,7 @@ function initWgscovplotEvent(){
         });
 
 
-        $("#toggle-variant-comparison").change(function (){
+        $("#toggle-variant-comparison").change(function () {
             let isChecked = $(this).prop("checked");
             let chartOption = chart.getOption();
             let seriesOption = chartOption.series;
@@ -374,7 +374,7 @@ function initWgscovplotEvent(){
                 isChecked, document.getElementById("toggle-coverage-stat").checked);
         });
 
-        $("#toggle-coverage-stat").change(function (){
+        $("#toggle-coverage-stat").change(function () {
             let isChecked = $(this).prop("checked");
             let chartOption = chart.getOption();
             let seriesOption = chartOption.series;
@@ -409,14 +409,14 @@ function initWgscovplotEvent(){
             });
             variantHeatmap.setOption({
                 dataZoom: [
-            {
-                type: "inside"
-            },
-            {
-                type: "slider",
-                show: isChecked
-            }
-        ]
+                    {
+                        type: "inside"
+                    },
+                    {
+                        type: "slider",
+                        show: isChecked
+                    }
+                ]
             });
         });
     });
@@ -433,9 +433,9 @@ function initWgscovplotRenderEnv() {
     const [plotDepths, plotVariants] = getDepthsVariants(plotSamples, window.depths, window.variants);
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
-        chart.setOption(option=wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
+        chart.setOption(option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
-        variantHeatmap.setOption(option=wgscovplot.getVariantHeatmapOption(plotSamples, window.variants));
+        variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(plotSamples, window.variants));
     } else {
         let renderEnv = document.getElementById("render-env").value;
         let isChecked = document.getElementById("toggle-darkmode").checked;
@@ -479,25 +479,24 @@ function initWgscovplotRenderEnv() {
  * @param {boolean} isInfoComparison - Whether to compare variant/ Coverage Stat information across selected samples
  */
 function updateTooltipOption(samples, depths, variants, seriesOption,
-                              isVariantSites, isNonVariantSites, isInfoComparison, isCovergateStatView){
+                             isVariantSites, isNonVariantSites, isInfoComparison, isCoverageStatView) {
     let isTooltipEnable = document.getElementById("toggle-tooltip").checked;
     let triggerOnType;
-    if (isTooltipEnable){
+    if (isTooltipEnable) {
         triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
-    }else{
-        triggerOnType ="none";
+    } else {
+        triggerOnType = "none";
     }
     seriesOption.forEach(element => {
-        if (element.type === 'line'){
+        if (element.type === 'line') {
             element.tooltip.trigger = isNonVariantSites ? "axis" : "none";
-        }
-        else if (element.type === 'bar'){
+        } else if (element.type === 'bar') {
             element.tooltip.trigger = isVariantSites ? "axis" : "none";
         }
     });
     let tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
-    triggerOnType=triggerOnType, isInfoComparison=isInfoComparison, isCovergateStatView=isCovergateStatView);
-    let isFixTooltipPostion = document.getElementById("fix-tooltip-postion").checked;
+        triggerOnType = triggerOnType, isInfoComparison = isInfoComparison, isCoverageStatView = isCoverageStatView);
+    let isFixTooltipPostion = document.getElementById("fix-tooltip-position").checked;
     tooltipOption[0].position = tooltipPosition(isFixTooltipPostion);
     tooltipOption[0].triggerOn = triggerOnType;
     chart.setOption({tooltip: tooltipOption, series: seriesOption});
@@ -508,15 +507,14 @@ function updateTooltipOption(samples, depths, variants, seriesOption,
  * @param {boolean} isChecked
  * @returns Returns the tooltip position
  */
-function tooltipPosition(isChecked){
-    if (isChecked){
+function tooltipPosition(isChecked) {
+    if (isChecked) {
         return function (pos, params, dom, rect, size) {
             let obj = {top: 5};
             obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
             return obj;
         };
-    }
-    else{
+    } else {
         return "cursor"; // follow cursor
     }
 }
@@ -535,13 +533,13 @@ function updateVarMapHeight(val) {
 /**
  * Apply View for selected gene feature
  */
-function applyFeatureView(){
+function applyFeatureView() {
     let featureName = $("#selected-gene-feature-name").select2('data');
     let start = [], end = [];
     let minStart, maxEnd;
     featureName.forEach(x => {
-        for (let i = 0; i < geneAmpliconFeatureData.length; i++){
-            if (x.text === geneAmpliconFeatureData[i].name){
+        for (let i = 0; i < geneAmpliconFeatureData.length; i++) {
+            if (x.text === geneAmpliconFeatureData[i].name) {
                 start.push(geneAmpliconFeatureData[i].value.start);
                 end.push(geneAmpliconFeatureData[i].value.end);
                 break;
@@ -550,7 +548,7 @@ function applyFeatureView(){
     });
     minStart = Math.min(...start);
     maxEnd = Math.max(...end);
-    if (featureName.length === 0){
+    if (featureName.length === 0) {
         minStart = 1;
         maxEnd = refSeqLength;
     }
@@ -575,11 +573,11 @@ function updateSubPlotHeight(val) {
                 parseFloat(document.getElementById("chart-top-input").value) + "%"; // set accoring to user's settings
         }
     }
-    if (amplicon || geneFeature){
+    if (amplicon || geneFeature) {
         gridOption[len].top =
-                parseFloat(gridOption[len - 1].top) +
-                parseFloat(gridOption[len - 1].height) +
-                parseFloat(document.getElementById("chart-top-input").value) + "%";
+            parseFloat(gridOption[len - 1].top) +
+            parseFloat(gridOption[len - 1].height) +
+            parseFloat(document.getElementById("chart-top-input").value) + "%";
     }
     chart.setOption({grid: gridOption});
 }
@@ -622,9 +620,9 @@ function updateSubPlotTopMargin(val) {
             gridOption[i].top = val + "%";
         } else {
             gridOption[i].top =
-                (parseFloat(gridOption[i - 1].top.replace("%","")) +
-                parseFloat(gridOption[i - 1].height) +
-                parseFloat(val)).toFixed(1) + "%";
+                (parseFloat(gridOption[i - 1].top.replace("%", "")) +
+                    parseFloat(gridOption[i - 1].height) +
+                    parseFloat(val)).toFixed(1) + "%";
         }
     }
     chart.setOption({grid: gridOption});
@@ -647,7 +645,7 @@ function updateGeneFeatureHeight(val) {
 function setScale() {
     let scaleType = document.getElementById("scale").value;
     let yAxisMax = document.getElementById("ymax").value;
-    let yAxisOption =  updateYAxisOption(chart.getOption().yAxis, scaleType, yAxisMax)
+    let yAxisOption = updateYAxisOption(chart.getOption().yAxis, scaleType, yAxisMax)
     chart.setOption({yAxis: yAxisOption});
 }
 
@@ -671,14 +669,13 @@ function setYMax() {
  * @param {number} zoomStart - Start view point
  * @param {number} zoomEnd - End view point
  */
-function setDataZoom(zoomStart, zoomEnd){
+function setDataZoom(zoomStart, zoomEnd) {
     let start;
     let end;
-    if (zoomStart === 0 && zoomEnd === 0){
+    if (zoomStart === 0 && zoomEnd === 0) {
         start = document.getElementById("start-pos").value;
         end = document.getElementById("end-pos").value;
-    }
-    else{
+    } else {
         start = zoomStart;
         end = zoomEnd;
     }
@@ -699,12 +696,12 @@ function setDataZoom(zoomStart, zoomEnd){
  * @param amplicon
  * @returns {Array<Object>} grid configuration for the charts
  */
-function updateGrid(geneFeature, amplicon){
+function updateGrid(geneFeature, amplicon) {
     let chartOption = chart.getOption();
     let currentSamples = getCurrentSamples(chartOption);
     let doubleStrand = false;
-    for (let i = 0; i < geneAmpliconFeatureData.length; i++){
-        if (geneAmpliconFeatureData[i].value.strand === -1){
+    for (let i = 0; i < geneAmpliconFeatureData.length; i++) {
+        if (geneAmpliconFeatureData[i].value.strand === -1) {
             doubleStrand = true;
             break;
         }
@@ -716,7 +713,7 @@ function updateGrid(geneFeature, amplicon){
 /**
  * Reset Grid Dislay to optimal configuration
  */
-function resetGridDisplay(){
+function resetGridDisplay() {
     let isShowAmplicon = amplicon ? document.getElementById("toggle-amplicon").checked : amplicon;
     let gridOption = updateGrid(geneFeature, isShowAmplicon);
     chart.setOption({grid: gridOption});
@@ -726,10 +723,10 @@ function resetGridDisplay(){
 /**
  * Dispatch click/dbclick actions for the whole chart
  */
-function onChartDataZoomActions(){
+function onChartDataZoomActions() {
 
-    chart.on("click", function(params){
-        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom'){
+    chart.on("click", function (params) {
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom') {
             document.getElementById("start-pos").value = params.value.start;
             document.getElementById("end-pos").value = params.value.end;
             setDataZoom(params.value.start, params.value.end);
@@ -737,8 +734,8 @@ function onChartDataZoomActions(){
 
     });
 
-    chart.on("dblclick", function(params){
-        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom'){
+    chart.on("dblclick", function (params) {
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom') {
             document.getElementById("start-pos").value = 1;
             document.getElementById("end-pos").value = refSeqLength;
             setDataZoom(1, refSeqLength);
@@ -766,13 +763,13 @@ function updateControlMenu() {
         document.getElementById("chart-top-output").value = top + 2.0 + "%";
         //update left
         document.getElementById("chart-left-input").value = left;
-        document.getElementById("chart-left-output").value = left+ "%";
+        document.getElementById("chart-left-output").value = left + "%";
 
         document.getElementById("chart-right-input").value = right;
         document.getElementById("chart-right-output").value = right + "%";
-        if (amplicon || geneFeature){
-            document.getElementById("genefeature-height-input").value = parseFloat(gridOption[gridOption.length-1].height);
-            document.getElementById("genefeature-height-output").value = parseFloat(gridOption[gridOption.length-1].height)+ "%";
+        if (amplicon || geneFeature) {
+            document.getElementById("genefeature-height-input").value = parseFloat(gridOption[gridOption.length - 1].height);
+            document.getElementById("genefeature-height-output").value = parseFloat(gridOption[gridOption.length - 1].height) + "%";
         }
     }
 }

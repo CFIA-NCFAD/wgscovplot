@@ -1,4 +1,4 @@
-import {ntColor} from "../../util";
+import {ntColor} from "../util";
 
 /**
  * Define options for variant bar charts
@@ -6,7 +6,7 @@ import {ntColor} from "../../util";
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {string} refSeq - Reference seq
  * @param {boolean} isVariantSites- whether to show tooltips for variant sites
- * @param {boolean} isShowMutation - whether to show Muation below Variant Sites
+ * @param {boolean} isShowMutation - whether to show Mutation below Variant Sites
  * @param {boolean} isHideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Array<Object>}
  */
@@ -24,7 +24,7 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                 itemStyle: {
                     color: function (params) {
                         let pos = params.data[0];
-                        let nt = refSeq[pos-1];
+                        let nt = refSeq[pos - 1];
                         if (ntColor.hasOwnProperty(nt)) {
                             return ntColor[nt];
                         }
@@ -39,7 +39,7 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                     distance: 10,
                     color: "inherit",
                     rotate: -30,
-                    formatter: function (params){
+                    formatter: function (params) {
                         let pos = params.data[0];
                         let output = "";
                         Object.values(variants[i]).forEach(values => {
@@ -50,10 +50,10 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                         return output;
                     }
                 },
-                labelLayout:{
+                labelLayout: {
                     hideOverlap: isHideOverlapMutation
                 },
-                tooltip:{
+                tooltip: {
                     trigger: isVariantSites ? "axis" : "none"
                 }
             });

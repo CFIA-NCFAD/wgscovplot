@@ -5,13 +5,13 @@ import {graphic} from "echarts/core";
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
  * @returns The shape of gene feature and/or amplicon feature
  */
-function getRegionAmpliconDepthRenderer (amplicon){
+function getRegionAmpliconDepthRenderer(amplicon) {
     /**
      *
      * @param params - Echarts params
      * @param api - Echarts api
      */
-    function renderRegionAmpliconDepth(params, api){
+    function renderRegionAmpliconDepth(params, api) {
         let start = api.coord([api.value(0), api.value(2)]);
         let end = api.coord([api.value(1), 1]);
         let rectShape = graphic.clipRectByRect(
@@ -35,8 +35,10 @@ function getRegionAmpliconDepthRenderer (amplicon){
             invisible: !amplicon
         };
     }
+
     return renderRegionAmpliconDepth;
 }
+
 /**
  * Define options for amplicon depth coverage bars
  * @param {Array<string>} samples - An array of samples name
@@ -46,7 +48,7 @@ function getRegionAmpliconDepthRenderer (amplicon){
  */
 function getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon) {
     let ampliconDepthSeries = [];
-    if (amplicon){
+    if (amplicon) {
         for (let [i, sample] of samples.entries()) {
             ampliconDepthSeries.push({
                 type: "custom",
@@ -57,7 +59,7 @@ function getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon
                     show: false,
                     position: "top",
                     distance: 25,
-                    rotate:60
+                    rotate: 60
                 },
                 labelLayout: {
                     hideOverlap: false

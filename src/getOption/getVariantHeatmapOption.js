@@ -1,6 +1,6 @@
-import {toTableHtml} from "../../util";
+import {toTableHtml} from "../util";
 import {map, filter, orderBy, find} from "lodash/collection";
-import {union, uniq, reverse} from "lodash/array";
+import {union, uniq} from "lodash/array";
 
 /**
  * Get tooltip for variant heatmap
@@ -11,7 +11,8 @@ import {union, uniq, reverse} from "lodash/array";
  */
 function getTooltipHeatmap(samples, mutations, variants) {
 
-    let toolTips = [
+    let toolTips;
+    toolTips= [
         {
             enterable: true,
             appendToBody: true,
@@ -65,23 +66,22 @@ function getMutationMatrix(samples, variants) {
     let samplesObjectSorted = orderBy(samplesObject, "POS", "asc");
     let mutation = uniq(map(samplesObjectSorted, "mutation"));
     let altFreqMatrix = [];
-    for (let i = 0; i < samples.length; i++){
-         for (let j = 0;  j < mutation.length; j++){
-              let foundObj = find(samplesObjectSorted, {"sample": samples[i], "mutation": mutation[j]});
-              if (foundObj !== undefined && foundObj !== null){
-                 altFreqMatrix.push([j, samples.length - 1 - i, foundObj.ALT_FREQ]);
-              }else{
-                 altFreqMatrix.push([j, samples.length - 1 - i, 0]);
-              }
-         }
+    for (let i = 0; i < samples.length; i++) {
+        for (let j = 0; j < mutation.length; j++) {
+            let foundObj = find(samplesObjectSorted, {"sample": samples[i], "mutation": mutation[j]});
+            if (foundObj !== undefined && foundObj !== null) {
+                altFreqMatrix.push([j, samples.length - 1 - i, foundObj.ALT_FREQ]);
+            } else {
+                altFreqMatrix.push([j, samples.length - 1 - i, 0]);
+            }
+        }
     }
     return [mutation, altFreqMatrix];
 }
+
 /**
  * Define all options for variant heatmap
  * @param {Array<string>} samples - An array of samples name
- * @param {Array<string>} mutations - Array of mutation name
- * @param {Array<Array<number>>} variantMatrix - Array of vairant heatmap value
  * @param {Array<Array<Object>>} variants - The object of variants data
  * @returns {Object} - The options for variant heatmap
  *
@@ -155,7 +155,8 @@ function getMutationMatrix(samples, variants) {
 function getVariantHeatmapOption(samples, variants) {
     let mutationMatrixInfo = getMutationMatrix(samples, variants);
     let dataSamples = [...samples].reverse();
-    let chartOptions = {
+    let chartOption;
+    chartOption = {
         xAxis: {
             type: "category",
             data: mutationMatrixInfo[0],
@@ -235,7 +236,7 @@ function getVariantHeatmapOption(samples, variants) {
             top: "5%"
         }
     };
-    return chartOptions;
+    return chartOption;
 }
 
 export {getVariantHeatmapOption};

@@ -11,8 +11,8 @@
 function shapePoints(x, y, width, height, strand, feature) {
     let taperOffset;
     if (width < 10) { // Element width is too small
-        taperOffset = width/2;
-    }else{
+        taperOffset = width / 2;
+    } else {
         taperOffset = 5;
     }
     if (feature === 'gene_feature') {
@@ -40,8 +40,7 @@ function shapePoints(x, y, width, height, strand, feature) {
             [x + width, y - height],
             [x, y - height],
         ];
-    }
-    else {
+    } else {
         return null;
     }
 }
