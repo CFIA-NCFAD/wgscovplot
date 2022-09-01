@@ -18,10 +18,9 @@ def test_basic_cli():
     result = runner.invoke(app)
     assert result.exit_code != 0
     assert 'Error' in result.output
-    assert 'Missing option' in result.output
+    assert "Missing argument 'INPUT_DIR'" in result.output
     help_result = runner.invoke(app, ['--help'])
     assert help_result.exit_code == 0
-    print(help_result.stdout)
     assert 'wgscovplot version' in help_result.output
 
 
