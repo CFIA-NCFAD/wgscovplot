@@ -18,7 +18,7 @@ import {concat} from "lodash/array";
  */
 function getDataSet(samples, segments, depths, positions) {
     let datasets = [];
-    if (samples.length > 0 && segments.length > 0) {
+    if (samples.length > 0 && segments.length > 0) { // segment virus
         const maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
         for (let i = 0; i < samples.length; i++) {
             let depthArray = [];
@@ -41,7 +41,7 @@ function getDataSet(samples, segments, depths, positions) {
                 },
             });
         }
-    } else {
+    } else { // non-segment virus
         for (let [j, depthArray] of depths.entries()) {
             datasets.push({
                 dimensions: [

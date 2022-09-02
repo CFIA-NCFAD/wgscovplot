@@ -52,7 +52,7 @@ function getCoverageStatComparison(samples, depths, start, end, currentSample, p
     let rows = [];
     let tableHeader = ["Sample", "Depth at position " + position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
     rows.push(...[tableHeader]);
-    for (var [i, sample] of samples.entries()) {
+    for (let [i, sample] of samples.entries()) {
         let meanCov = meanCoverage(depths[i], start, end).toFixed(2);
         let medianCov = medianCoverage(depths[i], start, end).toFixed(2);
         let genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
