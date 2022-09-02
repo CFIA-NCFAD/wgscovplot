@@ -1,15 +1,37 @@
 import {geneFeaturePlotProperties} from "../util";
 
 /**
+ * Custom xAxis label (for segment virus)
+ * @param {number} xAxisValue - xAxis value
+ * @param {Array<string>} segments - An array of segments names
+ * @param {Array<Array<number>>} segmentsRange - An array of segment start, end
+ * @returns {string}
+ */
+function getCustomXAxisLabel(xAxisValue, segments, segmentsRange) {
+    let segment = '';
+    let pos = 1;
+    for (let i = 0; i < segmentsRange.length; i++) {
+        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]) {
+            pos = xAxisValue - segmentsRange[i][0] + 1;
+            segment = segments[i];
+        }
+    }
+    return segment + ' - ' + pos.toLocaleString();
+}
+
+/**
  * Define options for x Axis
- * @param {Array<string>} samples - An array of samples name
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names (param for segment virus)
+ * @param {Array<Array<number>>} segmentsInterval - An array of segment start, end (param for segment virus)
  * @param {number} xAxisMax - Max value is set for x Axis
  * @param {boolean} geneFeature - whether to plot gene feature or not (true for false)
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
- * @param {boolean} isShowXAxisLabel - whether to show X Axis
+ * @param {boolean} showXAxisLabel - whether to show X Axis
  * @returns {Array<Object>}
  */
-function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
+function getXAxes(samples, segments, segmentsInterval, xAxisMax,
+                  geneFeature, amplicon, showXAxisLabel) {
     let axes = [];
     for (let i = 0; i < samples.length; i++) {
         axes.push({
@@ -18,8 +40,11 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
             min: 1,
             max: xAxisMax,
             axisLabel: {
-                show: isShowXAxisLabel,
+                show: showXAxisLabel,
                 interval: "auto",
+                formatter: (segments.length > 0) ? function (value) {
+                    return getCustomXAxisLabel(value, segments, segmentsInterval);
+                } : {}
             }
         });
     }
@@ -31,6 +56,9 @@ function getXAxes(samples, xAxisMax, geneFeature, amplicon, isShowXAxisLabel) {
             max: xAxisMax,
             axisLabel: {
                 interval: "auto",
+                formatter: (segments.length > 0) ? function (value) {
+                    return getCustomXAxisLabel(value, segments, segmentsInterval);
+                } : {}
             },
         });
     }

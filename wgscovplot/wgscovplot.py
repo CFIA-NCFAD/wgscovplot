@@ -22,14 +22,26 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
     about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
 
     if segment_virus:
+        # Get list of samples name
         samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
-        segments_name = mosdepth.get_segments_name(input_dir)
-        ref_seq = mosdepth.get_segments_references(input_dir)
-        ref_id = mosdepth.get_segments_ref_id(input_dir)
-        depths_data = mosdepth.get_segments_depth(input_dir)
-        variants_data = variants.get_segments_variants(input_dir)
-        coverage_stat = mosdepth.get_flu_info(input_dir, samples_name, segments_name, low_coverage_threshold)
-        low_coverage_regions = mosdepth.get_low_coverage_regions(input_dir, low_coverage_threshold)
+        # Find files sample.topsegments.csv for each sample
+        sample_top_references = mosdepth.get_sample_top_references(input_dir)
+        # Get list of segments
+        segments_name = mosdepth.get_segments_name(sample_top_references)
+        # Get reference id for each segment of each sample
+        ref_id = mosdepth.get_segments_ref_id(segments_name, sample_top_references)
+        # Get reference seq for each segment of each sample
+        ref_seq = mosdepth.get_segments_ref_seq(input_dir, segments_name, sample_top_references)
+        # Get coverage depth for each segment of each sample
+        depths_data = mosdepth.get_segments_depth(input_dir, segments_name, sample_top_references)
+        # Get variant info for each segment of each sample
+        variants_data = variants.get_segments_variants(input_dir, segments_name, sample_top_references)
+        # Get summary of coverage statistics
+        summary_info = mosdepth.get_flu_info(input_dir, samples_name, segments_name,
+                                             sample_top_references, low_coverage_threshold)
+        # Get low coverage regions
+        low_coverage_regions = mosdepth.get_low_coverage_regions(input_dir, segments_name, sample_top_references,
+                                                                 low_coverage_threshold)
         primer_data = {}
         if primer_seq_path is not None:
             primer_data = get_primer_data(primer_seq_path, edit_distance, ref_seq)
@@ -39,7 +51,7 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
                                                variants_data=variants_data,
                                                ref_seq=ref_seq,
                                                ref_id=ref_id,
-                                               coverage_stat=coverage_stat,
+                                               summary_info=summary_info,
                                                low_coverage_regions=low_coverage_regions,
                                                low_coverage_threshold=low_coverage_threshold,
                                                primer_data=primer_data,
@@ -96,7 +108,8 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
                          'OR provide NCBI Accession ID with option --ncbi-accession-id')
             exit(1)
         gene_amplicon_feature_data = get_gene_amplicon_feature(gene_feature, gene_misc_feature,
-                                                               gene_feature_path, ncbi_accession_id, region_amplicon_data)
+                                                               gene_feature_path, ncbi_accession_id,
+                                                               region_amplicon_data)
 
         # Get gene feature name, this is used for larger viral genome, use select2 to allow quick nanigation to feature
         # of interest
@@ -107,7 +120,7 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
 
         # Get coverage statistics information for all samples
         mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
-        sample_stat_info = stat_info(mosdepth_info, low_coverage_threshold=low_coverage_threshold)
+        summary_info = stat_info(mosdepth_info, low_coverage_threshold=low_coverage_threshold)
 
         # Get Variant data
         samples_variants_info = variants.get_info(input_dir)
@@ -128,7 +141,7 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
                                  depths_data=depths_data,
                                  variants_data=variants_data,
                                  ref_seq=ref_seq,
-                                 coverage_stat=sample_stat_info,
+                                 summary_info=summary_info,
                                  gene_amplicon_feature_data=gene_amplicon_feature_data,
                                  gene_feature_name=gene_feature_name,
                                  about_html=about_html,

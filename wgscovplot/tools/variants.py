@@ -539,12 +539,9 @@ def parse_clair3_vcf(df: pd.DataFrame, sample: str, segment: str, ref_seq_len: i
     return df_clair3_info.to_dict(orient='records')
 
 
-def get_segments_variants(basedir: Path) -> Dict[str, pd.DataFrame]:
-    sample_top_references = find_file_for_each_sample(basedir,
-                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                      sample_name_cleanup=VCF_SAMPLE_NAME_CLEANUP)
+def get_segments_variants(basedir: Path, segments_name: List,
+                          sample_top_references: Dict[str, Path]) -> Dict[str, Dict[str, Dict]]:
     out = {}
-    segments_name = mosdepth.get_segments_name(basedir)
     for sample, top_references_path in sample_top_references.items():
         out[sample] = {}
         df = mosdepth.read_top_references_table(top_references_path)

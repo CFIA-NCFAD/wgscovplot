@@ -1,4 +1,4 @@
-import {getDatasets} from "./getDataSets";
+import {getDataSet} from "./getDataSet";
 import {getXAxes, getYAxes} from "./getAxes";
 import {getDepthSeries} from "./getDepthSeries";
 import {getVariantsSeries} from "./getVariantSeries";
@@ -6,6 +6,8 @@ import {getRegionAmpliconDepthSeries} from "./getRegionAmpliconDepthSeries";
 import {getGeneFeatureSeries} from "../geneFeatures/getGeneFeatureSeries";
 import {getGrids} from "./getGrids";
 import {getTooltips} from "./getTooltips";
+import {getDataZoom} from "./getDataZoom";
+import {getToolbox} from "./getToolbox";
 
 
 /**
@@ -14,18 +16,18 @@ import {getTooltips} from "./getTooltips";
  * @param {Array<Object>} regionAmpliconDepthData - Array of region amplicon depth data
  * @param {string} refSeq - Reference seq
  * @param {number} yAxisMax - Max of Y Axis
- * @param {Array<string>} samples - An array of samples name
+ * @param {Array<string>} samples - An array of samples names
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<Array<Object>>} variants - The object of variants data
  * @param {boolean} geneFeature - whether to plot gene feature or not (true or false)
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true or false)
  * @param {string} triggerOnType - mousemove or click
- * @param {boolean} isVariantSites- whether to show tooltips for variant sites
- * @param {boolean} isNonVariantSites - whether to show tooltips for non variant sites
- * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
- * @param {boolean} isShowMutation - whether to show Muation below Variant Sites
- * @param {boolean} isShowXAxisLabel - whether to show X Axis
- * @param {boolean} isHideOverlapMutation - whether to hide overlapping mutation under variants sites
+ * @param {boolean} variantSites- whether to show tooltips for variant sites
+ * @param {boolean} nonVariantSites - whether to show tooltips for non variant sites
+ * @param {boolean} infoComparison - whether to compare variants/ Coverage Stat across samples
+ * @param {boolean} showMutation - whether to show Muation below Variant Sites
+ * @param {boolean} showXAxisLabel - whether to show X Axis
+ * @param {boolean} hideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Object} - The options for coverage chart
  *
  * The format of data
@@ -55,12 +57,12 @@ import {getTooltips} from "./getTooltips";
 function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, refSeq,
                                 yAxisMax, samples, depths, variants,
                                 geneFeature = false, amplicon = false,
-                                triggerOnType = "mousemove", isVariantSites = true,
-                                isNonVariantSites = false, isInfoComparison = true,
-                                isCoverageStatView = false,
-                                isShowMutation = false,
-                                isShowXAxisLabel = true,
-                                isHideOverlapMutation = true) {
+                                triggerOnType = "mousemove", variantSites = true,
+                                nonVariantSites = false, infoComparison = true,
+                                coverageStatView = false,
+                                showMutation = false,
+                                showXAxisLabel = true,
+                                hideOverlapMutation = true) {
     let positions = [...Array(refSeq.length + 1).keys()];
     let doubleStrand = false;
     Object.values(geneAmpliconFeatureData).forEach(x => {
@@ -71,45 +73,19 @@ function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData
     positions.shift();
     let chartOptions = {
         title: {},
-        dataset: getDatasets(depths, positions),
-        xAxis: getXAxes(samples, positions.length, geneFeature, amplicon, isShowXAxisLabel),
+        dataset: getDataSet([], [], depths, positions),
+        xAxis: getXAxes(samples, [], [], positions.length, geneFeature, amplicon, showXAxisLabel),
         yAxis: getYAxes(samples, "log", yAxisMax, geneFeature, amplicon),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
-            ...getDepthSeries(samples, isNonVariantSites),
-            ...getVariantsSeries(variants, depths, refSeq, isVariantSites, isShowMutation, isHideOverlapMutation),
+            ...getDepthSeries(samples, [], {}, [], nonVariantSites),
+            ...getVariantsSeries(variants, depths, refSeq, variantSites, showMutation, hideOverlapMutation),
             ...getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon),
             ...getGeneFeatureSeries(geneAmpliconFeatureData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, isInfoComparison, isCoverageStatView),
-        toolbox: {
-            show: "true",
-            feature: {
-                dataView: {
-                    readOnly: false,
-                },
-                restore: {},
-                saveAsImage: {
-                    name: "wgscovplot",
-                },
-            },
-        },
-        dataZoom: [
-            {
-                type: "inside",
-                filterMode: "none",
-                xAxisIndex: [...Array(samples.length + 1).keys()],
-                zoomLock: false,
-            },
-            {
-                show: true,
-                filterMode: "none",
-                xAxisIndex: [...Array(samples.length + 1).keys()],
-                type: "slider",
-                zoomLock: false,
-                showDataShadow: false
-            },
-        ],
+        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, infoComparison, coverageStatView),
+        toolbox: getToolbox(),
+        dataZoom: getDataZoom(samples),
         grid: getGrids(samples, geneFeature, amplicon, doubleStrand)
     };
     return chartOptions;

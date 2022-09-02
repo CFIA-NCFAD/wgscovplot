@@ -10,13 +10,12 @@ import {find} from "lodash/collection";
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {string} refSeq - Reference seq
  * @param {string} triggerOnType - mousemove or click
- * @param {boolean} isInfoComparison - whether to compare variants/ Coverage Stat across samples
- * @param {boolean} isCoverageStatView - whether to show Coverage stat
+ * @param {boolean} infoComparison - whether to compare variants/ Coverage Stat across samples
+ * @param {boolean} coverageStatView - whether to show Coverage stat
  * @returns {Array<Object>}
  */
 function getTooltips(samples, depths, variants, refSeq,
-                     triggerOnType = "mousemove", isInfoComparison = true,
-                     isCoverageStatView = false) {
+                     triggerOnType = "mousemove", infoComparison = true, coverageStatView = false) {
     let toolTips = [
         {
             trigger: "axis",
@@ -42,7 +41,7 @@ function getTooltips(samples, depths, variants, refSeq,
                 let depth = depths[i][position - 1];
                 let zoomStart = 1;
                 let zoomEnd = refSeq.length;
-                if (isCoverageStatView) {
+                if (coverageStatView) {
                     zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
                     zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
                 }
@@ -55,7 +54,7 @@ function getTooltips(samples, depths, variants, refSeq,
                     return false;
                 });
                 if (isVariantBar) {
-                    if (isInfoComparison) {
+                    if (infoComparison) {
                         positionRows = getVariantComparison(samples, variants, depths, position, sample);
                     } else {
                         positionRows = [
@@ -83,8 +82,8 @@ function getTooltips(samples, depths, variants, refSeq,
                 if (positionRows.length) {
                     output += "<h5>" + "Sample: " + sample + "</h5>";
                     output += toTableHtml(["Position Info", ""], positionRows, "table small");
-                    if (isCoverageStatView) {
-                        if (isInfoComparison) {
+                    if (coverageStatView) {
+                        if (infoComparison) {
                             coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample, position);
                         } else {
                             let meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);

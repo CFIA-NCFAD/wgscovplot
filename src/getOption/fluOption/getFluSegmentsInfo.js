@@ -57,13 +57,13 @@ function getYAxisMax(samples, segments, depths) {
 /**
  * Get segment index which a position belongs to
  * @param {number} xAxisValue - xAxis value
- * @param {Array<Array<number>>} segmentsRange - An array segment start, end
+ * @param {Array<Array<number>>} segmentsInterval - An array segment start, end
  * @returns {number}
  */
-function getSegmentsIndex(xAxisValue, segmentsRange) {
+function getSegmentsIndex(xAxisValue, segmentsInterval) {
     let index = 0;
-    for (let i = 0; i < segmentsRange.length; i++) {
-        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]) {
+    for (let i = 0; i < segmentsInterval.length; i++) {
+        if (xAxisValue >= segmentsInterval[i][0] && xAxisValue <= segmentsInterval[i][1]) {
             index = i;
         }
     }
@@ -76,8 +76,8 @@ function getSegmentsIndex(xAxisValue, segmentsRange) {
  * @returns {Array<Array<number>>}
  *
  */
-function getSegmentsRange(maxSegmentsLength) {
-    let segmentsRange = [];
+function getSegmentsInterval(maxSegmentsLength) {
+    let segmentsInterval = [];
     for (let m = 0; m < maxSegmentsLength.length; m++) {
         let segmentsStart;
         let segmentsEnd;
@@ -85,30 +85,30 @@ function getSegmentsRange(maxSegmentsLength) {
             segmentsStart = 1;
             segmentsEnd = maxSegmentsLength[m];
         } else {
-            segmentsStart = segmentsRange.at(-1)[1] + 1;
+            segmentsStart = segmentsInterval.at(-1)[1] + 1;
             segmentsEnd = segmentsStart + maxSegmentsLength[m] - 1;
         }
-        segmentsRange.push([segmentsStart, segmentsEnd]);
+        segmentsInterval.push([segmentsStart, segmentsEnd]);
     }
-    return segmentsRange;
+    return segmentsInterval;
 }
 
 /**
  * Get flu gene feature
  * @param {Array<string>} segments - An array of segments names
- * @param {Array<Array<number>>} segmentsRange - An array of maximum length
+ * @param {Array<Array<number>>} segmentsInterval - An array of maximum length
  * @returns {Array<Object>}
  *
  */
-function getFluGeneFeature(segments, segmentsRange) {
+function getFluGeneFeature(segments, segmentsInterval) {
     let geneFeature = [];
     for (let i = 0; i < segments.length; i++) {
         geneFeature.push({
             name: 'Segment ' + segments[i],
             value: {
                 "idx": i,
-                "start": segmentsRange[i][0],
-                "end": segmentsRange[i][1],
+                "start": segmentsInterval[i][0],
+                "end": segmentsInterval[i][1],
                 "level": 0,
                 "strand": '',
                 "rotate": 0.0,
@@ -122,4 +122,4 @@ function getFluGeneFeature(segments, segmentsRange) {
     return geneFeature;
 }
 
-export {getMaxSegmentsLength, getSegmentsRange, getFluGeneFeature, getYAxisMax, getXAxisMax, getSegmentsIndex};
+export {getMaxSegmentsLength, getSegmentsInterval, getFluGeneFeature, getYAxisMax, getXAxisMax, getSegmentsIndex};

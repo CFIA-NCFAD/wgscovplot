@@ -1,5 +1,5 @@
 import {toTableHtml} from "../../util";
-import {getMaxSegmentsLength, getSegmentsIndex, getSegmentsRange} from "./getFluSegmentsInfo";
+import {getMaxSegmentsLength, getSegmentsIndex, getSegmentsInterval} from "./getFluSegmentsInfo";
 import {find} from "lodash/collection";
 import {isEmpty} from "lodash/lang";
 import {genomeCoverage, meanCoverage, medianCoverage} from "../../coverageStat";
@@ -149,7 +149,7 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                         triggerOnType, infoComparison, coverageStatView, low, primerData) {
 
     let maxSegmentsLength = getMaxSegmentsLength(samples, segments, depths);
-    let segmentsRange = getSegmentsRange(maxSegmentsLength);
+    let segmentsInterval = getSegmentsInterval(maxSegmentsLength);
     let toolTips;
     toolTips= [
         {
@@ -173,10 +173,10 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 let coverageStatRows = [];
                 let primerInfoRows = [];
                 let sample = samples[i];
-                let segmentIndex = getSegmentsIndex(position, segmentsRange); // find segment index which pos belongs to
+                let segmentIndex = getSegmentsIndex(position, segmentsInterval); // find segment index which pos belongs to
                 let segmentName = segments[segmentIndex];
                 let segmentLength = refSeq[sample][segments[segmentIndex]].length; // get segment length
-                position = position - segmentsRange[segmentIndex][0] + 1; // convert to pos in segment
+                position = position - segmentsInterval[segmentIndex][0] + 1; // convert to pos in segment
                 let coverageDepth;
                 if (segmentLength === 0) {
                     coverageDepth = `No result reported for segment ${segments[segmentIndex]}`;

@@ -5,13 +5,13 @@ import {ntColor} from "../util";
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {string} refSeq - Reference seq
- * @param {boolean} isVariantSites- whether to show tooltips for variant sites
- * @param {boolean} isShowMutation - whether to show Mutation below Variant Sites
- * @param {boolean} isHideOverlapMutation - whether to hide overlapping mutation under variants sites
+ * @param {boolean} variantSites- whether to show tooltips for variant sites
+ * @param {boolean} showMutation - whether to show Mutation below Variant Sites
+ * @param {boolean} hideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Array<Object>}
  */
-function getVariantsSeries(variants, depths, refSeq, isVariantSites,
-                           isShowMutation, isHideOverlapMutation) {
+function getVariantsSeries(variants, depths, refSeq, variantSites,
+                           showMutation, hideOverlapMutation) {
     let variantSeries = [];
     for (let [i, varMap] of variants.entries()) {
         (function (i, varMap) {
@@ -32,7 +32,7 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                     },
                 },
                 label: {
-                    show: isShowMutation,
+                    show: showMutation,
                     position: "bottom",
                     align: "left",
                     verticalAlign: "middle",
@@ -51,10 +51,10 @@ function getVariantsSeries(variants, depths, refSeq, isVariantSites,
                     }
                 },
                 labelLayout: {
-                    hideOverlap: isHideOverlapMutation
+                    hideOverlap: hideOverlapMutation
                 },
                 tooltip: {
-                    trigger: isVariantSites ? "axis" : "none"
+                    trigger: variantSites ? "axis" : "none"
                 }
             });
         })(i, varMap);

@@ -203,41 +203,38 @@ function initWgscovplotEvent() {
 }
 
 /**
- * Update option for displaying tooltip for variant and non variant sites
+ * Update option for displaying tooltip for variant and non-variant sites
  * @param {Array<string>} samples - An array of samples name
  * @param {Array<string>} segments - An array of segments
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<Array<Object>>} variants - The object of variants data
  * @param {Array<Array<Object>>} seriesOption - Series option of the chart
- * @param {boolean} isVariantSites - Whether to enable tooltip for variant sites or not
- * @param {boolean} isNonVariantSites - Whether to enable tooltip for non variant sites or not
- * @param {boolean} isInfoComparison - Whether to compare variant/ Coverage Stat information across selected samples
- * @param {boolean} isCoverageStatView - Whether to display Coverage Stat
+ * @param {boolean} variantSites - Whether to enable tooltip for variant sites or not
+ * @param {boolean} nonVariantSites - Whether to enable tooltip for non-variant sites or not
+ * @param {boolean} infoComparison - Whether to compare variant/ Coverage Stat information across selected samples
+ * @param {boolean} coverageStatView - Whether to display Coverage Stat
  */
 function updateTooltipOption(samples, segments, depths, variants, seriesOption,
-                             isVariantSites, isNonVariantSites, isInfoComparison, isCoverageStatView) {
+                             variantSites, nonVariantSites, infoComparison, coverageStatView) {
 
-    let isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+    let tooltipEnable = document.getElementById("toggle-tooltip").checked;
     let triggerOnType;
-    if (isTooltipEnable) {
+    if (tooltipEnable) {
         triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
     } else {
         triggerOnType = "none";
     }
     seriesOption.forEach(element => {
         if (element.type === 'line') {
-            element.tooltip.trigger = isNonVariantSites ? "axis" : "none";
+            element.tooltip.trigger = nonVariantSites ? "axis" : "none";
         } else if (element.type === 'bar') {
-            element.tooltip.trigger = isVariantSites ? "axis" : "none";
+            element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
-    let tooltipOption = wgscovplot.getFluTooltips(samples, segments, depths, variants,
-        window.refSeq, window.refID,
-        triggerOnType = triggerOnType, isInfoComparison = isInfoComparison,
-        isCoverageStatView = isCoverageStatView,
-        low = window.lowCoverageThreshold, primerData = window.primerData);
-    let isFixTooltipPostion = document.getElementById("fix-tooltip-position").checked;
-    tooltipOption[0].position = tooltipPosition(isFixTooltipPostion);
+    let tooltipOption = wgscovplot.getFluTooltips(samples, segments, depths, variants, window.refSeq, window.refID,
+        triggerOnType, infoComparison, coverageStatView, window.lowCoverageThreshold, window.primerData);
+    let fixTooltipPosition = document.getElementById("fix-tooltip-position").checked;
+    tooltipOption[0].position = tooltipPosition(fixTooltipPosition);
     tooltipOption[0].triggerOn = triggerOnType;
     chart.setOption({tooltip: tooltipOption, series: seriesOption});
 }
@@ -268,9 +265,9 @@ function tooltipPosition(isChecked) {
 function updateFluCoverageChartOption(samples, segments) {
     let scaleType;
     let chartOption = chart.getOption();
-    let isTooltipEnable = document.getElementById("toggle-tooltip").checked;
+    let tooltipEnable = document.getElementById("toggle-tooltip").checked;
     let triggerOnType;
-    if (isTooltipEnable) {
+    if (tooltipEnable) {
         triggerOnType = document.getElementById("toggle-tooltip-trigger-click").checked ? "click" : "mousemove";
     } else {
         triggerOnType = "none";
@@ -284,10 +281,8 @@ function updateFluCoverageChartOption(samples, segments) {
     let showXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
     let updateOption = wgscovplot.getFluCoverageChartOption(samples, segments, window.depths, window.variants,
         window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData,
-        triggerOnType = triggerOnType, variantSites = variantSites,
-        nonVariantSites = nonVariantSites, infoComparison = variantComparison,
-        coverageStatView = coverageStatView, showMutation = showMutation,
-        showXAxisLabel = showXAxisLabel, hideOverlapMutation = hideOverlapMutation)
+        triggerOnType, variantSites, nonVariantSites, variantComparison, coverageStatView, showMutation,
+        showXAxisLabel, hideOverlapMutation);
 
     let seriesOption = updateOption.series;
     seriesOption.forEach(element => {
@@ -297,8 +292,8 @@ function updateFluCoverageChartOption(samples, segments) {
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
-    let isFixTooltipPostion = document.getElementById("fix-tooltip-position").checked;
-    updateOption.tooltip[0].position = tooltipPosition(isFixTooltipPostion);
+    let fixTooltipPosition = document.getElementById("fix-tooltip-position").checked;
+    updateOption.tooltip[0].position = tooltipPosition(fixTooltipPosition);
 
     // Reserve datzoom
     let oldDataZoom = chartOption.dataZoom;
@@ -317,9 +312,9 @@ function updateFluCoverageChartOption(samples, segments) {
         element.right = $("#chart-right-input").val() + "%";
     });
 
-    chart.setOption(option = updateOption, {notMerge: true})
+    chart.setOption(option = updateOption, {notMerge: true});
     document.getElementById("ymax").value = chart.getOption().yAxis[0].max;
-    updateControlMenu()
+    updateControlMenu();
 }
 
 /**
@@ -402,8 +397,7 @@ function initWgscovplotRenderEnv() {
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamplesSegments(plotSamples, plotSegments);
         chart.setOption(option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths,
-            window.variants, window.refSeq,
-            window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData));
+            window.variants, window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData));
     } else {
         let renderEnv = document.getElementById("render-env").value;
         let isChecked = document.getElementById("toggle-darkmode").checked;
@@ -442,7 +436,6 @@ function initWgscovplotRenderEnv() {
  */
 function setScale() {
     let scaleType = document.getElementById("scale").value;
-    let yAxisMax = document.getElementById("ymax").value;
     let yAxisOption = updateYAxisOption(chart.getOption().yAxis, scaleType);
     chart.setOption({yAxis: yAxisOption});
 }

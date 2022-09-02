@@ -133,17 +133,6 @@ def get_depth(basedir: Path) -> Dict[str, List]:
     return out
 
 
-def get_samples_name(basedir: Path, segment_virus: bool) -> List:
-    glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
-    sample_beds = find_file_for_each_sample(basedir,
-                                            glob_patterns=glob_patterns,
-                                            sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    out = []
-    for sample, bed_path in sample_beds.items():
-        out.append(sample)
-    return sorted(out)
-
-
 def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=REGIONS_PATTERNS,
@@ -218,12 +207,36 @@ def read_top_references_table(basedir: Path) -> pd.DataFrame:
                                                           'blastn_bitscore', 'ref_sequence_id'])
 
 
-def get_segments_depth(basedir: Path) -> Dict[str, Dict[str, List]]:
+def get_sample_top_references(basedir: Path) -> Dict[str, Path]:
+    # Find files sample.topsegments.csv for each sample
+    # File is located in reference_sequences/sample/sample.topsegments.csv
     sample_top_references = find_file_for_each_sample(basedir,
                                                       glob_patterns=TOP_REFERENCE_PATTERNS,
                                                       sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    return sample_top_references
+
+
+def get_samples_name(basedir: Path, segment_virus: bool) -> List:
+    glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
+    sample_beds = find_file_for_each_sample(basedir,
+                                            glob_patterns=glob_patterns,
+                                            sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = []
+    for sample, bed_path in sample_beds.items():
+        out.append(sample)
+    return sorted(out)
+
+
+def get_segments_name(sample_top_references: Dict[str, Path]) -> List:
+    segments = []
+    for sample, top_references_path in sample_top_references.items():
+        df = read_top_references_table(top_references_path)
+        segments = set(segments) | set(df['segment'])
+    return sorted(list(segments))
+
+
+def get_segments_depth(basedir: Path, segments_name: List, sample_top_references: Dict[str, Path]) -> Dict[str, Dict[str, List]]:
     out = {}
-    segments_name = get_segments_name(basedir)
     for sample, top_references_path in sample_top_references.items():
         out[sample] = {}
         df = read_top_references_table(top_references_path)
@@ -240,12 +253,8 @@ def get_segments_depth(basedir: Path) -> Dict[str, Dict[str, List]]:
     return out
 
 
-def get_segments_references(basedir: Path) -> Dict[str, Dict[str, str]]:
-    sample_top_references = find_file_for_each_sample(basedir,
-                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+def get_segments_ref_seq(basedir: Path, segments_name: List, sample_top_references: Dict[str, Path]) -> Dict[str, Dict[str, str]]:
     out = {}
-    segments_name = get_segments_name(basedir)
     for sample, top_references_path in sample_top_references.items():
         out[sample] = {}
         df = read_top_references_table(top_references_path)
@@ -260,12 +269,8 @@ def get_segments_references(basedir: Path) -> Dict[str, Dict[str, str]]:
     return out
 
 
-def get_segments_ref_id(basedir: Path) -> Dict[str, Dict[str, str]]:
-    sample_top_references = find_file_for_each_sample(basedir,
-                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+def get_segments_ref_id(segments_name: List, sample_top_references: Dict[str, Path]) -> Dict[str, Dict[str, str]]:
     out = {}
-    segments_name = get_segments_name(basedir)
     for sample, top_references_path in sample_top_references.items():
         out[sample] = {}
         df = read_top_references_table(top_references_path)
@@ -276,18 +281,8 @@ def get_segments_ref_id(basedir: Path) -> Dict[str, Dict[str, str]]:
     return out
 
 
-def get_segments_name(basedir: Path) -> List:
-    sample_top_references = find_file_for_each_sample(basedir,
-                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    segments = []
-    for sample, top_references_path in sample_top_references.items():
-        df = read_top_references_table(top_references_path)
-        segments = set(segments) | set(df['segment'])
-    return sorted(list(segments))
-
-
-def get_flu_info(basedir: Path, samples: List, segments: List, low_coverage_threshold: int = 5) -> str:
+def get_flu_info(basedir: Path, samples: List, segments: List, sample_top_references: Dict[str, Path],
+                 low_coverage_threshold: int = 5) -> str:
     headers = ['Sample', 'Segment', '# 0 Coverage Positions', '0 Coverage Regions',
                '# Low Coverage Positions (< ' + str(low_coverage_threshold) + 'X)',
                'Low Coverage Regions (< ' + str(low_coverage_threshold) + 'X)',
@@ -300,9 +295,6 @@ def get_flu_info(basedir: Path, samples: List, segments: List, low_coverage_thre
             df_flu_info.loc[i + i * (len(segments) - 1) + j, ['Sample', 'Segment']] = [sample, segment]
     df_flu_info = df_flu_info.sort_values(
         by=["Sample", "Segment"], ascending=[True, True])
-    sample_top_references = find_file_for_each_sample(basedir,
-                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
     for sample, top_references_path in sample_top_references.items():
         df = read_top_references_table(top_references_path)
         for row in df.itertuples():
@@ -331,12 +323,9 @@ def get_flu_info(basedir: Path, samples: List, segments: List, low_coverage_thre
                                float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
 
 
-def get_low_coverage_regions(basedir: Path, low_coverage_threshold: int = 5) -> Dict[str, Dict[str, str]]:
-    sample_top_references = find_file_for_each_sample(basedir,
-                                                      glob_patterns=TOP_REFERENCE_PATTERNS,
-                                                      sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+def get_low_coverage_regions(basedir: Path, segments_name: List, sample_top_references: Dict[str, Path],
+                             low_coverage_threshold: int = 5) -> Dict[str, Dict[str, str]]:
     out = {}
-    segments_name = get_segments_name(basedir)
     for sample, top_references_path in sample_top_references.items():
         out[sample] = {}
         df = read_top_references_table(top_references_path)

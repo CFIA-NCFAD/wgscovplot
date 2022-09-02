@@ -9,7 +9,7 @@ import {isEmpty} from "lodash/lang";
  * @param {Array<string>} segments - An array of segments names
  * @param {Object} depths - Object of depths array
  * @param {Object} variants - The object of variants data
- * @param {Array<Array<number>>} segmentsRange - An array of segment start, end
+ * @param {Array<Array<number>>} segmentsInterval - An array of segment start, end
  * @param {Object} refSeq - The object of reference sequences of each segment
  * @param {boolean} variantSites- whether to show variant sites information (tooltips options)
  * @param {boolean} showMutation - whether to show mutation below variant sites
@@ -27,7 +27,7 @@ import {isEmpty} from "lodash/lang";
  */
 function getFluVariantSeries(samples, segments,
                              depths, variants,
-                             segmentsRange, refSeq,
+                             segmentsInterval, refSeq,
                              variantSites, showMutation,
                              hideOverlapMutation) {
     let variantSeries = [];
@@ -38,7 +38,7 @@ function getFluVariantSeries(samples, segments,
             if (!isEmpty(variants[samples[i]][segments[j]])) {
                 for (let [k, varMap] of variants[samples[i]][segments[j]].entries()) {
                     pos = parseInt(varMap.POS);
-                    data.push([pos + segmentsRange[j][0] - 1, depths[samples[i]][segments[j]][pos - 1]]);
+                    data.push([pos + segmentsInterval[j][0] - 1, depths[samples[i]][segments[j]][pos - 1]]);
                 }
             } else {
                 data.push([]);
@@ -54,8 +54,8 @@ function getFluVariantSeries(samples, segments,
             itemStyle: {
                 color: function (params) {
                     let axisValue = params.data[0];
-                    let segmentIndex = getSegmentsIndex(axisValue, segmentsRange);
-                    let nt = refSeq[samples[i]][segments[segmentIndex]][axisValue - segmentsRange[segmentIndex][0]];
+                    let segmentIndex = getSegmentsIndex(axisValue, segmentsInterval);
+                    let nt = refSeq[samples[i]][segments[segmentIndex]][axisValue - segmentsInterval[segmentIndex][0]];
                     if (ntColor.hasOwnProperty(nt)) {
                         return ntColor[nt];
                     }
@@ -72,9 +72,9 @@ function getFluVariantSeries(samples, segments,
                 rotate: -30,
                 formatter: function (params) {
                     let output = "";
-                    let segmentIndex = getSegmentsIndex(params.data[0], segmentsRange);
+                    let segmentIndex = getSegmentsIndex(params.data[0], segmentsInterval);
                     let foundObj = find(variants[samples[i]][segments[segmentIndex]],
-                        {"POS": params.data[0] - segmentsRange[segmentIndex][0] + 1});
+                        {"POS": params.data[0] - segmentsInterval[segmentIndex][0] + 1});
                     if (foundObj !== undefined && foundObj !== null) {
                         output += foundObj.REF_SEQ + foundObj.POS + foundObj.ALT_SEQ;
                     }

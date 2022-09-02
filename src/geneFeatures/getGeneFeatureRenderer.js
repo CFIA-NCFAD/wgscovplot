@@ -9,7 +9,7 @@ import {graphic} from "echarts/core";
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true for false)
  * @returns The shape of gene feature and/or amplicon feature
  */
-function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplicon) {
+function getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData, amplicon) {
     /**
      *
      * @param params - Echarts params
@@ -36,7 +36,7 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
         let invisible = false;
         if (feature.value.type === 'gene_feature') {
             rotateAngle = feature.value.rotate;
-            if (isShowGeneLabel) {
+            if (showGeneLabel) {
                 // Element width is too small and hide label at the edges
                 if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord) {
                     invisible = true;
@@ -135,7 +135,6 @@ function getGeneFeatureRenderer(isShowGeneLabel, geneFeatureAmpliconData, amplic
             return null;
         }
     }
-
     return renderGeneFeatures;
 }
 
