@@ -35,4 +35,4 @@ jobs:
       run: |
         pwd
         ls
-        pytest --no-header --tb=auto -v -s
+        pytest --no-header --tb=auto -v -s tests/wgscovplot_pytest.py
