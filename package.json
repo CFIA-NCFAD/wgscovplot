@@ -11,7 +11,7 @@
     "dev:js": "webpack --config webpack.dev.js",
     "prod:js": "webpack --config webpack.prod.js",
     "test": "jest --env=jsdom",
-    "eslint_src": "eslint src ; exit 0"
+    "eslint_src": "eslint src"
   },
   "repository": {
     "type": "git",

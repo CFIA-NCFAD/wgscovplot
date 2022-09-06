@@ -10,8 +10,8 @@ runner = CliRunner()
 dirpath = Path(__file__).parent
 input_ref = dirpath / 'data/nCoV-2019.reference.fasta'
 input_genbank = dirpath / 'data/sequence_sars_cov2.gb'
-input_dir1 = dirpath / 'data/tools/non_segment_virus'
-input_dir2 = dirpath / 'data/tools/segment_virus'
+input_dir1 = dirpath / 'data/non_segment_virus'
+input_dir2 = dirpath / 'data/segment_virus'
 
 
 def test_basic_cli():

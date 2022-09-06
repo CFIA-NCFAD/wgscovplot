@@ -31,7 +31,7 @@ def check_dir_exists_callback(path: Path) -> Path:
 )
 def main(
         input_dir: Path = typer.Argument(..., callback=check_dir_exists_callback, help="Nextflow workflow results "
-                                                                                     "directory"),
+                                                                                       "directory"),
         output_html: Path = typer.Option("wgscovplot.html", help="Output File of Interactive HTML Coverage Plot"),
         ref_seq_path: Path = typer.Option(None, help="Path to reference sequences (Fasta)"),
         primer_seq_path: Path = typer.Option(None, help="Path to primer sequences (Fasta)"),

@@ -12,4 +12,4 @@ jobs:
         npm add --dev jest
         npm add --dev lodash
         npm add --dev jest-environment-jsdom
-        npm run test:ci
+        npm run test
