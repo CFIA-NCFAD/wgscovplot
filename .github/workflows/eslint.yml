@@ -8,4 +8,4 @@ jobs:
     - name: Install packages
       run: npm install
     - name: Run ESLint
-      run: npm run eslint_src
+      run: npm run eslint
