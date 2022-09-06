@@ -9,6 +9,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install modules and Test
       run: |
-        npm
         npm run eslint_src
         npm run eslint_wgscovplot_js

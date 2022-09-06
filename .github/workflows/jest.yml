@@ -9,7 +9,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install modules and Test
       run: |
-        npm
         npm add --dev jest
         npm add --dev lodash
         npm add --dev jest-environment-jsdom
