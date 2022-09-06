@@ -3,8 +3,10 @@ include HISTORY.md
 include LICENSE
 include README.md
 include wgscovplot/readme/README.md
+include wgscovplot/tmpl/js/wgscovplot.js
+include wgscovplot/tmpl/js/wgscovplot.prod.bundle.js
+include wgscovplot/tmpl/js/wgscovplot_flu.js
 
-recursive-include wgscovplot/tmpl/js *.js
 recursive-include wgscovplot/tmpl *.html
 recursive-include src *.js
 recursive-include tests *

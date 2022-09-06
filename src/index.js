@@ -6,7 +6,7 @@ import {getRegionAmpliconDepthRenderer} from "./getOption/getRegionAmpliconDepth
 import {getTooltips} from "./getOption/getTooltips";
 import {getGrids} from "./getOption/getGrids";
 import {getFluCoverageChartOption} from "./getOption/fluOption/getFluCoverageChartOption";
-import {getXAxisMax, getMaxSegmentsLength} from "./getOption/fluOption/getFluSegmentsInfo";
+import {getMaxSegmentsLength} from "./getOption/fluOption/getFluSegmentsInfo";
 import {getFluTooltips} from "./getOption/fluOption/getFluTooltips";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
@@ -35,4 +35,4 @@ echarts.use(
 export {getCoverageChartOption, getFluCoverageChartOption, getVariantHeatmapOption,
       median, meanCoverage, medianCoverage, genomeCoverage,
       getGeneFeatureRenderer, getRegionAmpliconDepthRenderer,
-      getTooltips, getGrids, getXAxisMax, getMaxSegmentsLength, getFluTooltips, echarts};
+      getTooltips, getGrids, getMaxSegmentsLength, getFluTooltips, echarts};

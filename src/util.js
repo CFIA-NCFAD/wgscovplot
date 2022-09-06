@@ -96,7 +96,7 @@ function getVariantComparison(samples, variants, depths, position, currentSample
         let row = [];
         row.push(key);
         if (key === "Coverage Depth") {
-            for (let [i, depthEle] of depths.entries()) {
+            for (let i = 0; i < depths.length; i++) {
                 row.push(depths[i][position - 1].toLocaleString());
             }
         } else {

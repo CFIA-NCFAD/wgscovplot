@@ -55,6 +55,7 @@ class MosdepthDepthInfo(BaseModel):
 
 
 def read_mosdepth_bed(p: Path) -> pd.DataFrame:
+    '''
     if '.tsv' in Path(p).suffixes:
         df_temp = pd.read_table(p, header=None, names=['sample_name', 'reference', 'pos', 'depth'])
         coverted_df = pd.DataFrame(columns=['genome', 'start_idx', 'end_idx', 'depth'])
@@ -63,6 +64,7 @@ def read_mosdepth_bed(p: Path) -> pd.DataFrame:
         coverted_df['end_idx'] = df_temp['pos']
         coverted_df['depth'] = df_temp['depth']
         return coverted_df
+    '''
     return pd.read_table(p, header=None, names=['genome', 'start_idx', 'end_idx', 'depth'])
 
 

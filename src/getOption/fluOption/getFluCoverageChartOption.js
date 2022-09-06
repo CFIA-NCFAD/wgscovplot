@@ -80,7 +80,7 @@ function getFluCoverageChartOption(samples, segments,
     chartOptions = {
         title: {},
         dataset: getDataSet(samples, segments, depths, positions),
-        xAxis: getXAxes(samples, segments, segmentsInterval, positions.length, true, false, true ),
+        xAxis: getXAxes(samples, segments, segmentsInterval, positions.length, true, false, showXAxisLabel ),
         yAxis: getYAxes(samples, "log", yMax, true, false),
         series: [
             ...getDepthSeries(samples, segments, lowCoverageRegion, segmentsInterval, nonVariantSites),

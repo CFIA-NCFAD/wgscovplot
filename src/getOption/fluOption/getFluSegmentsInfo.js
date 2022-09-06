@@ -1,5 +1,5 @@
 import {segmentsColor} from "../../util";
-import {max, sum} from "lodash/math";
+import {max} from "lodash/math";
 
 /**
  * Get maximum length for a segment among samples
@@ -21,17 +21,6 @@ function getMaxSegmentsLength(samples, segments, depths) {
         maxSegmentsLength.push(maxLength);
     }
     return maxSegmentsLength;
-}
-
-/**
- * Get maxXAxis value
- * @param {Array<number>} maxSegmentsLength - An array of maximum length
- * @returns {number}
- */
-function getXAxisMax(maxSegmentsLength) {
-    let xAxisMax = 0;
-    xAxisMax = sum(maxSegmentsLength);
-    return xAxisMax;
 }
 
 /**
@@ -122,4 +111,4 @@ function getFluGeneFeature(segments, segmentsInterval) {
     return geneFeature;
 }
 
-export {getMaxSegmentsLength, getSegmentsInterval, getFluGeneFeature, getYAxisMax, getXAxisMax, getSegmentsIndex};
+export {getMaxSegmentsLength, getSegmentsInterval, getFluGeneFeature, getYAxisMax, getSegmentsIndex};

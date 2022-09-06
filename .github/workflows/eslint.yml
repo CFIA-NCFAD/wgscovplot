@@ -1,0 +1,14 @@
+name: CI_Eslint
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install modules and Test
+      run: |
+        npm
+        npm run eslint_src
+        npm run eslint_wgscovplot_js

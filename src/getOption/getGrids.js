@@ -1,5 +1,3 @@
-import {geneFeaturePlotProperties} from "../util";
-
 /**
  *  Define grid for the whole charts
  * @param {Array<string>} samples - An array of samples name

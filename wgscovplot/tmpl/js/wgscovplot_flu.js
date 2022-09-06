@@ -471,7 +471,10 @@ function onChartDataZoomActions() {
             let chartOption = chart.getOption();
             const [plotSamples, plotSegments] = getCurrentSamplesSegments(chartOption);
             const maxSegmentsLength = wgscovplot.getMaxSegmentsLength(plotSamples, plotSegments, window.depths);
-            const xAxisMax = wgscovplot.getXAxisMax(maxSegmentsLength);
+            let xAxisMax = 1;
+            xAxisMax = maxSegmentsLength.reduce((a, b) => {
+                return a + b;
+            });
             setDataZoom(1, xAxisMax);
         }
     });

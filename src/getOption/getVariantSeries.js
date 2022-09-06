@@ -25,7 +25,7 @@ function getVariantsSeries(variants, depths, refSeq, variantSites,
                     color: function (params) {
                         let pos = params.data[0];
                         let nt = refSeq[pos - 1];
-                        if (ntColor.hasOwnProperty(nt)) {
+                        if (Object.prototype.hasOwnProperty.call(ntColor, nt)) {
                             return ntColor[nt];
                         }
                         return "#333";

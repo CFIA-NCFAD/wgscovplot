@@ -56,7 +56,7 @@ function getFluVariantSeries(samples, segments,
                     let axisValue = params.data[0];
                     let segmentIndex = getSegmentsIndex(axisValue, segmentsInterval);
                     let nt = refSeq[samples[i]][segments[segmentIndex]][axisValue - segmentsInterval[segmentIndex][0]];
-                    if (ntColor.hasOwnProperty(nt)) {
+                    if (Object.prototype.hasOwnProperty.call(ntColor, nt)) {
                         return ntColor[nt];
                     }
                     return "#333";
