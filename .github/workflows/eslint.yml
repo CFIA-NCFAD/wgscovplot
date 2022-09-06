@@ -1,13 +1,11 @@
 name: CI_Eslint
-
-on: [push]
-
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install modules and Test
-      run: |
-        npm run eslint_src
-        npm run eslint_wgscovplot_js
+    - name: Install modules
+      run: npm
+    - name: Run ESLint
+      run: eslint src
