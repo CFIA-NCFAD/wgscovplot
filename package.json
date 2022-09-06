@@ -11,8 +11,6 @@
     "dev:js": "webpack --config webpack.dev.js",
     "prod:js": "webpack --config webpack.prod.js",
     "test": "jest --env=jsdom",
-    "test:ci": "jest --env=jsdom",
-    "eslint_wgscovplot_js": "eslint wgscovplot ; exit 0",
     "eslint_src": "eslint src ; exit 0"
   },
   "repository": {

@@ -1,9 +1,12 @@
-name: CI_Eslint
+name: CI_ESlint
 on: push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - uses: stefanoeb/eslint-action@1.0.2
+      with:
+        files: src/
     - name: Run ESLint
-      run: eslint src
+      run: eslint
