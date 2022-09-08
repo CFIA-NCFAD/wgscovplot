@@ -10,7 +10,7 @@
   "scripts": {
     "dev:js": "webpack --config webpack.dev.js",
     "prod:js": "webpack --config webpack.prod.js",
-    "test:js": "jest --env=jsdom --config jest.config.js",
+    "test": "jest --env=jsdom --config jest.config.js",
     "eslint": "eslint src"
   },
   "repository": {
