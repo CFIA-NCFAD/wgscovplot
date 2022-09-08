@@ -411,7 +411,7 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        let options = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants,
+        let option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants,
             window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData);
         // Keep grid option
         option.grid = gridOption;
@@ -424,7 +424,7 @@ function initWgscovplotRenderEnv() {
         // Keep series
         option.series = seriesOption;
         //set chart option
-        chart.setOption(option = options);
+        chart.setOption(option);
     }
     // Update yAxisMax on Control Menu:
     document.getElementById("ymax").value = chart.getOption().yAxis[0].max;

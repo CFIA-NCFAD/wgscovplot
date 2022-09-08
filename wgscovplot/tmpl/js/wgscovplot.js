@@ -50,7 +50,7 @@ function updateCoverageChartOption(samples) {
     let showXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
     let hideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     let updateOption = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
-        yAxisMax, samples, depths, variants, geneFeature, amplicon, triggerOnType, variantSites,
+        yAxisMax, samples, depths, variants, lowCoverageThreshold, geneFeature, amplicon, triggerOnType, variantSites,
         nonVariantSites, variantComparison, coverageStatView, showMutation, showXAxisLabel, hideOverlapMutation);
 
     // Reserve tooltip in series option
@@ -430,7 +430,7 @@ function initWgscovplotRenderEnv() {
     if (chartOption === undefined || chartOption === null) {
         setDefaultSamples(plotSamples);
         chart.setOption(option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
-            maxDepth, plotSamples, plotDepths, plotVariants, geneFeature, amplicon));
+            maxDepth, plotSamples, plotDepths, plotVariants, lowCoverageThreshold, geneFeature, amplicon));
         variantHeatmap.setOption(option = wgscovplot.getVariantHeatmapOption(plotSamples, window.variants));
     } else {
         let renderEnv = document.getElementById("render-env").value;
@@ -445,8 +445,8 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        let options = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
-            yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon);
+        let option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
+            yAxisMax, plotSamples, plotDepths, plotVariants, lowCoverageThreshold, geneFeature, amplicon);
         // Keep grid option
         option.grid = gridOption;
         // Keep data zoom option
@@ -458,7 +458,7 @@ function initWgscovplotRenderEnv() {
         // Keep series
         option.series = seriesOption;
         //set chart option
-        chart.setOption(option = options);
+        chart.setOption(option);
     }
     updateControlMenu();
     onChartDataZoomActions();
@@ -491,7 +491,7 @@ function updateTooltipOption(samples, depths, variants, seriesOption,
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
-    let tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq,
+    let tooltipOption = wgscovplot.getTooltips(samples, depths, variants, window.refSeq, lowCoverageThreshold,
         triggerOnType, infoComparison, coverageStatView);
     let fixTooltipPosition = document.getElementById("fix-tooltip-position").checked;
     tooltipOption[0].position = tooltipPosition(fixTooltipPosition);

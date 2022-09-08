@@ -4,15 +4,15 @@ import {geneFeaturePlotProperties} from "../util";
  * Custom xAxis label (for segment virus)
  * @param {number} xAxisValue - xAxis value
  * @param {Array<string>} segments - An array of segments names
- * @param {Array<Array<number>>} segmentsRange - An array of segment start, end
+ * @param {Array<Array<number>>} segmentsInterval - An array of segment start, end
  * @returns {string}
  */
-function getCustomXAxisLabel(xAxisValue, segments, segmentsRange) {
+function getCustomXAxisLabel(xAxisValue, segments, segmentsInterval) {
     let segment = "";
     let pos = 1;
-    for (let i = 0; i < segmentsRange.length; i++) {
-        if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]) {
-            pos = xAxisValue - segmentsRange[i][0] + 1;
+    for (let i = 0; i < segmentsInterval.length; i++) {
+        if (xAxisValue >= segmentsInterval[i][0] && xAxisValue <= segmentsInterval[i][1]) {
+            pos = xAxisValue - segmentsInterval[i][0] + 1;
             segment = segments[i];
         }
     }

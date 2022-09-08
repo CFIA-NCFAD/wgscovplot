@@ -9,12 +9,13 @@ import {find} from "lodash/collection";
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<Array<Object>>} variants - The dict of variants data
  * @param {string} refSeq - Reference seq
+ * @param {number} low - low coverage threshold
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} infoComparison - whether to compare variants/ Coverage Stat across samples
  * @param {boolean} coverageStatView - whether to show Coverage stat
  * @returns {Array<Object>}
  */
-function getTooltips(samples, depths, variants, refSeq,
+function getTooltips(samples, depths, variants, refSeq, low,
                      triggerOnType = "mousemove", infoComparison = true, coverageStatView = false) {
     let toolTips = [
         {
@@ -80,11 +81,11 @@ function getTooltips(samples, depths, variants, refSeq,
                     output += toTableHtml(["Position Info", ""], positionRows, "table small");
                     if (coverageStatView) {
                         if (infoComparison) {
-                            coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, sample, position);
+                            coverageStatRows = getCoverageStatComparison(samples, depths, zoomStart, zoomEnd, low, sample, position);
                         } else {
                             let meanCov = meanCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
                             let medianCov = medianCoverage(depths[i], zoomStart, zoomEnd).toFixed(2);
-                            let genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, 10).toFixed(2);
+                            let genomeCov = genomeCoverage(depths[i], zoomStart, zoomEnd, low).toFixed(2);
                             coverageStatRows = [
                                 [
                                     "Range",
@@ -92,7 +93,7 @@ function getTooltips(samples, depths, variants, refSeq,
                                 ],
                                 ["Mean Coverage", meanCov + "X"],
                                 ["Median Coverage", medianCov + "X"],
-                                ["Genome Coverage ( >= 10x)", genomeCov + "%"],
+                                [`Genome Coverage (>= ${low}X)`, genomeCov + "%"],
                             ];
                         }
                         output += toTableHtml(["Coverage View Stats", ""], coverageStatRows, "table small");

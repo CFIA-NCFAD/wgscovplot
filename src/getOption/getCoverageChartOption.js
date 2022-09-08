@@ -19,13 +19,14 @@ import {getToolbox} from "./getToolbox";
  * @param {Array<string>} samples - An array of samples names
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {Array<Array<Object>>} variants - The object of variants data
+ * @param {number} lowCoverageThreshold - Low coverage threshold
  * @param {boolean} geneFeature - whether to plot gene feature or not (true or false)
  * @param {boolean} amplicon - whether to plot amplicon feature or not (true or false)
  * @param {string} triggerOnType - mousemove or click
  * @param {boolean} variantSites- whether to show tooltips for variant sites
- * @param {boolean} nonVariantSites - whether to show tooltips for non variant sites
+ * @param {boolean} nonVariantSites - whether to show tooltips for non-variant sites
  * @param {boolean} infoComparison - whether to compare variants/ Coverage Stat across samples
- * @param {boolean} showMutation - whether to show Muation below Variant Sites
+ * @param {boolean} showMutation - whether to show Mutation below Variant Sites
  * @param {boolean} showXAxisLabel - whether to show X Axis
  * @param {boolean} hideOverlapMutation - whether to hide overlapping mutation under variants sites
  * @returns {Object} - The options for coverage chart
@@ -56,7 +57,7 @@ import {getToolbox} from "./getToolbox";
  */
 function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, refSeq,
                                 yAxisMax, samples, depths, variants,
-                                geneFeature = false, amplicon = false,
+                                lowCoverageThreshold = 10, geneFeature = false, amplicon = false,
                                 triggerOnType = "mousemove", variantSites = true,
                                 nonVariantSites = false, infoComparison = true,
                                 coverageStatView = false,
@@ -83,7 +84,7 @@ function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData
             ...getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon),
             ...getGeneFeatureSeries(geneAmpliconFeatureData, samples.length, geneFeature, amplicon)
         ],
-        tooltip: getTooltips(samples, depths, variants, refSeq, triggerOnType, infoComparison, coverageStatView),
+        tooltip: getTooltips(samples, depths, variants, refSeq, lowCoverageThreshold, triggerOnType, infoComparison, coverageStatView),
         toolbox: getToolbox(),
         dataZoom: getDataZoom(samples),
         grid: getGrids(samples, geneFeature, amplicon, doubleStrand)

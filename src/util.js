@@ -44,18 +44,19 @@ export const segmentsColor = {
  * @param {Array<Array<number>>} depths - Array of depths
  * @param {number} start - start position
  * @param {number} end - end position
+ * @param {number} low - low coverage threshold
  * @param {string} currentSample - selected sample
  * @param {number} position - Selected position
  * @returns <Array<Array<string>> - Coverage Stat comparison across samples
  */
-function getCoverageStatComparison(samples, depths, start, end, currentSample, position) {
+function getCoverageStatComparison(samples, depths, start, end, low, currentSample, position) {
     let rows = [];
-    let tableHeader = ["Sample", "Depth at position " + position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", "Genome Coverage (>=10x) (%)"];
+    let tableHeader = ["Sample", "Depth at position " + position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", `Genome Coverage (>=${low}X) (%)`];
     rows.push(...[tableHeader]);
     for (let [i, sample] of samples.entries()) {
         let meanCov = meanCoverage(depths[i], start, end).toFixed(2);
         let medianCov = medianCoverage(depths[i], start, end).toFixed(2);
-        let genomeCov = genomeCoverage(depths[i], start, end, 10).toFixed(2);
+        let genomeCov = genomeCoverage(depths[i], start, end, low).toFixed(2);
         let coverageDepth = depths[i][position - 1];
         let row = [sample, coverageDepth.toLocaleString(), start.toLocaleString() + " - " + end.toLocaleString(), meanCov, medianCov, genomeCov];
         rows.push(...[row]);
