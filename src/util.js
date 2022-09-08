@@ -8,9 +8,9 @@ import {join} from "lodash/array";
  * @type {max_grid_height: number, rec_items_height: number, grid_height: string}
  */
 export const geneFeaturePlotProperties = {
-    'max_grid_height': 80,
-    'rec_items_height': 12,
-    'grid_height': "15%"
+    "max_grid_height": 80,
+    "rec_items_height": 12,
+    "grid_height": "15%"
 };
 
 /**
@@ -102,7 +102,7 @@ function getVariantComparison(samples, variants, depths, position, currentSample
         } else {
             variantArr.forEach(element => {
                 if (element[key] !== undefined && element[key] !== null) {
-                    if (key === 'sample' && element[key] === currentSample) {// Bold highlight selected sample
+                    if (key === "sample" && element[key] === currentSample) {// Bold highlight selected sample
                         row.push(element[key].bold());
                     } else {
                         row.push(element[key]);

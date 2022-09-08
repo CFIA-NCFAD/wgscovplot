@@ -225,9 +225,9 @@ function updateTooltipOption(samples, segments, depths, variants, seriesOption,
         triggerOnType = "none";
     }
     seriesOption.forEach(element => {
-        if (element.type === 'line') {
+        if (element.type === "line") {
             element.tooltip.trigger = nonVariantSites ? "axis" : "none";
-        } else if (element.type === 'bar') {
+        } else if (element.type === "bar") {
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
@@ -248,7 +248,7 @@ function tooltipPosition(isChecked) {
     if (isChecked) {
         return function (pos, params, dom, rect, size) {
             let obj = {top: 5};
-            obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+            obj[["left", "right"][+(pos[0] < size.viewSize[0] / 2)]] = 5;
             return obj;
         };
     } else {
@@ -286,9 +286,9 @@ function updateFluCoverageChartOption(samples, segments) {
 
     let seriesOption = updateOption.series;
     seriesOption.forEach(element => {
-        if (element.type === 'line') {
+        if (element.type === "line") {
             element.tooltip.trigger = nonVariantSites ? "axis" : "none";
-        } else if (element.type === 'bar') {
+        } else if (element.type === "bar") {
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
@@ -353,13 +353,13 @@ function setDefaultSamplesSegments(samples, segments) {
     let $selectedSamples = $("#selected-samples");
     $selectedSamples.select2();
     $selectedSamples.val(samples);
-    $selectedSamples.trigger('change');
+    $selectedSamples.trigger("change");
 
     // Set default samples display
     let $selectedSegments = $("#selected-segments");
     $selectedSegments.select2();
     $selectedSegments.val(segments);
-    $selectedSegments.trigger('change');
+    $selectedSegments.trigger("change");
 }
 
 /**
@@ -411,7 +411,7 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        let option = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants,
+        let options = wgscovplot.getFluCoverageChartOption(plotSamples, plotSegments, window.depths, window.variants,
             window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData);
         // Keep grid option
         option.grid = gridOption;
@@ -424,7 +424,7 @@ function initWgscovplotRenderEnv() {
         // Keep series
         option.series = seriesOption;
         //set chart option
-        chart.setOption(option = option);
+        chart.setOption(option = options);
     }
     // Update yAxisMax on Control Menu:
     document.getElementById("ymax").value = chart.getOption().yAxis[0].max;
@@ -460,14 +460,14 @@ function setYMax() {
 function onChartDataZoomActions() {
 
     chart.on("click", function (params) {
-        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom') {
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === "custom") {
             setDataZoom(params.value.start, params.value.end);
         }
 
     });
 
     chart.on("dblclick", function (params) {
-        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom') {
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === "custom") {
             let chartOption = chart.getOption();
             const [plotSamples, plotSegments] = getCurrentSamplesSegments(chartOption);
             const maxSegmentsLength = wgscovplot.getMaxSegmentsLength(plotSamples, plotSegments, window.depths);

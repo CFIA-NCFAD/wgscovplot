@@ -11,7 +11,7 @@
 function getMarkArea(sample, segments, segmentsInterval, lowCoverageRegion) {
     let data = [];
     for (let i = 0; i < segments.length; i++) {
-        if (lowCoverageRegion[sample][segments[i]] !== '') {
+        if (lowCoverageRegion[sample][segments[i]] !== "") {
             let coords = lowCoverageRegion[sample][segments[i]].split("; ");
             for (let j = 0; j < coords.length; j++) {
                 let coord = coords[j].split("-");
@@ -38,16 +38,16 @@ function getMarkArea(sample, segments, segmentsInterval, lowCoverageRegion) {
     }
     return {
         itemStyle: {
-            color: 'yellow',
+            color: "yellow",
             opacity: 0.4
         },
         label: {
             show: false,
-            position: 'insideTop',
+            position: "insideTop",
             fontSize: 10,
             rotate: 30,
-            overflow: 'truncate',
-            ellipsis: '...'
+            overflow: "truncate",
+            ellipsis: "..."
         },
         data: data
     };
@@ -72,14 +72,14 @@ function getMarkLine(segmentsInterval) {
     }
     return {
         silent: true,
-        symbol: ['none', 'none'],
+        symbol: ["none", "none"],
         label: {
             show: false,
         },
         lineStyle: {
             color: "#000",
             width: 1,
-            type: 'dashed',
+            type: "dashed",
             opacity: 0.5
         },
         data: data

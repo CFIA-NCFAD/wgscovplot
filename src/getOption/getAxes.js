@@ -8,7 +8,7 @@ import {geneFeaturePlotProperties} from "../util";
  * @returns {string}
  */
 function getCustomXAxisLabel(xAxisValue, segments, segmentsRange) {
-    let segment = '';
+    let segment = "";
     let pos = 1;
     for (let i = 0; i < segmentsRange.length; i++) {
         if (xAxisValue >= segmentsRange[i][0] && xAxisValue <= segmentsRange[i][1]) {
@@ -16,7 +16,7 @@ function getCustomXAxisLabel(xAxisValue, segments, segmentsRange) {
             segment = segments[i];
         }
     }
-    return segment + ' - ' + pos.toLocaleString();
+    return segment + " - " + pos.toLocaleString();
 }
 
 /**
@@ -88,7 +88,7 @@ function getYAxes(samples, scaleType, yMax, geneFeature, amplicon) {
             },
             nameLocation: "end",
             nameRotate: 0.01,
-            min: scaleType === 'log' ? 1 : 0,
+            min: scaleType === "log" ? 1 : 0,
             max: yMax,
             minorSplitLine: {
                 show: true,

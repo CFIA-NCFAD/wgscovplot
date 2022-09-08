@@ -162,11 +162,11 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
             confine: true,
             position: "cursor",
             axisPointer: {
-                type: 'line'
+                type: "line"
             },
             formatter: function (params) {
                 let param = params[0];
-                let output = '';
+                let output = "";
                 let position = param.axisValue; // pos of xAxis in full scale
                 let i = param.axisIndex;
                 let positionRows = [];
@@ -204,7 +204,7 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                             {"POS": position});
                         if (foundObj !== undefined && foundObj !== null) {
                             for (const [key, value] of Object.entries(foundObj)) {
-                                if (key !== 'Sample') { // do not write row for sample name
+                                if (key !== "Sample") { // do not write row for sample name
                                     positionRows.push(
                                         ...[[key, value]]
                                     );
@@ -216,22 +216,22 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                 } else { // tooltips for Non-Variant Sites
                     if (position > segmentLength) { //Out of range when segment length < padding array
                         positionRows = [
-                            ['Position', position],
-                            [coverageDepth, '']
+                            ["Position", position],
+                            [coverageDepth, ""]
                         ];
                         output += "<h5>" + "Sample: " + samples[params[0].axisIndex] + "</h5>";
                         output += toTableHtml(["Position Info", ""], positionRows, "table small");
                         return output;
                     } // Pos within segment length
                     positionRows = [
-                        ['Segment', segmentName],
-                        ['Segment Length', segmentLength],
-                        ['REF_ID', refID[samples[param.axisIndex]][segments[segmentIndex]]],
-                        ['POS', position],
-                        ['REF_SEQ', refSeq[samples[param.axisIndex]][segments[segmentIndex]][position - 1]],
-                        ['ALT_SEQ', ''],
-                        ['ALT_FREQ', ''],
-                        ['Coverage Depth', coverageDepth]
+                        ["Segment", segmentName],
+                        ["Segment Length", segmentLength],
+                        ["REF_ID", refID[samples[param.axisIndex]][segments[segmentIndex]]],
+                        ["POS", position],
+                        ["REF_SEQ", refSeq[samples[param.axisIndex]][segments[segmentIndex]][position - 1]],
+                        ["ALT_SEQ", ""],
+                        ["ALT_FREQ", ""],
+                        ["Coverage Depth", coverageDepth]
                     ];
                 }
                 if (positionRows.length) { // write rows to table
@@ -257,15 +257,15 @@ function getFluTooltips(samples, segments, depths, variants, refSeq, refID,
                         for (let i = 0; i < primerInfo.length; i++) {
                             if (position >= primerInfo[i].start && position <= primerInfo[i].end) {
                                 primerInfoRows = [
-                                    ['Primer Name', primerInfo[i].name],
-                                    ['Primer Sequence', primerInfo[i].query_aligned],
-                                    ['Match Aligned', primerInfo[i].matched_aligned],
-                                    ['Ref Sequence', primerInfo[i].target_aligned],
-                                    ['Cigar', primerInfo[i].cigar],
-                                    ['Start', primerInfo[i].start + 1],
-                                    ['End', primerInfo[i].end + 1],
-                                    ['Edit Distance', primerInfo[i].edit_distance],
-                                    ['Other Locations', primerInfo[i].other_locations]
+                                    ["Primer Name", primerInfo[i].name],
+                                    ["Primer Sequence", primerInfo[i].query_aligned],
+                                    ["Match Aligned", primerInfo[i].matched_aligned],
+                                    ["Ref Sequence", primerInfo[i].target_aligned],
+                                    ["Cigar", primerInfo[i].cigar],
+                                    ["Start", primerInfo[i].start + 1],
+                                    ["End", primerInfo[i].end + 1],
+                                    ["Edit Distance", primerInfo[i].edit_distance],
+                                    ["Other Locations", primerInfo[i].other_locations]
                                 ];
                             }
                         }

@@ -27,7 +27,7 @@ function getTooltips(samples, depths, variants, refSeq,
             confine: true,
             position: "cursor",
             axisPointer: {
-                type: 'line'
+                type: "line"
             },
             formatter: function (params) {
                 let output = "";
@@ -39,12 +39,8 @@ function getTooltips(samples, depths, variants, refSeq,
                 let sample = samples[i];
                 let position = param.axisValue;
                 let depth = depths[i][position - 1];
-                let zoomStart = 1;
-                let zoomEnd = refSeq.length;
-                if (coverageStatView) {
-                    zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
-                    zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
-                }
+                let zoomStart = Math.floor(chart.getOption().dataZoom[0].startValue);
+                let zoomEnd = Math.floor(chart.getOption().dataZoom[0].endValue);
                 let positionRows = [];
                 let coverageStatRows = [];
                 const isVariantBar = params.find(element => {
@@ -64,7 +60,7 @@ function getTooltips(samples, depths, variants, refSeq,
                         let foundObj = find(Object.values(variants[i]), {"POS": position});
                         if (foundObj !== undefined && foundObj !== null) {
                             for (const [key, value] of Object.entries(foundObj)) {
-                                if (key !== 'POS' && key !== 'sample') {
+                                if (key !== "POS" && key !== "sample") {
                                     positionRows.push(
                                         ...[[key, value]]
                                     );

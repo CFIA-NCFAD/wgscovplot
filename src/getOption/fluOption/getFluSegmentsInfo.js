@@ -93,13 +93,13 @@ function getFluGeneFeature(segments, segmentsInterval) {
     let geneFeature = [];
     for (let i = 0; i < segments.length; i++) {
         geneFeature.push({
-            name: 'Segment ' + segments[i],
+            name: "Segment " + segments[i],
             value: {
                 "idx": i,
                 "start": segmentsInterval[i][0],
                 "end": segmentsInterval[i][1],
                 "level": 0,
-                "strand": '',
+                "strand": "",
                 "rotate": 0.0,
                 "type": "segment_feature"
             },

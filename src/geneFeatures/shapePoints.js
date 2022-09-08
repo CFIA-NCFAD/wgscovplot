@@ -15,7 +15,7 @@ function shapePoints(x, y, width, height, strand, feature) {
     } else {
         taperOffset = 5;
     }
-    if (feature === 'gene_feature') {
+    if (feature === "gene_feature") {
         if (strand === 1) {
             return [
                 [x, y],
@@ -33,7 +33,7 @@ function shapePoints(x, y, width, height, strand, feature) {
                 [x + taperOffset, y - height],
             ];
         }
-    } else if (feature === 'amplicon_feature' || feature === 'segment_feature') {
+    } else if (feature === "amplicon_feature" || feature === "segment_feature") {
         return [
             [x, y],
             [x + width, y],

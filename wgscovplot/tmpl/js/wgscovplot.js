@@ -56,9 +56,9 @@ function updateCoverageChartOption(samples) {
     // Reserve tooltip in series option
     let seriesOption = updateOption.series;
     seriesOption.forEach(element => {
-        if (element.type === 'line') {
+        if (element.type === "line") {
             element.tooltip.trigger = nonVariantSites ? "axis" : "none";
-        } else if (element.type === 'bar') {
+        } else if (element.type === "bar") {
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
@@ -147,7 +147,7 @@ function setDefaultSamples(samples) {
     let $selectedsamples = $("#selectedsamples");
     $selectedsamples.select2();
     $selectedsamples.val(samples);
-    $selectedsamples.trigger('change');
+    $selectedsamples.trigger("change");
 }
 
 /**
@@ -198,7 +198,7 @@ function initWgscovplotEvent() {
 
         $("#selected-gene-feature-name").select2({
             tags: true,
-            width: '100%',
+            width: "100%",
         });
 
 
@@ -211,7 +211,7 @@ function initWgscovplotEvent() {
         });
 
         $("#selected-gene-feature-name").on("change", function () {
-            $("#selected-gene-feature-name").select2('data');
+            $("#selected-gene-feature-name").select2("data");
         });
 
         /**
@@ -445,7 +445,7 @@ function initWgscovplotRenderEnv() {
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
-        let option = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
+        let options = wgscovplot.getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData, window.refSeq,
             yAxisMax, plotSamples, plotDepths, plotVariants, geneFeature, amplicon);
         // Keep grid option
         option.grid = gridOption;
@@ -458,7 +458,7 @@ function initWgscovplotRenderEnv() {
         // Keep series
         option.series = seriesOption;
         //set chart option
-        chart.setOption(option = option);
+        chart.setOption(option = options);
     }
     updateControlMenu();
     onChartDataZoomActions();
@@ -485,9 +485,9 @@ function updateTooltipOption(samples, depths, variants, seriesOption,
         triggerOnType = "none";
     }
     seriesOption.forEach(element => {
-        if (element.type === 'line') {
+        if (element.type === "line") {
             element.tooltip.trigger = nonVariantSites ? "axis" : "none";
-        } else if (element.type === 'bar') {
+        } else if (element.type === "bar") {
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
@@ -508,7 +508,7 @@ function tooltipPosition(isChecked) {
     if (isChecked) {
         return function (pos, params, dom, rect, size) {
             let obj = {top: 5};
-            obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+            obj[["left", "right"][+(pos[0] < size.viewSize[0] / 2)]] = 5;
             return obj;
         };
     } else {
@@ -531,7 +531,7 @@ function updateVarMapHeight(val) {
  * Apply View for selected gene feature
  */
 function applyFeatureView() {
-    let featureName = $("#selected-gene-feature-name").select2('data');
+    let featureName = $("#selected-gene-feature-name").select2("data");
     let start = [], end = [];
     let minStart, maxEnd;
     featureName.forEach(x => {
@@ -723,7 +723,7 @@ function resetGridDisplay() {
 function onChartDataZoomActions() {
 
     chart.on("click", function (params) {
-        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom') {
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === "custom") {
             document.getElementById("start-pos").value = params.value.start;
             document.getElementById("end-pos").value = params.value.end;
             setDataZoom(params.value.start, params.value.end);
@@ -732,7 +732,7 @@ function onChartDataZoomActions() {
     });
 
     chart.on("dblclick", function (params) {
-        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === 'custom') {
+        if (params.componentIndex === chart.getOption().series.length - 1 && params.componentSubType === "custom") {
             document.getElementById("start-pos").value = 1;
             document.getElementById("end-pos").value = refSeqLength;
             setDataZoom(1, refSeqLength);

@@ -30,7 +30,7 @@ function getGeneFeatureSeries(geneAmpliconFeatureData, index, geneFeature, ampli
                 borderRadius: 6,
                 borderWidth: 2,
                 showContent: "true",
-                position: 'top',
+                position: "top",
                 textStyle: {
                     fontSize: 15,
                     fontWeight: "bolder",

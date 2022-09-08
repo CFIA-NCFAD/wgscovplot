@@ -16,14 +16,14 @@ import {popper} from "@popperjs/core";
 import select2 from "select2";
 import "select2/dist/css/select2.css";
 // Import the echarts core module, which provides the necessary interfaces for using echarts.
-import * as echarts from 'echarts/core';
+import * as echarts from "echarts/core";
 
-import {LineChart, BarChart, CustomChart, HeatmapChart} from 'echarts/charts';
+import {LineChart, BarChart, CustomChart, HeatmapChart} from "echarts/charts";
 import {
       TooltipComponent, GridComponent, DataZoomComponent,
       DatasetComponent, ToolboxComponent, VisualMapComponent, TitleComponent, MarkAreaComponent, MarkLineComponent
-} from 'echarts/components';
-import {SVGRenderer, CanvasRenderer } from 'echarts/renderers';
+} from "echarts/components";
+import {SVGRenderer, CanvasRenderer } from "echarts/renderers";
 
 echarts.use(
   [TooltipComponent, GridComponent,

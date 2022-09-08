@@ -34,7 +34,7 @@ function getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData, amplicon
         y = yStart - height / 2 - feature.value.level;
         points = shapePoints(x, y, width, height, feature.value.strand, feature.value.type);
         let invisible = false;
-        if (feature.value.type === 'gene_feature') {
+        if (feature.value.type === "gene_feature") {
             rotateAngle = feature.value.rotate;
             if (showGeneLabel) {
                 // Element width is too small and hide label at the edges
@@ -77,7 +77,7 @@ function getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData, amplicon
                     local: true,
                 },
             };
-        } else if (feature.value.type === 'amplicon_feature') {
+        } else if (feature.value.type === "amplicon_feature") {
             shape = graphic.clipPointsByRect(points, {
                 x: params.coordSys.x,
                 y: params.coordSys.y,
@@ -94,7 +94,7 @@ function getGeneFeatureRenderer(showGeneLabel, geneFeatureAmpliconData, amplicon
                 textConfig: {},
                 invisible: !amplicon
             };
-        } else if (feature.value.type === 'segment_feature') {
+        } else if (feature.value.type === "segment_feature") {
             if (width < 10 || start[0] >= rightCoord || end[0] <= leftCoord) {
                 invisible = true;
             } else {

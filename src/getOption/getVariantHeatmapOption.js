@@ -20,9 +20,9 @@ function getTooltipHeatmap(samples, mutations, variants) {
             showContent: true,
             confine: true,
             formatter: function (params) {
-                let output = '';
-                let mutationName = '';
-                let sample = '';
+                let output = "";
+                let mutationName = "";
+                let sample = "";
                 // values may be undefined when mouse move and zoom/in out heat map (causing error log)
                 if (params.value !== undefined && params.value !== null) {
                     mutationName = mutations[params.value[0]];
@@ -189,17 +189,17 @@ function getVariantHeatmapOption(samples, variants) {
             max: 1.00,
             precision: 2,
             calculable: true,
-            orient: 'vertical',
-            left: 'right',
-            top: '5%',
+            orient: "vertical",
+            left: "right",
+            top: "5%",
             inRange: {
                 color: [
-                    '#a50026',
-                    '#f46d43',
-                    '#fdae61',
-                    '#fee08b',
-                    '#f7ff00',
-                    '#006837'
+                    "#a50026",
+                    "#f46d43",
+                    "#fdae61",
+                    "#fee08b",
+                    "#f7ff00",
+                    "#006837"
                 ]
             }
         },
@@ -213,7 +213,7 @@ function getVariantHeatmapOption(samples, variants) {
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        shadowColor: "rgba(0, 0, 0, 0.5)"
                     }
                 }
             }
