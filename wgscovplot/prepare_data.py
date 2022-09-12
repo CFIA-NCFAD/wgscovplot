@@ -8,7 +8,6 @@ import edlib
 
 from Bio.SeqFeature import SeqFeature
 from jinja2 import Environment, FileSystemLoader
-from Bio import SeqIO, Entrez
 from itertools import cycle
 from .resources import gene_feature_properties
 from .colors import color_pallete, AmpliconColour

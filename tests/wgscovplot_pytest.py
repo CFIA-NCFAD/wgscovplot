@@ -30,7 +30,6 @@ def test_cli_non_segment_virus():
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test1.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
-                                          '--ref-seq-path', str(input_ref.absolute()),
                                           '--output-html', out_html,
                                           '--gene-feature',
                                           '--no-amplicon'])
@@ -40,7 +39,6 @@ def test_cli_non_segment_virus():
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test2.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
-                                          '--ref-seq-path', str(input_ref.absolute()),
                                           '--output-html', out_html,
                                           '--gene-feature'])
         assert test_result.exit_code == 0
@@ -49,7 +47,6 @@ def test_cli_non_segment_virus():
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test3.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
-                                          '--ref-seq-path', str(input_ref.absolute()),
                                           '--output-html', out_html,
                                           '--gene-feature',
                                           '--no-amplicon'])
@@ -57,7 +54,6 @@ def test_cli_non_segment_virus():
 
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test4.html'
-        ncbi_accession_id = 'MN908947.3'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
                                           '--gene-feature',
