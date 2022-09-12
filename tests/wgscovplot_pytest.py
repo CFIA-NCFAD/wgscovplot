@@ -32,7 +32,6 @@ def test_cli_non_segment_virus():
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--ref-seq-path', str(input_ref.absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature-path', str(input_genbank.absolute()),
                                           '--gene-feature',
                                           '--no-amplicon'])
         assert test_result.exit_code == 0
@@ -43,7 +42,6 @@ def test_cli_non_segment_virus():
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--ref-seq-path', str(input_ref.absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature-path', str(input_genbank.absolute()),
                                           '--gene-feature'])
         assert test_result.exit_code == 0
         assert exists(out_html)
@@ -61,7 +59,6 @@ def test_cli_non_segment_virus():
         out_html = 'wgscovplot_test4.html'
         ncbi_accession_id = 'MN908947.3'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
-                                          '--ncbi-accession-id', str(ncbi_accession_id),
                                           '--output-html', out_html,
                                           '--gene-feature',
                                           '--no-amplicon'])

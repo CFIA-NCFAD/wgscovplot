@@ -5,17 +5,20 @@ from pathlib import Path
 from Bio import SeqIO, Entrez
 from wgscovplot.tools import variants, mosdepth
 from wgscovplot.prepare_data import get_gene_amplicon_feature, write_html_coverage_plot, \
-    write_html_coverage_plot_segment_virus, stat_info, get_primer_data
+    write_html_coverage_plot_segment_virus, stat_info, get_primer_data, parse_gene_feature
 
 logger = logging.getLogger(__name__)
 Entrez.email = "wgscovplot@github.com"
 
+REF_PATTERN = '**/genome/snpeff_db/**/*.fa*'
+GENE_FEATURE_PATTERN = '**/genome/snpeff_db/**/*.gff'
 
-def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_accession_id: str,
-        low_coverage_threshold: int, amplicon: bool, gene_feature: bool, segment_virus: bool,
-        gene_misc_feature: bool, primer_seq_path: Path, edit_distance: int, dev: bool, output_html: Path) -> None:
+
+def run(input_dir: Path, low_coverage_threshold: int, amplicon: bool,
+        gene_feature: bool, segment_virus: bool, primer_seq_path: Path,
+        edit_distance: int, dev: bool, output_html: Path) -> None:
     # Read README.md
-    dirpath = Path(__file__).parent.parent
+    dirpath = Path(__file__).resolve().parent.parent
     readme = dirpath / 'README.md'
     with open(readme, "r", encoding="utf-8") as input_file:
         text = input_file.read()
@@ -58,35 +61,36 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
                                                about_html=about_html,
                                                output_html=output_html)
     else:
-        ref_name = mosdepth.get_refseq_name(input_dir)
-        if ref_name != '' and ncbi_accession_id == "" and ref_seq_path is None:
-            ncbi_accession_id = ref_name
-        if ref_seq_path is None and ncbi_accession_id == "":
-            logger.error('Please provide reference sequence --ref-seq /path/to/reference_sequence.fasta '
-                         'OR provide correct NCBI Accession ID with option --ncbi-accession-id')
-            exit(1)
-        # Parse reference sequence
-        elif ref_seq_path is not None:
-            with open(ref_seq_path) as fh:
+        ref_fasta_path = None
+        gene_feature_handle = None
+        if list(input_dir.glob(REF_PATTERN)):
+            ref_fasta_path = list(input_dir.glob(REF_PATTERN))[0]
+        if list(input_dir.glob(GENE_FEATURE_PATTERN)):
+            gene_feature_handle = list(input_dir.glob(GENE_FEATURE_PATTERN))[0]
+        # First check if reference fasta and gene feature GFF is available or not
+        if ref_fasta_path is not None and gene_feature_handle is not None:
+            with open(ref_fasta_path) as fh:
                 for name, seq in SeqIO.FastaIO.SimpleFastaParser(fh):
                     ref_seq = seq
-        else:
+        else:  # Automatically retrieve reference and gene feature file from NCBI
+            ref_id = mosdepth.get_refseq_id(input_dir)
             try:
-                logger.info(f'Fetching reference sequence with accession_id "{ncbi_accession_id}" from NCBI database')
+                logger.info(
+                    f'Fetching reference sequence with accession_id "{ref_id}" from NCBI database')
                 with Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text",
-                                   id=ncbi_accession_id) as fasta_handle:
+                                   id=ref_id) as fasta_handle:
                     for name, seq in SeqIO.FastaIO.SimpleFastaParser(fasta_handle):
                         ref_seq = seq
             except Exception as e:
                 logger.error(e, exc_info=True)
-                logger.error(
-                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id by providing option '
-                    f'--ncbi-accession-id OR '
-                    f'provide option --ref-seq /path/to/reference_sequence.fasta ')
+                logger.error(f'Error! can not fetch reference fast file with ID "{ref_id}"')
                 exit(1)
-        # Get the list of samples name
-        samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
-
+            try:
+                logger.info(f'Fetching Genbank file with accession_id "{ref_id}" from NCBI database')
+                gene_feature_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ref_id)
+            except Exception as e:
+                logger.error(e, exc_info=True)
+                logger.error(f'Error! can not fetch genbank file with ID "{ref_id}"')
         # Get amplicon data
         if amplicon:
             region_amplicon_depth_data = mosdepth.get_depth_amplicon(input_dir)
@@ -99,24 +103,20 @@ def run(input_dir: Path, ref_seq_path: Path, gene_feature_path: Path, ncbi_acces
         else:
             region_amplicon_depth_data = {}
             region_amplicon_data = {}
-
         # Get gene/amplicon feature
-        if gene_feature and gene_feature_path is None and ncbi_accession_id == "":
-            logger.error('If you want to plot gene features, '
-                         'please provide genbank file for gene features, '
-                         'option --genbank /path/to/genbank.gb '
-                         'OR provide NCBI Accession ID with option --ncbi-accession-id')
-            exit(1)
-        gene_amplicon_feature_data = get_gene_amplicon_feature(gene_feature, gene_misc_feature,
-                                                               gene_feature_path, ncbi_accession_id,
+        gene_amplicon_feature_data = get_gene_amplicon_feature(gene_feature,
+                                                               parse_gene_feature(gene_feature_handle),
                                                                region_amplicon_data)
 
-        # Get gene feature name, this is used for larger viral genome, use select2 to allow quick nanigation to feature
+        # Get gene feature name, this is used for larger viral genome, use select2 to allow quick navigation to feature
         # of interest
         gene_feature_name = []
         if len(gene_amplicon_feature_data):
             for feature in gene_amplicon_feature_data:
                 gene_feature_name.append(feature["name"])
+
+        # Get the list of samples name
+        samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
 
         # Get coverage statistics information for all samples
         mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)

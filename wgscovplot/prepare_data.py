@@ -13,6 +13,7 @@ from itertools import cycle
 from .resources import gene_feature_properties
 from .colors import color_pallete, AmpliconColour
 from wgscovplot.tools import mosdepth
+from BCBio import GFF
 
 logger = logging.getLogger(__name__)
 
@@ -73,34 +74,39 @@ def stat_info(sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo], low_cove
                       float_format=lambda x: f'{x:0.2f}', justify="left", table_id="summary-coverage-stat")
 
 
-def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
-                              annotation: Path, ncbi_accession_id: str,
-                              region_amplicon_data: Dict[str, List]) -> List[Dict[str, Any]]:
-    feature_data = []
-    if gene_feature:
-        colour_cycle = cycle(color_pallete)
-        minus_strains_list = [0, 0, 0]
-        plus_strains_list = [0, 0, 0]
-        if annotation is not None:
-            genbank_handle = annotation
-        else:
-            try:
-                logger.info(f'Fetching Genbank file with accession_id "{ncbi_accession_id}" from NCBI database')
-                genbank_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ncbi_accession_id)
-            except Exception as e:
-                logger.error(e, exc_info=True)
-                logger.error(
-                    f'Error! can not fetch "{ncbi_accession_id}" please correct accession id '
-                    f'by providing option --ncbi-accession-id OR '
-                    f'provide option --genbank /path/to/genbank.gb ')
-
-                exit(1)
-        if gene_misc_feature:
-            skip_feature = ["CDS", "source", "repeat_region"]
-        else:
-            skip_feature = ["CDS", "source", "repeat_region", "misc_feature"]
-        for seq_record in SeqIO.parse(genbank_handle, "gb"):
-            index = 0  # the index must be continuous for data handling with Echarts
+def parse_gene_feature(gene_feature_file: Path) -> Dict[int, Dict]:
+    gene_feature_data = {}
+    try:
+        interest_info = dict(gff_type=["gene", "five_prime_UTR", "three_prime_UTR"])
+        in_handle = open(gene_feature_file)
+        for rec in GFF.parse(in_handle, limit_info=interest_info):
+            for feature in rec.features:
+                start_pos = int(feature.location.start) + 1
+                end_pos = int(feature.location.end)
+                strand = feature.location.strand
+                if 'Name' in feature.qualifiers.keys():
+                    feature_name = feature.qualifiers['Name'][0]
+                else:
+                    feature_name = feature.qualifiers['gbkey'][0]
+                if gene_feature_data.get(strand):
+                    gene_feature_data[strand].append(dict(
+                        start_pos=start_pos,
+                        end_pos=end_pos,
+                        strand=strand,
+                        name=feature_name
+                    ))
+                else:
+                    gene_feature_data[strand] = []
+                    gene_feature_data[strand].append(dict(
+                        start_pos=start_pos,
+                        end_pos=end_pos,
+                        strand=strand,
+                        name=feature_name
+                    ))
+    except Exception as e:
+        logging.info(f"{e.__doc__} Genbank file provided instead of GFF file")
+        skip_feature = ["CDS", "source", "repeat_region", "misc_feature"]
+        for seq_record in SeqIO.parse(gene_feature_file, "gb"):
             seq_feature: SeqFeature
             for seq_feature in seq_record.features:
                 if seq_feature.type in skip_feature:
@@ -117,8 +123,40 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
                 start_pos = int(seq_feature.location.start) + 1
                 end_pos = int(seq_feature.location.end)
                 strand = seq_feature.strand
-                if strand == 1:
-                    if overlap(plus_strains_list[0], plus_strains_list[1], start_pos, end_pos):
+                if gene_feature_data.get(strand):
+                    gene_feature_data[strand].append(dict(
+                        start_pos=start_pos,
+                        end_pos=end_pos,
+                        strand=strand,
+                        name=feature_name
+                    ))
+                else:
+                    gene_feature_data[strand] = []
+                    gene_feature_data[strand].append(dict(
+                        start_pos=start_pos,
+                        end_pos=end_pos,
+                        strand=strand,
+                        name=feature_name
+                    ))
+    if 1 in gene_feature_data.keys():
+        gene_feature_data[1].sort(key=lambda k: k["start_pos"])
+    if -1 in gene_feature_data.keys():
+        gene_feature_data[-1].sort(key=lambda k: k["start_pos"])
+    return gene_feature_data
+
+
+def get_gene_amplicon_feature(gene_feature: bool, gene_feature_data: Dict[int, Dict],
+                              region_amplicon_data: Dict[str, List]) -> List[Dict[str, Any]]:
+    feature_data = []
+    if gene_feature:
+        colour_cycle = cycle(color_pallete)
+        minus_strains_list = [0, 0, 0]
+        plus_strains_list = [0, 0, 0]
+        index = 0
+        for key in gene_feature_data.keys():
+            for feature in gene_feature_data[key]:
+                if key == 1:
+                    if overlap(plus_strains_list[0], plus_strains_list[1], feature["start_pos"], feature["end_pos"]):
                         level = gene_feature_properties['plus_strand_level'] + gene_feature_properties[
                             'rec_items_height'] + 3
                         if plus_strains_list[2] == gene_feature_properties['plus_strand_level'] + \
@@ -126,9 +164,9 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
                             level = gene_feature_properties['plus_strand_level']
                     else:
                         level = gene_feature_properties['plus_strand_level']
-                    plus_strains_list = [start_pos, end_pos, level]
+                    plus_strains_list = [feature["start_pos"], feature["end_pos"], level]
                 else:
-                    if overlap(minus_strains_list[0], minus_strains_list[1], start_pos, end_pos):
+                    if overlap(minus_strains_list[0], minus_strains_list[1], feature["start_pos"], feature["end_pos"]):
                         level = gene_feature_properties['minus_strand_level'] + gene_feature_properties[
                             'rec_items_height'] + 3
                         if minus_strains_list[2] == gene_feature_properties['minus_strand_level'] + \
@@ -136,16 +174,16 @@ def get_gene_amplicon_feature(gene_feature: bool, gene_misc_feature: bool,
                             level = gene_feature_properties['minus_strand_level']
                     else:
                         level = gene_feature_properties['minus_strand_level']
-                    minus_strains_list = [start_pos, end_pos, level]
+                    minus_strains_list = [feature["start_pos"], feature["end_pos"], level]
                 feature_data.append(
-                    dict(name=feature_name,
+                    dict(name=feature["name"],
                          value={
                              "idx": index,
-                             "start": start_pos,
-                             "end": end_pos,
+                             "start": feature["start_pos"],
+                             "end": feature["end_pos"],
                              "level": level,
-                             "strand": strand,
-                             "rotate": 0.5 if strand == 1 else -0.5,
+                             "strand": feature["strand"],
+                             "rotate": 0.5 if feature["strand"] == 1 else -0.5,
                              "type": "gene_feature"
                          },
                          itemStyle={"color": next(colour_cycle)})

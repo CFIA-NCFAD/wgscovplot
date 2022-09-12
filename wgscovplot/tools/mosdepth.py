@@ -110,7 +110,7 @@ def depth_array(df: pd.DataFrame) -> np.ndarray:
     return arr
 
 
-def get_refseq_name(basedir: Path) -> str:
+def get_refseq_id(basedir: Path) -> str:
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=PER_BASE_PATTERNS,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
@@ -142,7 +142,6 @@ def get_depth_amplicon(basedir: Path) -> Dict[str, List]:
     out = {}
     try:
         for sample, bed_path in sample_beds.items():
-            logger.info(f'Region bed {bed_path}')
             df = read_mosdepth_region_bed(bed_path)
             out[sample] = []
             for row in df.itertuples():
