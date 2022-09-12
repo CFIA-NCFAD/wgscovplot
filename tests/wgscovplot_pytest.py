@@ -31,29 +31,22 @@ def test_cli_non_segment_virus():
         out_html = 'wgscovplot_test1.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature',
+                                          '--no-gene-feature',
                                           '--no-amplicon'])
         assert test_result.exit_code == 0
         assert exists(out_html)
-    
+
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test2.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature'])
+                                          '--no-gene-feature',
+                                          '--amplicon'])
         assert test_result.exit_code == 0
         assert exists(out_html)
 
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test3.html'
-        test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
-                                          '--output-html', out_html,
-                                          '--gene-feature',
-                                          '--no-amplicon'])
-        assert test_result.exit_code == 1
-
-    with runner.isolated_filesystem():
-        out_html = 'wgscovplot_test4.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
                                           '--gene-feature',
