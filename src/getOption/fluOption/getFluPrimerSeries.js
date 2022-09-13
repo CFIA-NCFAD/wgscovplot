@@ -1,6 +1,15 @@
 import {graphic} from "echarts/core";
 import {isEmpty} from "lodash/lang";
 
+/**
+ * Get Primer data
+ * @param {string} sample
+ * @param {Array<string>} segments - An array of segments names
+ * @param {Object} primerData - Object of primer data
+ * @param {Array<Array<number>>} segmentsInterval - An array of segment start, end
+ * @returns {Object} - Object of primer data
+ *
+ */
 function getFluPrimerData(sample, segments, primerData, segmentsInterval) {
     let primerFeature = [];
     for (let i = 0; i < segments.length; i++) {
@@ -23,6 +32,16 @@ function getFluPrimerData(sample, segments, primerData, segmentsInterval) {
     return primerFeature;
 }
 
+
+/**
+ * Define primers series, it is used to annotate into coverage plot
+ * @param {Array<string>} samples - An array of samples names
+ * @param {Array<string>} segments - An array of segments names
+ * @param {Object} primerData - Object of primer data
+ * @param {Array<Array<number>>} segmentsInterval - An array of segment start, end
+ * @returns {Object} - Primer Series Option
+ *
+ */
 function getFluPrimerSeries(samples, segments, primerData, segmentsInterval) {
     let primerSeries = [];
     if (isEmpty(primerData)) {

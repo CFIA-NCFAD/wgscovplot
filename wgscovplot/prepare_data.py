@@ -41,7 +41,7 @@ def expand_degenerate_bases(seq: str) -> List[str]:
 
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
-    return start1 <= start2 <= end1 or start1 <= end2 <= end1
+    return start1 < start2 < end1 or start1 < end2 < end1
 
 
 def max_depth(depth_data: Dict[str, List]) -> int:

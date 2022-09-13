@@ -19,7 +19,7 @@ def run(input_dir: Path, low_coverage_threshold: int, amplicon: bool,
         edit_distance: int, dev: bool, output_html: Path) -> None:
     # Read README.md
     dirpath = Path(__file__).resolve().parent.parent
-    readme = dirpath / 'README.md'
+    readme = dirpath/'README.md'
     with open(readme, "r", encoding="utf-8") as input_file:
         text = input_file.read()
     about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
