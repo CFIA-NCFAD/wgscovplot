@@ -17,11 +17,76 @@
             top: 56px;
             background: #cccccc;
         }
+        /* following CSS rules for btn-toggle are from sidebars.css from https://getbootstrap.com/docs/5.0/examples/sidebars/# */
+        .btn-toggle {
+            display: inline-flex;
+            align-items: center;
+            padding: .25rem .5rem;
+            font-weight: 600;
+            color: rgba(0, 0, 0, .65);
+            background-color: transparent;
+            border: 0;
+        }
+
+        .btn-toggle:hover,
+        .btn-toggle:focus {
+            color: rgba(0, 0, 0, .85);
+            background-color: #d2f4ea;
+        }
+
+        .btn-toggle::before {
+            width: 1.25em;
+            line-height: 0;
+            content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+            transition: transform .35s ease;
+            transform-origin: .5em 50%;
+        }
+
+        .btn-toggle[aria-expanded="true"] {
+            color: rgba(0, 0, 0, .85);
+        }
+
+        .btn-toggle[aria-expanded="true"]::before {
+            transform: rotate(90deg);
+        }
+
+        .btn-sidebar-hider {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            padding: .1rem .1rem;
+            font-weight: 600;
+            color: rgba(0, 0, 0, .65);
+            background-color: transparent;
+            border: 0;
+        }
+
+        .btn-sidebar-hider:hover,
+        .btn-sidebar-hider:focus {
+            color: rgba(0, 0, 0, .85);
+            background-color: #b8b8b8;
+        }
+
+        .btn-sidebar-hider::before {
+            width: 1.0em;
+            line-height: 5;
+            content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+            transition: transform .35s ease;
+            transform-origin: .5em 50%;
+        }
+
+        .btn-sidebar-hider[aria-expanded="true"] {
+            color: rgba(0, 0, 0, .85);
+        }
+
+        .btn-sidebar-hider[aria-expanded="true"]::before {
+            transform: rotateY(180deg);
+        }
     </style>
 </head>
 <body>
     {% block content%}
-        {% include "wgscovplot_flu_gui.html" %}
+        {% include "wgscovplot_flu_gui_sidebar.html" %}
     {% endblock %}
     <script type="text/javascript">
         {% include "js/wgscovplot_flu.js" %}
@@ -40,13 +105,14 @@
 
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;
-            let top = $chart.getBoundingClientRect().top;
+            let bbox = $chart.getBoundingClientRect();
+            let top = bbox.top;
             let height = window.innerHeight - top - BOTTOM_PADDING;
             if (height < 300) {
                 height = 300;
             }
             $chart.style.height = height + 'px';
-            $chart.style.width = window.innerWidth + 'px';
+            $chart.style.width = (window.innerWidth - bbox.left) + 'px';
             chart.resize();
         }
 
@@ -56,10 +122,17 @@
             let chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
             window.chart = chart;
             updateChartDivSize();
+            setTimeout(updateChartDivSize, 1000);
             initWgscovplotRenderEnv();
         })
         window.addEventListener("resize", updateChartDivSize);
         initWgscovplotEvent();
+        document.getElementById("control-menu-hider").addEventListener('transitionend', function (event) {
+            updateChartDivSize();
+        });
+        document.getElementById("control-menu").addEventListener('transitionend', function (event) {
+            updateChartDivSize();
+        });
     </script>
 </body>
 </html>
