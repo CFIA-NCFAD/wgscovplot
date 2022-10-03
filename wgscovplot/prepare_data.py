@@ -302,7 +302,8 @@ def write_html_coverage_plot(samples_name: List[str],
                                         gene_feature=gene_feature,
                                         ref_seq_length=len(ref_seq),
                                         max_depth=max_depth(depths_data),
-                                        low_coverage_threshold=low_coverage_threshold))
+                                        low_coverage_threshold=low_coverage_threshold,
+                                        segment_virus=False))
 
 
 def write_html_coverage_plot_segment_virus(samples_name: List[str],
@@ -336,4 +337,5 @@ def write_html_coverage_plot_segment_virus(samples_name: List[str],
                                         low_coverage_regions=low_coverage_regions,
                                         low_coverage_threshold=low_coverage_threshold,
                                         primer_data=primer_data,
-                                        about_html=about_html))
+                                        about_html=about_html,
+                                        segment_virus=True))

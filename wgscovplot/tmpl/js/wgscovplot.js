@@ -144,7 +144,7 @@ function updateYAxisOption(yAxisOption, scaleType, yAxisMax) {
  */
 function setDefaultSamples(samples) {
     // Set default samples display
-    let $selectedsamples = $("#selectedsamples");
+    let $selectedsamples = $("#selected-samples");
     $selectedsamples.select2();
     $selectedsamples.val(samples);
     $selectedsamples.trigger("change");
@@ -160,7 +160,7 @@ function getCurrentSamples(chartOption) {
     if (chartOption === undefined || chartOption === null) {
         samples = window.samples.slice(0, 3);
     } else {
-        let selectData = $("#selectedsamples").select2("data");
+        let selectData = $("#selected-samples").select2("data");
         for (let [key, entries] of selectData.entries()) {
             samples.push(selectData[key].text);
         }
@@ -184,11 +184,11 @@ function initWgscovplotEvent() {
         /**
          * Jquery actions to make the list of samples is not forced in alphabetical order
          */
-        $("#selectedsamples").select2({
+        $("#selected-samples").select2({
             tags: true,
         });
 
-        $("#selectedsamples").on("select2:select", function (evt) {
+        $("#selected-samples").on("select2:select", function (evt) {
             let element = evt.params.data.element;
             let $element = $(element);
             $element.detach();
@@ -206,7 +206,7 @@ function initWgscovplotEvent() {
          * Update chart options when adding/romoving samples
          * The chart options such as y Axis scale, yMax, DataZoom are reserved (users's settings are respected)
          */
-        $("#selectedsamples").on("change", function () {
+        $("#selected-samples").on("change", function () {
             updateCoverageChartOption(getCurrentSamples(chart.getOption()));
         });
 

@@ -4,8 +4,10 @@
         <div class="navbar-nav nav me-auto mb-2 mb-lg-0">
             <a type="button" class="nav-link active" aria-current="page" data-bs-toggle="tab"
                data-bs-target="#chart-pane" aria-selected="true">Coverage Plot</a>
+            {% if segment_virus == false %}
             <a type="button" class="nav-link" aria-current="page" data-bs-toggle="tab"
                data-bs-target="#varmap-chart-pane" aria-selected="true">Variant Heatmap</a>
+            {% endif %}
             <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#summary-table"
                aria-selected="false">Summary Information</a>
             <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#about"
@@ -18,17 +20,33 @@
     <div class="tab-pane show active" id="chart-pane" role="tabpanel">
         <div class="d-inline-flex">
             <div class="col-2 collapse show small bg-light border" id="control-menu">
+                <!--- Select Samples ---->
                 <div class="row mb-1 p-1">
                     <div class="d-flex">
                         <h6>Samples</h6>
                         <span class="text-info ms-1" title="Select samples to show in coverage plot">&#9432;</span>
                     </div>
-                    <select id="selectedsamples" class="selected-samples" multiple="multiple">
+                    <select id="selected-samples" class="selected-samples" multiple="multiple">
                         {% for sample in samples_name %}
                         <option value={{sample}}>{{sample}}</option>
                         {% endfor %}
                     </select>
                 </div>
+                <!--- Select Segments ---->
+                {% if segment_virus == true %}
+                <div class="row mb-1 p-1">
+                    <div class="d-flex">
+                        <h6>Segments</h6>
+                        <span class="text-info ms-1" title="Select segments to show in coverage plot">&#9432;</span>
+                    </div>
+                    <select id="selected-segments" class="selected-segments" multiple="multiple">
+                        {% for segment in segments_name %}
+                        <option value={{segment}}>{{segment}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <!--- Axis Options ---->
                 <div class="border rounded mb-1">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#axis-options" aria-expanded="false">
@@ -66,6 +84,7 @@
                         </div>
                     </div>
                 </div>
+                <!--- Tooltips ---->
                 <div class="border rounded mb-1">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#tooltips" aria-expanded="false">
@@ -156,12 +175,14 @@
                         </div>
                     </div>
                 </div>
+                <!--- Display Options ---->
                 <div class="border rounded mb-1">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#display-options" aria-expanded="false">
                         Display Options
                     </button>
                     <div class="collapse p-1" id="display-options">
+                        {% if segment_virus == false %}
                         <div class="row mb-1">
                             <div>
                                 <div class="form-check form-switch">
@@ -188,6 +209,7 @@
                                 </button>
                             </div>
                         </div>
+                        {% endif %}
                         <div class="row mb-1">
                             <div>
                                 <div class="d-flex">
@@ -273,6 +295,8 @@
                         </div>
                     </div>
                 </div>
+                <!--- Genetic Feature Options ---->
+                {% if segment_virus == false %}
                 {% if gene_feature == true or amplicon == true %}
                 <div class="border rounded mb-1">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
@@ -335,6 +359,8 @@
                     </div>
                 </div>
                 {% endif %}
+                {% endif %}
+                <!--- Variant Calls ---->
                 <div class="border rounded mb-1">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#variant-calls" aria-expanded="false">
@@ -349,6 +375,18 @@
                                 <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
                             </div>
                         </div>
+                        {% if segment_virus == true %}
+                        <div>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="toggle-mutation">Low Coverage Regions
+                                    Label </label>
+                                <span class="text-info ms-1"
+                                      title="Hide/Show label of low coverag regions">&#9432;</span>
+                                <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions"
+                                       unchecked>
+                            </div>
+                        </div>
+                        {% endif %}
                         <div>
                             <div class="form-check form-switch">
                                 <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping
