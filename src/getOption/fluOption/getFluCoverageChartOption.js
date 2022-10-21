@@ -83,7 +83,7 @@ function getFluCoverageChartOption(samples, segments,
         xAxis: getXAxes(samples, segments, segmentsInterval, positions.length, true, false, showXAxisLabel ),
         yAxis: getYAxes(samples, "log", yMax, true, false),
         series: [
-            ...getDepthSeries(samples, segments, lowCoverageRegion, segmentsInterval, nonVariantSites),
+            ...getDepthSeries(samples, segments, depths, lowCoverageThreshold, segmentsInterval, nonVariantSites),
             ...getFluVariantSeries(samples, segments, depths, variants, segmentsInterval,
                 refSeq, variantSites, showMutation, hideOverlapMutation),
             ...getFluPrimerSeries(samples, segments, primerData, segmentsInterval),

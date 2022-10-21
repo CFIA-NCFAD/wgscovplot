@@ -24,7 +24,7 @@
                 <div class="row mb-1 p-1">
                     <div class="d-flex">
                         <h6>Samples</h6>
-                        <span class="text-info ms-1" title="Select samples to show in coverage plot">&#9432;</span>
+                        <span class="info-icon text-info ms-1" title="Select samples to show in coverage plot">&#9432;</span>
                     </div>
                     <select id="selected-samples" class="selected-samples" multiple="multiple">
                         {% for sample in samples_name %}
@@ -37,7 +37,7 @@
                 <div class="row mb-1 p-1">
                     <div class="d-flex">
                         <h6>Segments</h6>
-                        <span class="text-info ms-1" title="Select segments to show in coverage plot">&#9432;</span>
+                        <span class="info-icon text-info ms-1" title="Select segments to show in coverage plot">&#9432;</span>
                     </div>
                     <select id="selected-segments" class="selected-segments" multiple="multiple">
                         {% for segment in segments_name %}
@@ -95,7 +95,7 @@
                             <div>
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-tooltip">Enable</label>
-                                    <span class="text-info ms-1"
+                                    <span class="info-icon text-info ms-1"
                                           title="Select samples to show in coverage plot">&#9432;</span>
                                     <input class="form-check-input" type="checkbox" id="toggle-tooltip" checked>
                                 </div>
@@ -106,7 +106,7 @@
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="fix-tooltip-position">Fix Tooltip
                                         Position</label>
-                                    <span class="text-info ms-1"
+                                    <span class="info-icon text-info ms-1"
                                           title="Fix tooltips table either on top-left or top-right of container">&#9432;</span>
                                     <input class="form-check-input" type="checkbox" id="fix-tooltip-position"
                                            unchecked>
@@ -116,9 +116,8 @@
                         <div class="row mb-1">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-tooltip-trigger-click">Trigger On
-                                        Click</label>
-                                    <span class="text-info ms-1"
+                                    <label class="form-check-label" for="toggle-tooltip-trigger-click">Show on click</label>
+                                    <span class="info-icon text-info ms-1"
                                           title="Click mouse to trigger tooltips (default is mouse hover)">&#9432;</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-trigger-click" unchecked>
@@ -130,7 +129,7 @@
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-tooltip-variant-sites">Variant
                                         Sites</label>
-                                    <span class="text-info ms-1"
+                                    <span class="info-icon text-info ms-1"
                                           title="Trigger tooltips for Variant Sites">&#9432;</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-variant-sites" checked>
@@ -142,7 +141,7 @@
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-tooltip-non-variant-sites">Non
                                         Variant Sites</label>
-                                    <span class="text-info ms-1"
+                                    <span class="info-icon text-info ms-1"
                                           title="Trigger tooltips for Non Variant Sites">&#9432;</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-non-variant-sites" unchecked>
@@ -152,10 +151,9 @@
                         <div class="row mb-1">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-variant-comparison">Compare Variant
-                                        Sites/Coverage Stat</label>
-                                    <span class="text-info ms-1"
-                                          title="Compare Variant Sites, Coverage Statistics across selected samples">&#9432;</span>
+                                    <label class="form-check-label" for="toggle-variant-comparison">Compare info across samples</label>
+                                    <span class="info-icon text-info ms-1"
+                                          title="Show table with comparison of variant site and/or coverage stats across shown samples.">&#9432;</span>
                                     <input class="form-check-input" type="checkbox" id="toggle-variant-comparison"
                                            checked>
                                 </div>
@@ -166,7 +164,7 @@
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-coverage-stat">Coverage
                                         Statistics</label>
-                                    <span class="text-info ms-1"
+                                    <span class="info-icon text-info ms-1"
                                           title="Show Coverage Statistics table">&#9432;</span>
                                     <input class="form-check-input" type="checkbox" id="toggle-coverage-stat"
                                            unchecked>
@@ -186,31 +184,54 @@
                         <div class="row mb-1">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-slider">Show Data Zoom Slider</label>
+                                    <label class="form-check-label" for="toggle-slider">Show view region Slider</label>
                                     <input class="form-check-input" type="checkbox" id="toggle-slider" checked>
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-1">
-                            <label for="start-pos" class="col-sm-4 col-form-label">Zoom Range</label>
-                            <div class="col-sm-8">
+                        <div class="row mb-3">
+                            <div class="">
                                 <div class="input-group">
                                     <input type="number" id="start-pos" class="form-control form-control-sm" value=1>
                                     <input type="number" id="end-pos" class="form-control form-control-sm" value={{ref_seq_length}}>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="setDataZoom(0, 0)">Show region</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                                <button class="btn btn-sm btn-outline-primary" onclick="setDataZoom(0, 0)">Set zoom
-                                </button>
-                                <button class="btn btn-sm btn-outline-primary"
-                                        onclick="setDataZoom(1, {{ref_seq_length}})">Reset zoom
+                                <button class="btn btn-sm btn-outline-secondary"
+                                        onclick="setDataZoom(1, {{ref_seq_length}})">Reset view
                                 </button>
                             </div>
                         </div>
                         {% endif %}
-                        <div class="row mb-1">
+                        <div class="row mb-3">
+                            <label for="ymax" class="col-sm-7 col-form-label">Low coverage Threshold</label>
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" type="number" id="low-threshold"
+                                           value={{ low_coverage_threshold }}
+                                           style="width: 30%">
+                                    <button class="btn btn-sm btn-primary" type="button" type="button" id="set-low-threshold"
+                                            onclick="setLowCoverageThreshold()">
+                                        Set
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div>
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="toggle-mutation">Highlight low coverage regions</label>
+                                    <span class="info-icon text-info ms-1"
+                                          title="Highlight low coverage regions">&#9432;</span>
+                                    <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions"
+                                           checked>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <div>
                                 <div class="d-flex">
                                     <label for="chart-height-input" class="form-label">Subplot Height</label>
@@ -218,12 +239,12 @@
                                 </div>
                                 <div>
                                     <input type="range" id="chart-height-input" class="form-range" value="19.0"
-                                           min="1.0" max="70.0" step="0.1"
+                                           min="1.0" max="100.0" step="0.1"
                                            onchange="updateSubPlotHeight(this.value);">
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div>
                                 <div class="d-flex">
                                     <label for="chart-left-input" class="form-label">Left Margin</label>
@@ -233,11 +254,11 @@
                                 <div>
                                     <input type="range" id="chart-left-input" class="form-range" value="4.0"
                                            min="1.0"
-                                           max="50.0" step="0.1" onchange="updateChartLeftMargin(this.value);">
+                                           max="25.0" step="0.1" onchange="updateChartLeftMargin(this.value);">
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div>
                                 <div class="d-flex">
                                     <label for="chart-right-input" class="form-label">Right Margin</label>
@@ -247,11 +268,11 @@
                                 <div>
                                     <input type="range" id="chart-right-input" class="form-range" value="4.0"
                                            min="1.0"
-                                           max="50.0" step="0.1" onchange="updateChartRightMargin(this.value);">
+                                           max="25.0" step="0.1" onchange="updateChartRightMargin(this.value);">
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div>
                                 <div class="d-flex">
                                     <label class="form-label"> Subplot Top Margin</label>
@@ -265,17 +286,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div class="col-md">
-                                <button class="btn btn-sm btn-outline-primary" onclick="resetGridDisplay()">Reset Grid
-                                    Display
+                                <button class="btn btn-sm btn-outline-primary" onclick="resetGridDisplay()">Reset plot margins and heights
                                 </button>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div class="col-sm-4">
                                 <label for="render-env" class="col-form-label">Renderer</label>
-                                <span class="text-info ms-1"
+                                <span class="info-icon text-info ms-1"
                                       title="Canvas for high performance and export PNG file &#10;SVG for high quality image (SVG file) but slightly lower performance">&#9432;</span>
                             </div>
                             <div class="col-sm-5">
@@ -285,7 +305,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row mb-1">
+                        <div class="row mb-3">
                             <div>
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
@@ -321,7 +341,7 @@
                             <div>
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
-                                    <span class="text-info ms-1"
+                                    <span class="info-icon text-info ms-1"
                                           title="Show Gene Features Names">&#9432;</span>
                                     <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
                                 </div>
@@ -331,7 +351,7 @@
                         {% if amplicon == True %}
                         <div class="form-check form-switch">
                             <label class="form-check-label" for="toggle-amplicon">Show Amplicon</label>
-                            <span class="text-info ms-1"
+                            <span class="info-icon text-info ms-1"
                                   title="Show Amplicon Features and Coverage Bars">&#9432;</span>
                             <input class="form-check-input" type="checkbox" id="toggle-amplicon" checked>
                         </div>
@@ -339,7 +359,7 @@
                         <div class="row mb-1">
                             <div class="form-group">
                                 <label for="selected-gene-feature-name">Select Features</label>
-                                <span class="text-info ms-1"
+                                <span class="info-icon text-info ms-1"
                                       title="Select interest features and click Apply button for viewing">&#9432;</span>
                                 <select id="selected-gene-feature-name" class="form-select form-select-sm"
                                         style="width: 30%" multiple="multiple">
@@ -369,29 +389,50 @@
                     <div class="collapse p-1" id="variant-calls">
                         <div>
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-mutation">Show Mutations</label>
-                                <span class="text-info ms-1"
+                                <label class="form-check-label" for="toggle-mutation">Show mutation labels</label>
+                                <span class="info-icon text-info ms-1"
                                       title="Show mutation under variant sites on X-Axis">&#9432;</span>
                                 <input class="form-check-input" type="checkbox" id="toggle-mutation" unchecked>
                             </div>
                         </div>
-                        {% if segment_virus == true %}
                         <div>
+                            <!---
+                            <div class="row">
+                                <label for="ymax" class="col-sm-7 col-form-label">Low coverage Threshold</label>
+                                <div class="col-sm-5">
+                                    <div class="input-group">
+                                        <input class="form-control form-control-sm" type="number" id="low-threshold" value={{ low_coverage_threshold }}
+                                               style="width: 30%">
+                                        <button class="btn btn-sm btn-primary" type="button" type="button"
+                                                onclick="setThreshold()">
+                                            Set
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="toggle-mutation">Low Coverage Regions</label>
+                                <span class="text-info ms-1"
+                                      title="Highlight low coverage regions">&#9432;</span>
+                                <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions"
+                                       checked>
+                            </div>
+
                             <div class="form-check form-switch">
                                 <label class="form-check-label" for="toggle-mutation">Low Coverage Regions
-                                    Label </label>
+                                    Label</label>
                                 <span class="text-info ms-1"
-                                      title="Hide/Show label of low coverag regions">&#9432;</span>
-                                <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions"
+                                      title="Hide/Show label of low coverage regions">&#9432;</span>
+                                <input class="form-check-input" type="checkbox" id="toggle-low-coverage-regions-label"
                                        unchecked>
                             </div>
+                            --->
                         </div>
-                        {% endif %}
                         <div>
                             <div class="form-check form-switch">
                                 <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping
                                     Mutations</label>
-                                <span class="text-info ms-1"
+                                <span class="info-icon text-info ms-1"
                                       title="Hide/Show overlapping mutation display">&#9432;</span>
                                 <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation"
                                        checked>

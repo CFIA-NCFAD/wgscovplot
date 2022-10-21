@@ -173,13 +173,34 @@ function initWgscovplotEvent() {
             chart.setOption({series: [...seriesOption]});
         });
 
-        //toggle-low-coverage-regions
-        $("#toggle-low-coverage-regions").change(function () {
+        //toggle-low-coverage-regions-label
+        $("#toggle-low-coverage-regions-label").change(function () {
             let seriesOption = chart.getOption().series;
             let showLabel = $(this).prop("checked");
             seriesOption.forEach(series => {
                 if (series.type === "line") {
                     series.markArea.label.show = showLabel;
+                }
+            });
+            chart.setOption({series: [...seriesOption]});
+        });
+
+        //toggle-low-coverage-regions
+        $("#toggle-low-coverage-regions").change(function () {
+            let seriesOption = chart.getOption().series;
+            let isShow = $(this).prop("checked");
+            let opacity;
+            if (isShow === true){
+                opacity = 0.4;
+                document.getElementById("set-low-threshold").disabled = false;
+            } else {
+                opacity = 0.0;
+                document.getElementById("set-low-threshold").disabled = true;
+            }
+            seriesOption.forEach(series => {
+                if (series.type === "line") {
+                    series.markArea.itemStyle.opacity = opacity;
+                    series.markLine.lineStyle.opacity = opacity;
                 }
             });
             chart.setOption({series: [...seriesOption]});
@@ -279,19 +300,29 @@ function updateFluCoverageChartOption(samples, segments) {
     let showMutation = document.getElementById("toggle-mutation").checked;
     let hideOverlapMutation = document.getElementById("toggle-hideoverlap-mutation").checked;
     let showXAxisLabel = document.getElementById("toggle-xaxis-label").checked;
+    let threshold = document.getElementById("low-threshold").value;
     let updateOption = wgscovplot.getFluCoverageChartOption(samples, segments, window.depths, window.variants,
-        window.refSeq, window.refID, window.lowCoverageRegions, window.lowCoverageThreshold, window.primerData,
+        window.refSeq, window.refID, window.lowCoverageRegions, threshold, window.primerData,
         triggerOnType, variantSites, nonVariantSites, variantComparison, coverageStatView, showMutation,
         showXAxisLabel, hideOverlapMutation);
 
+    let lowCoverageRegion = document.getElementById("toggle-low-coverage-regions").checked;
+    let opacity;
+    if (lowCoverageRegion === true) {
+        opacity = 0.4;
+    } else {
+        opacity = 0.0;
+    }
     let seriesOption = updateOption.series;
     seriesOption.forEach(element => {
         if (element.type === "line") {
+            element.markArea.itemStyle.opacity = opacity;
             element.tooltip.trigger = nonVariantSites ? "axis" : "none";
         } else if (element.type === "bar") {
             element.tooltip.trigger = variantSites ? "axis" : "none";
         }
     });
+
     let fixTooltipPosition = document.getElementById("fix-tooltip-position").checked;
     updateOption.tooltip[0].position = tooltipPosition(fixTooltipPosition);
 
@@ -408,6 +439,13 @@ function initWgscovplotRenderEnv() {
         //let yAxisMax = chart.getOption().yAxis[0].max;
         let dataZoomOption = chart.getOption().dataZoom;
         let tooltipOption = chart.getOption().tooltip;
+        let lowCoverageRegion = document.getElementById("toggle-low-coverage-regions").checked;
+        let opacity;
+        if (lowCoverageRegion === true) {
+            opacity = 0.4;
+        } else {
+            opacity = 0.0;
+        }
         wgscovplot.echarts.dispose(chart); // destroy chart instance and re-init chart
         $chart = document.getElementById("chart");
         chart = wgscovplot.echarts.init($chart, mode, {renderer: renderEnv});
@@ -423,6 +461,12 @@ function initWgscovplotRenderEnv() {
         option.tooltip = tooltipOption;
         // Keep series
         option.series = seriesOption;
+        // Keep low coverage regions hightlight
+        option.series.forEach(element => {
+            if (element.type === "line") {
+                element.markArea.itemStyle.opacity = opacity;
+            }
+        });
         //set chart option
         chart.setOption(option);
     }
@@ -452,6 +496,30 @@ function setYMax() {
         }
     });
     chart.setOption({yAxis: yAxisOption});
+}
+
+/**
+ * Set low coverage threshold with horizontal line in the charts
+ */
+function setLowCoverageThreshold() {
+    let threshold = document.getElementById("low-threshold").value;
+    let chartOption = chart.getOption();
+    const [currentSamples, currentSegments] = getCurrentSamplesSegments(chartOption);
+    let maxSegmentsLength = wgscovplot.getMaxSegmentsLength(currentSamples, currentSegments, window.depths);
+    let segmentsInterval = wgscovplot.getSegmentsInterval(maxSegmentsLength);
+    let seriesOption = chartOption.series;
+    let lowCoverageRegion = document.getElementById("toggle-low-coverage-regions").checked;
+    let opacity;
+    if (lowCoverageRegion === true) {
+        opacity = 0.4;
+    } else {
+        opacity = 0.0;
+    }
+    for (let i = 0; i < currentSamples.length; i++) {
+        seriesOption[i].markArea = wgscovplot.getMarkArea(currentSamples[i], currentSegments, segmentsInterval, window.depths, parseInt(threshold), opacity);
+        seriesOption[i].markLine = wgscovplot.getCoverageThresholdLine(segmentsInterval, threshold);
+    }
+    chart.setOption({series: seriesOption});
 }
 
 /**

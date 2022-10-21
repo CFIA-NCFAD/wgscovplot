@@ -8,6 +8,9 @@ import {getGrids} from "./getOption/getGrids";
 import {getFluCoverageChartOption} from "./getOption/fluOption/getFluCoverageChartOption";
 import {getMaxSegmentsLength} from "./getOption/fluOption/getFluSegmentsInfo";
 import {getFluTooltips} from "./getOption/fluOption/getFluTooltips";
+import {getCoordsInterval} from "./util";
+import {getMarkArea, getCoverageThresholdLine} from "./getOption/getDepthSeries";
+import {getSegmentsInterval} from "./getOption/fluOption/getFluSegmentsInfo";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import $ from "jquery";
@@ -35,4 +38,5 @@ echarts.use(
 export {getCoverageChartOption, getFluCoverageChartOption, getVariantHeatmapOption,
       median, meanCoverage, medianCoverage, genomeCoverage,
       getGeneFeatureRenderer, getRegionAmpliconDepthRenderer,
-      getTooltips, getGrids, getMaxSegmentsLength, getFluTooltips, echarts};
+      getTooltips, getGrids, getMaxSegmentsLength, getFluTooltips,
+      getCoordsInterval, getSegmentsInterval, getMarkArea, getCoverageThresholdLine, echarts};

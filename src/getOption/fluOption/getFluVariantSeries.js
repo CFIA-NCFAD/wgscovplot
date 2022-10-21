@@ -4,6 +4,37 @@ import {find} from "lodash/collection";
 import {isEmpty} from "lodash/lang";
 
 /**
+ * @param {Array<Array<number>>} segmentsInterval - An array of segment start, end
+ */
+function getSegmentsMarkLine(segmentsInterval) {
+    let data = [];
+    for (let i = 0; i < segmentsInterval.length; i++) {
+        if (i === 0) {
+            data.push({xAxis: segmentsInterval[i][1]});
+        } else if (i === segmentsInterval.length - 1) {
+            data.push({xAxis: segmentsInterval[i][0]});
+        } else {
+            data.push({xAxis: segmentsInterval[i][0]});
+            data.push({xAxis: segmentsInterval[i][1]});
+        }
+    }
+    return {
+        silent: true,
+        symbol: ["none", "none"],
+        label: {
+            show: false,
+        },
+        lineStyle: {
+            color: "#000",
+            width: 1,
+            type: "dashed",
+            opacity: 0.2
+        },
+        data: data
+    };
+}
+
+/**
  * Define variant sites bar
  * @param {Array<string>} samples - An array of samples names
  * @param {Array<string>} segments - An array of segments names
@@ -84,6 +115,7 @@ function getFluVariantSeries(samples, segments,
             labelLayout: {
                 hideOverlap: hideOverlapMutation
             },
+            markLine: getSegmentsMarkLine(segmentsInterval),
             large: true,
             tooltip: {
                 trigger: variantSites ? "axis" : "none"

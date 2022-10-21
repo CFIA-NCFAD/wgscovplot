@@ -141,7 +141,7 @@ function toTableHtml(headers, rows, classes) {
                 "<tr>" +
                 join(
                     map(xs, function (x, i) {
-                        return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + x + "</td>";
+                        return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + "<samp>"+x+"</samp>" + "</td>";
                     }),
                     ""
                 ) +
@@ -154,4 +154,34 @@ function toTableHtml(headers, rows, classes) {
     return out;
 }
 
-export {toTableHtml, getVariantComparison, getCoverageStatComparison};
+/**
+ *
+ * @param {Array<number>} depths
+ * @param {number} threshold
+ * @returns The regions in which depth < threshold
+ */
+function getCoordsInterval(depths, threshold) {
+    let coords = [];
+    let foundInterval = false;
+    let firstCoord, lastCoord;
+    let count = 0;
+    for (let i = 0; i < depths.length; i++) {
+        if (depths[i] < threshold) {
+            firstCoord = i - count;
+            count += 1;
+            foundInterval = true;
+            if (i === depths.length - 1) {
+                coords.push([firstCoord + 1, firstCoord + count]); // pos in index 1
+            }
+        } else {
+            if (foundInterval === true) {
+                coords.push([firstCoord + 1, firstCoord + count]); // pos in index 1
+            }
+            foundInterval = false;
+            count = 0;
+        }
+    }
+    return coords;
+}
+
+export {toTableHtml, getVariantComparison, getCoverageStatComparison, getCoordsInterval};

@@ -79,7 +79,7 @@ function getCoverageChartOption(geneAmpliconFeatureData, regionAmpliconDepthData
         yAxis: getYAxes(samples, "log", yAxisMax, geneFeature, amplicon),
         // Render 1. Coverage depth; 2. Variants; 3 Amplicon Bar Plot; 4. Gene Feature
         series: [
-            ...getDepthSeries(samples, [], {}, [], nonVariantSites),
+            ...getDepthSeries(samples, [], depths, lowCoverageThreshold, [], nonVariantSites),
             ...getVariantsSeries(variants, depths, refSeq, variantSites, showMutation, hideOverlapMutation),
             ...getRegionAmpliconDepthSeries(samples, regionAmpliconDepthData, amplicon),
             ...getGeneFeatureSeries(geneAmpliconFeatureData, samples.length, geneFeature, amplicon)
