@@ -25,10 +25,10 @@ function getSegmentsMarkLine(segmentsInterval) {
             show: false,
         },
         lineStyle: {
-            color: "#000",
+            color: "#d90a0a",
             width: 1,
-            type: "dashed",
-            opacity: 0.2
+            type: "dotted",
+            opacity: 0.4
         },
         data: data
     };

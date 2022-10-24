@@ -7,13 +7,13 @@ function getToolbox() {
     toolBox = {
         show: "true",
         feature: {
-            dataView: {
-                readOnly: false,
-            },
-            restore: {},
             saveAsImage: {
                 name: "wgscovplot",
             },
+            restore: {},
+            dataView: {
+                readOnly: false,
+            }
         },
     };
     return toolBox;

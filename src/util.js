@@ -163,7 +163,7 @@ function toTableHtml(headers, rows, classes) {
 function getCoordsInterval(depths, threshold) {
     let coords = [];
     let foundInterval = false;
-    let firstCoord, lastCoord;
+    let firstCoord;
     let count = 0;
     for (let i = 0; i < depths.length; i++) {
         if (depths[i] < threshold) {
