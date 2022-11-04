@@ -436,7 +436,7 @@ function initWgscovplotRenderEnv() {
         let gridOption = chart.getOption().grid;
         let seriesOption = chart.getOption().series;
         let scaleType = chart.getOption().yAxis[0].type;
-        //let yAxisMax = chart.getOption().yAxis[0].max;
+        //let yAxisMax = chart.chartOptions().yAxis[0].max;
         let dataZoomOption = chart.getOption().dataZoom;
         let tooltipOption = chart.getOption().tooltip;
         let lowCoverageRegion = document.getElementById("toggle-low-coverage-regions").checked;

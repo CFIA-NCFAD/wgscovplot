@@ -1,18 +1,40 @@
 import logging
 import re
 from collections import defaultdict
+from itertools import product
 from pathlib import Path
 from typing import Union, List, Optional, Mapping, Callable
 
+import markdown
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
+NT_MAP = {
+    'A': ['A'],
+    'C': ['C'],
+    'G': ['G'],
+    'T': ['T'],
+    'R': ['A', 'G'],
+    'Y': ['C', 'T'],
+    'S': ['G', 'C'],
+    'W': ['A', 'T'],
+    'K': ['G', 'T'],
+    'M': ['A', 'C'],
+    'B': ['C', 'G', 'T'],
+    'D': ['A', 'G', 'T'],
+    'H': ['A', 'C', 'T'],
+    'V': ['A', 'C', 'G'],
+    'N': ['A', 'C', 'G', 'T'],
+}
 
-def find_file_for_each_sample(basedir: Path,
-                              glob_patterns: List[str],
-                              sample_name_cleanup: Optional[List[Union[str, re.Pattern]]] = None,
-                              single_entry_selector_func: Optional[Callable] = None) -> Mapping[str, Path]:
+
+def find_file_for_each_sample(
+        basedir: Path,
+        glob_patterns: List[str],
+        sample_name_cleanup: Optional[List[Union[str, re.Pattern]]] = None,
+        single_entry_selector_func: Optional[Callable] = None
+) -> Mapping[str, Path]:
     sample_files = defaultdict(list)
     for glob_pattern in glob_patterns:
         for p in basedir.glob(glob_pattern):
@@ -121,3 +143,23 @@ def try_parse_number(s: str) -> Union[int, float, List[float], List[int], str]:
     except ValueError:
         pass
     return s
+
+
+def readme_to_html() -> str:
+    """Read README.md Markdown to convert to HTML"""
+    # Read README.md
+    dirpath = Path(__file__).resolve().parent.parent
+    readme = dirpath / 'README.md'
+    with open(readme, "r", encoding="utf-8") as input_file:
+        text = input_file.read()
+    return markdown.markdown(
+        text, extensions=['tables', 'nl2br', 'extra', 'md_in_html']
+    )
+
+
+def expand_degenerate_bases(seq: str) -> List[str]:
+    return list(map("".join, product(*map(NT_MAP.get, seq))))
+
+
+def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
+    return start1 < start2 < end1 or start1 < end2 < end1

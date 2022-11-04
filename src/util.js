@@ -1,13 +1,10 @@
-import {defaultTo} from "lodash/util";
-import {genomeCoverage, meanCoverage, medianCoverage} from "./coverageStat";
-import {find, map} from "lodash/collection";
+import {map} from "lodash/collection";
 import {join} from "lodash/array";
 
 /**
  * Define properties for gene/amplicon feature plot which is in the last index of grid
- * @type {max_grid_height: number, rec_items_height: number, grid_height: string}
  */
-export const geneFeaturePlotProperties = {
+export const FEATURE_PLOT_PROPS = {
     "max_grid_height": 80,
     "rec_items_height": 12,
     "grid_height": "15%"
@@ -15,9 +12,8 @@ export const geneFeaturePlotProperties = {
 
 /**
  * Dict of color for coloring variant position in the chart
- * @type {Dict[]}
  */
-export const ntColor = {
+export const NT_COLOURS = {
     "A": "#ea5e48",
     "C": "#eaca48",
     "G": "#6ad82b",
@@ -27,7 +23,7 @@ export const ntColor = {
 /**
  * Define color for flu gene segments
  */
-export const segmentsColor = {
+export const FLU_SEGMENT_COLOURS = {
     "1_PB2": "#A6CEE3",
     "2_PB1": "#1F78B4",
     "3_PA": "#B2DF8A",
@@ -39,98 +35,22 @@ export const segmentsColor = {
 };
 
 /**
- * Function get Coverage Stat comparison across samples
- * @param {Array<string>} samples - An array of samples name
- * @param {Array<Array<number>>} depths - Array of depths
- * @param {number} start - start position
- * @param {number} end - end position
- * @param {number} low - low coverage threshold
- * @param {string} currentSample - selected sample
- * @param {number} position - Selected position
- * @returns <Array<Array<string>> - Coverage Stat comparison across samples
- */
-function getCoverageStatComparison(samples, depths, start, end, low, currentSample, position) {
-    let rows = [];
-    let tableHeader = ["Sample", "Depth at position " + position.toLocaleString(), "Range", "Mean Coverage (X)", "Median Coverage (X)", `Genome Coverage (>=${low}X) (%)`];
-    rows.push(...[tableHeader]);
-    for (let [i, sample] of samples.entries()) {
-        let meanCov = meanCoverage(depths[i], start, end).toFixed(2);
-        let medianCov = medianCoverage(depths[i], start, end).toFixed(2);
-        let genomeCov = genomeCoverage(depths[i], start, end, low).toFixed(2);
-        let coverageDepth = depths[i][position - 1];
-        let row = [sample, coverageDepth.toLocaleString(), start.toLocaleString() + " - " + end.toLocaleString(), meanCov, medianCov, genomeCov];
-        rows.push(...[row]);
-    }
-    return rows;
-}
-
-/**
- * Function get Variant Comparison across samples
- * @param {Array<string>} samples - An array of samples name
- * @param {Array<Array<number>>} depths - Array of depths
- * @param {Array<Array<Object>>} variants - The dict of variants data
- * @param {number} position - Variant position
- * @param {string} currentSample - selected sample
- * @returns <Array<Array<string>> - Variant comparison across samples
- */
-function getVariantComparison(samples, variants, depths, position, currentSample = "") {
-    let rows = [];
-    let variantArr = [];
-    for (let [i, element] of variants.entries()) {
-        if (element.length) {
-            let isPOSExist = false;
-            let foundObj = find(Object.values(element), {"POS": position});
-            if (foundObj !== undefined && foundObj !== null) {
-                isPOSExist = true;
-                variantArr.push(foundObj);
-            }
-            if (!isPOSExist) {
-                variantArr.push({"sample": samples[i], "POS": position}); // sample has variant infor but no variant infor at this position
-            }
-        } else {
-            variantArr.push({"sample": samples[i], "POS": position}); // sample has no variant information
-        }
-    }
-    var unionKeys = [...new Set(variantArr.reduce((r, e) => [...r, ...Object.keys(e)], []))];
-    unionKeys.push("Coverage Depth"); // Add Coverage Depth row
-    unionKeys.forEach(key => {
-        let row = [];
-        row.push(key);
-        if (key === "Coverage Depth") {
-            for (let i = 0; i < depths.length; i++) {
-                row.push(depths[i][position - 1].toLocaleString());
-            }
-        } else {
-            variantArr.forEach(element => {
-                if (element[key] !== undefined && element[key] !== null) {
-                    if (key === "sample" && element[key] === currentSample) {// Bold highlight selected sample
-                        row.push(element[key].bold());
-                    } else {
-                        row.push(element[key]);
-                    }
-                } else {
-                    row.push("");
-                }
-            });
-        }
-        rows.push(...[row]);
-    });
-    return rows;
-}
-
-/**
  * Write tooltip information to HTML table
  * @param {string[]} headers - Header of table
  * @param {Array<Array<string>>} rows - Rows of table
  * @param {string} classes - Classes defined for table
  * @returns {string}
  */
-function toTableHtml(headers, rows, classes) {
-    let classTable = defaultTo(classes, "table");
-    let out = '<table class="' + classTable + '"><thead>';
+function toTableHtml(
+    {
+        headers,
+        rows,
+        classes = "table small",
+    }) {
+    let out = `<table class="${classes}"><thead>`;
     out += join(
         map(headers, function (x) {
-            return "<strong>" + x + "</strong>";
+            return `<strong>${x}</strong>`;
         }),
         ""
     );
@@ -141,7 +61,7 @@ function toTableHtml(headers, rows, classes) {
                 "<tr>" +
                 join(
                     map(xs, function (x, i) {
-                        return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + "<samp>"+x+"</samp>" + "</td>";
+                        return `<td ${i === 0 ? "scope=\"row\"" : ""}><samp>${x}</samp></td>`;
                     }),
                     ""
                 ) +
@@ -158,12 +78,12 @@ function toTableHtml(headers, rows, classes) {
  *
  * @param {Array<number>} depths
  * @param {number} threshold
- * @returns The regions in which depth < threshold
+ * @returns {{start: number, end: number}[]} The regions in which depth < threshold
  */
 function getCoordsInterval(depths, threshold) {
     let coords = [];
     let foundInterval = false;
-    let firstCoord, lastCoord;
+    let firstCoord = 0;
     let count = 0;
     for (let i = 0; i < depths.length; i++) {
         if (depths[i] < threshold) {
@@ -171,11 +91,15 @@ function getCoordsInterval(depths, threshold) {
             count += 1;
             foundInterval = true;
             if (i === depths.length - 1) {
-                coords.push([firstCoord + 1, firstCoord + count]); // pos in index 1
+                let end = firstCoord + count;
+                let start = firstCoord + 1;
+                coords.push({start, end}); // pos in index 1
             }
         } else {
-            if (foundInterval === true) {
-                coords.push([firstCoord + 1, firstCoord + count]); // pos in index 1
+            if (foundInterval) {
+                let start = firstCoord + 1;
+                let end = firstCoord + count;
+                coords.push({start, end}); // pos in index 1
             }
             foundInterval = false;
             count = 0;
@@ -184,4 +108,4 @@ function getCoordsInterval(depths, threshold) {
     return coords;
 }
 
-export {toTableHtml, getVariantComparison, getCoverageStatComparison, getCoordsInterval};
+export {toTableHtml, getCoordsInterval};

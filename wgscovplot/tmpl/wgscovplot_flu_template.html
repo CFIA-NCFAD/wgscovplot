@@ -119,14 +119,13 @@
         document.addEventListener("DOMContentLoaded", function(event) {
             let $chart = document.getElementById("chart");
             window.$chart = $chart;
-            let chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
-            window.chart = chart;
+            window.chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
             updateChartDivSize();
             setTimeout(updateChartDivSize, 1000);
             initWgscovplotRenderEnv();
         })
         window.addEventListener("resize", updateChartDivSize);
-        initWgscovplotEvent();
+        initEventHandlers();
         document.getElementById("control-menu-hider").addEventListener('transitionend', function (event) {
             updateChartDivSize();
         });

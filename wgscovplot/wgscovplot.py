@@ -1,126 +1,104 @@
 import logging
-import markdown
 from pathlib import Path
 
-from Bio import SeqIO, Entrez
+from Bio import Entrez
+
+import wgscovplot.flu
+import wgscovplot.tools.mosdepth.flu as flu
+import wgscovplot.util as util
+from wgscovplot.features import build_echarts_features_array
+from wgscovplot.io import write_html_coverage_plot_segment_virus, write_html_coverage_plot, get_ref_seq_and_annotation, \
+    TemplateHTML
+from wgscovplot.db import TemplateDB
+from wgscovplot.rtpcr import flu_rtpcr_matches
+from wgscovplot.stats import cov_stats_to_html_table
 from wgscovplot.tools import variants, mosdepth
-from wgscovplot.prepare_data import get_gene_amplicon_feature, write_html_coverage_plot, \
-    write_html_coverage_plot_segment_virus, stat_info, get_primer_data, parse_gene_feature
 
 logger = logging.getLogger(__name__)
 Entrez.email = "wgscovplot@github.com"
 
-REF_PATTERN = '**/genome/snpeff_db/**/*.fa*'
-GENE_FEATURE_PATTERN = '**/genome/snpeff_db/**/*.gff'
 
-
-def run(input_dir: Path, low_coverage_threshold: int, amplicon: bool,
-        gene_feature: bool, segment_virus: bool, primer_seq_path: Path,
-        edit_distance: int, dev: bool, output_html: Path) -> None:
-    # Read README.md
-    dirpath = Path(__file__).resolve().parent.parent
-    readme = dirpath/'README.md'
-    with open(readme, "r", encoding="utf-8") as input_file:
-        text = input_file.read()
-    about_html = markdown.markdown(text, extensions=['tables', 'nl2br', 'extra', 'md_in_html'])
-
-    if segment_virus:
+def run(
+        input_dir: Path,
+        low_coverage_threshold: int,
+        show_amplicon: bool,
+        show_gene_features: bool,
+        is_segmented: bool,
+        primer_seq_path: Path,
+        edit_distance: int,
+        dev: bool,
+        output_html: Path
+) -> None:
+    if is_segmented:
         # Get list of samples name
-        samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
+        samples = flu.get_samples_name(input_dir, is_segmented)
         # Find files sample.topsegments.csv for each sample
-        sample_top_references = mosdepth.get_sample_top_references(input_dir)
+        sample_top_references = wgscovplot.flu.get_sample_top_references(input_dir)
         # Get list of segments
-        segments_name = mosdepth.get_segments_name(sample_top_references)
+        segments = flu.get_segments(sample_top_references)
         # Get reference id for each segment of each sample
-        ref_id = mosdepth.get_segments_ref_id(segments_name, sample_top_references)
+        ref_id = flu.get_segments_ref_id(sample_top_references)
         # Get reference seq for each segment of each sample
-        ref_seq = mosdepth.get_segments_ref_seq(input_dir, segments_name, sample_top_references)
+        ref_seq = flu.get_segments_ref_seq(input_dir, sample_top_references)
         # Get coverage depth for each segment of each sample
-        depths_data = mosdepth.get_segments_depth(input_dir, segments_name, sample_top_references)
+        depths = flu.get_segments_depth(input_dir, sample_top_references)
         # Get variant info for each segment of each sample
-        variants_data = variants.get_segments_variants(input_dir, segments_name, sample_top_references)
+        variants_data = variants.get_segments_variants(
+            input_dir,
+            sample_top_references
+        )
         # Get summary of coverage statistics
-        summary_info = mosdepth.get_flu_info(input_dir, samples_name, segments_name,
-                                             sample_top_references, low_coverage_threshold)
+        cov_html_table = flu.get_flu_info(
+            basedir=input_dir,
+            samples=samples,
+            segments=segments,
+            sample_top_references=sample_top_references,
+            low_coverage_threshold=low_coverage_threshold
+        )
         # Get low coverage regions
-        low_coverage_regions = mosdepth.get_low_coverage_regions(input_dir, segments_name, sample_top_references,
-                                                                 low_coverage_threshold)
+        low_coverage_regions = flu.get_low_coverage_regions(input_dir, segments, sample_top_references,
+                                                            low_coverage_threshold)
         primer_data = {}
         if primer_seq_path is not None:
-            primer_data = get_primer_data(primer_seq_path, edit_distance, ref_seq)
-        write_html_coverage_plot_segment_virus(samples_name=samples_name,
-                                               segments_name=segments_name,
-                                               depths_data=depths_data,
+            # TODO: sample consensus sequences need to be matched against NOT ref seqs!!!
+            primer_data = flu_rtpcr_matches(primer_seq_path, ref_seq, edit_distance)
+        write_html_coverage_plot_segment_virus(samples_name=samples,
+                                               segments_name=segments,
+                                               depths_data=depths,
                                                variants_data=variants_data,
                                                ref_seq=ref_seq,
                                                ref_id=ref_id,
-                                               summary_info=summary_info,
+                                               summary_info=cov_html_table,
                                                low_coverage_regions=low_coverage_regions,
                                                low_coverage_threshold=low_coverage_threshold,
                                                primer_data=primer_data,
-                                               about_html=about_html,
+                                               about_html=util.readme_to_html(),
                                                output_html=output_html)
     else:
-        ref_fasta_path = None
-        gene_feature_handle = None
-        if list(input_dir.glob(REF_PATTERN)):
-            ref_fasta_path = list(input_dir.glob(REF_PATTERN))[0]
-        if list(input_dir.glob(GENE_FEATURE_PATTERN)):
-            gene_feature_handle = list(input_dir.glob(GENE_FEATURE_PATTERN))[0]
-        # First check if reference fasta and gene feature GFF is available or not
-        if ref_fasta_path is not None and gene_feature_handle is not None:
-            with open(ref_fasta_path) as fh:
-                for name, seq in SeqIO.FastaIO.SimpleFastaParser(fh):
-                    ref_seq = seq
-        else:  # Automatically retrieve reference and gene feature file from NCBI
-            ref_id = mosdepth.get_refseq_id(input_dir)
-            try:
-                logger.info(
-                    f'Fetching reference sequence with accession_id "{ref_id}" from NCBI database')
-                with Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text",
-                                   id=ref_id) as fasta_handle:
-                    for name, seq in SeqIO.FastaIO.SimpleFastaParser(fasta_handle):
-                        ref_seq = seq
-            except Exception as e:
-                logger.error(e, exc_info=True)
-                logger.error(f'Error! can not fetch reference fast file with ID "{ref_id}"')
-                exit(1)
-            try:
-                logger.info(f'Fetching Genbank file with accession_id "{ref_id}" from NCBI database')
-                gene_feature_handle = Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ref_id)
-            except Exception as e:
-                logger.error(e, exc_info=True)
-                logger.error(f'Error! can not fetch genbank file with ID "{ref_id}"')
+        ref_seq, gene_features = get_ref_seq_and_annotation(input_dir, get_gene_features=show_gene_features)
         # Get amplicon data
-        if amplicon:
-            region_amplicon_depth_data = mosdepth.get_depth_amplicon(input_dir)
+        if show_amplicon:
+            amplicon_depths = mosdepth.get_amplicon_depths(input_dir)
             region_amplicon_data = mosdepth.get_region_amplicon(input_dir)
-            if not (region_amplicon_depth_data and region_amplicon_data):
-                logging.warning('No amplicon data found')
-                amplicon = False
-                region_amplicon_depth_data = {}
+            if not (amplicon_depths and region_amplicon_data):
+                logging.warning(f'No Mosdepth region BED file with amplicon data found in "{input_dir}"')
+                show_amplicon = False
+                amplicon_depths = {}
                 region_amplicon_data = {}
         else:
-            region_amplicon_depth_data = {}
+            amplicon_depths = {}
             region_amplicon_data = {}
-        # Get gene/amplicon feature
-        gene_amplicon_feature_data = get_gene_amplicon_feature(gene_feature,
-                                                               parse_gene_feature(gene_feature_handle),
-                                                               region_amplicon_data)
-
-        # Get gene feature name, this is used for larger viral genome, use select2 to allow quick navigation to feature
-        # of interest
-        gene_feature_name = []
-        if len(gene_amplicon_feature_data):
-            for feature in gene_amplicon_feature_data:
-                gene_feature_name.append(feature["name"])
+        echarts_features = build_echarts_features_array(
+            gene_features,
+            region_amplicon_data
+        )
 
         # Get the list of samples name
-        samples_name = mosdepth.get_samples_name(input_dir, segment_virus)
+        samples = wgscovplot.tools.mosdepth.flu.get_samples_name(input_dir, is_segmented)
 
         # Get coverage statistics information for all samples
-        mosdepth_info = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
-        summary_info = stat_info(mosdepth_info, low_coverage_threshold=low_coverage_threshold)
+        mosdepth_info, sample_depths = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
+        cov_html_table = cov_stats_to_html_table(mosdepth_info)
 
         # Get Variant data
         samples_variants_info = variants.get_info(input_dir)
@@ -128,26 +106,30 @@ def run(input_dir: Path, low_coverage_threshold: int, amplicon: bool,
         for sample, df_variants in samples_variants_info.items():
             variants_data[sample] = df_variants.to_dict(orient='records')
 
-        # Get Depths data
-        depths_data = mosdepth.get_depth(input_dir)
+        # encode sample coverage depth arrays in base64 for better compression vs dumping a regular list to JSON
+        depths = mosdepth.get_base64_encoded_depth_arrays(sample_depths)
+        # depths = {sample: ds.astype(int).tolist() for sample, ds in sample_depths.items()}
 
-        # Get Coverage stat for summary information
-        coverage_stat = {}
-        for sample, coverage_info in mosdepth_info.items():
-            coverage_stat[sample] = coverage_info.dict()
-
+        db = TemplateDB(
+            samples=samples,
+            ref_seq=ref_seq,
+            depths=depths,
+            amplicon_depths=amplicon_depths,
+            mosdepth_info=mosdepth_info,
+            variants=variants_data,
+            show_amplicon=show_amplicon,
+            show_gene_features=show_gene_features,
+            low_coverage_threshold=low_coverage_threshold,
+            echart_features=echarts_features
+        )
+        html = TemplateHTML(
+            about_html=util.readme_to_html(),
+            cov_stats_html=cov_html_table,
+        )
         # Write coverage plot to HTML file
-        write_html_coverage_plot(samples_name=samples_name,
-                                 depths_data=depths_data,
-                                 variants_data=variants_data,
-                                 ref_seq=ref_seq,
-                                 summary_info=summary_info,
-                                 gene_amplicon_feature_data=gene_amplicon_feature_data,
-                                 gene_feature_name=gene_feature_name,
-                                 about_html=about_html,
-                                 output_html=output_html,
-                                 region_amplicon_depth_data=region_amplicon_depth_data,
-                                 amplicon=amplicon,
-                                 gene_feature=gene_feature,
-                                 low_coverage_threshold=low_coverage_threshold,
-                                 dev=dev)
+        write_html_coverage_plot(
+            output_html=output_html,
+            db=db,
+            html=html,
+            dev=dev,
+        )

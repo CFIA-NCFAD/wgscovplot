@@ -2,12 +2,13 @@
 import logging
 import os
 import re
+from collections import defaultdict
 from enum import Enum
 from operator import itemgetter
 from pathlib import Path
 from typing import Dict, Tuple, List, Optional, Iterable, Union
-from Bio import SeqIO
-from wgscovplot.tools import mosdepth
+
+from wgscovplot.flu import SampleSegmentRef
 
 import pandas as pd
 from pydantic import BaseModel
@@ -524,41 +525,40 @@ def parse_vcf_info(s: str) -> dict:
     return out
 
 
-def parse_clair3_vcf(df: pd.DataFrame, sample: str, segment: str, ref_seq_len: int) -> Optional[pd.DataFrame]:
+def parse_clair3_vcf(
+        df: pd.DataFrame,
+        sample: str,
+        segment: str,
+        ref_seq_len: int
+) -> List[Dict[str, str]]:
     if df.empty:
         return []
-    df_clair3_info = df
-    df_clair3_info['Sample'] = sample
-    df_clair3_info['Segment'] = segment
-    df_clair3_info['Segment Length'] = ref_seq_len
-    df_clair3_info['ALT_FREQ'] = df_clair3_info['SAMPLE'].apply(lambda x: x.split(':')[-1])
-    df_clair3_info.drop(columns=['ID', 'INFO', 'QUAL', 'FILTER', 'INFO', 'FORMAT', 'SAMPLE'], inplace=True)
-    df_clair3_info = df_clair3_info.reindex(columns=['Sample', 'Segment', 'Segment Length',
+    df['Sample'] = sample
+    df['Segment'] = segment
+    df['Segment Length'] = ref_seq_len
+    # TODO: verify that allele frequency/fraction (AF) is being parsed correctly
+    df['ALT_FREQ'] = df['SAMPLE'].apply(lambda x: x.split(':')[-1])
+    df.drop(columns=['ID', 'INFO', 'QUAL', 'FILTER', 'INFO', 'FORMAT', 'SAMPLE'], inplace=True)
+    df = df.reindex(columns=['Sample', 'Segment', 'Segment Length',
                                                      'CHROM', 'POS', 'REF', 'ALT', 'ALT_FREQ'])
-    df_clair3_info.rename(columns={'CHROM': 'REF_ID', 'ALT': 'ALT_SEQ', 'REF': 'REF_SEQ'}, inplace=True)
-    return df_clair3_info.to_dict(orient='records')
+    df.rename(columns={'CHROM': 'REF_ID', 'ALT': 'ALT_SEQ', 'REF': 'REF_SEQ'}, inplace=True)
+    return df.to_dict(orient='records')
 
 
-def get_segments_variants(basedir: Path, segments_name: List,
-                          sample_top_references: Dict[str, Path]) -> Dict[str, Dict[str, Dict]]:
-    out = {}
-    for sample, top_references_path in sample_top_references.items():
-        out[sample] = {}
-        df = mosdepth.read_top_references_table(top_references_path)
-        for segment in segments_name:
-            out[sample][segment] = {}
-        for row in df.itertuples():
-            vcf_files = basedir.glob(f'**/variants/**/'
-                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.no_frameshifts.vcf')
-            ref_files = basedir.glob(f'**/reference_sequences/**/'
-                                     f'{row.sample}.Segment_{row.segment}.{row.ncbi_id}.*')
-            ref_seq_len = 0
-            for p1 in ref_files:
-                for record in SeqIO.parse(open(p1), 'fasta'):
-                    ref_seq_len = len(record.seq)
-            for p2 in vcf_files:
-                variants_caller, df_vcf = read_vcf(p2)
-                out[sample][row.segment] = parse_clair3_vcf(df_vcf, sample, row.segment, ref_seq_len)
+def get_segments_variants(
+        basedir: Path,
+        sample_top_references: List[SampleSegmentRef],
+) -> Dict[str, Dict[str, List[Dict[str, str]]]]:
+    out = defaultdict(dict)
+    for ssr in sample_top_references:
+        segment = ssr.segment
+        ref_id = ssr.ref_id
+        sample = ssr.sample
+        vcf_files = basedir.glob(f'**/variants/**/'
+                                 f'{sample}.Segment_{segment}.{ref_id}.no_frameshifts.vcf')
+        for vcf in vcf_files:
+            variants_caller, df_vcf = read_vcf(vcf)
+            out[sample][str(segment)] = parse_clair3_vcf(df_vcf, sample, segment, len(ssr.ref_seq))
     return out
 
 

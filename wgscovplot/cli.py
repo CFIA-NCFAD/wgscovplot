@@ -11,7 +11,8 @@ from wgscovplot.wgscovplot import run
 from wgscovplot import __version__
 
 app = typer.Typer()
-
+logger = logging.getLogger(__name__)
+VERSION = f"wgscovplot version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
 
 def version_callback(value: bool):
     if value:
@@ -27,37 +28,52 @@ def check_dir_exists_callback(path: Path) -> Path:
 
 
 @app.command(
-    epilog=f"wgscovplot version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
+    epilog=VERSION
 )
 def main(
-        input_dir: Path = typer.Argument(..., callback=check_dir_exists_callback, help="Nextflow workflow results "
-                                                                                       "directory"),
-        output_html: Path = typer.Option("wgscovplot.html", help="Output File of Interactive HTML Coverage Plot"),
-        primer_seq_path: Path = typer.Option(None, help="Path to primer sequences (Fasta)"),
-        low_coverage_threshold: int = typer.Option(default=10, help="Low Coverage Threshold"),
-        amplicon: bool = typer.Option(default=True, help="Plot Amplicon Coverage Depth"),
-        gene_feature: bool = typer.Option(default=True, help="Plot Gene Features"),
-        segment_virus: bool = typer.Option(default=False, help="Generate Coverage plot for segments virus"),
-        dev: bool = typer.Option(default=False, help="Run tool with debug mode"),
-        edit_distance: int = typer.Option(default=0, help="Maximum k errors allowed for primer sequence alignment ("
-                                                          "use this option when --primer-seq provided"),
+        input_dir: Path = typer.Argument(...,
+                                         callback=check_dir_exists_callback,
+                                         help="Directory containing Mosdepth and variant calling results from "
+                                              "sequence analysis. For example, the output directory from execution of "
+                                              "the nf-core/viralrecon or CFIA-NCFAD/nf-flu Nextflow workflow"),
+        output_html: Path = typer.Option("wgscovplot.html", help="wgscovplot HTML output file"),
+        primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
+        low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
+        show_amplicons: bool = typer.Option(default=True,
+                                            help="Show amplicon positions and coverage along with sequencing coverage "
+                                                 "plots."),
+        show_gene_features: bool = typer.Option(default=True,
+                                                help="Show genetic features such as CDS, genes, 5'/3'UTR along with "
+                                                     "sequencing coverage plots."),
+        is_segmented: bool = typer.Option(default=False,
+                                          help="Output coverage plots for segmented viruses like Influenza A virus."),
+        dev: bool = typer.Option(default=False, help="Run wgscovplot in development output mode."),
+        max_primer_mismatches: int = typer.Option(default=0,
+                                                  help="The maximum differences or 'edits' allowed between real-time "
+                                                       "PCR primer/probe sequences and the sample sequences."),
         verbose: bool = typer.Option(default=False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(None,
                                                callback=version_callback,
                                                help=f'Print {"wgscovplot version"} and exit')
 ):
+    init_logging(verbose)
+    logger.info(VERSION)
+    logger.info(f'{input_dir=}')
+    logger.info(f'{output_html=}')
+    run(input_dir, low_coverage_threshold, show_amplicons, show_gene_features, is_segmented, primers_fasta,
+        max_primer_mismatches, dev,
+        output_html)
+
+
+def init_logging(verbose):
     from rich.traceback import install
-
     install(show_locals=True)
-
     logging.basicConfig(
         format="%(message)s",
         datefmt="[%Y-%m-%d %X]",
         level=logging.INFO if not verbose else logging.DEBUG,
         handlers=[RichHandler(rich_tracebacks=True, tracebacks_show_locals=True)],
     )
-    run(input_dir, low_coverage_threshold, amplicon, gene_feature, segment_virus, primer_seq_path, edit_distance, dev,
-        output_html)
 
 
 if __name__ == "__main__":
