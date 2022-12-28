@@ -84,7 +84,9 @@ function updateCoverageChartOption({db, elements}) {
     updateOption.yAxis = updateYAxisOption({yAxisOption: updateOption.yAxis, db});
 
     if (!isNil(db.amplicon_depths)) {
-        db.show_amplicons = elements.$toggleShowAmplicon.checked;
+        if (db.show_amplicons === true){
+            db.show_amplicons = elements.$toggleAmplicons.checked;
+        }
         for (let i = 0; i < seriesOption.length - 1; i++) {
             if (seriesOption[i].type === "custom") {
                 seriesOption[i].renderItem = getRegionAmpliconDepthRenderer(db.show_amplicons);
@@ -294,22 +296,22 @@ function initTooltipEventHandlers({db, elements}) {
     elements.$toggleTooltip.addEventListener("change", () => {
         db.tooltipEnabled = elements.$toggleTooltip.checked;
         db.tooltipTriggerOn = db.tooltipEnabled ? (elements.$toggleShowTooltipOnClick.checked ? "click" : "mousemove") : "none";
-        chart.setOption({
+        db.chart.setOption({
             tooltip: {triggerOn: db.tooltipTriggerOn},
         });
     });
 
     elements.$toggleFixedTooltipPosition.addEventListener("change", () => {
         db.fixedTooltipPosition = elements.$toggleFixedTooltipPosition.checked;
-        let tooltip = chart.getOption().tooltip;
+        let tooltip = db.chart.getOption().tooltip;
         tooltip[0].position = tooltipPosition(db.fixedTooltipPosition);
-        chart.setOption({tooltip});
+        db.chart.setOption({tooltip});
     });
 
     elements.$toggleShowTooltipOnClick.addEventListener("change", () => {
         db.tooltipEnabled = elements.$toggleTooltip.checked;
         db.tooltipTriggerOn = db.tooltipEnabled ? (elements.$toggleShowTooltipOnClick.checked ? "click" : "mousemove") : "none";
-        chart.setOption({
+        db.chart.setOption({
             tooltip: {triggerOn: db.tooltipTriggerOn}
         });
     });
@@ -405,6 +407,14 @@ function initEventHandlers({db, elements}) {
         width: "100%",
     });
 
+    elements.$selectedGeneFeatures.on("select2:select", (evt) => {
+        let element = evt.params.data.element;
+        let $element = $(element);
+        $element.detach();
+        elements.$selectedGeneFeatures.append($element);
+        elements.$selectedGeneFeatures.trigger("change");
+    });
+
     /**
      * Events for Axis Options
      */
@@ -480,14 +490,9 @@ function initEventHandlers({db, elements}) {
     }
 
 
-    /*
-    elements.$btnShowSelectedFeatures.addEventListener("click", () => {
+    elements.$btnShowSelectedGeneFeatures.addEventListener("click", () => {
         applyFeatureView({db, elements})
-    });
-    elements.$selectedGeneFeatures.on("change", function () {
-        elements.$selectedGeneFeatures.select2("data");
-    });
-     */
+    })
 
     $toggleShowVariantLabels.addEventListener("change", () => {
         let series = db.chart.getOption().series;
@@ -552,9 +557,9 @@ function initEventHandlers({db, elements}) {
 
     elements.$toggleDataZoomSlider.addEventListener("change", () => {
         db.showDataZoomSlider = elements.$toggleDataZoomSlider.checked;
-        let nGrids = chart.getOption().grid.length;
+        let nGrids = db.chart.getOption().grid.length;
         let xAxisIndex = [...Array(nGrids).keys()];
-        chart.setOption({
+        db.chart.setOption({
             dataZoom: [
                 {
                     type: "inside",
@@ -625,7 +630,7 @@ function initWgscovplotRenderEnv({db, elements}) {
     let chartOptions = chart.getOption();
     if (isNil(chartOptions)) {
         chart.setOption(getCoverageChartOption(db));
-        //variantHeatmap.setOption(getVariantHeatmapOption(db));
+        variantHeatmap.setOption(getVariantHeatmapOption(db));
     } else {
         let renderEnv = $renderEnv.value;
         let isChecked = $toggleDarkMode.checked;
@@ -685,7 +690,7 @@ function updateTooltipOption(
     db.fixedTooltipPosition = elements.$toggleFixedTooltipPosition.checked;
     tooltip[0].position = tooltipPosition(db.fixedTooltipPosition);
     tooltip[0].triggerOn = db.tooltipTriggerOn;
-    chart.setOption({tooltip, series});
+    db.chart.setOption({tooltip, series});
 }
 
 /**
@@ -726,10 +731,7 @@ function applyFeatureView({db, elements}) {
         echart_features,
         ref_seq,
     } = db;
-    const {
-        $select2Features,
-    } = elements;
-    let features = $select2Features.select2("data");
+    let features = elements.$selectedGeneFeatures.select2("data");
     let starts = [], ends = [];
     let minStart, maxEnd;
     features.forEach(({text: feature}) => {

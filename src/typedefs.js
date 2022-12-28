@@ -141,7 +141,7 @@
  * @property {HTMLInputElement} $toggleShowNonVariantSiteTooltips
  * @property {HTMLInputElement} $toggleShowLowCovRegions
  * @property {HTMLInputElement} $toggleFixedTooltipPosition
- * @property {HTMLButtonElement} $btnShowSelectedFeatures
+ * @property {HTMLButtonElement} $btnShowSelectedGeneFeatures
  * @property {HTMLInputElement} $toggleTooltipCovStats
  * @property {HTMLInputElement} $toggleShowTooltipOnClick
  * @property {HTMLInputElement} $toggleTooltipVariantComparison

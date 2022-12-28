@@ -152,7 +152,6 @@ function getVariantsSeries(db) {
         showVariantSiteTooltips = true,
         hideOverlappingVariantLabels = true,
     } = db;
-    console.log(showVariantLabels)
     let variantSeries = [];
     let i = 0;
     for (let sample of selectedSamples) {

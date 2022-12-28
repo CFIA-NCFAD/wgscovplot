@@ -375,7 +375,7 @@
                                     <option value={{feature_name.name}}>{{feature_name.name}}</option>
                                     {% endfor %}
                                 </select>
-                                <button class="btn btn-sm btn-outline-primary" onclick="applyFeatureView()">Apply
+                                <button class="btn btn-sm btn-outline-primary" id="show-selected-gene-feature">Apply
                                 </button>
                             </div>
                         </div>
@@ -440,7 +440,7 @@
     </div>
     <div class="tab-pane" id="summary-table" role="tabpanel">
         <div class="container-fluid">
-            {{ summary_info }}
+            {{ cov_stats_html }}
         </div>
     </div>
 </div>
