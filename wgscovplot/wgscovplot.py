@@ -121,6 +121,7 @@ def run(
             show_genes=show_gene_features,
             segment_virus=is_segmented,
             low_coverage_threshold=low_coverage_threshold,
+            max_depth=mosdepth.max_depth(sample_depths),
             echart_features=echarts_features
         )
         html = TemplateHTML(

@@ -97,11 +97,11 @@ def build_echarts_features_array(
             # TODO: implement better logic for getting primer pool since not all schemes will have the same suffix format
             primer_pool = int(feature.name.split('_')[-1])
             if primer_pool % 2 == 0:
-                level = fp.amplicon_pool2_level + fp.amplicon_offset if gene_features is not None else fp.amplicon_pool2_level
-                amplicon_color = AmpliconColour.pool1
-            else:
                 level = fp.amplicon_pool1_level + fp.amplicon_offset if gene_features is not None else fp.amplicon_pool1_level
                 amplicon_color = AmpliconColour.pool2
+            else:
+                level = fp.amplicon_pool2_level + fp.amplicon_offset if gene_features is not None else fp.amplicon_pool2_level
+                amplicon_color = AmpliconColour.pool1
             out.append(
                 EChartsFeature(name=feature.name,
                                value=EChartsFeatureValue(

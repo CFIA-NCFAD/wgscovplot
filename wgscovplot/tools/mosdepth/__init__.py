@@ -1,5 +1,6 @@
 import base64
 import logging
+import math
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -121,6 +122,14 @@ def get_refseq_id(basedir: Path) -> str:
         refseq_name = df['genome'][0]
         break
     return refseq_name
+
+
+def max_depth(depth_data: Dict[str, List]) -> int:  # get max_depth among samples and set for YMax
+    max_value = 0
+    for key, values in depth_data.items():
+        if max_value <= max(values):
+            max_value = max(values)
+    return math.ceil(max_value * 1.5)
 
 
 def get_base64_encoded_depth_arrays(sample_depths: Dict[str, np.ndarray]) -> Dict[str, List]:

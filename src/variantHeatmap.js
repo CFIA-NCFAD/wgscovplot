@@ -3,14 +3,14 @@ import {filter, find, isEmpty, isNil, map, orderBy, union, uniq} from "lodash";
 
 /**
  * Get tooltip for variant heatmap
- * @param {Array<string>} samples - An array of samples name
+ * @param {Array<string>} selectedSamples - An array of samples name
  * @param {Array<string>} mutations - Array of mutation name
  * @param {SampleVariantCalls} variants - The object of variants data
  * @returns {Object}
  */
 function getTooltipHeatmap(
     {
-        samples,
+        dataSamples,
         mutations,
         variants,
     }) {
@@ -27,7 +27,7 @@ function getTooltipHeatmap(
             // values may be undefined when mouse move and zoom/in out heat map (causing error log)
             if (!isNil(value)) {
                 mutation = mutations[value[0]];
-                sample = samples[value[1]];
+                sample = dataSamples[value[1]];
             }
             let rows = [];
             let sampleVariants = variants[sample];
@@ -55,7 +55,7 @@ function getTooltipHeatmap(
 /**
  * Prepare data for Variant heatmap
  * @param {Array<string>} samples - An array of samples name
- * @param {SampleVariantCalls} variants - The object of variants data
+ * @param {SampleVariantCalls|SampleSegmentVariantCalls} variants - The object of variants data
  * @returns {[string[], Array<[number, number, number]>]} - Tuple of mutation names array and array of mutation AF values for heatmap
  */
 function getMutationMatrix(samples, variants) {
@@ -64,20 +64,21 @@ function getMutationMatrix(samples, variants) {
         let variantCalls = variants[sample];
         sampleVariants = union(sampleVariants, filter(variantCalls, "mutation"));
     });
-    sampleVariants = orderBy(sampleVariants, "POS", "asc");
+    sampleVariants = orderBy(sampleVariants, (obj) => parseInt(obj.POS));
     let mutations = uniq(map(sampleVariants, "mutation"));
     let altFreqMatrix = [];
     for (let i = 0; i < samples.length; i++) {
         let sample = samples[i];
         for (let j = 0; j < mutations.length; j++) {
             let mutation = mutations[j];
-            let foundObj = find(sampleVariants, {sample, mutation});
+            let foundObj = find(sampleVariants, {"sample":sample, "mutation":mutation});
             altFreqMatrix.push([
                 j,
                 samples.length - 1 - i,
-                !isNil(foundObj) ? foundObj.ALT_FREQ : 0
+                !isNil(foundObj) ? parseFloat(foundObj.ALT_FREQ) : 0
             ]);
         }
+
     }
     return [mutations, altFreqMatrix];
 }
@@ -105,11 +106,11 @@ function getMutationMatrix(samples, variants) {
  */
 function getVariantHeatmapOption(db) {
     const {
-        samples,
+        selectedSamples,
         variants,
     } = db;
-    let {mutations, matrix} = getMutationMatrix(samples, variants);
-    let dataSamples = [...samples].reverse();
+    let [mutations, matrix] = getMutationMatrix(selectedSamples, variants);
+    let dataSamples = [...selectedSamples].reverse();
     let chartOption;
     chartOption = {
         xAxis: {
@@ -173,7 +174,7 @@ function getVariantHeatmapOption(db) {
                 }
             }
         ],
-        tooltip: getTooltipHeatmap({samples, mutations, variants}),
+        tooltip: getTooltipHeatmap({dataSamples, mutations, variants}),
         toolbox: {
             show: "true",
             feature: {
