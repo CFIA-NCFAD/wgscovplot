@@ -146,6 +146,7 @@
  * @property {HTMLInputElement} $toggleShowTooltipOnClick
  * @property {HTMLInputElement} $toggleTooltipVariantComparison
  * @property {HTMLInputElement} $toggleDataZoomSlider
- * @property {HTMLButtonElement} $btnResetView
  * @property {HTMLButtonElement} $btnResetMargins
+ * @property {HTMLButtonElement} $btnShowZoomRegion
+ * @property {HTMLButtonElement} $btnResetView
  */

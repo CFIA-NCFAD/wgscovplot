@@ -652,13 +652,13 @@
     </div>
   </div>
 </div>
-<script type="text/javascript" src="./js/wgscovplot.dev.bundle.js"></script>
-<script type="text/javascript" src="./js/sars-cov-2-db.js"></script>
+<!-- TODO: allow loading of different test virus DBs based on CLI opts for npm/webpack -->
+<script src="js/sars-cov-2-db.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function (event) {
     const $chart = document.getElementById("chart");
     const $variantHeatmap = document.getElementById("varmap-chart");
-    console.debug(wgscovplot);
+    console.debug(db);
     console.time("convert base64 depths");
     let xs;
     for (let [sample, depthsBase64] of Object.entries(db.depths)) {
@@ -685,7 +685,7 @@
     db.leftMargin = "4.0%";
     db.rightMargin = "4.0%";
 
-    db.showCovStatsInTooltips = true;
+    db.showCovStatsInTooltips = false;
     db.crossSampleComparisonInTooltips = true;
     db.yMax = 1000;
     db.showLowCovRegions = true;

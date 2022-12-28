@@ -3,6 +3,7 @@ import {get, isNil} from "lodash";
 import {uniqBy} from "lodash/array";
 import {keys} from "lodash/object";
 import {genomeCoverage, meanCoverage, medianCoverage} from "../stats";
+import {toFloat32Array} from "../util";
 
 /**
  * Function get Variant Comparison across samples
@@ -40,7 +41,7 @@ function getVariantComparison(
         row.push(key);
         if (key === "Coverage Depth") {
             for (let sample of selectedSamples) {
-                row.push(depths[sample][position - 1].toLocaleString());
+                row.push(toFloat32Array(depths[sample])[position - 1].toLocaleString());
             }
         } else {
             for (let variant of variantArr) {
@@ -86,7 +87,7 @@ function getCoverageStatComparison(
     ];
     rows.push(...[tableHeader]);
     for (let sample of selectedSamples) {
-        let sampleDepths = depths[sample];
+        let sampleDepths = toFloat32Array(depths[sample]);
         let meanCov = meanCoverage(sampleDepths, start, end).toFixed(2);
         let medianCov = medianCoverage(sampleDepths, start, end).toFixed(2);
         let genomeCov = genomeCoverage(sampleDepths, start, end, low_coverage_threshold).toFixed(2);

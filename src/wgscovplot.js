@@ -42,7 +42,6 @@ function updateCoverageChartOption({db, elements}) {
         chart,
         show_genes,
     } = db;
-
     let chartOption = chart.getOption();
     db.tooltipEnabled = elements.$toggleTooltip.checked;
     db.tooltipTriggerOn = (db.tooltipEnabled) ? (elements.$toggleShowTooltipOnClick.checked ? "click" : "mousemove") : "none";
@@ -114,6 +113,40 @@ function updateCoverageChartOption({db, elements}) {
 }
 
 /**
+ * Set scale for y Axis
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - Object of HTML element names to HTMLElement object
+ */
+function setScale({db, elements}) {
+    db.scaleType = elements.$selectYScale.value;
+    db.yMax = parseInt(elements.$ymax.value);
+    let yAxisOption = db.chart.getOption().yAxis;
+    let updatedYAxisOption = updateYAxisOption({yAxisOption, db})
+    db.chart.setOption({yAxis: updatedYAxisOption});
+}
+
+/**
+ * Set yMax for Y Axis
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - Object of HTML element names to HTMLElement object
+ */
+function setYMax({db, elements}) {
+    const {
+        show_amplicons,
+        show_genes,
+    } = db;
+    let yMax = elements.$ymax.value;
+    let yAxisOption = db.chart.getOption().yAxis;
+    let len = (show_amplicons || show_genes) ? yAxisOption.length - 1 : yAxisOption.length;
+    yAxisOption.forEach(element => {
+        if (element.gridIndex < len) {
+            element.max = yMax;
+        }
+    });
+    db.chart.setOption({yAxis: yAxisOption});
+}
+
+/**
  * Update scale type and max for Y Axis
  * @param {Object} yAxisOption - Options of Yaxis need to be updated
  * @param {Object} db - wgscovplot DB object
@@ -121,10 +154,10 @@ function updateCoverageChartOption({db, elements}) {
  */
 function updateYAxisOption({yAxisOption, db}) {
     const {
-        show_amplicons = true,
-        show_genes = true,
-        scaleType = "log",
-        yMax = 1000,
+        show_amplicons,
+        show_genes,
+        scaleType,
+        yMax
     } = db;
     let len = (show_amplicons || show_genes) ? yAxisOption.length - 1 : yAxisOption.length;
     if (scaleType === "value") {
@@ -184,7 +217,11 @@ function initChartDisplayEventHandlers({db, elements}) {
         $chartLeftInput,
         $renderEnv,
         $toggleDarkMode,
+        $startPos,
+        $endPos,
     } = elements;
+    $startPos.value = 1;
+    $endPos.value = db.positions.length;
     $chartTopInput.addEventListener(
         "change",
         () => updateSubPlotTopMargin({
@@ -192,7 +229,7 @@ function initChartDisplayEventHandlers({db, elements}) {
             db,
             elements,
         })
-    )
+    );
     $chartHeightInput.addEventListener(
         "change",
         () => updateSubPlotHeight({
@@ -201,39 +238,47 @@ function initChartDisplayEventHandlers({db, elements}) {
             elements,
         })
     );
+
     $chartLeftInput.addEventListener("change", () => {
         db.leftMargin = $chartLeftInput.value;
-        elements.$chartLeftOutput.value = db.leftMargin;
+        elements.$chartLeftOutput.value = db.leftMargin + "%";
         let gridOption = db.chart.getOption().grid;
         gridOption.forEach(element => {
             element.left = db.leftMargin + "%";
         });
         db.chart.setOption({grid: gridOption});
     });
+
     $chartRightInput.addEventListener("change", () => {
         db.rightMargin = $chartRightInput.value
-        elements.$chartRightOutput.value = db.rightMargin;
+        elements.$chartRightOutput.value = db.rightMargin + "%";
         let gridOption = db.chart.getOption().grid;
         gridOption.forEach(element => {
             element.right = db.rightMargin + "%";
         });
         db.chart.setOption({grid: gridOption});
     });
+
     $renderEnv.addEventListener(
         "change",
         () => initWgscovplotRenderEnv({db, elements})
     );
+
     $toggleDarkMode.addEventListener(
         "change",
         () => initWgscovplotRenderEnv({db, elements})
     );
-    elements.$genefeatureHeightInput.addEventListener("change", () => {
-        const val = elements.$genefeatureHeightInput
-        elements.$genefeatureHeightOutput.value = val;
-        let gridOption = db.chart.getOption().grid;
-        gridOption[gridOption.length - 1].height = val + "%";
-        db.chart.setOption({grid: gridOption});
-    });
+    if (db.show_genes === true) {
+        elements.$genefeatureHeightInput.addEventListener("change", () => {
+            const val = elements.$genefeatureHeightInput.value;
+            elements.$genefeatureHeightOutput.value = val + "%";
+            let gridOption = db.chart.getOption().grid;
+            gridOption[gridOption.length - 1].height = val + "%";
+            db.chart.setOption({grid: gridOption});
+        });
+    }
+
+
 }
 
 /**
@@ -245,6 +290,7 @@ function initTooltipEventHandlers({db, elements}) {
     const {
         chart
     } = db;
+
     elements.$toggleTooltip.addEventListener("change", () => {
         db.tooltipEnabled = elements.$toggleTooltip.checked;
         db.tooltipTriggerOn = db.tooltipEnabled ? (elements.$toggleShowTooltipOnClick.checked ? "click" : "mousemove") : "none";
@@ -252,12 +298,14 @@ function initTooltipEventHandlers({db, elements}) {
             tooltip: {triggerOn: db.tooltipTriggerOn},
         });
     });
+
     elements.$toggleFixedTooltipPosition.addEventListener("change", () => {
         db.fixedTooltipPosition = elements.$toggleFixedTooltipPosition.checked;
         let tooltip = chart.getOption().tooltip;
         tooltip[0].position = tooltipPosition(db.fixedTooltipPosition);
         chart.setOption({tooltip});
     });
+
     elements.$toggleShowTooltipOnClick.addEventListener("change", () => {
         db.tooltipEnabled = elements.$toggleTooltip.checked;
         db.tooltipTriggerOn = db.tooltipEnabled ? (elements.$toggleShowTooltipOnClick.checked ? "click" : "mousemove") : "none";
@@ -265,18 +313,22 @@ function initTooltipEventHandlers({db, elements}) {
             tooltip: {triggerOn: db.tooltipTriggerOn}
         });
     });
+
     elements.$toggleShowVariantSiteTooltips.addEventListener("change", () => {
         db.showVariantSiteTooltips = elements.$toggleShowVariantSiteTooltips.checked;
         updateTooltipOption({db, elements});
     });
+
     elements.$toggleShowNonVariantSiteTooltips.addEventListener("change", () => {
         db.showNonVariantSiteTooltips = elements.$toggleShowNonVariantSiteTooltips.checked;
         updateTooltipOption({db, elements});
     });
+
     elements.$toggleTooltipVariantComparison.addEventListener("change", () => {
         db.crossSampleComparisonInTooltips = elements.$toggleTooltipVariantComparison.checked;
         updateTooltipOption({db, elements});
     });
+
     elements.$toggleTooltipCovStats.addEventListener("change", () => {
         db.showCovStatsInTooltips = elements.$toggleTooltipCovStats.checked;
         updateTooltipOption({db, elements});
@@ -326,20 +378,9 @@ function initEventHandlers({db, elements}) {
     initChartDisplayEventHandlers({db, elements});
     initTooltipEventHandlers({db, elements});
     initLowCovRegionHighlighting({db, elements});
-    elements.$btnShowRegion.addEventListener("click", () => {
-        setDataZoom({db, elements})
-    });
-    elements.$btnResetView.addEventListener("click", () => {
-        setDataZoom({
-            start: 1,
-            end: ref_seq.length,
-            db,
-            elements
-        })
-    });
 
     /**
-     * Jquery actions to make the list of samples is not forced in alphabetical order
+     * Events for selecting sample
      */
     elements.$selectedSamples.on("select2:select", (evt) => {
         let element = evt.params.data.element;
@@ -348,6 +389,7 @@ function initEventHandlers({db, elements}) {
         elements.$selectedSamples.append($element);
         elements.$selectedSamples.trigger("change");
     });
+
     elements.$selectedSamples.on("change", () => {
         const selectedSamples = [];
         let selectData = elements.$selectedSamples.select2("data");
@@ -357,72 +399,127 @@ function initEventHandlers({db, elements}) {
         db.selectedSamples = selectedSamples;
         updateCoverageChartOption({db, elements});
     });
+
     elements.$selectedGeneFeatures.select2({
         tags: true,
         width: "100%",
     });
+
+    /**
+     * Events for Axis Options
+     */
+    elements.$selectYScale.addEventListener(
+        "change",
+        () => {
+            setScale({db, elements})
+        })
+
+    elements.$btnSetYMax.addEventListener(
+        "click",
+        () => {
+            setYMax({db, elements})
+        })
+
+    /**
+     * Display Options
+     */
+    elements.$btnShowZoomRegion.addEventListener(
+        "click",
+        () => {
+            setDataZoom({
+                start: 0,
+                end: 0,
+                db,
+                elements,
+            });
+        }
+    )
+
+    elements.$btnResetView.addEventListener("click", () => {
+        setDataZoom({
+            start: 1,
+            end: db.positions.length,
+            db,
+            elements
+        })
+    });
+
+    if (db.show_genes === true) {
+        elements.$toggleGeneLabel.addEventListener("change", () => {
+            let seriesOption = db.chart.getOption().series;
+            db.showGeneLabels = elements.$toggleGeneLabel.checked;
+            seriesOption[seriesOption.length - 1].renderItem = getGeneFeatureRenderer(db);
+            db.chart.setOption({series: [...seriesOption]});
+        });
+    }
+
+    if (db.show_amplicons === true) {
+        $toggleAmplicons.addEventListener("change", () => {
+
+            db.show_amplicons = $toggleAmplicons.checked;
+            let seriesOption = db.chart.getOption().series;
+            for (let i = 0; i < seriesOption.length - 1; i++) {
+                if (seriesOption[i].type === "custom") {
+                    seriesOption[i].renderItem = getRegionAmpliconDepthRenderer(db.show_amplicons);
+                }
+            }
+            db.showGeneLabels = elements.$toggleGeneLabel.checked;
+            if (db.showGeneLabels) {
+                seriesOption[seriesOption.length - 1].renderItem = getGeneFeatureRenderer(db);
+            }
+            const gridOptions = getGrids(db);
+            db.leftMargin = $chartLeftInput.value;
+            db.rightMargin = $chartRightInput.value;
+            gridOptions.forEach(element => {
+                element.left = db.leftMargin + "%";
+                element.right = db.rightMargin + "%";
+            });
+            db.chart.setOption({series: [...seriesOption], grid: [...gridOptions]});
+            updateControlMenu({db, elements});
+        });
+    }
+
+
+    /*
     elements.$btnShowSelectedFeatures.addEventListener("click", () => {
         applyFeatureView({db, elements})
     });
     elements.$selectedGeneFeatures.on("change", function () {
         elements.$selectedGeneFeatures.select2("data");
     });
-    elements.$toggleGeneLabel.addEventListener("change", () => {
-        let series = chart.getOption().series;
-        db.showGeneLabels = elements.$toggleGeneLabel.checked;
-        series[series.length - 1].renderItem = getGeneFeatureRenderer(db);
-        chart.setOption({series});
-    });
-    $toggleAmplicons.addEventListener("change", () => {
-        db.show_amplicons = $toggleAmplicons.checked;
-        let series = chart.getOption().series;
-        for (let i = 0; i < series.length - 1; i++) {
-            if (series[i].type === "custom") {
-                series[i].renderItem = getRegionAmpliconDepthRenderer(db.show_amplicons);
-            }
-        }
-        db.showGeneLabels = elements.$toggleGeneLabel.checked;
-        if (db.showGeneLabels) {
-            series[series.length - 1].renderItem = getGeneFeatureRenderer(db);
-        }
-        const grid = getGrids(db);
-        db.leftMargin = $chartLeftInput.value;
-        db.rightMargin = $chartRightInput.value;
-        grid.forEach(element => {
-            element.left = db.leftMargin + "%";
-            element.right = db.rightMargin + "%";
-        });
-        chart.setOption({series, grid});
-        updateControlMenu({db, elements});
-    });
+     */
+
     $toggleShowVariantLabels.addEventListener("change", () => {
-        let series = chart.getOption().series;
+        let series = db.chart.getOption().series;
+        console.log(series)
         db.showVariantLabels = $toggleShowVariantLabels.checked;
         series.forEach(s => {
             if (s.type === "bar") {
                 s.label.show = db.showVariantLabels;
             }
         });
-        chart.setOption({series});
+        db.chart.setOption({series});
     });
+
     $toggleHideOverlappingVariantLabels.addEventListener("change", () => {
-        let series = chart.getOption().series;
+        let series = db.chart.getOption().series;
         db.hideOverlappingVariantLabels = $toggleHideOverlappingVariantLabels.checked;
         series.forEach(s => {
             if (s.type === "bar") {
                 s.labelLayout.hideOverlap = db.hideOverlappingVariantLabels;
             }
         });
-        chart.setOption({series});
+        db.chart.setOption({series});
     });
+
     $toggleXAxisLabel.addEventListener("change", () => {
-        let xAxis = chart.getOption().xAxis;
+        let xAxis = db.chart.getOption().xAxis;
         let showAxisLabel = $toggleXAxisLabel.checked;
         let gridLength = (db.show_amplicons || db.show_genes) ? xAxis.length - 1 : xAxis.length;
         for (let i = 0; i < gridLength; i++) {
             xAxis[i].axisLabel.show = showAxisLabel;
         }
-        chart.setOption({xAxis});
+        db.chart.setOption({xAxis});
     });
 
     // elements.$toggleShowLowCovRegionLabels.addEventListener("change", () => {
@@ -437,22 +534,23 @@ function initEventHandlers({db, elements}) {
     // });
 
     elements.$toggleShowLowCovRegions.addEventListener("change", () => {
-        let series = chart.getOption().series;
+        let series = db.chart.getOption().series;
         db.showLowCovRegions = elements.$toggleShowLowCovRegions.checked;
         db.showLowCovRegionsOpacity = db.showLowCovRegions ? 0.4 : 0;
-        elements.$btnSetLowCovThreshold.disabled = db.showLowCovRegions;
+        elements.$btnSetLowCovThreshold.disabled = !db.showLowCovRegions;
         series.forEach(s => {
             if (s.type === "line") {
                 s.markArea.itemStyle.opacity = db.showLowCovRegionsOpacity;
                 s.markLine.lineStyle.opacity = db.showLowCovRegionsOpacity;
             }
         });
-        chart.setOption({series});
+        db.chart.setOption({series});
     });
 
     /**
      * Toggle slider zoom
      */
+
     elements.$toggleDataZoomSlider.addEventListener("change", () => {
         db.showDataZoomSlider = elements.$toggleDataZoomSlider.checked;
         let nGrids = chart.getOption().grid.length;
@@ -472,6 +570,7 @@ function initEventHandlers({db, elements}) {
                 },
             ],
         });
+        /*
         db.variantHeatmap.setOption({
             dataZoom: [
                 {
@@ -482,14 +581,21 @@ function initEventHandlers({db, elements}) {
                     show: db.showDataZoomSlider
                 }
             ]
-        });
+        });*/
     });
+
+    elements.$btnResetMargins.addEventListener("click", () => {
+        resetGridDisplay({db, elements});
+    })
+
+    /*
     elements.$btnSetYMax.addEventListener("click", () => {
         db.yMax = parseInt(elements.$ymax.value);
         let yAxisOption = db.chart.getOption().yAxis;
         yAxisOption = updateYAxisOption({yAxisOption, db});
         db.chart.setOption({yAxis: yAxisOption});
     });
+
     elements.$selectYScale.addEventListener("change", () => {
         db.yMax = maxBy(Object.values(db.mosdepth_info), "max_depth").max_depth;
         elements.$ymax.value = db.yMax;
@@ -498,13 +604,12 @@ function initEventHandlers({db, elements}) {
         yAxisOption = updateYAxisOption({yAxisOption, db});
         db.chart.setOption({yAxis: yAxisOption});
     });
-    elements.$btnResetMargins.addEventListener("click", () => {
-        resetGridDisplay({db, elements});
-    })
+     */
+
 }
 
 /**
- * Initialize the enviroment for the chart (sgv/canvas or dark/white mode)
+ * Initialize the environment for the chart (sgv/canvas or dark/white mode)
  * The entire chart will be disposed and re-initialized
  * However, the old settings of charts are reserved (users's settings are respected)
  */
@@ -521,7 +626,7 @@ function initWgscovplotRenderEnv({db, elements}) {
     let chartOptions = chart.getOption();
     if (isNil(chartOptions)) {
         chart.setOption(getCoverageChartOption(db));
-        variantHeatmap.setOption(getVariantHeatmapOption(db));
+        //variantHeatmap.setOption(getVariantHeatmapOption(db));
     } else {
         let renderEnv = $renderEnv.value;
         let isChecked = $toggleDarkMode.checked;
@@ -576,6 +681,7 @@ function updateTooltipOption(
             element.tooltip.trigger = showVariantSiteTooltips ? "axis" : "none";
         }
     });
+    db.showCovStatsInTooltips = elements.$toggleTooltipCovStats.checked;
     let tooltip = getTooltips(db);
     db.fixedTooltipPosition = elements.$toggleFixedTooltipPosition.checked;
     tooltip[0].position = tooltipPosition(db.fixedTooltipPosition);
@@ -594,7 +700,7 @@ function tooltipPosition(isChecked) {
             let obj = {
                 top: 5,
             };
-            obj[(pos[0] < size.viewSize[0] / 2) ? "left" : "right"] = 5;
+            obj[(pos[0] < size.viewSize[0] / 2) ? "right" : "left"] = 5;
             return obj;
         };
     } else {
@@ -674,7 +780,7 @@ function updateSubPlotHeight(
         $chartHeightOutput,
         $chartTopInput,
     } = elements;
-    $chartHeightOutput.value = val;
+    $chartHeightOutput.value = val + "%";
     let gridOption = chart.getOption().grid;
     let len = (show_amplicons || show_genes) ? gridOption.length - 1 : gridOption.length;
     let topInputValue = parseFloat($chartTopInput.value);
@@ -716,7 +822,7 @@ function updateSubPlotTopMargin(
     const {
         chart,
     } = db;
-    $chartTopOutput.value = val;
+    $chartTopOutput.value = val + "%";
     let gridOption = chart.getOption().grid;
     for (let i = 0; i < gridOption.length; i++) {
         let grid = gridOption[i];
@@ -731,29 +837,6 @@ function updateSubPlotTopMargin(
         }
     }
     chart.setOption({grid: gridOption});
-}
-
-
-/**
- * Set yMax for Y Axis
- * @param {WgsCovPlotDB} db
- * @param {Elements} elements
- */
-function setYMax({db, elements}) {
-    const {
-        chart,
-        show_amplicons,
-        show_genes,
-    } = db;
-    db.yMax = parseInt(elements.$ymax.value);
-    let yAxis = chart.getOption().yAxis;
-    let len = (show_amplicons || show_genes) ? yAxis.length - 1 : yAxis.length;
-    yAxis.forEach(element => {
-        if (element.gridIndex < len) {
-            element.max = db.yMax;
-        }
-    });
-    chart.setOption({yAxis});
 }
 
 /**
@@ -795,7 +878,9 @@ function setDataZoom(
  * @param {Elements} elements
  */
 function resetGridDisplay({db, elements}) {
-    db.show_amplicons = elements.$toggleAmplicons.checked;
+    if (db.show_amplicons === true){
+        db.show_amplicons = elements.$toggleAmplicons.checked;
+    }
     let grid = getGrids(db);
     db.chart.setOption({grid});
     updateControlMenu({db, elements});
@@ -851,27 +936,26 @@ function onChartDataZoomActions({db, elements}) {
  * @param {Elements} elements
  */
 function updateControlMenu({db, elements}) {
-    let grid = db.chart.getOption().grid;
-    if (grid.length > 0) {
-        let [{height, top, left, right}] = grid;
-        height = parseFloat(height);
-        top = parseFloat(top);
-        left = parseFloat(left);
-        right = parseFloat(right);
+    let gridOption = db.chart.getOption().grid;
+    if (gridOption.length > 0) {
+        let height = parseFloat(gridOption[0].height);
+        let top = parseFloat(gridOption[0].top);
+        let left = parseFloat(gridOption[0].left);
+        let right = parseFloat(gridOption[0].right);
         elements.$chartHeightInput.value = height;
-        elements.$chartHeightOutput.value = height;
+        elements.$chartHeightOutput.value = height + "%";
         // Because height of each subplot = (1/(n+verticalRatio)) * 100 - heightOffset(6) + "%",
         // top margin is set 4 so need to plus 2.
         elements.$chartTopInput.value = top + 2.0;
-        elements.$chartTopOutput.value = top + 2.0;
+        elements.$chartTopOutput.value = top + 2.0 + "%";
         // update left margin
         elements.$chartLeftInput.value = left;
-        elements.$chartLeftOutput.value = left;
+        elements.$chartLeftOutput.value = left + "%";
         // update right margin
         elements.$chartRightInput.value = right;
-        elements.$chartRightOutput.value = right;
+        elements.$chartRightOutput.value = right + "%";
         if (db.show_amplicons || db.show_genes) {
-            let featuresGrid = grid[grid.length - 1];
+            let featuresGrid = gridOption[gridOption.length - 1];
             elements.$genefeatureHeightInput.value = featuresGrid.height;
             elements.$genefeatureHeightOutput.value = featuresGrid.height;
         }

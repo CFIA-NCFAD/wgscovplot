@@ -97,7 +97,7 @@ def get_genome_length(df):
 
 
 def depth_array(df: pd.DataFrame) -> np.ndarray:
-    arr = np.zeros(df.end_idx.max(), dtype=np.uint16)
+    arr = np.zeros(df.end_idx.max(), dtype=np.float32)
     for row in df.itertuples():
         arr[row.start_idx:row.end_idx] = row.depth
     return arr
@@ -115,7 +115,7 @@ def get_refseq_id(basedir: Path) -> str:
     return refseq_name
 
 
-def get_base64_encoded_depth_arrays(sample_depths: Dict[str, np.ndarray]) -> Dict[str, str]:
+def get_base64_encoded_depth_arrays(sample_depths: Dict[str, np.ndarray]) -> Dict[str, List]:
     """Encode depth arrays as base64 strings
 
     Instead of dumping a list of numbers to a JSON list, the float32 array will be base64 encoded so
@@ -153,6 +153,7 @@ def get_base64_encoded_depth_arrays(sample_depths: Dict[str, np.ndarray]) -> Dic
     """
     out = {}
     for sample, arr in sample_depths.items():
+        arr[arr == 0] = 1E-5
         out[sample] = base64.b64encode(arr).decode('utf-8')
     return out
 

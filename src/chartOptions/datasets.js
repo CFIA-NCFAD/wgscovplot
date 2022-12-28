@@ -1,6 +1,6 @@
 import {constant, times} from "lodash/util";
 import {isNil} from "lodash";
-
+import {toFloat32Array} from "../util";
 
 /**
  * Get ECharts dataset options containing depths for all samples (and segments if virus is segmented)
@@ -11,14 +11,14 @@ import {isNil} from "lodash";
  * @param {SegmentCoords | null} segCoords
  * @returns {Array<Object>}
  */
-function getDatasets(
-    {
+function getDatasets(db) {
+    const {
         selectedSamples,
         depths,
         positions,
         segments= null,
         segCoords= null,
-    }) {
+    } = db
     let datasets = [];
     if (!isNil(segments) && !isNil(segCoords)) { // segment virus
         for (let sample of selectedSamples) {
@@ -53,7 +53,7 @@ function getDatasets(
                 ],
                 source: {
                     position: positions,
-                    depth: depths[sample],
+                    depth: toFloat32Array(depths[sample]),
                 },
             });
         }

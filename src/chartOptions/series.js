@@ -1,6 +1,7 @@
 import {get, isNil} from "lodash";
 import {getCoordsInterval, NT_COLOURS} from "../util";
 import {graphic} from "echarts/core";
+import {toFloat32Array} from "../util";
 
 /**
  *  Get options config for low coverage region highlighting using ECharts MarkArea
@@ -38,7 +39,7 @@ function getMarkArea({sample, db}) {
             }
         }
     } else {
-        for (let {start, end} of getCoordsInterval(depths[sample], low_coverage_threshold)) {
+        for (let {start, end} of getCoordsInterval(toFloat32Array(depths[sample]), low_coverage_threshold)) {
             data.push([
                 {
                     name: `${start}-${end} (<${low_coverage_threshold}X)`,
@@ -80,7 +81,7 @@ function getCoverageThresholdLine(db) {
             formatter: "{c}X",
         },
         lineStyle: {
-            color: "#450606",
+            color: "#151313",
             width: 1,
             type: "dotted",
             opacity: db.showLowCovRegionsOpacity
@@ -161,7 +162,7 @@ function getVariantsSeries(db) {
             yAxisIndex: i,
             data: sampleVariants.map((x) => [
                 parseInt(x.POS),
-                depths[sample][parseInt(x.POS) - 1],
+                toFloat32Array(depths[sample])[parseInt(x.POS) - 1],
             ]),
             barWidth: 2,
             itemStyle: {

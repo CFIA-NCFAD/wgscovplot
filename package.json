@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev:js": "webpack --config webpack.dev.js",
-    "serve": "webpack serve --config webpack.dev.js",
+    "serve": "webpack serve --config webpack.serve.js",
     "prod:js": "webpack --config webpack.prod.js",
     "test": "jest --env=jsdom --config jest.config.js",
     "eslint": "eslint src wgscovplot/tmpl/js"

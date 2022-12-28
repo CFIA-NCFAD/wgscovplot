@@ -11,11 +11,11 @@ import {getFluVariantSeries} from "./chartOptions/flu/getFluVariantSeries";
 import {tooltips} from "./chartOptions/flu/tooltips";
 import {getCoverageStatComparison, getVariantComparison} from "./chartOptions/tooltips";
 import {getFluPrimerSeries} from "./chartOptions/flu/primerMatches";
+import {toFloat32Array} from "./util";
 
 /**
  * Get ECharts Grid options objects given selected samples (and segments) and if gene/amplicon/segment features are being shown
  * @param {WgsCovPlotDB} db
- * @returns {{show: boolean, height: string, top: string, left: string, right: string}[]}
  */
 function getGrids(db) {
     const {
@@ -25,8 +25,6 @@ function getGrids(db) {
         doubleStrand,
         padTop = 4.0,
         heightOffset = 6.0,
-        leftMargin = "4.0%",
-        rightMargin = "4.0%",
     } = db;
     let featureHeight;
     // TODO: make magic numbers function optional params
@@ -47,8 +45,8 @@ function getGrids(db) {
             show: true,
             height: sampleHeight.toFixed(1) + "%",
             top: ((sampleHeight + heightOffset) * idx + padTop).toFixed(1) + "%",
-            left: leftMargin,
-            right: rightMargin,
+            left: "4.0%",
+            right: "4.0%",
         });
     }
     if (show_amplicons || show_genes) {
@@ -56,8 +54,8 @@ function getGrids(db) {
             show: false,
             height: featureHeight.toFixed(1) + "%",
             top: ((sampleHeight + heightOffset) * selectedSamples.length + padTop).toFixed(1) + "%",
-            left: leftMargin,
-            right: rightMargin,
+            left: "4.0%",
+            right: "4.0%",
         });
     }
     return grids;
@@ -105,12 +103,11 @@ function tooltipFormatter({db}) {
             axisIndex,
             axisValue: position
         }] = params;
-
         if (axisIndex >= selectedSamples.length) {
             return output;
         }
         let sample = selectedSamples[axisIndex];
-        let sampleDepths = depths[sample];
+        let sampleDepths = toFloat32Array(depths[sample]);
         let depth = sampleDepths[position - 1];
         let [dataZoom] = chart.getOption().dataZoom;
         let zoomStart = Math.floor(dataZoom.startValue);
@@ -133,7 +130,7 @@ function tooltipFormatter({db}) {
                     ["Position", position.toLocaleString()],
                     ["Coverage Depth", depth.toLocaleString()],
                 ];
-                let foundObj = find(variants[sample], {POS: position});
+                let foundObj = find(variants[sample], {"POS": position.toString()}, 0);
                 if (!isNil(foundObj)) {
                     for (const [key, value] of Object.entries(foundObj)) {
                         if (key !== "POS" && key !== "sample") {
@@ -144,7 +141,7 @@ function tooltipFormatter({db}) {
             }
         } else {
             positionRows = [
-                ["Position", position.toLocaleString()],
+                ["Pos", position.toLocaleString()],
                 ["Coverage Depth", depth.toLocaleString()],
             ];
             positionRows.push(["Sequence", ref_seq[position - 1]]);
@@ -242,7 +239,7 @@ function getCoverageChartOption(db) {
         dataset: getDatasets(db),
         xAxis: getXAxes(db),
         yAxis: getYAxes(db),
-        series,
+        series: series,
         tooltip: getTooltips(db),
         toolbox: {
             show: "true",

@@ -117,8 +117,9 @@ def run(
             amplicon_depths=amplicon_depths,
             mosdepth_info=mosdepth_info,
             variants=variants_data,
-            show_amplicon=show_amplicon,
-            show_gene_features=show_gene_features,
+            show_amplicons=show_amplicon,
+            show_genes=show_gene_features,
+            segment_virus=is_segmented,
             low_coverage_threshold=low_coverage_threshold,
             echart_features=echarts_features
         )

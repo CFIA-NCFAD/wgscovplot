@@ -19,5 +19,7 @@ class TemplateDB(BaseModel):
     variants: Dict[str, List[Dict[str, str]]]
     show_amplicons: bool = False
     show_genes: bool = False
+    segment_virus: bool = False
     low_coverage_threshold: int = 10
+    max_depth: int = 10000
     echart_features: List[EChartsFeature]

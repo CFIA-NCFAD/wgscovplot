@@ -34,6 +34,13 @@ export const FLU_SEGMENT_COLOURS = {
     "8_NS": "#FF7F00"
 };
 
+function toFloat32Array(b64) {
+    let f32a = new Float32Array(new Uint8Array([...window.atob(b64)].map(c => c.charCodeAt(0))).buffer)
+    let depthArr = Array.from(f32a)
+    return depthArr
+}
+
+
 /**
  * Write tooltip information to HTML table
  * @param {string[]} headers - Header of table
@@ -78,7 +85,6 @@ function toTableHtml(
  *
  * @param {Array<number>} depths
  * @param {number} threshold
- * @returns {{start: number, end: number}[]} The regions in which depth < threshold
  */
 function getCoordsInterval(depths, threshold) {
     let coords = [];
@@ -108,4 +114,4 @@ function getCoordsInterval(depths, threshold) {
     return coords;
 }
 
-export {toTableHtml, getCoordsInterval};
+export {toTableHtml, getCoordsInterval, toFloat32Array};
