@@ -148,10 +148,11 @@ function getVariantsSeries(db) {
         variants,
         depths,
         ref_seq,
+        showVariantLabels,
         showVariantSiteTooltips = true,
-        showVariantLabels = false,
         hideOverlappingVariantLabels = true,
     } = db;
+    console.log(showVariantLabels)
     let variantSeries = [];
     let i = 0;
     for (let sample of selectedSamples) {
@@ -185,7 +186,7 @@ function getVariantsSeries(db) {
                 formatter: function ({data: [pos]}) {
                     let output = "";
                     Object.values(sampleVariants).forEach(({POS, REF, ALT}) => {
-                        if (POS === pos) {
+                        if (parseInt(POS) === pos) {
                             output += `${REF}${POS}${ALT}`;
                         }
                     });

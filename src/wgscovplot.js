@@ -491,7 +491,6 @@ function initEventHandlers({db, elements}) {
 
     $toggleShowVariantLabels.addEventListener("change", () => {
         let series = db.chart.getOption().series;
-        console.log(series)
         db.showVariantLabels = $toggleShowVariantLabels.checked;
         series.forEach(s => {
             if (s.type === "bar") {
