@@ -105,6 +105,3 @@ palette = [
 class AmpliconColour:
     pool1 = 'rgba(255, 99, 71, 0.2)'
     pool2 = 'rgba(68, 99, 255, 0.2)'
-
-    #    pool1 = 'rgba(255, 99, 71, 0.2)'
-    #    pool2 = 'rgba(68, 99, 255, 0.2)'

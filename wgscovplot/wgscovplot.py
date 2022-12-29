@@ -21,7 +21,7 @@ Entrez.email = "wgscovplot@github.com"
 def run(
         input_dir: Path,
         low_coverage_threshold: int,
-        show_amplicon: bool,
+        show_amplicons: bool,
         show_gene_features: bool,
         is_segmented: bool,
         primer_seq_path: Path,
@@ -77,18 +77,17 @@ def run(
     else:
         ref_seq, gene_features = get_ref_seq_and_annotation(input_dir, get_gene_features=show_gene_features)
         # Get amplicon data
-        if show_amplicon:
+        if show_amplicons:
             amplicon_depths = mosdepth.get_amplicon_depths(input_dir)
             region_amplicon_data = mosdepth.get_region_amplicon(input_dir)
             if not (amplicon_depths and region_amplicon_data):
                 logging.warning(f'No Mosdepth region BED file with amplicon data found in "{input_dir}"')
-                show_amplicon = False
+                show_amplicons = False
                 amplicon_depths = {}
                 region_amplicon_data = {}
         else:
             amplicon_depths = {}
             region_amplicon_data = {}
-        print(gene_features, region_amplicon_data)
         echarts_features = build_echarts_features_array(
             gene_features,
             region_amplicon_data
@@ -118,7 +117,7 @@ def run(
             amplicon_depths=amplicon_depths,
             mosdepth_info=mosdepth_info,
             variants=variants_data,
-            show_amplicons=show_amplicon,
+            show_amplicons=show_amplicons,
             show_genes=show_gene_features,
             segment_virus=is_segmented,
             low_coverage_threshold=low_coverage_threshold,

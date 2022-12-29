@@ -475,10 +475,10 @@ function initEventHandlers({db, elements}) {
                     seriesOption[i].renderItem = getRegionAmpliconDepthRenderer(db.show_amplicons);
                 }
             }
-            //db.showGeneLabels = elements.$toggleGeneLabel.checked;
-            //if (db.showGeneLabels) {
-            //    seriesOption[seriesOption.length - 1].renderItem = getGeneFeatureRenderer(db);
-            //}
+            if (db.show_genes){
+                db.showGeneLabels = elements.$toggleGeneLabel.checked;
+                seriesOption[seriesOption.length - 1].renderItem = getGeneFeatureRenderer(db);
+            }
             const gridOptions = getGrids(db);
             db.leftMargin = $chartLeftInput.value;
             db.rightMargin = $chartRightInput.value;
@@ -869,16 +869,16 @@ function resetGridDisplay({db, elements}) {
  * @param {Elements} elements
  */
 function onChartDataZoomActions({db, elements}) {
-    const {chart, ref_seq} = db;
+    const {ref_seq} = db;
     const {$startPos, $endPos} = elements;
 
-    chart.on("click", function (
+    db.chart.on("click", function (
         {
             componentIndex,
             componentSubType,
             value: {start, end},
         }) {
-        if (componentIndex === chart.getOption().series.length - 1 && componentSubType === "custom") {
+        if (componentIndex === db.chart.getOption().series.length - 1 && componentSubType === "custom") {
             $startPos.value = start;
             $endPos.value = end;
             setDataZoom({
@@ -890,8 +890,8 @@ function onChartDataZoomActions({db, elements}) {
         }
     });
 
-    chart.on("dblclick", function ({componentIndex, componentSubType}) {
-        if (componentIndex === chart.getOption().series.length - 1 && componentSubType === "custom") {
+    db.chart.on("dblclick", function ({componentIndex, componentSubType}) {
+        if (componentIndex === db.chart.getOption().series.length - 1 && componentSubType === "custom") {
             const start = 1;
             const end = ref_seq.length;
             $startPos.value = start;

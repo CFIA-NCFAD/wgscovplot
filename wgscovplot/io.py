@@ -94,8 +94,8 @@ def pydantic_to_dict(x):
         return x.dict()
 
 
-def parse_gff(path: Path) -> List[Feature]:
-    out = []
+def parse_gff(path: Path) -> Dict[int, List[Feature]]:
+    features = {}
     with open(path) as fh:
         interest_info = dict(gff_type=["gene", "five_prime_UTR", "three_prime_UTR"])
         rec: SeqRecord
@@ -107,25 +107,36 @@ def parse_gff(path: Path) -> List[Feature]:
                 strand = int(feature.location.strand)
                 qs: OrderedDict[str, List[str]] = feature.qualifiers
                 feature_name = qs['Name'][0] if 'Name' in qs else qs['gbkey'][0]
-                out.append(Feature(
-                    start_pos=start_pos,
-                    end_pos=end_pos,
-                    strand=strand,
-                    name=feature_name
-                ))
-    out.sort(key=lambda k: k.start_pos)
-    return out
+                if features.get(strand):
+                    features[strand].append(Feature(
+                        start=start_pos,
+                        end=end_pos,
+                        strand=strand,
+                        name=feature_name
+                    ))
+                else:
+                    features[strand] = []
+                    features[strand].append(Feature(
+                        start=start_pos,
+                        end=end_pos,
+                        strand=strand,
+                        name=feature_name
+                    ))
+    if 1 in features.keys():
+        features[1].sort(key=lambda k: k.start)
+    if -1 in features.keys():
+        features[-1].sort(key=lambda k: k.start)
+    return features
 
 
 def parse_genbank(
         gb_handle_or_path: Union[Path, TextIOWrapper]
-) -> Tuple[str, List[Feature]]:
+) -> Tuple[str, Dict[int, List[Feature]]]:
     """Parse sequence and features from Genbank
 
     Args:
         gb_handle_or_path: Handle or path to Genbank file
     """
-    #features: List[Feature] = []
     features = {}
     skip_feature = {"CDS", "source", "repeat_region", "misc_feature"}
     seq = ''

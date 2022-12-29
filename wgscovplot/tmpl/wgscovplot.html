@@ -100,7 +100,6 @@
 
 <script>
     const db = {{db | tojson}};
-    console.log(db)
     window.db = db;
     document.addEventListener("DOMContentLoaded", function (event) {
         const $chart = document.getElementById("chart");
@@ -125,7 +124,7 @@
         db.heightOffset = 6.0;
         db.leftMargin = "4.0%";
         db.rightMargin = "4.0%";
-        //Genetic Features
+        //Genetic Features and variant call
         db.hideOverlappingVariantLabels = true;
         db.showVariantLabels = false;
         db.showGeneLabels = true;
