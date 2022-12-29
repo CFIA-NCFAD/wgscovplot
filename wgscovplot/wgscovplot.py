@@ -88,6 +88,7 @@ def run(
         else:
             amplicon_depths = {}
             region_amplicon_data = {}
+        print(gene_features, region_amplicon_data)
         echarts_features = build_echarts_features_array(
             gene_features,
             region_amplicon_data
@@ -121,7 +122,6 @@ def run(
             show_genes=show_gene_features,
             segment_virus=is_segmented,
             low_coverage_threshold=low_coverage_threshold,
-            max_depth=mosdepth.max_depth(sample_depths),
             echart_features=echarts_features
         )
         html = TemplateHTML(

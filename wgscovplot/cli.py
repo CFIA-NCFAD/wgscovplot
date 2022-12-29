@@ -39,7 +39,7 @@ def main(
         output_html: Path = typer.Option("wgscovplot.html", help="wgscovplot HTML output file"),
         primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
         low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
-        show_amplicons: bool = typer.Option(default=False,
+        show_amplicons: bool = typer.Option(default=True,
                                             help="Show amplicon positions and coverage along with sequencing coverage "
                                                  "plots."),
         show_gene_features: bool = typer.Option(default=True,

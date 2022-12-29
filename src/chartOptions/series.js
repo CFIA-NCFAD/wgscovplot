@@ -81,9 +81,9 @@ function getCoverageThresholdLine(db) {
             formatter: "{c}X",
         },
         lineStyle: {
-            color: "#151313",
+            color: "#6b6464",
             width: 1,
-            type: "dotted",
+            type: "dashed",
             opacity: db.showLowCovRegionsOpacity
         },
         data: [

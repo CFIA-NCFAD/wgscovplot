@@ -21,5 +21,4 @@ class TemplateDB(BaseModel):
     show_genes: bool = False
     segment_virus: bool = False
     low_coverage_threshold: int = 10
-    max_depth: int
     echart_features: List[EChartsFeature]

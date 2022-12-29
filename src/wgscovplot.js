@@ -57,7 +57,6 @@ function updateCoverageChartOption({db, elements}) {
 
     let lowCoverageRegion = elements.$toggleShowLowCovRegions.checked;
     db.showLowCovRegionsOpacity = lowCoverageRegion ? 0.4 : 0.0;
-
     // Preserve tooltip config in series options
     let seriesOption = updateOption.series;
     seriesOption.forEach(element => {
@@ -80,7 +79,8 @@ function updateCoverageChartOption({db, elements}) {
 
     // preserve y-axis limit/max value and scale type
     db.scaleType = elements.$selectYScale.value;
-    db.yMax = parseInt(elements.$ymax.value);
+    db.yMax = maxBy(Object.values(db.mosdepth_info), "max_depth").max_depth * 1.5;
+    elements.$ymax.value = db.yMax;
     updateOption.yAxis = updateYAxisOption({yAxisOption: updateOption.yAxis, db});
 
     if (!isNil(db.amplicon_depths)) {
@@ -223,7 +223,7 @@ function initChartDisplayEventHandlers({db, elements}) {
         $endPos,
     } = elements;
     $startPos.value = 1;
-    $endPos.value = db.positions.length;
+    $endPos.value = db.ref_seq_length;
     $chartTopInput.addEventListener(
         "change",
         () => updateSubPlotTopMargin({
@@ -270,7 +270,7 @@ function initChartDisplayEventHandlers({db, elements}) {
         "change",
         () => initWgscovplotRenderEnv({db, elements})
     );
-    if (db.show_genes === true) {
+    if (db.show_genes === true || db.show_amplicons === true) {
         elements.$genefeatureHeightInput.addEventListener("change", () => {
             const val = elements.$genefeatureHeightInput.value;
             elements.$genefeatureHeightOutput.value = val + "%";
@@ -402,10 +402,12 @@ function initEventHandlers({db, elements}) {
         updateCoverageChartOption({db, elements});
     });
 
-    elements.$selectedGeneFeatures.select2({
-        tags: true,
-        width: "100%",
-    });
+    if (db.show_genes === true || db.show_amplicons === true){
+        elements.$selectedGeneFeatures.select2({
+            tags: true,
+            width: "100%",
+        });
+    }
 
     elements.$selectedGeneFeatures.on("select2:select", (evt) => {
         let element = evt.params.data.element;
@@ -463,7 +465,7 @@ function initEventHandlers({db, elements}) {
         });
     }
 
-    if (db.show_amplicons === true) {
+    if (db.show_amplicons === true && db.show_genes === true) {
         $toggleAmplicons.addEventListener("change", () => {
 
             db.show_amplicons = $toggleAmplicons.checked;
@@ -473,10 +475,10 @@ function initEventHandlers({db, elements}) {
                     seriesOption[i].renderItem = getRegionAmpliconDepthRenderer(db.show_amplicons);
                 }
             }
-            db.showGeneLabels = elements.$toggleGeneLabel.checked;
-            if (db.showGeneLabels) {
-                seriesOption[seriesOption.length - 1].renderItem = getGeneFeatureRenderer(db);
-            }
+            //db.showGeneLabels = elements.$toggleGeneLabel.checked;
+            //if (db.showGeneLabels) {
+            //    seriesOption[seriesOption.length - 1].renderItem = getGeneFeatureRenderer(db);
+            //}
             const gridOptions = getGrids(db);
             db.leftMargin = $chartLeftInput.value;
             db.rightMargin = $chartRightInput.value;
@@ -489,10 +491,11 @@ function initEventHandlers({db, elements}) {
         });
     }
 
-
-    elements.$btnShowSelectedGeneFeatures.addEventListener("click", () => {
-        applyFeatureView({db, elements})
-    })
+    if (db.show_genes === true || db.show_amplicons === true){
+        elements.$btnShowSelectedGeneFeatures.addEventListener("click", () => {
+            applyFeatureView({db, elements})
+        })
+    }
 
     $toggleShowVariantLabels.addEventListener("change", () => {
         let series = db.chart.getOption().series;
@@ -525,17 +528,6 @@ function initEventHandlers({db, elements}) {
         }
         db.chart.setOption({xAxis});
     });
-
-    // elements.$toggleShowLowCovRegionLabels.addEventListener("change", () => {
-    //     let series = chart.getOption().series;
-    //     let showLabel = elements.$toggleShowLowCovRegionLabels.checked;
-    //     series.forEach(series => {
-    //         if (series.type === "line") {
-    //             series.markArea.label.show = showLabel;
-    //         }
-    //     });
-    //     chart.setOption({series});
-    // });
 
     elements.$toggleShowLowCovRegions.addEventListener("change", () => {
         let series = db.chart.getOption().series;
@@ -592,24 +584,6 @@ function initEventHandlers({db, elements}) {
         resetGridDisplay({db, elements});
     })
 
-    /*
-    elements.$btnSetYMax.addEventListener("click", () => {
-        db.yMax = parseInt(elements.$ymax.value);
-        let yAxisOption = db.chart.getOption().yAxis;
-        yAxisOption = updateYAxisOption({yAxisOption, db});
-        db.chart.setOption({yAxis: yAxisOption});
-    });
-
-    elements.$selectYScale.addEventListener("change", () => {
-        db.yMax = maxBy(Object.values(db.mosdepth_info), "max_depth").max_depth;
-        elements.$ymax.value = db.yMax;
-        db.scaleType = elements.$selectYScale.value;
-        let yAxisOption = db.chart.getOption().yAxis;
-        yAxisOption = updateYAxisOption({yAxisOption, db});
-        db.chart.setOption({yAxis: yAxisOption});
-    });
-     */
-
 }
 
 /**
@@ -628,6 +602,8 @@ function initWgscovplotRenderEnv({db, elements}) {
         $toggleDarkMode,
     } = elements;
     let chartOptions = chart.getOption();
+    db.yMax = maxBy(Object.values(db.mosdepth_info), "max_depth").max_depth * 1.5;
+    elements.$ymax.value = db.yMax;
     if (isNil(chartOptions)) {
         chart.setOption(getCoverageChartOption(db));
         variantHeatmap.setOption(getVariantHeatmapOption(db));

@@ -125,7 +125,8 @@ def parse_genbank(
     Args:
         gb_handle_or_path: Handle or path to Genbank file
     """
-    features: List[Feature] = []
+    #features: List[Feature] = []
+    features = {}
     skip_feature = {"CDS", "source", "repeat_region", "misc_feature"}
     seq = ''
     for seq_record in SeqIO.parse(gb_handle_or_path, "gb"):
@@ -149,13 +150,26 @@ def parse_genbank(
             start_pos = int(seq_feature.location.start) + 1
             end_pos = int(seq_feature.location.end)
             strand = int(seq_feature.strand)
-            features.append(Feature(
-                start=start_pos,
-                end=end_pos,
-                strand=strand,
-                name=feature_name
-            ))
-    features.sort(key=lambda f: f.start)
+            if features.get(strand):
+                features[strand].append(Feature(
+                    start=start_pos,
+                    end=end_pos,
+                    strand=strand,
+                    name=feature_name
+                ))
+            else:
+                features[strand] = []
+                features[strand].append(Feature(
+                    start=start_pos,
+                    end=end_pos,
+                    strand=strand,
+                    name=feature_name
+                ))
+    # sort plus, minus strand coord separately
+    if 1 in features.keys():
+        features[1].sort(key=lambda k: k.start)
+    if -1 in features.keys():
+        features[-1].sort(key=lambda k: k.start)
     return seq, features
 
 
@@ -174,6 +188,8 @@ def get_ref_seq_and_annotation(
     if ref_seq is None or (gene_features is None and get_gene_features):
         ref_id = mosdepth.get_refseq_id(input_dir)
         ref_seq, gene_features = fetch_ref_seq_from_ncbi_entrez(ref_id)
+        if not get_gene_features:
+            gene_features = None
     return ref_seq, gene_features
 
 
