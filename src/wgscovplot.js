@@ -735,9 +735,7 @@ function applyFeatureView({db, elements}) {
 
 /**
  * Adjust subplot heights and top margins and chart-height-output value.
- *
  * Triggered on change of #chart-height-input value.
- *
  * @param {string} val - Subplots height percent value
  * @param {WgsCovPlotDB} db
  * @param {Elements} elements
