@@ -244,13 +244,10 @@ function getCoverageChartOption(db) {
         toolbox: {
             show: "true",
             feature: {
-                dataView: {
-                    readOnly: false,
-                },
-                restore: {},
                 saveAsImage: {
                     name: "wgscovplot",
                 },
+                restore: {},
             },
         },
         dataZoom: getDataZoom(selectedSamples.length),
@@ -300,13 +297,10 @@ function getFluCoverageChartOption(db) {
         toolbox: {
             show: "true",
             feature: {
-                dataView: {
-                    readOnly: false,
-                },
-                restore: {},
                 saveAsImage: {
                     name: "wgscovplot",
                 },
+                restore: {},
             },
         },
         dataZoom: getDataZoom(selectedSamples.length),
