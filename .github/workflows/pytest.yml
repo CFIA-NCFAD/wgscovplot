@@ -36,3 +36,10 @@ jobs:
         pwd
         ls
         pytest --no-header --tb=auto -v -s tests/wgscovplot_pytest.py
+    - name: Upload output/
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-artifact
+        path: ./*.html
+
