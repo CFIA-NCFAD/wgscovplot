@@ -54,7 +54,6 @@ function updateCoverageChartOption({db, elements}) {
     db.hideOverlappingVariantLabels = elements.$toggleHideOverlappingVariantLabels.checked;
     db.low_coverage_threshold = parseInt(elements.$lowThreshold.value);
     let updateOption = getCoverageChartOption(db);
-
     let lowCoverageRegion = elements.$toggleShowLowCovRegions.checked;
     db.showLowCovRegionsOpacity = lowCoverageRegion ? 0.4 : 0.0;
     // Preserve tooltip config in series options
@@ -383,6 +382,7 @@ function initEventHandlers({db, elements}) {
 
     /**
      * Events for selecting sample
+     * https://stackoverflow.com/questions/40763223/select2-multiselect-how-to-stop-automatic-sorting
      */
     elements.$selectedSamples.on("select2:select", (evt) => {
         let element = evt.params.data.element;
@@ -408,7 +408,7 @@ function initEventHandlers({db, elements}) {
             width: "100%",
         });
     }
-
+    //https://stackoverflow.com/questions/40763223/select2-multiselect-how-to-stop-automatic-sorting
     elements.$selectedGeneFeatures.on("select2:select", (evt) => {
         let element = evt.params.data.element;
         let $element = $(element);
@@ -848,7 +848,7 @@ function setDataZoom(
 }
 
 /**
- * Reset Grid Dislay to optimal configuration
+ * Reset Grid Display to optimal configuration
  * @param {WgsCovPlotDB} db
  * @param {Elements} elements
  */
@@ -890,6 +890,7 @@ function onChartDataZoomActions({db, elements}) {
 
     db.chart.on("dblclick", function ({componentIndex, componentSubType}) {
         if (componentIndex === db.chart.getOption().series.length - 1 && componentSubType === "custom") {
+            console.log("dbclick")
             const start = 1;
             const end = ref_seq.length;
             $startPos.value = start;

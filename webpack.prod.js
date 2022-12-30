@@ -26,7 +26,7 @@ module.exports = {
     module: {
         rules:[{
                 test:/\.js$/,
-                exclude:[/(node_modules)/,/(wgscovplot)/],
+                exclude:[/(node_modules)/,/(wgscovplot)/,/(tests)/],
                 use: "babel-loader"
             },
             {

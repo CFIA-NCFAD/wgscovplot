@@ -1,5 +1,6 @@
 import {map} from "lodash/collection";
 import {join} from "lodash/array";
+let isBase64 = require('is-base64');
 
 /**
  * Define properties for gene/amplicon feature plot which is in the last index of grid
@@ -34,10 +35,14 @@ export const FLU_SEGMENT_COLOURS = {
     "8_NS": "#FF7F00"
 };
 
+
 function toFloat32Array(b64) {
-    let f32a = new Float32Array(new Uint8Array([...window.atob(b64)].map(c => c.charCodeAt(0))).buffer)
-    let depthArr = Array.from(f32a)
-    return depthArr
+    if (isBase64(b64)) {
+        let f32a = new Float32Array(new Uint8Array([...window.atob(b64)].map(c => c.charCodeAt(0))).buffer);
+        let depthArr = Array.from(f32a);
+        return depthArr;
+    }
+    return b64;
 }
 
 
@@ -68,7 +73,7 @@ function toTableHtml(
                 "<tr>" +
                 join(
                     map(xs, function (x, i) {
-                        return `<td ${i === 0 ? "scope=\"row\"" : ""}><samp>${x}</samp></td>`;
+                        return "<td " + (i === 0 ? 'scope="row"' : "") + ">" + "<samp>"+x+"</samp>" + "</td>";
                     }),
                     ""
                 ) +

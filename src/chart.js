@@ -255,13 +255,6 @@ function getCoverageChartOption(db) {
     };
 }
 
-export {
-    getCoverageChartOption,
-    getGrids,
-    getDataZoom,
-    getTooltips,
-};
-
 /**
  * Get Coverage Chart options
  * @param {WgsCovPlotDB} db - wgscovplot DB object
@@ -310,4 +303,10 @@ function getFluCoverageChartOption(db) {
 
 }
 
-export {getFluCoverageChartOption};
+export {
+    getFluCoverageChartOption,
+    getCoverageChartOption,
+    getGrids,
+    getDataZoom,
+    getTooltips,
+};
