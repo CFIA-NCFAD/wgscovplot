@@ -1,6 +1,6 @@
 {
   "name": "wgscovplot",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "",
   "main": "wgscovplot/tmpl/wgscovplot.prod.bundle.js",
   "directories": {
@@ -8,8 +8,8 @@
     "test": "tests"
   },
   "scripts": {
-    "dev": "webpack serve --config webpack.dev.js",
-    "prod": "webpack --config webpack.prod.js",
+    "dev:js": "webpack serve --config webpack.dev.js",
+    "prod:js": "webpack --config webpack.prod.js",
     "test": "jest --env=jsdom --config jest.config.js",
     "eslint": "eslint src wgscovplot/tmpl/js"
   },

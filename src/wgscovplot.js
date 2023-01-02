@@ -21,7 +21,7 @@ import {isNil, maxBy} from "lodash";
 
 import $ from "jquery";
 import {getGeneFeatureRenderer} from "./features";
-import {getVariantHeatmapOption} from "./variantHeatmap";
+import {getVariantHeatmapOption} from "./heatmap";
 
 echarts.use(
     [TooltipComponent, GridComponent,
@@ -270,9 +270,9 @@ function initChartDisplayEventHandlers({db, elements}) {
         () => initWgscovplotRenderEnv({db, elements})
     );
     if (db.show_genes === true || db.show_amplicons === true) {
-        elements.$genefeatureHeightInput.addEventListener("change", () => {
-            const val = elements.$genefeatureHeightInput.value;
-            elements.$genefeatureHeightOutput.value = val + "%";
+        elements.$geneFeatureHeightInput.addEventListener("change", () => {
+            const val = elements.$geneFeatureHeightInput.value;
+            elements.$geneFeatureHeightOutput.value = val + "%";
             let gridOption = db.chart.getOption().grid;
             gridOption[gridOption.length - 1].height = val + "%";
             db.chart.setOption({grid: gridOption});
@@ -566,7 +566,6 @@ function initEventHandlers({db, elements}) {
                 },
             ],
         });
-        /*
         db.variantHeatmap.setOption({
             dataZoom: [
                 {
@@ -576,8 +575,8 @@ function initEventHandlers({db, elements}) {
                     type: "slider",
                     show: db.showDataZoomSlider
                 }
-            ]
-        });*/
+            ],
+        });
     });
 
     elements.$btnResetMargins.addEventListener("click", () => {
@@ -890,7 +889,6 @@ function onChartDataZoomActions({db, elements}) {
 
     db.chart.on("dblclick", function ({componentIndex, componentSubType}) {
         if (componentIndex === db.chart.getOption().series.length - 1 && componentSubType === "custom") {
-            console.log("dbclick")
             const start = 1;
             const end = ref_seq.length;
             $startPos.value = start;
@@ -932,8 +930,8 @@ function updateControlMenu({db, elements}) {
         elements.$chartRightOutput.value = right + "%";
         if (db.show_amplicons || db.show_genes) {
             let featuresGrid = gridOption[gridOption.length - 1];
-            elements.$genefeatureHeightInput.value = featuresGrid.height;
-            elements.$genefeatureHeightOutput.value = featuresGrid.height;
+            elements.$geneFeatureHeightInput.value = parseFloat(featuresGrid.height);
+            elements.$geneFeatureHeightOutput.value = featuresGrid.height;
         }
     }
 }

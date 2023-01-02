@@ -317,8 +317,8 @@
                         <div class="row mb-3">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
-                                    <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
+                                    <label class="form-check-label" for="toggle-dark-mode">Dark Mode</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-dark-mode" unchecked>
                                 </div>
                             </div>
                         </div>
@@ -336,10 +336,10 @@
                             <div class="d-flex">
                                 <label class="form-label">Feature Plot Height</label>
                                 <output class="text-muted ms-auto"
-                                        id="genefeature-height-output">15.0<span>%</span></output>
+                                        id="gene-feature-height-output">15.0<span>%</span></output>
                             </div>
                             <div>
-                                <input type="range" id="genefeature-height-input" class="form-range"
+                                <input type="range" id="gene-feature-height-input" class="form-range"
                                        value="15.0" min="1.0"
                                        max="50.0" step="0.1">
                             </div>
@@ -348,10 +348,10 @@
                         <div class="row mb-1">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                    <label class="form-check-label" for="toggle-gene-label">Show Gene Label</label>
                                     <span class="info-icon text-info ms-1"
                                           title="Show Gene Features Names">ℹ️</span>
-                                    <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                                    <input class="form-check-input" type="checkbox" id="toggle-gene-label" checked>
                                 </div>
                             </div>
                         </div>
@@ -379,11 +379,6 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="d-grid gap-2 col-3 mx-auto">
-
-                            </div>
-                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -405,11 +400,11 @@
                         </div>
                         <div>
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping
+                                <label class="form-check-label" for="toggle-hide-overlap-mutation">Hide Overlapping
                                     Mutations</label>
                                 <span class="info-icon text-info ms-1"
                                       title="Hide/Show overlapping mutation display">ℹ️</span>
-                                <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation"
+                                <input class="form-check-input" type="checkbox" id="toggle-hide-overlap-mutation"
                                        checked>
                             </div>
                         </div>

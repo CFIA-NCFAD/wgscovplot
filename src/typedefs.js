@@ -115,8 +115,8 @@
  * @property {HTMLOutputElement} $chartLeftOutput
  * @property {HTMLInputElement} $chartRightInput
  * @property {HTMLOutputElement} $chartRightOutput
- * @property {HTMLInputElement} $genefeatureHeightInput
- * @property {HTMLOutputElement} $genefeatureHeightOutput
+ * @property {HTMLInputElement} $geneFeatureHeightInput
+ * @property {HTMLOutputElement} $geneFeatureHeightOutput
  * @property {HTMLSelectElement} $renderEnv
  * @property {Object} $selectedSamples
  * @property {Object} $selectedGeneFeatures

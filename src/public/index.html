@@ -87,45 +87,6 @@
     </style>
 </head>
 <body>
-<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">
-      WGSCOVPLOT
-    </span>
-        <div class="navbar-nav nav me-auto mb-2 mb-lg-0">
-            <a type="button"
-               class="nav-link active"
-               aria-current="page"
-               data-bs-toggle="tab"
-               data-bs-target="#chart-pane"
-               aria-selected="true">
-                Coverage Plot
-            </a>
-            <a type="button"
-               class="nav-link show-for-unsegmented-viruses"
-               aria-current="page"
-               data-bs-toggle="tab"
-               data-bs-target="#varmap-chart-pane"
-               aria-selected="true">
-                Variant Heatmap
-            </a>
-            <a type="button"
-               class="nav-link"
-               data-bs-toggle="tab"
-               data-bs-target="#summary-table"
-               aria-selected="false">
-                Summary Information
-            </a>
-            <a type="button"
-               class="nav-link"
-               data-bs-toggle="tab"
-               data-bs-target="#about"
-               aria-selected="false">
-                About
-            </a>
-        </div>
-    </div>
-</nav>
 
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
@@ -137,11 +98,6 @@
             <a type="button" class="nav-link" aria-current="page" data-bs-toggle="tab"
                data-bs-target="#varmap-chart-pane"
                aria-selected="true">Variant Heatmap</a>
-            <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#summary-table"
-               aria-selected="false">Summary
-                Information</a>
-            <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#about"
-               aria-selected="false">About</a>
         </div>
     </div>
     </div>
@@ -181,7 +137,7 @@
                             <div class="col-sm-7">
                                 <div class="input-group">
                                     <input id="ymax" class="form-control form-control-sm" type="number"
-                                           value={{ db.max_depth }}>
+                                           value=0>
                                     <button class="btn btn-sm btn-primary" type="button" id="set-ymax">
                                         Set
                                     </button>
@@ -426,8 +382,8 @@
                         <div class="row mb-3">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-darkmode">Dark Mode</label>
-                                    <input class="form-check-input" type="checkbox" id="toggle-darkmode" unchecked>
+                                    <label class="form-check-label" for="toggle-dark-mode">Dark Mode</label>
+                                    <input class="form-check-input" type="checkbox" id="toggle-dark-mode" unchecked>
                                 </div>
                             </div>
                         </div>
@@ -443,10 +399,10 @@
                             <div class="d-flex">
                                 <label class="form-label">Feature Plot Height</label>
                                 <output class="text-muted ms-auto"
-                                        id="genefeature-height-output">15.0<span>%</span></output>
+                                        id="gene-feature-height-output">15.0<span>%</span></output>
                             </div>
                             <div>
-                                <input type="range" id="genefeature-height-input" class="form-range"
+                                <input type="range" id="gene-feature-height-input" class="form-range"
                                        value="15.0" min="1.0"
                                        max="50.0" step="0.1">
                             </div>
@@ -454,10 +410,10 @@
                         <div class="row mb-1">
                             <div>
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="toggle-genelabel">Show Gene Label</label>
+                                    <label class="form-check-label" for="toggle-gene-label">Show Gene Label</label>
                                     <span class="info-icon text-info ms-1"
                                           title="Show Gene Features Names">ℹ️</span>
-                                    <input class="form-check-input" type="checkbox" id="toggle-genelabel" checked>
+                                    <input class="form-check-input" type="checkbox" id="toggle-gene-label" checked>
                                 </div>
                             </div>
                         </div>
@@ -479,11 +435,6 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="d-grid gap-2 col-3 mx-auto">
-
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <!--- Variant Calls ---->
@@ -503,11 +454,11 @@
                         </div>
                         <div>
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="toggle-hideoverlap-mutation">Hide Overlapping
+                                <label class="form-check-label" for="toggle-hide-overlap-mutation">Hide Overlapping
                                     Mutations</label>
                                 <span class="info-icon text-info ms-1"
                                       title="Hide/Show overlapping mutation display">ℹ️</span>
-                                <input class="form-check-input" type="checkbox" id="toggle-hideoverlap-mutation"
+                                <input class="form-check-input" type="checkbox" id="toggle-hide-overlap-mutation"
                                        checked>
                             </div>
                         </div>
@@ -531,16 +482,6 @@
     <div class="tab-pane" id="varmap-chart-pane" role="tabpanel">
         <div class="container-fluid" id="varmap-chart"></div>
     </div>
-    <div class="tab-pane" id="about" role="tabpanel">
-        <div class="container">
-            <h6>No about information for development mode</h6>
-        </div>
-    </div>
-    <div class="tab-pane" id="summary-table" role="tabpanel">
-        <div class="container">
-            <h6>No summary information for development mode</h6>
-        </div>
-    </div>
 </div>
 
 <!-- TODO: allow loading of different test virus DBs based on CLI opts for npm/webpack -->
@@ -549,14 +490,13 @@
     document.addEventListener("DOMContentLoaded", function (event) {
         const $chart = document.getElementById("chart");
         const $variantHeatmap = document.getElementById("varmap-chart");
-
         console.time("convert base64 depths");
         let xs;
         for (let [sample, depthsBase64] of Object.entries(db.depths)) {
-            xs = Array.from(new Uint16Array(new Uint8Array([...atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
+            xs = Array.from(new Uint16Array(new Uint8Array([...window.atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
             for (let i = 0; i < xs.length; i++) {
                 if (xs[i] === 0) {
-                    xs[i] = 0.0000001;
+                    xs[i] = 1E-5;
                 }
             }
             db.depths[sample] = xs;
@@ -571,7 +511,6 @@
         db.selectedSamples = db.samples.slice(0, 3);
         //Axis Option
         db.scaleType = "log";
-        db.yMax = 100000;
         db.low_coverage_threshold= 10;
         //Tooltips option
         db.showVariantSiteTooltips = true;
@@ -590,8 +529,6 @@
         db.showGeneLabels = true;
         db.show_amplicons = true;
         db.show_genes = true;
-
-
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;
             let bbox = $chart.getBoundingClientRect();
@@ -631,28 +568,33 @@
             $ymax: document.getElementById("ymax"),
             $btnSetYMax: document.getElementById("set-ymax"),
             $toggleXAxisLabel: document.getElementById("toggle-xaxis-label"),
-
+            //Display options
+            $toggleDataZoomSlider: document.getElementById("toggle-zoom-slider"),
+            $startPos: document.getElementById("start-pos"),
+            $endPos: document.getElementById("end-pos"),
+            $btnShowZoomRegion: document.getElementById("show-zoom-region"),
+            $btnResetView: document.getElementById("reset-view"),
+            $lowThreshold: document.getElementById("low-threshold"),
+            $toggleShowLowCovRegions: document.getElementById("toggle-low-coverage-regions"),
+            $btnSetLowCovThreshold: document.getElementById("set-low-threshold"),
             $chartHeightInput: document.getElementById("chart-height-input"),
             $chartHeightOutput: document.getElementById("chart-height-output"),
-            $chartTopInput: document.getElementById("chart-top-input"),
-            $chartTopOutput: document.getElementById("chart-top-output"),
             $chartLeftInput: document.getElementById("chart-left-input"),
             $chartLeftOutput: document.getElementById("chart-left-output"),
             $chartRightInput: document.getElementById("chart-right-input"),
             $chartRightOutput: document.getElementById("chart-right-output"),
-            $genefeatureHeightInput: document.getElementById("genefeature-height-input"),
-            $genefeatureHeightOutput: document.getElementById("genefeature-height-output"),
+            $chartTopInput: document.getElementById("chart-top-input"),
+            $chartTopOutput: document.getElementById("chart-top-output"),
+            $btnResetMargins: document.getElementById("reset-margin"),
             $renderEnv: document.getElementById("render-env"),
-
+            $toggleDarkMode: document.getElementById("toggle-dark-mode"),
+            //Gene Features
             $selectedGeneFeatures: $("#selected-gene-feature-name"),
-            $btnShowSelectedGeneFeatures: document.getElementById("show-selected-gene-feature"),
-            $toggleDarkMode: document.getElementById("toggle-darkmode"),
-            $toggleGeneLabel: document.getElementById("toggle-genelabel"),
+            $geneFeatureHeightInput: document.getElementById("gene-feature-height-input"),
+            $geneFeatureHeightOutput: document.getElementById("gene-feature-height-output"),
+            $toggleGeneLabel: document.getElementById("toggle-gene-label"),
             $toggleAmplicons: document.getElementById("toggle-amplicon"),
-            $toggleMutations: document.getElementById("toggle-mutation"),
-            $startPos: document.getElementById("start-pos"),
-            $endPos: document.getElementById("end-pos"),
-
+            $btnShowSelectedGeneFeatures: document.getElementById("show-selected-gene-feature"),
             //Tooltips option
             $toggleTooltip: document.getElementById("toggle-tooltip"),
             $toggleFixedTooltipPosition: document.getElementById("fix-tooltip-position"),
@@ -661,22 +603,12 @@
             $toggleShowNonVariantSiteTooltips: document.getElementById("toggle-tooltip-non-variant-sites"),
             $toggleTooltipVariantComparison: document.getElementById("toggle-variant-comparison"),
             $toggleTooltipCovStats: document.getElementById("toggle-coverage-stat"),
+            //Variants call
             $toggleShowVariantLabels: document.getElementById("toggle-mutation"),
-
-            //Display option
-            $toggleDataZoomSlider: document.getElementById("toggle-zoom-slider"),
-            $btnShowZoomRegion: document.getElementById("show-zoom-region"),
-            $btnResetView: document.getElementById("reset-view"),
-            $lowThreshold: document.getElementById("low-threshold"),
-            $toggleShowLowCovRegions: document.getElementById("toggle-low-coverage-regions"),
-            $btnSetLowCovThreshold: document.getElementById("set-low-threshold"),
-
-            $toggleHideOverlappingVariantLabels: document.getElementById("toggle-hideoverlap-mutation"),
-            $btnResetMargins: document.getElementById("reset-margin"),
+            $toggleHideOverlappingVariantLabels: document.getElementById("toggle-hide-overlap-mutation"),
 
         }
         window.elements = elements;
-
         const selectedSamplesOpts = [];
         for (let i = 0; i < db.samples.length; i++) {
             let sample = db.samples[i];
@@ -692,8 +624,8 @@
         });
 
         const selectedGeneFeatures = [];
-        for (let j = 0; j < window.db.echart_features.length; j++) {
-            selectedGeneFeatures.push(window.db.echart_features[j].name)
+        for (let j = 0; j < db.echart_features.length; j++) {
+            selectedGeneFeatures.push(db.echart_features[j].name)
         }
         elements.$selectedGeneFeatures.select2({
             data: selectedGeneFeatures,

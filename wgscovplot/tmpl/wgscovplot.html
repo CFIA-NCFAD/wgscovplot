@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <title>WGSCOVPLOT</title>
     <script type="text/javascript">
-        {% if dev == false %}
-        {% include "js/wgscovplot.prod.bundle.js" %}
-        {% else %}
-        {% include "js/wgscovplot.dev.bundle.js" %}
-        {% endif %}
+        {% include "js/wgscovplot.bundle.js" %}
     </script>
     <style>
         #nav-tabContent {
@@ -94,13 +90,13 @@
     </style>
 </head>
 <body>
+
 {% block content %}
 {% include "wgscovplot_control_menu.html" %}
 {% endblock %}
 
 <script>
-    const db = {{db | tojson}};
-    console.log(db)
+    const db = {{ db | tojson }};
     window.db = db;
     document.addEventListener("DOMContentLoaded", function (event) {
         const $chart = document.getElementById("chart");
@@ -113,7 +109,6 @@
         db.selectedSamples = window.db.samples.slice(0, 3);
         //Axis Option
         db.scaleType = "log";
-        db.yMax = 100000;
         //Tooltips option
         db.showVariantSiteTooltips = true;
         db.showNonVariantSiteTooltips = false;
@@ -167,28 +162,33 @@
             $ymax: document.getElementById("ymax"),
             $btnSetYMax: document.getElementById("set-ymax"),
             $toggleXAxisLabel: document.getElementById("toggle-xaxis-label"),
-
+            //Display options
+            $toggleDataZoomSlider: document.getElementById("toggle-zoom-slider"),
+            $startPos: document.getElementById("start-pos"),
+            $endPos: document.getElementById("end-pos"),
+            $btnShowZoomRegion: document.getElementById("show-zoom-region"),
+            $btnResetView: document.getElementById("reset-view"),
+            $lowThreshold: document.getElementById("low-threshold"),
+            $toggleShowLowCovRegions: document.getElementById("toggle-low-coverage-regions"),
+            $btnSetLowCovThreshold: document.getElementById("set-low-threshold"),
             $chartHeightInput: document.getElementById("chart-height-input"),
             $chartHeightOutput: document.getElementById("chart-height-output"),
-            $chartTopInput: document.getElementById("chart-top-input"),
-            $chartTopOutput: document.getElementById("chart-top-output"),
             $chartLeftInput: document.getElementById("chart-left-input"),
             $chartLeftOutput: document.getElementById("chart-left-output"),
             $chartRightInput: document.getElementById("chart-right-input"),
             $chartRightOutput: document.getElementById("chart-right-output"),
-            $genefeatureHeightInput: document.getElementById("genefeature-height-input"),
-            $genefeatureHeightOutput: document.getElementById("genefeature-height-output"),
+            $chartTopInput: document.getElementById("chart-top-input"),
+            $chartTopOutput: document.getElementById("chart-top-output"),
+            $btnResetMargins: document.getElementById("reset-margin"),
             $renderEnv: document.getElementById("render-env"),
-
+            $toggleDarkMode: document.getElementById("toggle-dark-mode"),
+            //Gene Features
             $selectedGeneFeatures: $("#selected-gene-feature-name"),
-            $btnShowSelectedGeneFeatures: document.getElementById("show-selected-gene-feature"),
-            $toggleDarkMode: document.getElementById("toggle-darkmode"),
-            $toggleGeneLabel: document.getElementById("toggle-genelabel"),
+            $geneFeatureHeightInput: document.getElementById("gene-feature-height-input"),
+            $geneFeatureHeightOutput: document.getElementById("gene-feature-height-output"),
+            $toggleGeneLabel: document.getElementById("toggle-gene-label"),
             $toggleAmplicons: document.getElementById("toggle-amplicon"),
-            $toggleMutations: document.getElementById("toggle-mutation"),
-            $startPos: document.getElementById("start-pos"),
-            $endPos: document.getElementById("end-pos"),
-
+            $btnShowSelectedGeneFeatures: document.getElementById("show-selected-gene-feature"),
             //Tooltips option
             $toggleTooltip: document.getElementById("toggle-tooltip"),
             $toggleFixedTooltipPosition: document.getElementById("fix-tooltip-position"),
@@ -197,18 +197,9 @@
             $toggleShowNonVariantSiteTooltips: document.getElementById("toggle-tooltip-non-variant-sites"),
             $toggleTooltipVariantComparison: document.getElementById("toggle-variant-comparison"),
             $toggleTooltipCovStats: document.getElementById("toggle-coverage-stat"),
+            //Variants call
             $toggleShowVariantLabels: document.getElementById("toggle-mutation"),
-
-            //Display option
-            $toggleDataZoomSlider: document.getElementById("toggle-zoom-slider"),
-            $btnShowZoomRegion: document.getElementById("show-zoom-region"),
-            $btnResetView: document.getElementById("reset-view"),
-            $lowThreshold: document.getElementById("low-threshold"),
-            $toggleShowLowCovRegions: document.getElementById("toggle-low-coverage-regions"),
-            $btnSetLowCovThreshold: document.getElementById("set-low-threshold"),
-
-            $toggleHideOverlappingVariantLabels: document.getElementById("toggle-hideoverlap-mutation"),
-            $btnResetMargins: document.getElementById("reset-margin"),
+            $toggleHideOverlappingVariantLabels: document.getElementById("toggle-hide-overlap-mutation"),
 
         }
         window.elements = elements;
