@@ -1,65 +1,57 @@
 import {FLU_SEGMENT_COLOURS} from "../../util";
-import {max} from "lodash/math";
-
 
 /**
  * Get maximum length for a segment among samples
  * @param {WgsCovPlotDB} db
- * @returns {SegmentCoords}
+ * @returns {Object}
+ *
  */
-function getSegmentCoords(db) {
+function getMaxSegmentLength(db) {
     const {
         selectedSegments,
-        selectedSamples,
-        depths,
+        selectedSamples
+    } = db;
+    let out = {}
+    for (let segment of selectedSegments) {
+        let maxLength = 0;
+        for (let sample of selectedSamples) {
+            let length = db.mosdepth_info[sample][segment].ref_seq_length;
+            if (maxLength <= length) {
+                maxLength = length;
+            }
+        }
+        out[segment] = maxLength;
+    }
+    return out
+}
+
+/**
+ * Get maximum length for a segment among samples
+ * @param {WgsCovPlotDB} db
+ * @param {maxSegmentLength} maxSegmentLength
+ * @returns {Object}
+ */
+function getSegmentCoords(db, maxSegmentLength) {
+    const {
+        selectedSegments,
     } = db;
     let out = {};
     let prev = {
         maxLength: 0,
         start: 0,
-        end: 1,
+        end: 0,
     }
     for (let segment of selectedSegments) {
-        let maxLength = 0;
-        for (let sample of selectedSamples) {
-            let length = depths[sample][segment].length;
-            if (maxLength <= length) {
-                maxLength = length;
-            }
-        }
+        let maxLength = maxSegmentLength[segment];
         let segCoords = {
             maxLength,
             start: prev.end + 1,
-            end: prev.end + maxLength + 1,
+            end: prev.end + maxLength,
         };
         out[segment] = segCoords;
         prev = segCoords;
     }
     return out;
-}
-
-
-/**
- * Get max y-axis value
- * @param {WgsCovPlotDB} db
- * @returns {number}
- */
-function getYAxisMax(db) {
-    const {
-        selectedSamples,
-        selectedSegments,
-        depths
-    } = db;
-    let yAxisMax = 0;
-    for (let segment of selectedSegments) {
-        for (let sample of selectedSamples) {
-            let maxDepth = max(depths[sample][segment]);
-            if (yAxisMax <= maxDepth) {
-                yAxisMax = maxDepth;
-            }
-        }
-    }
-    return yAxisMax;
 }
 
 /**
@@ -85,7 +77,7 @@ function whichSegment(
 /**
  * Get influenza segment features options array for ECharts
  * @param {WgsCovPlotDB} db
- * @returns {Array<Object>}
+ * @returns {Object[]}
  *
  */
 function getFluGeneFeature(db) {
@@ -104,7 +96,7 @@ function getFluGeneFeature(db) {
                 start,
                 end,
                 level: 0,
-                strand: "",
+                strand: 1,
                 rotate: 0.0,
                 type: "segment",
             },
@@ -117,4 +109,4 @@ function getFluGeneFeature(db) {
     return geneFeature;
 }
 
-export {getSegmentCoords, getFluGeneFeature, getYAxisMax, whichSegment};
+export {getMaxSegmentLength, getSegmentCoords, getFluGeneFeature, whichSegment};

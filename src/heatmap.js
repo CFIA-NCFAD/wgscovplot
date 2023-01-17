@@ -54,9 +54,9 @@ function getTooltipHeatmap(
 
 /**
  * Prepare data for Variant heatmap
- * @param {Array<string>} samples - An array of samples name
+ * @param {String[]} samples - An array of samples name
  * @param {SampleVariantCalls|SampleSegmentVariantCalls} variants - The object of variants data
- * @returns {[string[], Array<[number, number, number]>]} - Tuple of mutation names array and array of mutation AF values for heatmap
+ * @returns {[string[], number[]} - Tuple of mutation names array and array of mutation AF values for heatmap
  */
 function getMutationMatrix(samples, variants) {
     let sampleVariants = [];

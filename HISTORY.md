@@ -7,7 +7,7 @@
 
 ## 0.2.1 (2022-06-14)
 
-- Fixed issues of tooltips displayed incorrectly due to samples list being reversed 
+- Fixed issues of segmentTooltips displayed incorrectly due to samples list being reversed 
 
 ## 0.2.0 (2022-03-28)
 

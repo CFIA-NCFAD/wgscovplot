@@ -8,7 +8,8 @@
     "test": "tests"
   },
   "scripts": {
-    "dev:js": "webpack serve --config webpack.dev.js",
+    "dev:segment": "webpack serve --env build=segment --port 9000 --config webpack.dev.js",
+    "dev:nonsegment": "webpack serve --env build=nonsegment --port 9001 --config webpack.dev.js",
     "prod:js": "webpack --config webpack.prod.js",
     "test": "jest --env=jsdom --config jest.config.js",
     "eslint": "eslint src wgscovplot/tmpl/js"
@@ -28,7 +29,6 @@
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
     "echarts": "^5.4.1",
-    "is-base64": "^1.1.0",
     "jquery": "^3.6.3",
     "lodash": "^4.17.21",
     "select2": "^4.1.0-rc.0"

@@ -1,10 +1,10 @@
 import {FEATURE_PLOT_PROPS} from "../util";
-import {isNil} from "lodash";
+import {isNil, maxBy} from "lodash";
 
 /**
  * Custom xAxis label (for segment virus)
  * @param {number} value - xAxis value
- * @param {Array<string>} segments - An array of segments names
+ * @param {string[]} segments - An array of segments names
  * @param {SegmentCoords} segCoords
  * @returns {string}
  */
@@ -27,7 +27,7 @@ function getCustomXAxisLabel(value, segments, segCoords) {
 function getXAxes(db) {
     const {
         selectedSamples,
-        segments = null,
+        selectedSegments = null,
         segCoords = null,
         positions,
         show_genes,
@@ -35,9 +35,9 @@ function getXAxes(db) {
         showXAxisLabel = true,
     } = db;
     let formatter = {};
-    if (!isNil(segments) && segments.length > 0) {
+    if (!isNil(selectedSegments) && selectedSegments.length > 0) {
         formatter.formatter = function (value) {
-            return getCustomXAxisLabel(value, segments, segCoords)
+            return getCustomXAxisLabel(value, selectedSegments, segCoords)
         }
     }
     let axes = [];
@@ -72,7 +72,7 @@ function getXAxes(db) {
 /**
  * Define options for Y axis
  * @param {WgsCovPlotDB} db
- * @returns {Array<Object>}
+ * @returns {Object[]}
  */
 function getYAxes(db) {
     const {
@@ -102,7 +102,7 @@ function getYAxes(db) {
             },
         });
     }
-    if (show_amplicons || show_genes) {
+    if (show_amplicons || show_genes || db.segment_virus) {
         axes.push({
             max: FEATURE_PLOT_PROPS.max_grid_height,
             gridIndex: selectedSamples.length,
@@ -112,4 +112,31 @@ function getYAxes(db) {
     return axes;
 }
 
-export {getXAxes, getYAxes};
+/**
+ * Get max y-axis value
+ * @param {WgsCovPlotDB} db
+ * @returns {number}
+ */
+function getYAxisMax(db) {
+    let yAxisMax = 0;
+    if (db.segment_virus === true) {
+        for (let segment of db.selectedSegments) {
+            for (let sample of db.selectedSamples) {
+                let maxDepth = db.mosdepth_info[sample][segment].max_depth;
+                if (yAxisMax <= maxDepth) {
+                    yAxisMax = maxDepth;
+                }
+            }
+        }
+    } else {
+        for (let sample of db.selectedSamples) {
+            let maxDepth = db.mosdepth_info[sample].max_depth;
+            if (yAxisMax <= maxDepth) {
+                yAxisMax = maxDepth;
+            }
+        }
+    }
+    return yAxisMax;
+}
+
+export {getXAxes, getYAxes, getYAxisMax};

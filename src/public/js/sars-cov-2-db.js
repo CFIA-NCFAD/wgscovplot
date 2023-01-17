@@ -2,7 +2,7 @@
 * wgscovplot DB object
 * @type {WgsCovPlotDB}
 */
-window.db = {
+window.dbNonSegment = {
     "amplicon_depths":
     {
         "Sample1":
@@ -2301,7 +2301,8 @@ window.db = {
         "Sample3",
         "Sample4"
     ],
-    "show_amplicon": true,
+    "show_amplicons": false,
+    "show_genes": true,
     "show_gene_features": true,
     "variants":
     {
@@ -3607,5 +3608,6 @@ window.db = {
                 "sample": "Sample4"
             }
         ]
-    }
+    },
+    "segment_virus": false
 }

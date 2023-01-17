@@ -1,6 +1,5 @@
 import base64
 import logging
-import math
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -46,16 +45,20 @@ REGIONS_PATTERNS = [
 
 class MosdepthDepthInfo(BaseModel):
     sample: str
-    n_zero_coverage: int
-    zero_coverage_coords: str
-    low_coverage_threshold: int = 5
-    n_low_coverage: int
-    low_coverage_coords: str
-    genome_coverage: float
-    mean_coverage: float
-    median_coverage: int
-    ref_seq_length: int
-    max_depth: int
+    n_zero_coverage: int = 0
+    zero_coverage_coords: str = ""
+    low_coverage_threshold: int = 10
+    n_low_coverage: int = 0
+    low_coverage_coords: str = ""
+    genome_coverage: float = 0
+    mean_coverage: float = 0
+    median_coverage: int = 0
+    ref_seq_length: int = 0
+    max_depth: int = 0
+
+
+class FluMosdepthDepthInfo(MosdepthDepthInfo):
+    segment: str
 
 
 def read_mosdepth_bed(p: Path) -> pd.DataFrame:
@@ -124,47 +127,15 @@ def get_refseq_id(basedir: Path) -> str:
     return refseq_name
 
 
-def get_base64_encoded_depth_arrays(sample_depths: Dict[str, np.ndarray]) -> Dict[str, List]:
-    """Encode depth arrays as base64 strings
-
-    Instead of dumping a list of numbers to a JSON list, the float32 array will be base64 encoded so
-    that it can be decoded into a Float32Array in JS. The base64 encoding will compress the numbers
-    significantly (~60% of the size of dumping list to JSON).
-
-    ```python
-    import base64
-    import numpy as np
-    import json
-
-    t = np.arange(30000, dtype=np.float32)
-    print(len(base64.b64encode(t)))
-    # 160000
-
-    print(json.dumps(t.tolist()))
-    # 258890
-    ```
-
-    The array can be converted to a JS Float32Array with:
-
-    ```js
-    // base64 encoded 32-bit float array
-    b64 = "AAAAAAAAgD8AAABAAABAQAAAgEAAAKBAAADAQAAA4..."
-    f32a = new Float32Array(new Uint8Array([...atob(b64)].map(c => c.charCodeAt(0))).buffer)
-    // to regular JS array
-    arr = Array.from(f32a)
-    ```
-
-    Args:
-        sample_depths: Dict of sample name to depths array
-
-    Returns:
-        Dict of sample name to 32-bit float depth arrays encoded with base64
-    """
-    out = {}
-    for sample, arr in sample_depths.items():
-        arr[arr == 0] = 1E-5
-        out[sample] = base64.b64encode(arr).decode('utf-8')
-    return out
+def get_samples_name(basedir: Path, segment_virus: bool) -> List:
+    glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
+    sample_beds = find_file_for_each_sample(basedir,
+                                            glob_patterns=glob_patterns,
+                                            sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = []
+    for sample, bed_path in sample_beds.items():
+        out.append(sample)
+    return sorted(out)
 
 
 def get_amplicon_depths(basedir: Path) -> Dict[str, List]:
@@ -227,21 +198,22 @@ def get_info(
     out = {}
     sample_depths = {}
     for sample, bed_path in sample_beds.items():
-        df = read_mosdepth_bed(bed_path)
-        arr = depth_array(df)
-        sample_depths[sample] = arr
+        df_mosdepth = read_mosdepth_bed(bed_path)
+        arr = depth_array(df_mosdepth)
         mean_cov = arr.mean()
         median_cov = pd.Series(arr).median()
         depth_info = MosdepthDepthInfo(sample=sample,
                                        low_coverage_threshold=low_coverage_threshold,
-                                       n_low_coverage=count_positions(df[df.depth < low_coverage_threshold]),
-                                       n_zero_coverage=count_positions(df[df.depth == 0]),
-                                       zero_coverage_coords=get_interval_coords_bed(df),
-                                       low_coverage_coords=get_interval_coords_bed(df, low_coverage_threshold),
-                                       genome_coverage=get_genome_coverage(df, low_coverage_threshold),
+                                       n_low_coverage=count_positions(df_mosdepth[df_mosdepth.depth < low_coverage_threshold]),
+                                       n_zero_coverage=count_positions(df_mosdepth[df_mosdepth.depth == 0]),
+                                       zero_coverage_coords=get_interval_coords_bed(df_mosdepth),
+                                       low_coverage_coords=get_interval_coords_bed(df_mosdepth, low_coverage_threshold),
+                                       genome_coverage=get_genome_coverage(df_mosdepth, low_coverage_threshold),
                                        mean_coverage=mean_cov,
                                        median_coverage=median_cov,
-                                       ref_seq_length=get_genome_length(df),
+                                       ref_seq_length=get_genome_length(df_mosdepth),
                                        max_depth=arr.max())
         out[sample] = depth_info
+        arr[arr == 0] = 1E-5
+        sample_depths[sample] = base64.b64encode(arr).decode('utf-8')
     return out, sample_depths

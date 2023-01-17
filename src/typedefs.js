@@ -10,7 +10,6 @@
  * @typedef {Object<string, number[]>} SampleDepths
  */
 
-
 /**
  * @typedef {Object<string, string>} VariantCall
  */
@@ -35,6 +34,10 @@
 
 /**
  * @typedef {Object<string, {maxLength: number, start: number, end: number}>} SegmentCoords
+ */
+
+/**
+ * @typedef {Object<string, {maxLength: number}>} maxSegmentLength
  */
 
 /**
@@ -68,9 +71,11 @@
  * @property {SampleVariantCalls | SampleSegmentVariantCalls} variants
  * @property {SampleAmpliconDepths | null} amplicon_depths
  * @property {SampleMosdepthInfo | SampleSegmentMosdepthInfo} mosdepth_info
- * @property {Object[] | null} echart_features
+ * @property {Object[] | null} echartFeatures
  * @property {Object} chart - ECharts object for coverage plots
  * @property {Object} variantHeatmap - ECharts object for variant calling heatmap
+ * @property {Object} segments_ref_seq
+ * @property {Object} primer_matches
  * @property {number[]} positions - array of positions from 1 to length of reference sequence
  * @property {string[]} samples - array of all samples
  * @property {string[]} selectedSamples - Selected sample names
@@ -79,8 +84,8 @@
  * @property {boolean} crossSampleComparisonInTooltips - show cross sample comparison in tooltips?
  * @property {boolean} fixedTooltipPosition - tooltip appears in fixed position?
  * @property {boolean} hideOverlappingVariantLabels - hide overlapping variant labels
- * @property {boolean} show_amplicons - Show amplicon features?
- * @property {boolean} show_genes - Show gene features?
+ * @property {boolean} showAmplicons - Show amplicon features?
+ * @property {boolean} showGenes - Show gene features?
  * @property {boolean} showCovStatsInTooltips - show coverage stats in tooltips
  * @property {boolean} showGeneLabels - show gene feature labels
  * @property {boolean} showNonVariantSiteTooltips - default = false
@@ -91,6 +96,7 @@
  * @property {number} heightOffset - Cov subplot height offset as % (default 6.0)
  * @property {number} padTop - Padding to top coordinate of each cov subplot as % (default 4.0)
  * @property {boolean} showLowCovRegions - Highlight low coverage regions in coverage plots?
+ * @property {boolean} segment_virus -
  * @property {number} showLowCovRegionsOpacity - Opacity of areas highlighting low coverage regions (default 0.5)
  * @property {number} yMax - y-axis max value. Can be adjusted by user, but also dependent on samples being shown.
  * @property {string} scaleType - Cov plot y-axis scaling, "linear" or "log"
@@ -119,6 +125,7 @@
  * @property {HTMLOutputElement} $geneFeatureHeightOutput
  * @property {HTMLSelectElement} $renderEnv
  * @property {Object} $selectedSamples
+ * @property {Object} $selectedSegments
  * @property {Object} $selectedGeneFeatures
  * @property {HTMLInputElement} $toggleDarkMode
  * @property {HTMLInputElement} $toggleGeneLabel

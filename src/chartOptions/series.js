@@ -1,7 +1,6 @@
 import {get, isNil} from "lodash";
 import {getCoordsInterval, NT_COLOURS} from "../util";
 import {graphic} from "echarts/core";
-import {toFloat32Array} from "../util";
 
 /**
  *  Get options config for low coverage region highlighting using ECharts MarkArea
@@ -15,13 +14,13 @@ function getMarkArea({sample, db}) {
         depths,
         low_coverage_threshold = 10,
         lowCovAreaOpacity = 0.4,
-        segments = null,
+        selectedSegments = null,
         segCoords = null,
     } = db;
     let data = [];
-    if (!isNil(segments) && !isNil(segCoords) && segments.length > 0) {
-        for (let i = 0; i < segments.length; i++) {
-            let segment = segments[i];
+    if (!isNil(selectedSegments) && !isNil(segCoords) && selectedSegments.length > 0) {
+        for (let i = 0; i < selectedSegments.length; i++) {
+            let segment = selectedSegments[i];
             let sampleSegDepths = depths[sample][segment];
             if (isNil(sampleSegDepths)) {
                 continue;
@@ -39,7 +38,7 @@ function getMarkArea({sample, db}) {
             }
         }
     } else {
-        for (let {start, end} of getCoordsInterval(toFloat32Array(depths[sample]), low_coverage_threshold)) {
+        for (let {start, end} of getCoordsInterval(depths[sample], low_coverage_threshold)) {
             data.push([
                 {
                     name: `${start}-${end} (<${low_coverage_threshold}X)`,
@@ -98,7 +97,7 @@ function getCoverageThresholdLine(db) {
 /**
  * Define options for depth coverage charts
  * @param {WgsCovPlotDB} db - wgscovplot DB object
- * @returns {Array<Object>}
+ * @returns {Object[]}
  */
 function getDepthSeries(db) {
     const {
@@ -140,7 +139,7 @@ function getDepthSeries(db) {
 /**
  * Define options for variant bar charts
  * @param {WgsCovPlotDB} db
- * @returns {Array<Object>}
+ * @returns {Object[]}
  */
 function getVariantsSeries(db) {
     const {
@@ -162,7 +161,7 @@ function getVariantsSeries(db) {
             yAxisIndex: i,
             data: sampleVariants.map((x) => [
                 parseInt(x.POS),
-                toFloat32Array(depths[sample])[parseInt(x.POS) - 1],
+                depths[sample][parseInt(x.POS) - 1],
             ]),
             barWidth: 2,
             itemStyle: {
@@ -242,7 +241,7 @@ function getRegionAmpliconDepthRenderer(show_amplicons) {
 /**
  * Define options for amplicon depth coverage bars
  * @param {WgsCovPlotDB} db
- * @returns {Array<Object>}
+ * @returns {Object[]}
  */
 function getRegionAmpliconDepthSeries(db) {
     const {

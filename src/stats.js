@@ -4,7 +4,7 @@ import {mean} from "lodash/math";
 
 /**
  * Calculate mean coverage for a genome region
- * @param {Array<number>} depths - depths array
+ * @param {number[]} depths - depths array
  * @param {number} start - start position
  * @param {number} end - end position
  * @returns {number} - Returns the mean
@@ -16,7 +16,7 @@ function meanCoverage(depths, start, end) {
 
 /**
  *  Calculate coverage depth of genome region according to threshold low
- * @param {Array<number>} depths - depth array
+ * @param {number[]} depths - depth array
  * @param {number} start - start position
  * @param {number} end - end position
  * @param {number} low - the threshold that wants to set
@@ -32,7 +32,7 @@ function genomeCoverage(depths, start, end, low) {
 
 /**
  * Calculate median of an array
- * @param {Array<number>} arr - The array to iterate over
+ * @param {number[]} arr - The array to iterate over
  * @returns {number} - Returns the median
  */
 function median(arr) {
@@ -47,7 +47,7 @@ function median(arr) {
 
 /**
  * Calculate median coverage for a genome region
- * @param {Array<number>} depths - depth array
+ * @param {number[]} depths - depth array
  * @param {number} start - start position
  * @param {number} end - end position
  * @returns {number} - Returns the median

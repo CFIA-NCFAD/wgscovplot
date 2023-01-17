@@ -1,7 +1,7 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-module.exports = {
+module.exports = (env) => ({
     mode: "development",
     devtool: "inline-source-map",
     devServer: {
@@ -9,7 +9,6 @@ module.exports = {
             directory: path.join(__dirname, "./src/public"),
         },
         compress: true,
-        port: 9000,
         open: true,
         liveReload: true,
         hot: false,
@@ -17,6 +16,9 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: "./src/public/index.html",
+            templateParameters: {
+                is_segmented: env.build === "segment" ? true : false,
+            }
         }),
     ],
     entry: {
@@ -30,11 +32,12 @@ module.exports = {
         globalObject: "this"
     },
     module: {
-        rules: [{
-            test: /\.test\.js$/,
-            exclude: [/(node_modules)/, /(wgscovplot)/],
-            use: "babel-loader"
-        },
+        rules: [
+            {
+                test: /\.test\.js$/,
+                exclude: [/(node_modules)/, /(wgscovplot)/],
+                use: "babel-loader"
+            },
             {
                 test: /\.css$/,
                 use: ["style-loader", "css-loader"]
@@ -45,6 +48,7 @@ module.exports = {
                 options: {
                     exposes: ["$", "jQuery"]
                 }
-            }],
+            }
+        ],
     },
-};
+});

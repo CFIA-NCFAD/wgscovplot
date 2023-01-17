@@ -95,11 +95,10 @@
             <a type="button" class="nav-link active" aria-current="page"
                data-bs-toggle="tab" data-bs-target="#chart-pane"
                aria-selected="true">Coverage Plot</a>
-            <a type="button" class="nav-link" aria-current="page" data-bs-toggle="tab"
+            <a type="button" class="nav-link show-for-non-segmented-viruses" aria-current="page" data-bs-toggle="tab"
                data-bs-target="#varmap-chart-pane"
                aria-selected="true">Variant Heatmap</a>
         </div>
-    </div>
     </div>
 </nav>
 
@@ -114,6 +113,15 @@
                         <span class="info-icon text-info ms-1" title="Select samples to show in coverage plot">ℹ️</span>
                     </div>
                     <select id="selected-samples" class="selected-samples" multiple="multiple">
+                    </select>
+                </div>
+                <div class="row mb-1 p-1 show-for-segmented-viruses">
+                    <div class="d-flex">
+                        <h6>Segments</h6>
+                        <span class="info-icon text-info ms-1"
+                              title="Select segments to show in coverage plot">ℹ️</span>
+                    </div>
+                    <select id="selected-segments" class="selected-segments" multiple="multiple">
                     </select>
                 </div>
                 <!--- Axis Options ---->
@@ -177,7 +185,7 @@
                                     <label class="form-check-label" for="fix-tooltip-position">Fix Tooltip
                                         Position</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Fix tooltips table either on top-left or top-right of container">ℹ️</span>
+                                          title="Fix segmentTooltips table either on top-left or top-right of container">ℹ️</span>
                                     <input class="form-check-input" type="checkbox" id="fix-tooltip-position"
                                            unchecked>
                                 </div>
@@ -189,7 +197,7 @@
                                     <label class="form-check-label" for="toggle-tooltip-trigger-click">Show on
                                         click</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Click mouse to trigger tooltips (default is mouse hover)">ℹ️</span>
+                                          title="Click mouse to trigger segmentTooltips (default is mouse hover)">ℹ️</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-trigger-click" unchecked>
                                 </div>
@@ -201,7 +209,7 @@
                                     <label class="form-check-label" for="toggle-tooltip-variant-sites">Variant
                                         Sites</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Trigger tooltips for Variant Sites">ℹ️</span>
+                                          title="Trigger segmentTooltips for Variant Sites">ℹ️</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-variant-sites" checked>
                                 </div>
@@ -213,7 +221,7 @@
                                     <label class="form-check-label" for="toggle-tooltip-non-variant-sites">Non
                                         Variant Sites</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Trigger tooltips for Non Variant Sites">ℹ️</span>
+                                          title="Trigger segmentTooltips for Non Variant Sites">ℹ️</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-non-variant-sites" unchecked>
                                 </div>
@@ -261,7 +269,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row mb-3 show-for-non-segmented-viruses">
                             <div class="">
                                 <div class="input-group">
                                     <input type="number" id="start-pos" class="form-control form-control-sm" value="">
@@ -272,7 +280,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row mb-3 show-for-non-segmented-viruses">
                             <div class="d-grid gap-2 d-md-flex justify-content-md-between">
                                 <button id="reset-view" class="btn btn-sm btn-outline-secondary">Reset view</button>
                             </div>
@@ -390,7 +398,7 @@
                     </div>
                 </div>
                 <!--- Genetic Feature Options ---->
-                <div class="border rounded mb-1">
+                <div class="border rounded mb-1 show-for-non-segmented-viruses">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#gene-features" aria-expanded="false">Genetic Features
                     </button>
@@ -485,33 +493,40 @@
 </div>
 
 <!-- TODO: allow loading of different test virus DBs based on CLI opts for npm/webpack -->
+<script src="js/flu-db.js"></script>
 <script src="js/sars-cov-2-db.js"></script>
 <script>
+    //Load database
+    if (<%= is_segmented %> === true){
+        window.db = window.dbSegment
+    } else {
+        window.db = window.dbNonSegment
+    }
     document.addEventListener("DOMContentLoaded", function (event) {
+        console.log(db)
         const $chart = document.getElementById("chart");
         const $variantHeatmap = document.getElementById("varmap-chart");
-        console.time("convert base64 depths");
-        let xs;
-        for (let [sample, depthsBase64] of Object.entries(db.depths)) {
-            xs = Array.from(new Uint16Array(new Uint8Array([...window.atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
-            for (let i = 0; i < xs.length; i++) {
-                if (xs[i] === 0) {
-                    xs[i] = 1E-5;
+        if (db.segment_virus === false) {
+            let xs;
+            for (let [sample, depthsBase64] of Object.entries(db.depths)) {
+                xs = Array.from(new Uint16Array(new Uint8Array([...window.atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
+                for (let i = 0; i < xs.length; i++) {
+                    if (xs[i] === 0) {
+                        xs[i] = 1E-5;
+                    }
                 }
+                db.depths[sample] = xs;
             }
-            db.depths[sample] = xs;
         }
-        console.timeEnd("convert base64 depths");
-        console.debug(db);
         db.chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
-        db.variantHeatmap = wgscovplot.echarts.init($variantHeatmap, "white", {renderer: "canvas"});
-        db.positions = [...Array(db.ref_seq.length + 1).keys()];
-        db.positions.shift();
-        db.ref_seq_length = db.positions.length
+        if (db.segment_virus === false){
+            db.variantHeatmap = wgscovplot.echarts.init($variantHeatmap, "white", {renderer: "canvas"});
+            db.positions = [...Array(db.ref_seq.length + 1).keys()];
+            db.positions.shift();
+        }
         db.selectedSamples = db.samples.slice(0, 3);
         //Axis Option
         db.scaleType = "log";
-        db.low_coverage_threshold= 10;
         //Tooltips option
         db.showVariantSiteTooltips = true;
         db.showNonVariantSiteTooltips = false;
@@ -527,8 +542,9 @@
         db.hideOverlappingVariantLabels = true;
         db.showVariantLabels = false;
         db.showGeneLabels = true;
-        db.show_amplicons = true;
-        db.show_genes = true;
+        if (db.segment_virus === true){
+            db.selectedSegments = db.segments.slice(0, 8);
+        }
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;
             let bbox = $chart.getBoundingClientRect();
@@ -540,22 +556,19 @@
             $chart.style.height = height + "px";
             $chart.style.width = (window.innerWidth - bbox.left) + "px";
             db.chart.resize();
-            $variantHeatmap.style.height = height + "px";
-            $variantHeatmap.style.width = window.innerWidth + "px";
-            db.variantHeatmap.resize();
+            if (db.segment_virus === false) {
+                 $variantHeatmap.style.height = height + "px";
+                 $variantHeatmap.style.width = window.innerWidth + "px";
+                 db.variantHeatmap.resize();
+            }
         }
 
         updateChartDivSize();
         setTimeout(updateChartDivSize, 1000);
         window.addEventListener("resize", updateChartDivSize);
-
         document.getElementById("control-menu-hider").addEventListener("transitionend", function (event) {
             updateChartDivSize();
         });
-        document.getElementById("control-menu").addEventListener("transitionend", function (event) {
-            updateChartDivSize();
-        });
-
         /**
          * @typedef {Elements}
          */
@@ -563,6 +576,7 @@
             $chart,
             $variantHeatmap,
             $selectedSamples: $("#selected-samples"),
+            $selectedSegments: $("#selected-segments"),
             //Axis Option
             $selectYScale: document.getElementById("yaxis-scale"),
             $ymax: document.getElementById("ymax"),
@@ -606,7 +620,6 @@
             //Variants call
             $toggleShowVariantLabels: document.getElementById("toggle-mutation"),
             $toggleHideOverlappingVariantLabels: document.getElementById("toggle-hide-overlap-mutation"),
-
         }
         window.elements = elements;
         const selectedSamplesOpts = [];
@@ -623,21 +636,37 @@
             tags: true,
         });
 
-        const selectedGeneFeatures = [];
-        for (let j = 0; j < db.echart_features.length; j++) {
-            selectedGeneFeatures.push(db.echart_features[j].name)
+        if (db.segment_virus === true){
+            const selectedSegmentsOpts = [];
+            for (let i = 0; i < db.segments.length; i++) {
+                let segment = db.segments[i];
+                selectedSegmentsOpts.push({
+                    id: i,
+                    text: segment,
+                    selected: db.selectedSegments.includes(segment),
+                });
+            }
+
+            elements.$selectedSegments.select2({
+                data: selectedSegmentsOpts,
+                tags: true,
+            });
         }
-        elements.$selectedGeneFeatures.select2({
-            data: selectedGeneFeatures,
-            tags: true,
-        });
-        // hide UI elements if segmented or non-segmented virus
-        // Keep here for now as it will be changed after update code for segment virus
-        const isNonSegmented = (db.segments === undefined || db.segments === null);
-        if (isNonSegmented) {
+
+        if (db.segment_virus === false) {
+            const selectedGeneFeatures = [];
+            for (let j = 0; j < db.echart_features.length; j++) {
+                selectedGeneFeatures.push(db.echart_features[j].name)
+            }
+            elements.$selectedGeneFeatures.select2({
+                data: selectedGeneFeatures,
+                tags: true,
+            });
+        }
+        if (db.segment_virus === false) {
             $(".show-for-segmented-viruses").hide();
         } else {
-            $(".show-for-unsegmented-viruses").hide();
+            $(".show-for-non-segmented-viruses").hide();
         }
         wgscovplot.initWgscovplotRenderEnv({db, elements});
         wgscovplot.initEventHandlers({db, elements});

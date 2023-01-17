@@ -3,14 +3,14 @@ import {get, isNil} from "lodash";
 import {uniqBy} from "lodash/array";
 import {keys} from "lodash/object";
 import {genomeCoverage, meanCoverage, medianCoverage} from "../stats";
-import {toFloat32Array, toTableHtml} from "../util";
+import {toTableHtml} from "../util";
 
 /**
  * Function get Variant Comparison across samples
  * @param {WgsCovPlotDB} db
  * @param {number} position - x-axis position
  * @param {string} sampleInFocus - sample
- * @returns <Array<Array<string>> - Variant comparison across samples
+ * @returns {(string[])[]} - Variant comparison across samples
  */
 function getVariantComparison(
     {
@@ -27,7 +27,7 @@ function getVariantComparison(
     let variantArr = [];
     for (let sample of selectedSamples) {
         let sampleVariants = variants[sample];
-        let variant = find(sampleVariants, {POS: position + ""})
+        let variant = find(sampleVariants, {POS: position + ""}, 0)
         if (!isNil(variant)) {
             variantArr.push(variant);
         } else {
@@ -41,7 +41,7 @@ function getVariantComparison(
         row.push(key);
         if (key === "Coverage Depth") {
             for (let sample of selectedSamples) {
-                row.push(toFloat32Array(depths[sample])[position - 1].toLocaleString());
+                row.push(depths[sample][position - 1].toLocaleString());
             }
         } else {
             for (let variant of variantArr) {
@@ -62,7 +62,7 @@ function getVariantComparison(
  * @param {number} end - end position
  * @param {number} low_coverage_threshold - low coverage threshold
  * @param {number} position - Selected position
- * @returns <Array<Array<string>> - Coverage Stat comparison across samples
+ * @returns {(string[])[]} - Coverage Stat comparison across samples
  */
 function getCoverageStatComparison(
     {
@@ -87,7 +87,7 @@ function getCoverageStatComparison(
     ];
     rows.push(...[tableHeader]);
     for (let sample of selectedSamples) {
-        let sampleDepths = toFloat32Array(depths[sample]);
+        let sampleDepths = depths[sample];
         let meanCov = meanCoverage(sampleDepths, start, end).toFixed(2);
         let medianCov = medianCoverage(sampleDepths, start, end).toFixed(2);
         let genomeCov = genomeCoverage(sampleDepths, start, end, low_coverage_threshold).toFixed(2);
@@ -105,6 +105,11 @@ function getCoverageStatComparison(
     return rows;
 }
 
+/**
+ * Format tooltips in table
+ * @param {WgsCovPlotDB} db
+ * @returns {(string[])[]} - Coverage Stat comparison across samples
+ */
 function tooltipFormatter({db}) {
     return function (params) {
         const {
@@ -126,10 +131,8 @@ function tooltipFormatter({db}) {
             return output;
         }
         let sample = selectedSamples[axisIndex];
-        let sampleDepths = toFloat32Array(depths[sample]);
+        let sampleDepths = depths[sample];
         let depth = sampleDepths[position - 1];
-        //let depth1 = window.atob(depths[sample]).charCodeAt(position - 1).buffer
-        //console.log(depth1)
         let [dataZoom] = chart.getOption().dataZoom;
         let zoomStart = Math.floor(dataZoom.startValue);
         let zoomEnd = Math.floor(dataZoom.endValue);
@@ -137,7 +140,6 @@ function tooltipFormatter({db}) {
         let coverageStatRows = [];
         const isVariantBar = params.find(element => {
             return element.componentSubType === "bar";
-
         });
         if (isVariantBar) {
             if (crossSampleComparisonInTooltips) {
@@ -209,7 +211,7 @@ function tooltipFormatter({db}) {
 /**
  * Define options for tooltips
  * @param {Object} db - wgscovplot DB object
- * @returns {Array<Object>}
+ * @returns {Object[]}
  */
 function getTooltips(db) {
     const {

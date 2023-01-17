@@ -47,7 +47,6 @@ def main(
                                                      "sequencing coverage plots."),
         is_segmented: bool = typer.Option(default=False,
                                           help="Output coverage plots for segmented viruses like Influenza A virus."),
-        dev: bool = typer.Option(default=False, help="Run wgscovplot in development output mode."),
         max_primer_mismatches: int = typer.Option(default=0,
                                                   help="The maximum differences or 'edits' allowed between real-time "
                                                        "PCR primer/probe sequences and the sample sequences."),
@@ -61,8 +60,7 @@ def main(
     logger.info(f'{input_dir=}')
     logger.info(f'{output_html=}')
     run(input_dir, low_coverage_threshold, show_amplicons, show_gene_features, is_segmented, primers_fasta,
-        max_primer_mismatches, dev,
-        output_html)
+        max_primer_mismatches, output_html)
 
 
 def init_logging(verbose):

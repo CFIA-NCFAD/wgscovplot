@@ -98,15 +98,23 @@
 <script>
     const db = {{ db | tojson }};
     window.db = db;
+    console.log(db)
     document.addEventListener("DOMContentLoaded", function (event) {
         const $chart = document.getElementById("chart");
-        const $variantHeatmap = document.getElementById("varmap-chart");
         db.chart = wgscovplot.echarts.init($chart, "white", {renderer: "canvas"});
-        db.variantHeatmap = wgscovplot.echarts.init($variantHeatmap, "white", {renderer: "canvas"});
-        db.positions = [...Array(db.ref_seq.length + 1).keys()];
-        db.positions.shift();
-        db.ref_seq_length = db.positions.length
+        const $variantHeatmap = document.getElementById("varmap-chart");
+        if (db.segment_virus === false){
+            db.variantHeatmap = wgscovplot.echarts.init($variantHeatmap, "white", {renderer: "canvas"});
+            db.positions = [...Array(db.ref_seq.length + 1).keys()];
+            db.positions.shift();
+            db.ref_seq_length = db.positions.length;
+        }
         db.selectedSamples = window.db.samples.slice(0, 3);
+        if (db.segment_virus === true){
+            db.selectedSegments = window.db.segments.slice(0, 8);
+            db.show_genes = true;
+            db.show_amplicons = false;
+        }
         //Axis Option
         db.scaleType = "log";
         //Tooltips option
@@ -125,7 +133,6 @@
         db.showVariantLabels = false;
         db.showGeneLabels = true;
 
-
         function updateChartDivSize() {
             let BOTTOM_PADDING = 20;
             let bbox = $chart.getBoundingClientRect();
@@ -137,9 +144,11 @@
             $chart.style.height = height + "px";
             $chart.style.width = (window.innerWidth - bbox.left) + "px";
             db.chart.resize();
-            $variantHeatmap.style.height = height + "px";
-            $variantHeatmap.style.width = window.innerWidth + "px";
-            db.variantHeatmap.resize();
+            if (db.segment_virus === false) {
+                $variantHeatmap.style.height = height + "px";
+                $variantHeatmap.style.width = window.innerWidth + "px";
+                db.variantHeatmap.resize();
+            }
         }
 
         updateChartDivSize();
@@ -149,14 +158,12 @@
         document.getElementById("control-menu-hider").addEventListener("transitionend", function (event) {
             updateChartDivSize();
         });
-        document.getElementById("control-menu").addEventListener("transitionend", function (event) {
-            updateChartDivSize();
-        });
 
         const elements = {
             $chart,
             $variantHeatmap,
             $selectedSamples: $("#selected-samples"),
+            $selectedSegments: $("#selected-segments"),
             //Axis Option
             $selectYScale: document.getElementById("yaxis-scale"),
             $ymax: document.getElementById("ymax"),
@@ -206,6 +213,16 @@
         elements.$selectedSamples.select2();
         elements.$selectedSamples.val(db.selectedSamples);
         elements.$selectedSamples.trigger("change");
+        if (db.segment_virus === true){
+            elements.$selectedSegments.select2();
+            elements.$selectedSegments.val(db.selectedSegments);
+            elements.$selectedSegments.trigger("change");
+        }
+        if (db.segment_virus === false) {
+            $(".show-for-segmented-viruses").hide();
+        } else {
+            $(".show-for-non-segmented-viruses").hide();
+        }
         wgscovplot.initWgscovplotRenderEnv({db, elements});
         wgscovplot.initEventHandlers({db, elements});
     });

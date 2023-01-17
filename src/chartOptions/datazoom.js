@@ -1,7 +1,7 @@
 /**
  * Get ECharts DataZoom options
  * @param {number} numSamples - Number of selected samples
- * @returns {[Object, Object]}
+ * @returns {Object[]}
  */
 function getDataZoom(numSamples) {
     let xAxisIndex = [...Array(numSamples + 1).keys()];

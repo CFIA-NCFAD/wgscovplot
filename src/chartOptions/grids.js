@@ -1,6 +1,7 @@
 /**
  * Get ECharts Grid options objects given selected samples (and segments) and if gene/amplicon/segment features are being shown
  * @param {WgsCovPlotDB} db
+ * @returns {Object[]}
  */
 function getGrids(db) {
     const {

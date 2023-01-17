@@ -15,6 +15,7 @@ import {
 } from "echarts/components";
 import {CanvasRenderer, SVGRenderer} from "echarts/renderers";
 import {getCoverageChartOption, getGrids, getTooltips} from "./chart";
+import {getSegmentTooltips} from "./chartOptions/flu/segmentTooltips";
 
 import {getCoverageThresholdLine, getMarkArea, getRegionAmpliconDepthRenderer} from "./chartOptions/series";
 import {isNil, maxBy} from "lodash";
@@ -22,6 +23,7 @@ import {isNil, maxBy} from "lodash";
 import $ from "jquery";
 import {getGeneFeatureRenderer} from "./features";
 import {getVariantHeatmapOption} from "./heatmap";
+import {getYAxisMax} from "./chartOptions/axes";
 
 echarts.use(
     [TooltipComponent, GridComponent,
@@ -36,6 +38,7 @@ echarts.use(
  * Users's settings are respected by keeping old settings and set it back.
  * @param {WgsCovPlotDB} db - wgscovplot DB object
  * @param {Elements} elements - Object of HTML element names to HTMLElement object
+ * @returns {Object} Chart option
  */
 function updateCoverageChartOption({db, elements}) {
     const {
@@ -78,7 +81,7 @@ function updateCoverageChartOption({db, elements}) {
 
     // preserve y-axis limit/max value and scale type
     db.scaleType = elements.$selectYScale.value;
-    db.yMax = maxBy(Object.values(db.mosdepth_info), "max_depth").max_depth * 1.5;
+    db.yMax = getYAxisMax(db);
     elements.$ymax.value = db.yMax;
     updateOption.yAxis = updateYAxisOption({yAxisOption: updateOption.yAxis, db});
 
@@ -109,8 +112,10 @@ function updateCoverageChartOption({db, elements}) {
     //set chart option
     chart.setOption(updateOption, {notMerge: true});
     // Update control menu
-    updateControlMenu({db, elements});
-    db.variantHeatmap.setOption(getVariantHeatmapOption(db));
+    updateGrid({db, elements});
+    if (db.segment_virus === false){
+        db.variantHeatmap.setOption(getVariantHeatmapOption(db));
+    }
 }
 
 /**
@@ -150,7 +155,7 @@ function setYMax({db, elements}) {
 /**
  * Update scale type and max for Y Axis
  * @param {Object} yAxisOption - Options of Yaxis need to be updated
- * @param {Object} db - wgscovplot DB object
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
  * @returns {Object} Returns the updated options (Scale type or ymax) for yAxis
  */
 function updateYAxisOption({yAxisOption, db}) {
@@ -186,7 +191,7 @@ function updateYAxisOption({yAxisOption, db}) {
 /**
  * Get selected samples from sample select2 input
  *
- * If the chart is not initalizaed yet, get 3 first samples from list of all samples that could be displayed.
+ * If the chart is not initialized yet, get 3 first samples from list of all samples that could be displayed.
  * @param {WgsCovPlotDB} db
  * @param {Elements} elements
  * @returns {string[]} Selected sample names
@@ -222,7 +227,11 @@ function initChartDisplayEventHandlers({db, elements}) {
         $endPos,
     } = elements;
     $startPos.value = 1;
-    $endPos.value = db.ref_seq_length;
+    if (db.segment_virus === false){
+        $endPos.value = db.ref_seq_length;
+    } else {
+        $endPos.value = db.positions.length;
+    }
     $chartTopInput.addEventListener(
         "change",
         () => updateSubPlotTopMargin({
@@ -269,7 +278,8 @@ function initChartDisplayEventHandlers({db, elements}) {
         "change",
         () => initWgscovplotRenderEnv({db, elements})
     );
-    if (db.show_genes === true || db.show_amplicons === true) {
+
+    if ((db.show_genes === true || db.show_amplicons === true) && db.segment_virus === false) {
         elements.$geneFeatureHeightInput.addEventListener("change", () => {
             const val = elements.$geneFeatureHeightInput.value;
             elements.$geneFeatureHeightOutput.value = val + "%";
@@ -278,8 +288,6 @@ function initChartDisplayEventHandlers({db, elements}) {
             db.chart.setOption({grid: gridOption});
         });
     }
-
-
 }
 
 /**
@@ -402,6 +410,16 @@ function initEventHandlers({db, elements}) {
         updateCoverageChartOption({db, elements});
     });
 
+    elements.$selectedSegments.on("change", () => {
+        const selectedSegments = [];
+        let selectData = elements.$selectedSegments.select2("data");
+        for (let {text} of Object.values(selectData)) {
+            selectedSegments.push(text);
+        }
+        db.selectedSegments = selectedSegments;
+        updateCoverageChartOption({db, elements});
+    });
+
     if (db.show_genes === true || db.show_amplicons === true){
         elements.$selectedGeneFeatures.select2({
             tags: true,
@@ -456,7 +474,7 @@ function initEventHandlers({db, elements}) {
         })
     });
 
-    if (db.show_genes === true) {
+    if (db.show_genes === true && db.segment_virus === false) {
         elements.$toggleGeneLabel.addEventListener("change", () => {
             let seriesOption = db.chart.getOption().series;
             db.showGeneLabels = elements.$toggleGeneLabel.checked;
@@ -465,7 +483,7 @@ function initEventHandlers({db, elements}) {
         });
     }
 
-    if (db.show_amplicons === true && db.show_genes === true) {
+    if (db.show_amplicons === true && db.show_genes === true && db.segment_virus === false) {
         $toggleAmplicons.addEventListener("change", () => {
 
             db.show_amplicons = $toggleAmplicons.checked;
@@ -487,11 +505,11 @@ function initEventHandlers({db, elements}) {
                 element.right = db.rightMargin + "%";
             });
             db.chart.setOption({series: [...seriesOption], grid: [...gridOptions]});
-            updateControlMenu({db, elements});
+            updateGrid({db, elements});
         });
     }
 
-    if (db.show_genes === true || db.show_amplicons === true){
+    if ((db.show_genes === true || db.show_amplicons === true) && db.segment_virus === false){
         elements.$btnShowSelectedGeneFeatures.addEventListener("click", () => {
             applyFeatureView({db, elements})
         })
@@ -566,29 +584,32 @@ function initEventHandlers({db, elements}) {
                 },
             ],
         });
-        db.variantHeatmap.setOption({
-            dataZoom: [
-                {
-                    type: "inside"
-                },
-                {
-                    type: "slider",
-                    show: db.showDataZoomSlider
-                }
-            ],
-        });
+        if (db.segment_virus === false) {
+            db.variantHeatmap.setOption({
+                dataZoom: [
+                    {
+                        type: "inside"
+                    },
+                    {
+                        type: "slider",
+                        show: db.showDataZoomSlider
+                    }
+                ],
+            });
+        }
     });
 
     elements.$btnResetMargins.addEventListener("click", () => {
         resetGridDisplay({db, elements});
     })
-
 }
 
 /**
  * Initialize the environment for the chart (sgv/canvas or dark/white mode)
  * The entire chart will be disposed and re-initialized
  * However, the old settings of charts are reserved (users's settings are respected)
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function initWgscovplotRenderEnv({db, elements}) {
     const {
@@ -601,11 +622,13 @@ function initWgscovplotRenderEnv({db, elements}) {
         $toggleDarkMode,
     } = elements;
     let chartOptions = chart.getOption();
-    db.yMax = maxBy(Object.values(db.mosdepth_info), "max_depth").max_depth * 1.5;
-    elements.$ymax.value = db.yMax;
     if (isNil(chartOptions)) {
+        if (db.segment_virus === false) {
+            variantHeatmap.setOption(getVariantHeatmapOption(db));
+        }
+        db.yMax = getYAxisMax(db);
+        elements.$ymax.value = db.yMax;
         chart.setOption(getCoverageChartOption(db));
-        variantHeatmap.setOption(getVariantHeatmapOption(db));
     } else {
         let renderEnv = $renderEnv.value;
         let isChecked = $toggleDarkMode.checked;
@@ -631,14 +654,14 @@ function initWgscovplotRenderEnv({db, elements}) {
         //set chart option
         db.chart.setOption(option);
     }
-    updateControlMenu({db, elements});
+    updateGrid({db, elements});
     onChartDataZoomActions({db, elements});
 }
 
 /**
  * Update option for displaying tooltip for variant and non variant sites
- * @param {Object} db - An array of samples name
- * @param {Object} elements -
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function updateTooltipOption(
     {
@@ -661,7 +684,7 @@ function updateTooltipOption(
         }
     });
     db.showCovStatsInTooltips = elements.$toggleTooltipCovStats.checked;
-    let tooltip = getTooltips(db);
+    let tooltip = db.segment_virus === false ? getTooltips(db) : getSegmentTooltips(db);
     db.fixedTooltipPosition = elements.$toggleFixedTooltipPosition.checked;
     tooltip[0].position = tooltipPosition(db.fixedTooltipPosition);
     tooltip[0].triggerOn = db.tooltipTriggerOn;
@@ -700,6 +723,8 @@ function updateVarMapHeight(val) {
 
 /**
  * Apply View for selected gene feature
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function applyFeatureView({db, elements}) {
     const {
@@ -736,8 +761,8 @@ function applyFeatureView({db, elements}) {
  * Adjust subplot heights and top margins and chart-height-output value.
  * Triggered on change of #chart-height-input value.
  * @param {string} val - Subplots height percent value
- * @param {WgsCovPlotDB} db
- * @param {Elements} elements
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function updateSubPlotHeight(
     {
@@ -781,8 +806,9 @@ function updateSubPlotHeight(
 
 /**
  * Adjust top margin of chart
- * @param {WgsCovPlotDB} db
  * @param {string} val - Subplots top margin percent value
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  * @param {HTMLOutputElement} $chartTopOutput - chart right margin output HTML element
  */
 function updateSubPlotTopMargin(
@@ -817,8 +843,8 @@ function updateSubPlotTopMargin(
  * Set zoom view for the chart
  * @param {number} start - Start view point
  * @param {number} end - End view point
- * @param {WgsCovPlotDB} db
- * @param {Elements} elements
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function setDataZoom(
     {
@@ -848,8 +874,8 @@ function setDataZoom(
 
 /**
  * Reset Grid Display to optimal configuration
- * @param {WgsCovPlotDB} db
- * @param {Elements} elements
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function resetGridDisplay({db, elements}) {
     if (db.show_amplicons === true){
@@ -857,16 +883,16 @@ function resetGridDisplay({db, elements}) {
     }
     let grid = getGrids(db);
     db.chart.setOption({grid});
-    updateControlMenu({db, elements});
+    updateGrid({db, elements});
 }
 
 /**
  * Dispatch click/dbclick actions for the whole chart
- * @param {WgsCovPlotDB} db
- * @param {Elements} elements
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
 function onChartDataZoomActions({db, elements}) {
-    const {ref_seq} = db;
+    const {positions} = db;
     const {$startPos, $endPos} = elements;
 
     db.chart.on("click", function (
@@ -890,7 +916,7 @@ function onChartDataZoomActions({db, elements}) {
     db.chart.on("dblclick", function ({componentIndex, componentSubType}) {
         if (componentIndex === db.chart.getOption().series.length - 1 && componentSubType === "custom") {
             const start = 1;
-            const end = ref_seq.length;
+            const end = db.positions.length;
             $startPos.value = start;
             $endPos.value = end;
             setDataZoom({
@@ -906,10 +932,10 @@ function onChartDataZoomActions({db, elements}) {
 /**
  * The Control Menu is updated when the number of selected samples changes
  * Menu is updated to reflect chart properties such as subplot height/top/left/right margin
- * @param {WgsCovPlotDB} db
- * @param {Elements} elements
+ * @param {WgsCovPlotDB} db - wgscovplot DB object
+ * @param {Elements} elements - jQuery selection objects or HTML control elements
  */
-function updateControlMenu({db, elements}) {
+function updateGrid({db, elements}) {
     let gridOption = db.chart.getOption().grid;
     if (gridOption.length > 0) {
         let height = parseFloat(gridOption[0].height);
@@ -928,7 +954,7 @@ function updateControlMenu({db, elements}) {
         // update right margin
         elements.$chartRightInput.value = right;
         elements.$chartRightOutput.value = right + "%";
-        if (db.show_amplicons || db.show_genes) {
+        if ((db.show_amplicons || db.show_genes) && db.segment_virus === false) {
             let featuresGrid = gridOption[gridOption.length - 1];
             elements.$geneFeatureHeightInput.value = parseFloat(featuresGrid.height);
             elements.$geneFeatureHeightOutput.value = featuresGrid.height;

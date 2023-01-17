@@ -1,3 +1,7 @@
+
+import {FEATURE_PLOT_PROPS, toTableHtml} from "./util";
+import {graphic} from "echarts/core";
+
 /**
  * Define the points of gene/amplicon features shape
  * @param {number} x - x-axis coordinate
@@ -8,9 +12,6 @@
  * @param {string} type - type of feature
  * @returns {(number[])[] | null} - Coordinate of 5 points for gene feature or 4 points for amplicon feature
  */
-import {FEATURE_PLOT_PROPS, toTableHtml} from "./util";
-import {graphic} from "echarts/core";
-
 function shapePoints(
     {
         x,

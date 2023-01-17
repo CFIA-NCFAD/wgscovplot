@@ -39,7 +39,7 @@ python setup.py install
 ## Features
 
 - Compare sequencing coverage across multiple samples
-- Fully-interactive plots with informative tooltips highlighting variant calling results and coverage statistics across all samples being shown  
+- Fully-interactive plots with informative segmentTooltips highlighting variant calling results and coverage statistics across all samples being shown  
 - Easy-to-use: Simply provide a [nf-core/viralrecon], [peterk87/nf-virontus], [CFIA-NCFAD/nf-flu] Nextflow workflow results directory as input (`wgscovplot --input-dir /path/to/viralrecon/results`) and `wgscovplot` will figure out what files it needs to generate its interactive sequencing coverage plots 
 - Annotate coverage plots with variant calling results from multiple different variant callers ([iVar](https://github.com/andersen-lab/ivar), [Nanopolish](https://github.com/jts/nanopolish), [Longshot](https://github.com/pjedge/longshot), [Medaka](https://github.com/nanoporetech/medaka)) and variant effect results from [SnpEff]/[SnpSift]
 

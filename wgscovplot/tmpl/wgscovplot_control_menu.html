@@ -5,11 +5,9 @@
             <a type="button" class="nav-link active" aria-current="page"
                data-bs-toggle="tab" data-bs-target="#chart-pane"
                aria-selected="true">Coverage Plot</a>
-            {% if db.segment_virus == false %}
-            <a type="button" class="nav-link" aria-current="page" data-bs-toggle="tab"
+            <a type="button" class="nav-link show-for-non-segmented-viruses" aria-current="page" data-bs-toggle="tab"
                data-bs-target="#varmap-chart-pane"
                aria-selected="true">Variant Heatmap</a>
-            {% endif %}
             <a type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#summary-table"
                aria-selected="false">Summary
                 Information</a>
@@ -37,20 +35,18 @@
                     </select>
                 </div>
                 <!--- Select Segments ---->
-                {% if db.segment_virus == true %}
-                <div class="row mb-1 p-1">
+                <div class="row mb-1 p-1 show-for-segmented-viruses">
                     <div class="d-flex">
                         <h6>Segments</h6>
                         <span class="info-icon text-info ms-1"
                               title="Select segments to show in coverage plot">ℹ️</span>
                     </div>
                     <select id="selected-segments" class="selected-segments" multiple="multiple">
-                        {% for segment in segments_name %}
+                        {% for segment in db.segments %}
                         <option value={{segment}}>{{segment}}</option>
                         {% endfor %}
                     </select>
                 </div>
-                {% endif %}
                 <!--- Axis Options ---->
                 <div class="border rounded mb-1">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
@@ -72,7 +68,7 @@
                             <div class="col-sm-7">
                                 <div class="input-group">
                                     <input id="ymax" class="form-control form-control-sm" type="number"
-                                           value={{ db.max_depth }}>
+                                           value="">
                                     <button class="btn btn-sm btn-primary" type="button" id="set-ymax">
                                         Set
                                     </button>
@@ -112,7 +108,7 @@
                                     <label class="form-check-label" for="fix-tooltip-position">Fix Tooltip
                                         Position</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Fix tooltips table either on top-left or top-right of container">ℹ️</span>
+                                          title="Fix segmentTooltips table either on top-left or top-right of container">ℹ️</span>
                                     <input class="form-check-input" type="checkbox" id="fix-tooltip-position"
                                            unchecked>
                                 </div>
@@ -124,7 +120,7 @@
                                     <label class="form-check-label" for="toggle-tooltip-trigger-click">Show on
                                         click</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Click mouse to trigger tooltips (default is mouse hover)">ℹ️</span>
+                                          title="Click mouse to trigger segmentTooltips (default is mouse hover)">ℹ️</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-trigger-click" unchecked>
                                 </div>
@@ -136,7 +132,7 @@
                                     <label class="form-check-label" for="toggle-tooltip-variant-sites">Variant
                                         Sites</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Trigger tooltips for Variant Sites">ℹ️</span>
+                                          title="Trigger segmentTooltips for Variant Sites">ℹ️</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-variant-sites" checked>
                                 </div>
@@ -148,7 +144,7 @@
                                     <label class="form-check-label" for="toggle-tooltip-non-variant-sites">Non
                                         Variant Sites</label>
                                     <span class="info-icon text-info ms-1"
-                                          title="Trigger tooltips for Non Variant Sites">ℹ️</span>
+                                          title="Trigger segmentTooltips for Non Variant Sites">ℹ️</span>
                                     <input class="form-check-input" type="checkbox"
                                            id="toggle-tooltip-non-variant-sites" unchecked>
                                 </div>
@@ -187,8 +183,7 @@
                         Display Options
                     </button>
                     <div class="collapse p-1" id="display-options">
-                        {% if db.segment_virus == false %}
-                        <div class="row mb-1">
+                        <div class="row mb-1 show-for-non-segmented-viruses">
                             <div>
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="toggle-zoom-slider">Show view region slider</label>
@@ -196,7 +191,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row mb-3 show-for-non-segmented-viruses">
                             <div class="">
                                 <div class="input-group">
                                     <input type="number" id="start-pos" class="form-control form-control-sm" value="">
@@ -206,12 +201,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row mb-3 show-for-non-segmented-viruses">
                             <div class="d-grid gap-2 d-md-flex justify-content-md-between">
                                 <button id="reset-view" class="btn btn-sm btn-outline-secondary">Reset view</button>
                             </div>
                         </div>
-                        {% endif %}
                         <div class="row mb-3">
                             <label for="ymax" class="col-sm-7 col-form-label">Low coverage Threshold</label>
                             <div class="col-sm-5">
@@ -325,9 +319,8 @@
                     </div>
                 </div>
                 <!--- Genetic Feature Options ---->
-                {% if db.segment_virus == false %}
                 {% if db.show_genes == true or db.show_amplicons == true %}
-                <div class="border rounded mb-1">
+                <div class="border rounded mb-1 show-for-non-segmented-viruses">
                     <button class="btn btn-toggle rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#gene-features" aria-expanded="false">Genetic Features
                     </button>
@@ -356,7 +349,7 @@
                             </div>
                         </div>
                         {% endif %}
-                        {% if db.show_amplicons == True and db.show_genes == true %}
+                        {% if db.show_amplicons == true and db.show_genes == true %}
                         <div class="form-check form-switch">
                             <label class="form-check-label" for="toggle-amplicon">Show Amplicon</label>
                             <span class="info-icon text-info ms-1"
@@ -381,7 +374,6 @@
                         </div>
                     </div>
                 </div>
-                {% endif %}
                 {% endif %}
                 <!--- Variant Calls ---->
                 <div class="border rounded mb-1">
