@@ -1,4 +1,4 @@
-import {get, isNil} from "lodash";
+import {get, isEmpty} from "lodash";
 import {getCoordsInterval, NT_COLOURS} from "../util";
 import {graphic} from "echarts/core";
 
@@ -14,25 +14,25 @@ function getMarkArea({sample, db}) {
         depths,
         low_coverage_threshold = 10,
         lowCovAreaOpacity = 0.4,
-        selectedSegments = null,
-        segCoords = null,
     } = db;
     let data = [];
-    if (!isNil(selectedSegments) && !isNil(segCoords) && selectedSegments.length > 0) {
-        for (let i = 0; i < selectedSegments.length; i++) {
-            let segment = selectedSegments[i];
+    if (db.segment_virus === true) {
+        for (let segment of db.selectedSegments) {
             let sampleSegDepths = depths[sample][segment];
-            if (isNil(sampleSegDepths)) {
-                continue;
+            let coordsInterval;
+            if (isEmpty(sampleSegDepths)) {
+                coordsInterval = [{start:1, end:(db.segCoords[segment].end - db.segCoords[segment].start + 1)}];
+            } else {
+                coordsInterval = getCoordsInterval(sampleSegDepths, low_coverage_threshold);
             }
-            for (let {start, end} of getCoordsInterval(sampleSegDepths, low_coverage_threshold)) {
+            for (let {start, end} of coordsInterval) {
                 data.push([
                     {
                         name: `${start}-${end} (<${low_coverage_threshold}X)`,
-                        xAxis: start + segCoords[segment].start - 1,
+                        xAxis: start + db.segCoords[segment].start - 1,
                     },
                     {
-                        xAxis: end + segCoords[segment].start - 1,
+                        xAxis: end + db.segCoords[segment].start - 1,
                     }
                 ]);
             }

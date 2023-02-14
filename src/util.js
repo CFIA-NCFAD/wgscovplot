@@ -39,7 +39,7 @@ export const FLU_SEGMENT_COLOURS = {
  * Convert based 64 string to Float32 Array
  * @param {number[]} depths
  * @param {number} threshold
- * @returns {number[] | string}
+ * @returns {number[]}
  */
 function toFloat32Array(b64String) {
     if (typeof b64String === 'string') {

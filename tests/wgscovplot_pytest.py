@@ -31,8 +31,8 @@ def test_cli_non_segment_virus():
         out_html = 'wgscovplot_test1.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
-                                          '--no-gene-feature',
-                                          '--no-amplicon'])
+                                          '--no-show-gene-features',
+                                          '--no-show-amplicons'])
         assert test_result.exit_code == 0
         assert exists(out_html)
 
@@ -40,8 +40,8 @@ def test_cli_non_segment_virus():
         out_html = 'wgscovplot_test2.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
-                                          '--no-gene-feature',
-                                          '--amplicon'])
+                                          '--no-show-gene-features',
+                                          '--show-amplicons'])
         assert test_result.exit_code == 0
         assert exists(out_html)
 
@@ -49,11 +49,10 @@ def test_cli_non_segment_virus():
         out_html = 'wgscovplot_test3.html'
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute()),
                                           '--output-html', out_html,
-                                          '--gene-feature',
-                                          '--no-amplicon'])
+                                          '--show-gene-features',
+                                          '--show-amplicons'])
         assert test_result.exit_code == 0
         assert exists(out_html)
-
     with runner.isolated_filesystem():
         test_result = runner.invoke(app, [str(input_dir1.resolve().absolute())])
         assert test_result.exit_code == 0
@@ -64,7 +63,7 @@ def test_cli_segment_virus():
     with runner.isolated_filesystem():
         out_html = 'wgscovplot_test_segment_virus.html'
         test_result = runner.invoke(app, [str(input_dir2.resolve().absolute()),
-                                          '--segment-virus',
+                                          '--is-segmented',
                                           '--output-html', out_html])
         assert test_result.exit_code == 0
         assert exists(out_html)

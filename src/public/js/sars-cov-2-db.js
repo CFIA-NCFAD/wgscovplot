@@ -2301,7 +2301,7 @@ window.dbNonSegment = {
         "Sample3",
         "Sample4"
     ],
-    "show_amplicons": false,
+    "show_amplicons": true,
     "show_genes": true,
     "show_gene_features": true,
     "variants":

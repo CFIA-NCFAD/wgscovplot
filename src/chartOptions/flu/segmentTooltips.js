@@ -181,7 +181,6 @@ function segmentTooltipFormatter({db}) {
             coverageDepth = `No result reported for segment ${segment}`;
         } else {
             if (position <= segmentLength) {
-                // get coverage depth for pos
                 coverageDepth = sampleSegDepths[position - 1].toLocaleString();
             } else {
                 coverageDepth = `No sequence at this position. 
