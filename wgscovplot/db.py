@@ -16,7 +16,7 @@ class TemplateDB(BaseModel):
     depths: Dict[str, str]
     amplicon_depths: Dict[str, List[Dict]]
     mosdepth_info: Dict[str, MosdepthDepthInfo]
-    variants: Dict[str, List[Dict[str, str]]]
+    variants: Dict[str, List[Dict]]
     show_amplicons: bool = False
     show_genes: bool = False
     low_coverage_threshold: int = 10

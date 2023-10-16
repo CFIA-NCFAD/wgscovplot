@@ -71,7 +71,7 @@ def write_html_coverage_plot(
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
-        loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
+        loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent.parent, "web")),
     )
     template_file = render_env.get_template("wgscovplot.html")
     with open(output_html, "w+", encoding="utf-8") as fout:
@@ -108,12 +108,12 @@ def parse_gff(path: Path) -> List[Feature]:
                 qs: OrderedDict[str, List[str]] = feature.qualifiers
                 feature_name = qs['Name'][0] if 'Name' in qs else qs['gbkey'][0]
                 out.append(Feature(
-                    start_pos=start_pos,
-                    end_pos=end_pos,
+                    start=start_pos,
+                    end=end_pos,
                     strand=strand,
                     name=feature_name
                 ))
-    out.sort(key=lambda k: k.start_pos)
+    out.sort(key=lambda k: k.start)
     return out
 
 
