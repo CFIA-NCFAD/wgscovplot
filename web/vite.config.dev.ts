@@ -1,16 +1,13 @@
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import handlebars from 'vite-plugin-handlebars';
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 
 export default defineConfig({
     plugins: [
         solidPlugin(),
-        // @ts-ignore
-        handlebars({
-            context: {
-            }
-        }),
+        cssInjectedByJsPlugin({topExecutionPriority: false}),
     ],
     define: {
         'process.env': {}
@@ -25,8 +22,6 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 entryFileNames: `assets/[name].js`,
-                chunkFileNames: `assets/[name].js`,
-                assetFileNames: `assets/[name].[ext]`
             }
         },
         watch: {}
