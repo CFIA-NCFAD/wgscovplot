@@ -17,13 +17,13 @@ import {
 import {BarChart, CustomChart, HeatmapChart, LineChart} from "echarts/charts";
 import {CanvasRenderer, SVGRenderer} from "echarts/renderers";
 import type {ECharts, EChartsType} from "echarts";
-import {isNil, map, max, pick, values} from "lodash";
+import {isNil, map, max, pick, sum, values} from "lodash";
 import {MosdepthInfo} from "../db";
 import {unwrap} from "solid-js/store";
-import {getSegmentCoords} from "../chartOptions/axes";
 import {getDatasets, getDataZoom, getGrids, getSeries, getTooltips, getXAxes, getYAxes} from "../chart";
 import {DragDropProvider, DragDropSensors, DragEventHandler,} from "@thisbeyond/solid-dnd";
 import {ChartTooltip} from "./ChartTooltip";
+
 
 echarts.use(
   [TooltipComponent, GridComponent,
@@ -66,13 +66,14 @@ createEffect(() => {
 createEffect(() => {
   if (isNil(state.segments)) return;
   let selectedSegments = state.chartOptions.selectedSegments;
+  let selectedSamples = state.chartOptions.selectedSamples;
   untrack(() => {
     if (isNil(selectedSegments) || selectedSegments.length === 0) {
       setState("chartOptions", "selectedSegments", state.segments);
     }
-    let segmentCoords = getSegmentCoords(state);
-    console.log("segmentCoords", segmentCoords);
-    setState("segCoords", segmentCoords);
+    if (isNil(selectedSamples) || selectedSamples.length === 0) {
+      setState("chartOptions", "selectedSamples", state.samples.slice(0, 3));
+    }
   });
 });
 
@@ -107,7 +108,7 @@ const Chart: Component = () => {
         // @ts-ignore
         if (componentIndex === chart.getOption().series.length - 1 && componentSubType === "custom") {
           const start = 1;
-          const end = state.ref_seq.length;
+          const end = state.positions.length;
           setState("chartOptions", "startPos", start);
           setState("chartOptions", "endPos", end);
         }
@@ -161,7 +162,7 @@ const Chart: Component = () => {
   });
 
   let echartsOptions = createMemo(() => {
-    console.time("build opts")
+    //console.time("build opts")
     let opts = {
       dataset: datasets(),
       xAxis: xAxes(),
@@ -179,19 +180,31 @@ const Chart: Component = () => {
       },
       dataZoom: getDataZoom(state),
     };
-    console.timeEnd("build opts")
+    //console.timeEnd("build opts")
     return opts;
   });
 
   createEffect(() => {
     if (chart !== undefined) {
       console.time("chart setOption")
+
+      let dataZoom : any = chart.getOption().dataZoom;
+      let start = Math.floor(dataZoom[0]["startValue"]);
+      let end = Math.floor(dataZoom[0]["endValue"]);
       // tell ECharts to merge replace rather than normal merge
       // unwrap opts to pass a plain object instead of a Solid Proxy object to ECharts
       // this reduces deep cloning by ECharts and speeds up chart updates
       chart.setOption(unwrap(echartsOptions()), {
         replaceMerge: ['dataset', 'xAxis', 'yAxis', 'series', 'grid', 'dataZoom']
       });
+
+      state.chart.dispatchAction({
+        type: "dataZoom",
+        startValue: start,
+        endValue: end,
+      });
+
+      console.log("Chart Options", chart.getOption())
       console.timeEnd("chart setOption")
       console.info("CHART UPDATE", Date.now());
     }

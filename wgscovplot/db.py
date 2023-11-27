@@ -17,7 +17,7 @@ class TemplateDB(BaseModel):
     amplicon_depths: Dict[str, List[Dict]]
     mosdepth_info: Dict[str, MosdepthDepthInfo]
     variants: Dict[str, List[Dict]]
-    show_amplicons: bool = False
-    show_genes: bool = False
+    #show_amplicons: bool = False
+    #show_genes: bool = False
     low_coverage_threshold: int = 10
     echart_features: List[EChartsFeature]

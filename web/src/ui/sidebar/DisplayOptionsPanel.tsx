@@ -5,6 +5,7 @@ import {Slider} from "../components/Slider";
 import {setState, state} from "../../state";
 import {CovColour} from "./CovColour";
 import {HelpIcon} from "../components/HelpIcon";
+import {isNil} from "lodash";
 import {SelectEChartsRenderer} from "./SelectEChartsRenderer";
 import {ChartDarkModeToggle} from "./ChartDarkModeToggle";
 import {NuclColourSelect} from "./NuclColourSelect";
@@ -57,6 +58,14 @@ export const DisplayOptionsPanel: Component = () => {
                type="color" value={state.chartOptions.subplotTitleColour}
                onChange={(e) => setState("chartOptions", "subplotTitleColour", e.currentTarget.value)}/>
       </div>
+      <Show when={!isNil(state.amplicon_depths)}>
+        <div class="mt-2">
+          <input type="checkbox" id="show-amplicons" class="hover:ring h-4 w-4 form-check"
+                 checked={state.show_amplicons}
+                 onChange={(e) => setState("show_amplicons", e.currentTarget.checked)}/>
+          <label class="ml-1" for="show-amplicons">Show Amplicon Depths?</label>
+        </div>
+      </Show>
       <div class="mt-2">
         <input type="checkbox" id="show-features" class="hover:ring h-4 w-4 form-check"
                checked={state.chartOptions.showFeatures}

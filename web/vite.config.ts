@@ -9,7 +9,7 @@ export default defineConfig({
     // @ts-ignore
     handlebars({
       context: {
-        db_js: 'data/sars-cov-2-largedb.js',
+        db_js: 'data/sars-cov2-check.js',
       }
     }),
   ],

@@ -10,6 +10,13 @@ export interface SampleDepths {
   [key: string]: number[];
 }
 
+
+export interface PrimerMatches {
+  [key: string]: {
+    [key: string]: PrimerMatchesInfo[]
+  }
+}
+
 export interface VariantCall {
   [key: string]: string;
 
@@ -47,6 +54,22 @@ export interface SegmentCoords {
   }
 }
 
+export interface MaxSegmentLength {
+    [key: string]: number
+}
+
+export interface SegmentRegSeq {
+  [key: string]: {
+    [key: string] : string
+  }
+}
+
+export interface SegmentRegID {
+  [key: string]: {
+    [key: string] : string
+  }
+}
+
 export interface MosdepthInfo {
   genome_coverage: number;
   low_coverage_coords: string;
@@ -59,6 +82,18 @@ export interface MosdepthInfo {
   ref_seq_length: number;
   sample: string;
   zero_coverage_coords: string;
+}
+
+export interface PrimerMatchesInfo {
+  cigar: string,
+  edit_distance: number,
+  end: number,
+  matched_aligned: string,
+  name: string,
+  other_locations: string
+  query_aligned: string,
+  start: number,
+  target_aligned: string
 }
 
 export interface SampleMosdepthInfo {
@@ -91,7 +126,7 @@ export interface ChartOptions {
   /** Selected sample names */
   selectedSamples: string[];
   /** list of selected virus segment names */
-  selectedSegments?: string[];
+  selectedSegments: string[];
   /** show coverage stats in tooltips */
   showCovStatsInTooltips: boolean;
   /** Show ECharts DataZoom slider? */
@@ -164,7 +199,7 @@ export interface TooltipOptions {
   y: number;
   sample: string;
   position: number;
-  depth: number;
+  depth: number | string; // string is needed for flu
   tables: Table[];
 }
 
@@ -189,13 +224,13 @@ export interface ECFeature {
 export interface WgsCovPlotDB {
   activePage: string;
   /** amplicon depths */
-  amplicon_depths?: SampleAmpliconDepths;
+  amplicon_depths: SampleAmpliconDepths;
   /** coverage depths */
   depths: SampleDepths | SampleSegmentDepths;
   /** ??? gene/amplicon features on both plus and minus strands? */
   doubleStrand: boolean;
   /** ECharts features */
-  echart_features?: ECFeature[];
+  echart_features: ECFeature[];
   /** mosdepth/coverage depth info */
   mosdepth_info: SampleMosdepthInfo | SampleSegmentMosdepthInfo;
 
@@ -203,14 +238,22 @@ export interface WgsCovPlotDB {
   positions: number[];
   /** reference sequence */
   ref_seq: string;
+  segments_ref_seq: SegmentRegSeq;
+  segments_ref_id: SegmentRegID;
+
+  /** Primer data **/
+  primer_matches: PrimerMatches
 
   /** array of all samples */
   samples: string[];
 
   /** plotting coordinates for virus segments */
-  segCoords?: SegmentCoords;
+  segCoords: SegmentCoords;
   /** list of virus segment names if segmented virus being shown */
-  segments?: string[];
+  segments: string[];
+
+  /** Max length among samples of 1 segment**/
+  maxSegmentLength: MaxSegmentLength
 
   /** Show amplicon features? */
   show_amplicons: boolean;
@@ -299,7 +342,7 @@ export const defaultDB: WgsCovPlotDB = {
   show_amplicons: false,
   show_genes: true,
   variantHeatmap: undefined,
-  variants: {},
+  variants: {}
 }
 
 export interface ECFormatterFeature {

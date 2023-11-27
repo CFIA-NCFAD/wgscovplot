@@ -21,8 +21,8 @@ Entrez.email = "wgscovplot@github.com"
 def run(
         input_dir: Path,
         low_coverage_threshold: int,
-        show_amplicon: bool,
-        show_gene_features: bool,
+        #show_amplicon: bool,
+        #show_gene_features: bool,
         is_segmented: bool,
         primer_seq_path: Path,
         edit_distance: int,
@@ -75,23 +75,13 @@ def run(
                                                about_html=util.readme_to_html(),
                                                output_html=output_html)
     else:
-        ref_seq, gene_features = get_ref_seq_and_annotation(input_dir, get_gene_features=show_gene_features)
+        ref_seq, gene_features = get_ref_seq_and_annotation(input_dir)
         # Get amplicon data
-        if show_amplicon:
-            amplicon_depths = mosdepth.get_amplicon_depths(input_dir)
-            region_amplicon_data = mosdepth.get_region_amplicon(input_dir)
-            if not (amplicon_depths and region_amplicon_data):
-                logging.warning(f'No Mosdepth region BED file with amplicon data found in "{input_dir}"')
-                show_amplicon = False
-                amplicon_depths = {}
-                region_amplicon_data = {}
-        else:
-            amplicon_depths = {}
-            region_amplicon_data = {}
-        echarts_features = build_echarts_features_array(
-            gene_features,
-            region_amplicon_data
-        )
+        amplicon_depths = mosdepth.get_amplicon_depths(input_dir)
+        region_amplicon_data = mosdepth.get_region_amplicon(input_dir)
+        if not (amplicon_depths and region_amplicon_data):
+            logging.warning(f'No Mosdepth region BED file with amplicon data found in "{input_dir}"')
+        echarts_features = build_echarts_features_array(gene_features, region_amplicon_data)
 
         # Get the list of samples name
         samples = wgscovplot.tools.mosdepth.flu.get_samples_name(input_dir, is_segmented)
@@ -117,8 +107,6 @@ def run(
             amplicon_depths=amplicon_depths,
             mosdepth_info=mosdepth_info,
             variants=variants_data,
-            show_amplicon=show_amplicon,
-            show_gene_features=show_gene_features,
             low_coverage_threshold=low_coverage_threshold,
             echart_features=echarts_features
         )

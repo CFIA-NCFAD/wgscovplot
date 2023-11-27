@@ -163,3 +163,6 @@ def expand_degenerate_bases(seq: str) -> List[str]:
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
     return start1 < start2 < end1 or start1 < end2 < end1
+
+#def overlap(start1, end1, start2, end2) :
+#    return max(0, min(end1, end2) - max(start1, start2)+1)

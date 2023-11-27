@@ -2,7 +2,7 @@
 * wgscovplot DB object
 * @type {WgsCovPlotDB}
 */
-window.db = {
+db = {
     "amplicon_depths":
     {
         "Sample1":

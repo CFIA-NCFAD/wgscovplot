@@ -6,6 +6,7 @@ import {Sidebar} from "./ui/Sidebar";
 import {ChartContainer} from "./ui/ChartContainer";
 import {state} from "./state";
 import {AboutPage} from "./ui/AboutPage";
+import {VariantHeatMapPage} from "./ui/VariantHeatMapPage";
 import {Nav} from "./ui/Nav";
 
 const App: Component = () => {
@@ -20,6 +21,9 @@ const App: Component = () => {
           <div class={"flex " + (state.activePage === "about" ? "" : "hidden")}>
             <AboutPage/>
           </div>
+        <div class={"flex " + (state.activePage === "heatmap" ? "" : "hidden")}>
+          <VariantHeatMapPage/>
+        </div>
       </div>
 
     </div>

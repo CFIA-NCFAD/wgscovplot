@@ -88,6 +88,18 @@ export function getCoordsInterval(depths: number[], threshold: number) {
   return out;
 }
 
+export const toFloat16Array = (b64String: string | number[]) => {
+    if (typeof b64String === 'string') {
+        //let f32a = new Float32Array(new Uint8Array([...window.atob(b64String)].map(c => c.charCodeAt(0))).buffer);
+        //let xs = Array.from(new Uint16Array(new Uint8Array([...atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
+        let f32a = Array.from(new Uint16Array(new Uint8Array([...atob(b64String)].map(c => c.charCodeAt(0))).buffer));
+        let depthArr = Array.from(f32a);
+        return depthArr;
+    }
+    return b64String;
+}
+
+
 /**
  * Convert hex color to HSL
  *

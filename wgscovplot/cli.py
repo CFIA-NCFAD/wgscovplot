@@ -9,6 +9,8 @@ from rich.logging import RichHandler
 from sys import version_info
 from wgscovplot.wgscovplot import run
 from wgscovplot import __version__
+from textual.app import App, ComposeResult
+from textual.widgets import Button,Input, Label, Static
 
 app = typer.Typer()
 logger = logging.getLogger(__name__)
@@ -48,6 +50,7 @@ def main(
         is_segmented: bool = typer.Option(default=False,
                                           help="Output coverage plots for segmented viruses like Influenza A virus."),
         dev: bool = typer.Option(default=False, help="Run wgscovplot in development output mode."),
+        interactive: bool = typer.Option(default=False, help="Run wgscovplot in interactive mode with textual."),
         max_primer_mismatches: int = typer.Option(default=0,
                                                   help="The maximum differences or 'edits' allowed between real-time "
                                                        "PCR primer/probe sequences and the sample sequences."),
@@ -60,10 +63,9 @@ def main(
     logger.info(VERSION)
     logger.info(f'{input_dir=}')
     logger.info(f'{output_html=}')
-    run(input_dir, low_coverage_threshold, show_amplicons, show_gene_features, is_segmented, primers_fasta,
+    run(input_dir, low_coverage_threshold, is_segmented, primers_fasta,
         max_primer_mismatches, dev,
         output_html)
-
 
 def init_logging(verbose):
     from rich.traceback import install

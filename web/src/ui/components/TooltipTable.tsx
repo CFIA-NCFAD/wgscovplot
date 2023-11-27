@@ -18,7 +18,7 @@ export const TooltipTable: Component<{ headers: string[], rows: string[][], high
             <For each={cells}>
               {(cell, j) =>
                 <td class={"px-2 " +
-                  (j() === 0 ? "font-semibold" : "text-right") +
+                  (j() === 0 ? "font-semibold" : "text-right font-mono") +
                   (j() === props.highlightColumn ? " bg-amber-400/25" : "")
                 }>
                   {cell}

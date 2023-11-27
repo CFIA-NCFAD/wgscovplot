@@ -4,8 +4,9 @@
   "description": "",
   "scripts": {
     "start": "vite",
+    "start-flu": "vite -c vite.config.flu.ts",
     "dev": "vite",
-    "build": "vite build -c vite.config.dev.ts -m development",
+    "build": "vite build -c vite.config.build.ts",
     "serve": "vite preview"
   },
   "license": "MIT",

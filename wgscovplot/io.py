@@ -16,8 +16,8 @@ from wgscovplot.tools import mosdepth
 
 logger = logging.getLogger(__name__)
 
-REF_FASTA_GLOB_PATTERN = '**/genome/snpeff_db/**/*.fa*'
-GFF_GLOB_PATTERN = '**/genome/snpeff_db/**/*.gff'
+REF_FASTA_GLOB_PATTERN = '**/genome/**/*.fa*'
+GFF_GLOB_PATTERN = '**/genome/**/*.gff'
 
 
 class TemplateHTML(BaseModel):
@@ -77,8 +77,8 @@ def write_html_coverage_plot(
     with open(output_html, "w+", encoding="utf-8") as fout:
         fout.write(
             template_file.render(
-                db=db.dict(),
-                **html.dict(),
+                db=db.model_dump(),
+                **html.model_dump(),
                 is_segmented=False,
                 dev=dev,
             )
@@ -161,17 +161,14 @@ def parse_genbank(
 
 def get_ref_seq_and_annotation(
         input_dir: Path,
-        get_gene_features: bool
 ) -> Tuple[str, Optional[List[Feature]]]:
     ref_seq = None
     gene_features = None
-    if get_gene_features:
-        gff_path = find_ref_gff(input_dir)
-        gene_features = parse_gff(gff_path) if gff_path else None
+    gff_path = find_ref_gff(input_dir)
+    gene_features = parse_gff(gff_path) if gff_path else None
     fasta_path = find_ref_fasta(input_dir)
-    if fasta_path:
-        ref_seq = read_first_seq_from_fasta(fasta_path)
-    if ref_seq is None or (gene_features is None and get_gene_features):
+    ref_seq = read_first_seq_from_fasta(fasta_path) if fasta_path else None
+    if ref_seq is None or gene_features is None:
         ref_id = mosdepth.get_refseq_id(input_dir)
         ref_seq, gene_features = fetch_ref_seq_from_ncbi_entrez(ref_id)
     return ref_seq, gene_features

@@ -10,7 +10,7 @@ import {SampleVariantCalls} from "./db";
  * @param {SampleVariantCalls} variants - Object of sample name to variant calls
  * @returns {Object}
  */
-const getTooltipHeatmap = (
+export const getTooltipHeatmap = (
     {
         samples,
         mutations,
