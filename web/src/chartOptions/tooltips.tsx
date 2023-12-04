@@ -1,7 +1,10 @@
 import {get, isNil, find, uniqBy, flatMap, keys} from "lodash";
 import {genomeCoverage, meanCoverage, medianCoverage} from "../stats";
-import {SampleDepths, VariantCall, WgsCovPlotDB} from "../db";
+import {SampleDepths, SegmentCoords, VariantCall, WgsCovPlotDB} from "../db";
 import {unwrap} from "solid-js/store";
+import {setState} from "../state";
+import {whichSegment} from "./segmented/getSegmentsInfo";
+import {getPrimerInfo} from "./segmented/pcr";
 
 
 export const getVariantComparison = (db: WgsCovPlotDB, position: number): Array<Array<string>> => {
@@ -165,7 +168,7 @@ export const getSegmentCoverageStatComparison = (db: WgsCovPlotDB, segment: stri
       sample,
       coverageDepth,
       segment,
-      `1-${depthArr.length}`,
+      depthArr.length > 0 ?`1-${depthArr.length}` : `${depthArr.length}-${depthArr.length}`,
       depthArr.length,
       meanCov,
       medianCov,
@@ -174,4 +177,216 @@ export const getSegmentCoverageStatComparison = (db: WgsCovPlotDB, segment: stri
     rows.push(row);
   });
   return rows;
+}
+
+export const tooltipFormatter = (db: WgsCovPlotDB) => {
+  if (isNil(db.segments)) {
+    let depths: SampleDepths = unwrap(db.depths) as SampleDepths;
+    return function (params: { axisIndex: number, axisValue: number, componentSubType: string }[]) {
+      let selectedSamples = db.chartOptions.selectedSamples;
+      let output = "";
+      let [{
+        axisIndex,
+        axisValue: position
+      }] = params;
+      if (axisIndex >= selectedSamples.length || db.variants === undefined) {
+        return output;
+      }
+      let sample = selectedSamples[axisIndex];
+      let sampleDepths = depths[sample];
+      // change tooltip position if it's a click event and the tooltip is not already showing
+      if (!db.tooltipOptions.show) {
+        setState("tooltipOptions", "left", db.tooltipOptions.x + 10);
+        setState("tooltipOptions", "top", db.tooltipOptions.y);
+      }
+      // set tooltip state
+      setState("tooltipOptions", "show", true);
+      setState("tooltipOptions", "sample", sample);
+      setState("tooltipOptions", "position", position);
+      setState("tooltipOptions", "depth", sampleDepths[position - 1]);
+
+      let [dataZoom] = db.chart.getOption().dataZoom;
+      let zoomStart = 1
+      let zoomEnd = db.ref_seq.length;
+      if (dataZoom !== undefined) {
+        zoomStart = Math.floor(dataZoom.startValue);
+        zoomEnd = Math.floor(dataZoom.endValue);
+      }
+      let positionRows: string[][] = [];
+      let tables = [];
+      const isVariantBar = params.find(x => x.componentSubType === "bar");
+      if (isVariantBar) {
+        if (db.chartOptions.crossSampleComparisonInTooltips) {
+          positionRows = getVariantComparison(db, position);
+        } else {
+          let foundObj: any = find(db.variants[sample], {POS: position}, 0);
+          if (!isNil(foundObj)) {
+            for (const [key, value] of Object.entries(foundObj)) {
+              positionRows.push([key, value as string]);
+            }
+          }
+        }
+        tables.push({headers: ["Variant Info", ""], rows: positionRows});
+      } else {
+        positionRows = [
+          ["Sample", sample],
+          ["Position", position.toString()],
+          ["Sequence", db.ref_seq[position - 1]]
+        ]
+        tables.push({headers: ["Position Info", ""], rows: positionRows});
+      }
+      if (positionRows.length) {
+        if (db.chartOptions.showCovStatsInTooltips) {
+          let coverageStatRows = [];
+          if (db.chartOptions.crossSampleComparisonInTooltips) {
+            coverageStatRows = getCoverageStatComparison(db, zoomStart, zoomEnd, position);
+          } else {
+            let meanCov = meanCoverage(sampleDepths, zoomStart, zoomEnd).toFixed(2);
+            let medianCov = medianCoverage(sampleDepths, zoomStart, zoomEnd).toFixed(2);
+            let genomeCov = genomeCoverage(sampleDepths, zoomStart, zoomEnd, db.chartOptions.low_coverage_threshold).toFixed(2);
+            coverageStatRows = [
+              [
+                "Range",
+                `${zoomStart.toLocaleString()} - ${zoomEnd.toLocaleString()}`,
+              ],
+              ["Mean Coverage", `${meanCov}X`],
+              ["Median Coverage", `${medianCov}X`],
+              [`Genome Coverage (>= ${db.chartOptions.low_coverage_threshold}X)`, `${genomeCov}%`],
+            ];
+          }
+          tables.push({
+            headers: ["Coverage View Stats", ""],
+            rows: coverageStatRows,
+          });
+        }
+      }
+      setState("tooltipOptions", "tables", tables);
+      return;
+    };
+  } else {
+    return function (params: { axisIndex: number, axisValue: number, componentSubType: string }[]) {
+      let [{
+        axisIndex,
+        axisValue: position
+      }] = params;
+      let positionRows: string[][] = [];
+      let tables = [];
+      let sample = db.chartOptions.selectedSamples[axisIndex];
+      let segment = whichSegment(position, db);
+      let sequence = db.segments_ref_seq[sample][segment];
+      let segmentLength = sequence.length;
+      // convert to pos in segment
+      position = position - db.segCoords[segment].start + 1;
+      let coverageDepth;
+      // @ts-ignore
+      let sampleSegDepths: number[] = db.depths[sample][segment];
+      let refID = db.segments_ref_id[sample][segment];
+      if (segmentLength === 0) {
+        coverageDepth = `No result reported for segment ${segment}`;
+      } else {
+        if (position <= segmentLength) {
+          // get coverage depth for pos
+          coverageDepth = sampleSegDepths[position - 1].toLocaleString();
+        } else {
+          coverageDepth = `No sequence at this position. 
+                        Reference sequence ${refID} 
+                        is only ${sampleSegDepths.length} bp`;
+        }
+      }
+      if (!db.tooltipOptions.show) {
+        setState("tooltipOptions", "left", db.tooltipOptions.x + 10);
+        setState("tooltipOptions", "top", db.tooltipOptions.y);
+      }
+      // set tooltip state
+      setState("tooltipOptions", "show", true);
+      setState("tooltipOptions", "sample", sample);
+      setState("tooltipOptions", "position", position);
+      setState("tooltipOptions", "depth", coverageDepth);
+      const isVariantBar = params.find(element => element.componentSubType === "bar");
+      if (isVariantBar) { //tooltips at Variant sites
+        if (db.chartOptions.crossSampleComparisonInTooltips) {
+          positionRows = getSegmentVariantComparison(db, sample, segment, position)
+        } else {
+          // @ts-ignore
+          let foundObj = find(db.variants[sample][segment],
+            {"POS": position.toString()});
+          if (!isNil(foundObj)) {
+            for (const [key, value] of Object.entries(foundObj)) {
+              // @ts-ignore
+              positionRows.push(...[[key, value]]);
+            }
+          }
+          positionRows.push(["Coverage Depth", coverageDepth]);
+        }
+        let sortingCriteria = ["Sample", "Segment", "POS", "Segment Length", "Coverage Depth", "REF_ID", "REF_SEQ", "ALT_SEQ", "ALT_FREQ"]
+        positionRows.sort((a, b) => sortingCriteria.indexOf(a[0]) - sortingCriteria.indexOf(b[0]))
+        tables.push({headers: ["Variant Info", ""], rows: positionRows});
+      } else { // tooltips for Non-Variant Sites
+        if (position > segmentLength) { //Out of range when segment length < padding array
+          positionRows = [
+            ["Position", position.toString()],
+            [coverageDepth, ""]
+          ];
+        } // Pos within segment length
+        positionRows = [
+          ["Sample", sample],
+          ["Segment", segment],
+          ["POS", position.toString()],
+          ["Coverage Depth", coverageDepth],
+          ["Segment Length", segmentLength.toString()],
+          ["REF_ID", refID],
+          ["REF_SEQ", sequence[position - 1]],
+          ["ALT_SEQ", ""],
+          ["ALT_FREQ", ""],
+        ];
+        tables.push({headers: ["Position Info", ""], rows: positionRows});
+      }
+      if (positionRows.length) { // write rows to table
+        if (db.chartOptions.showCovStatsInTooltips) {
+          let coverageStatRows = [];
+          if (db.chartOptions.crossSampleComparisonInTooltips) {
+            coverageStatRows = getSegmentCoverageStatComparison(db, segment, position);
+          } else {
+            let meanCov = meanCoverage(sampleSegDepths, 1, segmentLength).toFixed(2);
+            let medianCov = medianCoverage(sampleSegDepths, 1, segmentLength).toFixed(2);
+            let genomeCov = genomeCoverage(sampleSegDepths, 1, segmentLength, db.chartOptions.low_coverage_threshold).toFixed(2);
+            coverageStatRows = [
+              ["Mean Coverage", `${meanCov}X`],
+              ["Median Coverage", `${medianCov}X`],
+              [`Genome Coverage (>= ${db.chartOptions.low_coverage_threshold}X)`, `${genomeCov}%`],
+            ];
+          }
+          tables.push({headers: ["Coverage View Stats", ""], rows: coverageStatRows});
+        }
+        if (!isNil(db.primer_matches)) {
+          let primerInfoRows = getPrimerInfo(sample, position, segment, db)
+          if (primerInfoRows.length) {
+            tables.push({headers: ["Primer Info", ""], rows: primerInfoRows});
+          }
+        }
+      }
+      setState("tooltipOptions", "tables", tables);
+      return;
+    }
+  }
+}
+
+export const getTooltips = (db: WgsCovPlotDB) => {
+  return [
+    {
+      trigger: "axis",
+      enterable: true,
+      triggerOn: db.tooltipOptions.showTooltip ? db.chartOptions.tooltipTriggerOn : "none",
+      appendToBody: false,
+      renderMode: "html",
+      showContent: true,
+      confine: true,
+      position: "cursor",
+      className: "hidden",
+      axisPointer: {
+        type: "line"
+      },
+      formatter: tooltipFormatter(db),
+    },
+  ];
 }

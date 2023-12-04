@@ -10,6 +10,11 @@ export interface SampleDepths {
   [key: string]: number[];
 }
 
+export interface ECColorArg {
+  data: {
+    0: number;
+  }
+}
 
 export interface PrimerMatches {
   [key: string]: {
@@ -120,6 +125,7 @@ export interface ChartOptions {
   geneLabelTextSize: number;
   geneLabelDistance: number;
   geneLabelRotation: number;
+  variantLabelsRotation: number;
   lowCovThresholdLineWidth: number;
   lowCovThresholdLineColour: string;
   lowCovColour: string;
@@ -269,6 +275,7 @@ export interface WgsCovPlotDB {
   tooltipOptions: TooltipOptions;
 }
 
+// @ts-ignore
 export const defaultDB: WgsCovPlotDB = {
   activePage: "chart",
   chart: null,
@@ -292,6 +299,7 @@ export const defaultDB: WgsCovPlotDB = {
     geneLabelTextSize: 10,
     geneLabelDistance: 10,
     geneLabelRotation: 0,
+    variantLabelsRotation: -30,
     lowCovThresholdLineWidth: 1,
     lowCovThresholdLineColour: "#910000",
     sidebarCollapsed: false,
@@ -299,7 +307,7 @@ export const defaultDB: WgsCovPlotDB = {
     crossSampleComparisonInTooltips: false,
     fixedTooltipPosition: false,
     heightOffset: 6.0,
-    hideOverlappingVariantLabels: false,
+    hideOverlappingVariantLabels: true,
     leftMargin: 3.0,
     lowCoverageOpacity: 0.3,
     low_coverage_threshold: 10,

@@ -1,8 +1,8 @@
 import {whichSegment} from "./getSegmentsInfo";
-import {isEmpty, find} from "lodash";
-import {remove, map, get, isNil} from "lodash";
+import {find} from "lodash";
+import {get, isNil} from "lodash";
 import {SegmentCoords, WgsCovPlotDB} from "../../db";
-import {ECColorArg} from "../../chart";
+import {ECColorArg} from "../../db";
 import {state} from "../../state";
 
 const segmentSeparatorLines = (segments: string[], segCoords: SegmentCoords): {} => {
@@ -38,10 +38,11 @@ const segmentSeparatorLines = (segments: string[], segCoords: SegmentCoords): {}
 export function getSegmentVariantSeries(db: WgsCovPlotDB) {
   let variantSeries = [];
   let pos;
+  let segments = Object.keys(db.segCoords) // trigger only segCoords is updated from get Dataset
   for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
     let data = [];
     let sample = db.chartOptions.selectedSamples[i];
-    for (let segment of db.chartOptions.selectedSegments) {
+    for (let segment of segments) {
       // @ts-ignore
       let vars = db.variants[sample][segment];
       if (!isNil(vars)) {
@@ -66,7 +67,7 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
       itemStyle: {
         color: function (arg: ECColorArg) {
           let pos = arg.data[0];
-          const segment = whichSegment(pos, db);
+          const segment = whichSegment(pos, db)
           const seqPosition = pos - db.segCoords[segment].start;
           const nt = db.segments_ref_seq[sample][segment][seqPosition];
           return get(state.chartOptions.ntColor, nt, "#333");
@@ -79,9 +80,8 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
         verticalAlign: "middle",
         distance: 10,
         color: "inherit",
-        rotate: -30,
+        rotate: db.chartOptions.variantLabelsRotation,
         formatter: function (arg: ECColorArg) {
-          let output = "";
           let pos = arg.data[0];
           let segment = whichSegment(pos, db);
           let seqPosition = pos - db.segCoords[segment].start + 1;
@@ -97,7 +97,7 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
       labelLayout: {
         hideOverlap: db.chartOptions.hideOverlappingVariantLabels
       },
-      markLine: segmentSeparatorLines(db.chartOptions.selectedSegments, db.segCoords),
+      markLine: segmentSeparatorLines(segments, db.segCoords),
       large: true,
       tooltip: {
         trigger: db.tooltipOptions.showTooltip ? "axis" : "none"

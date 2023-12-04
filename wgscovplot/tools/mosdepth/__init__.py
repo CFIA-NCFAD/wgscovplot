@@ -214,6 +214,7 @@ def get_info(
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=PER_BASE_PATTERNS,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    print("Depth Files", sample_beds)
     out = {}
     sample_depths = {}
     for sample, bed_path in sample_beds.items():

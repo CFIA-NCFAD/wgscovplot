@@ -29,6 +29,13 @@ export const MutationOptionsPanel: Component = () => {
           <label class="ml-1" for="hide-overlapping-variant-labels">Hide overlapping variant labels?</label>
           <HelpIcon helpMsg="Hide mutation/variant labels that overlap with each other."/>
         </div>
+        <div class="mt-2">
+          <label for="subplot-title-font-size">Variant labels rotation angle</label>
+          <HelpIcon helpMsg="Set rotation angle for variant labels"/>
+          <input id="subplot-title-font-size" class="w-1/6 ml-3 border border-gray-300 rounded px-1"
+                 type="number" min="-180" step="2" value={state.chartOptions.variantLabelsRotation}
+                 onChange={(e) => setState("chartOptions", "variantLabelsRotation", parseFloat(e.currentTarget.value))}/>
+        </div>
       </Show>
     </Show>
   </CollapsiblePanel>

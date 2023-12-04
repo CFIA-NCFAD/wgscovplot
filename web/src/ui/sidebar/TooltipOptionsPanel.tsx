@@ -6,7 +6,7 @@ import {TooltipTriggerSelect} from "./TooltipTriggerSelect";
 
 export const TooltipOptionsPanel: Component = () => {
   return (
-    <CollapsiblePanel title="Tooltip options" defaultCollapsed={true}>
+    <CollapsiblePanel title="Tooltip Options" defaultCollapsed={true}>
       <div class="mt-2">
         <input type="checkbox" id="show-tooltip" class="hover:ring h-4 w-4 form-check"
                checked={state.tooltipOptions.showTooltip}

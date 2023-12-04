@@ -4,7 +4,8 @@ import {WgsCovPlotDB} from "../../db";
 
 export function getSegmentPrimerData(sample: string, db: WgsCovPlotDB) {
     let primerFeatures = [];
-    for (let segment of db.chartOptions.selectedSegments) {
+    let segments = Object.keys(db.segCoords); // trigger only segCoords is updated from get Dataset
+    for (let segment of segments) {
         let matchesData;
         if (has(db.primer_matches, [sample, segment])) {
             matchesData = db.primer_matches[sample][segment];
@@ -67,14 +68,8 @@ export function primerMatchRenderer() {
     };
 }
 
-/**
- * Define primers series, it is used to annotate into coverage plot
- * @param {Object} db - wgscovplot DB object
- * @returns {Object} - Primer Series Option
- *
- */
 export function getSegmentPrimerSeries(db: WgsCovPlotDB) {
-
+    console.log("Trigger getSegmentPrimerSeries")
     let primerSeries: any[] = [];
     if (isEmpty(db.primer_matches)) {
         return primerSeries;
@@ -99,6 +94,7 @@ export function getSegmentPrimerSeries(db: WgsCovPlotDB) {
             data: getSegmentPrimerData(sample, db),
         });
     }
+    //console.timeEnd("Trigger getSegmentPrimerSeries")
     return primerSeries;
 }
 

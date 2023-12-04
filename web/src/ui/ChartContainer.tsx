@@ -14,13 +14,19 @@ import {
   TooltipComponent,
   VisualMapComponent,
 } from "echarts/components";
+import {LabelLayout, UniversalTransition} from "echarts/features";
 import {BarChart, CustomChart, HeatmapChart, LineChart} from "echarts/charts";
 import {CanvasRenderer, SVGRenderer} from "echarts/renderers";
 import type {ECharts, EChartsType} from "echarts";
 import {isNil, map, max, pick, sum, values} from "lodash";
 import {MosdepthInfo} from "../db";
 import {unwrap} from "solid-js/store";
-import {getDatasets, getDataZoom, getGrids, getSeries, getTooltips, getXAxes, getYAxes} from "../chart";
+import {getSeries} from "../chartOptions/chartSeries";
+import {getXAxes, getYAxes} from "../chartOptions/axes";
+import {getGrids} from "../chartOptions/chartGrid";
+import {getDataZoom} from "../chartOptions/dataZoom";
+import {getDatasets} from "../chartOptions/dataset";
+import {getTooltips} from "../chartOptions/tooltips";
 import {DragDropProvider, DragDropSensors, DragEventHandler,} from "@thisbeyond/solid-dnd";
 import {ChartTooltip} from "./ChartTooltip";
 
@@ -29,7 +35,8 @@ echarts.use(
   [TooltipComponent, GridComponent,
     LineChart, BarChart, ToolboxComponent, HeatmapChart,
     DataZoomComponent, CustomChart, VisualMapComponent, TitleComponent,
-    DatasetComponent, SVGRenderer, CanvasRenderer, MarkAreaComponent, MarkLineComponent]
+    DatasetComponent, SVGRenderer, CanvasRenderer, MarkAreaComponent,
+    MarkLineComponent, LabelLayout, UniversalTransition]
 );
 
 // add global event listeners for mouse position
@@ -76,7 +83,6 @@ createEffect(() => {
     }
   });
 });
-
 
 const Chart: Component = () => {
   let chartDiv: undefined | HTMLDivElement = undefined;
@@ -145,6 +151,7 @@ const Chart: Component = () => {
     });
   });
 
+
   let datasets = createMemo(() => {
     return getDatasets(state);
   });
@@ -186,8 +193,7 @@ const Chart: Component = () => {
 
   createEffect(() => {
     if (chart !== undefined) {
-      console.time("chart setOption")
-
+      //console.time("chart setOption")
       let dataZoom : any = chart.getOption().dataZoom;
       let start = Math.floor(dataZoom[0]["startValue"]);
       let end = Math.floor(dataZoom[0]["endValue"]);
@@ -204,9 +210,9 @@ const Chart: Component = () => {
         endValue: end,
       });
 
-      console.log("Chart Options", chart.getOption())
-      console.timeEnd("chart setOption")
-      console.info("CHART UPDATE", Date.now());
+      //console.log("Chart Options", chart.getOption())
+      //console.timeEnd("chart setOption")
+      //console.info("CHART UPDATE", Date.now());
     }
   })
 
