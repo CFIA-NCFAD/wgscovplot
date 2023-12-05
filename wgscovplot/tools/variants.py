@@ -8,8 +8,6 @@ from operator import itemgetter
 from pathlib import Path
 from typing import Dict, Tuple, List, Optional, Iterable, Union
 
-from wgscovplot.flu import SampleSegmentRef
-
 import pandas as pd
 from pydantic import BaseModel
 
@@ -540,25 +538,31 @@ def parse_clair3_vcf(
     df['ALT_FREQ'] = df['SAMPLE'].apply(lambda x: x.split(':')[-1])
     df.drop(columns=['ID', 'INFO', 'QUAL', 'FILTER', 'INFO', 'FORMAT', 'SAMPLE'], inplace=True)
     df = df.reindex(columns=['Sample', 'Segment', 'Segment Length',
-                                                     'CHROM', 'POS', 'REF', 'ALT', 'ALT_FREQ'])
+                             'CHROM', 'POS', 'REF', 'ALT', 'ALT_FREQ'])
     df.rename(columns={'CHROM': 'REF_ID', 'ALT': 'ALT_SEQ', 'REF': 'REF_SEQ'}, inplace=True)
     return df.to_dict(orient='records')
 
 
 def get_segments_variants(
         basedir: Path,
-        sample_top_references: List[SampleSegmentRef],
-) -> Dict[str, Dict[str, List[Dict[str, str]]]]:
-    out = defaultdict(dict)
-    for ssr in sample_top_references:
-        segment = ssr.segment
-        ref_id = ssr.ref_id
-        sample = ssr.sample
-        vcf_files = basedir.glob(f'**/variants/**/'
-                                 f'{sample}.Segment_{segment}.{ref_id}.no_frameshifts.vcf')
-        for vcf in vcf_files:
-            variants_caller, df_vcf = read_vcf(vcf)
-            out[sample][str(segment)] = parse_clair3_vcf(df_vcf, sample, segment, len(ssr.ref_seq))
+        segments: List,
+        req_seq: Dict[str, Dict[str, str]],
+        sample_top_references: Dict[str, pd.DataFrame],
+) -> Dict[str, Dict[str, List[Dict]]]:
+    out = {}
+    for sample, df_top_references in sample_top_references.items():
+        out[sample] = {}
+        for segment in segments:
+            out[sample][segment] = []  # if sample, segment has now info so set to empty
+        for row in df_top_references.itertuples():
+            vcf_files = basedir.glob(f'**/variants/**/'
+                                     f'{row.sample}.Segment_{row.segment}.{row.ref_id}.no_frameshifts.vcf')
+            ref_seq_len = 0
+            if req_seq[sample][row.segment]:
+                ref_seq_len = len(req_seq[sample][row.segment])
+            for vcf_file in vcf_files:
+                variants_caller, df_vcf = read_vcf(vcf_file)
+                out[sample][row.segment] = parse_clair3_vcf(df_vcf, sample, row.segment, ref_seq_len)
     return out
 
 

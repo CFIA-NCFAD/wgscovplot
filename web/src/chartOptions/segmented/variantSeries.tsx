@@ -86,7 +86,7 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
           let segment = whichSegment(pos, db);
           let seqPosition = pos - db.segCoords[segment].start + 1;
           // @ts-ignore
-          let variant = find(db.variants[sample][segment], {POS: seqPosition.toString()}, 0);
+          let variant = find(db.variants[sample][segment], {POS: seqPosition.toString() | seqPosition}, 0);
           if (!isNil(variant)) {
             const {REF_SEQ, POS, ALT_SEQ} = variant;
             return `${REF_SEQ}${POS}${ALT_SEQ}`;

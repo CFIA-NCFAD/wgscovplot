@@ -14,7 +14,7 @@ import {
   TooltipComponent,
   VisualMapComponent,
 } from "echarts/components";
-import {LabelLayout, UniversalTransition} from "echarts/features";
+import {LabelLayout} from "echarts/features";
 import {BarChart, CustomChart, HeatmapChart, LineChart} from "echarts/charts";
 import {CanvasRenderer, SVGRenderer} from "echarts/renderers";
 import type {ECharts, EChartsType} from "echarts";
@@ -36,7 +36,7 @@ echarts.use(
     LineChart, BarChart, ToolboxComponent, HeatmapChart,
     DataZoomComponent, CustomChart, VisualMapComponent, TitleComponent,
     DatasetComponent, SVGRenderer, CanvasRenderer, MarkAreaComponent,
-    MarkLineComponent, LabelLayout, UniversalTransition]
+    MarkLineComponent, LabelLayout]
 );
 
 // add global event listeners for mouse position
@@ -212,7 +212,7 @@ const Chart: Component = () => {
 
       //console.log("Chart Options", chart.getOption())
       //console.timeEnd("chart setOption")
-      //console.info("CHART UPDATE", Date.now());
+     // console.info("CHART UPDATE", Date.now());
     }
   })
 

@@ -115,7 +115,6 @@ function getGeneFeatureRenderer(db: WgsCovPlotDB) {
 }
 
 export const getGeneFeatureSeries = (db: WgsCovPlotDB) => {
-  console.time("Trigger getGeneFeatureSeries")
   let index = db.chartOptions.selectedSamples.length;
   return {
     type: "custom",
@@ -173,7 +172,6 @@ export const getGeneFeatureSeries = (db: WgsCovPlotDB) => {
       },
     },
   };
-  console.timeEnd("Trigger getGeneFeatureSeries")
 }
 
 export function getRegionAmpliconDepthRenderer(db: WgsCovPlotDB) {

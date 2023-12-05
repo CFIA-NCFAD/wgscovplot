@@ -7,14 +7,14 @@ import {whichSegment} from "./segmented/getSegmentsInfo";
 import {getPrimerInfo} from "./segmented/pcr";
 
 
-export const getVariantComparison = (db: WgsCovPlotDB, position: number): Array<Array<string>> => {
+export const getVariantComparison = (db: WgsCovPlotDB, position: any): Array<Array<string>> => {
   if (isNil(db.variants)) {
     return [];
   }
   let rows: any[][] = [];
   let variantArr: VariantCall[] = [];
   for (let sample of db.chartOptions.selectedSamples) {
-    let variant = find(db.variants[sample], {POS: position}, 0) as VariantCall;
+    let variant = find(db.variants[sample], {POS: position.toString() | position}, 0) as VariantCall;
     if (!isNil(variant)) {
       variantArr.push(variant);
     } else {
@@ -76,12 +76,12 @@ export const getCoverageStatComparison = (db: WgsCovPlotDB, start: number, end: 
   return rows;
 }
 
-export const getSegmentVariantComparison = (db: WgsCovPlotDB, sample: string, segment: string, position: number): Array<Array<string>> => {
+export const getSegmentVariantComparison = (db: WgsCovPlotDB, sample: string, segment: string, position: any): Array<Array<string>> => {
   let variantArr: any = [];
   db.chartOptions.selectedSamples.forEach(sample => {
     // @ts-ignore
     let variantCall = find(db.variants[sample][segment],
-      {"POS": position.toString()}, 0);
+      {"POS": position.toString() | position}, 0);
     if (!isNil(variantCall)) {
       variantArr.push(variantCall);
     } else {
@@ -219,7 +219,8 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
         if (db.chartOptions.crossSampleComparisonInTooltips) {
           positionRows = getVariantComparison(db, position);
         } else {
-          let foundObj: any = find(db.variants[sample], {POS: position}, 0);
+          // @ts-ignore
+          let foundObj: any = find(db.variants[sample], {POS: position.toString() | position}, 0);
           if (!isNil(foundObj)) {
             for (const [key, value] of Object.entries(foundObj)) {
               positionRows.push([key, value as string]);
@@ -308,8 +309,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
           positionRows = getSegmentVariantComparison(db, sample, segment, position)
         } else {
           // @ts-ignore
-          let foundObj = find(db.variants[sample][segment],
-            {"POS": position.toString()});
+          let foundObj = find(db.variants[sample][segment], {"POS": position.toString() | position});
           if (!isNil(foundObj)) {
             for (const [key, value] of Object.entries(foundObj)) {
               // @ts-ignore

@@ -10,7 +10,7 @@ from Bio.SeqRecord import SeqRecord
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
 
-from wgscovplot.db import TemplateDB
+from wgscovplot.db import NonSegmentTemplateDB, SegmentTemplateDB
 from wgscovplot.features import Feature
 from wgscovplot.tools import mosdepth
 
@@ -25,47 +25,10 @@ class TemplateHTML(BaseModel):
     cov_stats_html: str
 
 
-def write_html_coverage_plot_segment_virus(
-        samples_name: List[str],
-        segments_name: List[str],
-        depths_data: Dict[str, Dict[str, List]],
-        variants_data: Dict[str, Dict[str, Dict]],
-        ref_seq: Dict[str, Dict[str, str]],
-        ref_id: Dict[str, Dict[str, str]],
-        summary_info: str,
-        low_coverage_regions: Dict[str, Dict[str, str]],
-        low_coverage_threshold: int,
-        primer_data: Dict[str, Dict[str, Dict]],
-        about_html: str,
-        output_html: Path,
-) -> None:
-    render_env = Environment(
-        keep_trailing_newline=True,
-        trim_blocks=True,
-        lstrip_blocks=True,
-        loader=FileSystemLoader(Path.joinpath(Path(__file__).resolve().parent, "tmpl")),
-    )
-    template_file = render_env.get_template("wgscovplot_flu_template.html")
-    with open(output_html, "w+", encoding="utf-8") as fout:
-        fout.write(template_file.render(samples_name=samples_name,
-                                        segments_name=segments_name,
-                                        depths_data=depths_data,
-                                        variants_data=variants_data,
-                                        ref_seq=ref_seq,
-                                        ref_id=ref_id,
-                                        summary_info=summary_info,
-                                        low_coverage_regions=low_coverage_regions,
-                                        low_coverage_threshold=low_coverage_threshold,
-                                        primer_data=primer_data,
-                                        about_html=about_html,
-                                        segment_virus=True))
-
-
 def write_html_coverage_plot(
-        db: TemplateDB,
+        db: NonSegmentTemplateDB | SegmentTemplateDB,
         html: TemplateHTML,
         output_html: Path,
-        dev: bool = False,
 ) -> None:
     render_env = Environment(
         keep_trailing_newline=True,
@@ -79,8 +42,6 @@ def write_html_coverage_plot(
             template_file.render(
                 db=db.model_dump(),
                 **html.model_dump(),
-                is_segmented=False,
-                dev=dev,
             )
         )
 

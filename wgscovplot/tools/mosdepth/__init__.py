@@ -45,16 +45,27 @@ REGIONS_PATTERNS = [
 
 class MosdepthDepthInfo(BaseModel):
     sample: str
-    n_zero_coverage: int
-    zero_coverage_coords: str
-    low_coverage_threshold: int = 5
-    n_low_coverage: int
-    low_coverage_coords: str
-    genome_coverage: float
-    mean_coverage: float
-    median_coverage: int
-    ref_seq_length: int
-    max_depth: int
+    n_zero_coverage: int = 0
+    zero_coverage_coords: str = ""
+    low_coverage_threshold: int = 10
+    n_low_coverage: int = 0
+    low_coverage_coords: str = ""
+    genome_coverage: float = 0
+    mean_coverage: float = 0
+    median_coverage: float = 0
+    ref_seq_length: int = 0
+    max_depth: int = 0
+
+
+def get_samples_name(basedir: Path, segment_virus: bool) -> List:
+    glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
+    sample_beds = find_file_for_each_sample(basedir,
+                                            glob_patterns=glob_patterns,
+                                            sample_name_cleanup=SAMPLE_NAME_CLEANUP)
+    out = []
+    for sample, bed_path in sample_beds.items():
+        out.append(sample)
+    return sorted(out)
 
 
 def read_mosdepth_bed(p: Path) -> pd.DataFrame:
@@ -214,13 +225,13 @@ def get_info(
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=PER_BASE_PATTERNS,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
-    print("Depth Files", sample_beds)
     out = {}
     sample_depths = {}
     for sample, bed_path in sample_beds.items():
         df = read_mosdepth_bed(bed_path)
         arr = depth_array(df)
-        sample_depths[sample] = arr
+        arr[arr == 0] = 1E-7  # assign values for zero depth position so that it can be plotted in log scale mode
+        sample_depths[sample] = base64.b64encode(arr).decode('utf-8')
         mean_cov = arr.mean()
         median_cov = pd.Series(arr).median()
         depth_info = MosdepthDepthInfo(sample=sample,

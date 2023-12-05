@@ -9,12 +9,11 @@ from rich.logging import RichHandler
 from sys import version_info
 from wgscovplot.wgscovplot import run
 from wgscovplot import __version__
-from textual.app import App, ComposeResult
-from textual.widgets import Button,Input, Label, Static
 
 app = typer.Typer()
 logger = logging.getLogger(__name__)
 VERSION = f"wgscovplot version {__version__}; Python {version_info.major}.{version_info.minor}.{version_info.micro}"
+
 
 def version_callback(value: bool):
     if value:
@@ -41,19 +40,11 @@ def main(
         output_html: Path = typer.Option("wgscovplot.html", help="wgscovplot HTML output file"),
         primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
         low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
-        show_amplicons: bool = typer.Option(default=True,
-                                            help="Show amplicon positions and coverage along with sequencing coverage "
-                                                 "plots."),
-        show_gene_features: bool = typer.Option(default=True,
-                                                help="Show genetic features such as CDS, genes, 5'/3'UTR along with "
-                                                     "sequencing coverage plots."),
         is_segmented: bool = typer.Option(default=False,
                                           help="Output coverage plots for segmented viruses like Influenza A virus."),
-        dev: bool = typer.Option(default=False, help="Run wgscovplot in development output mode."),
-        interactive: bool = typer.Option(default=False, help="Run wgscovplot in interactive mode with textual."),
-        max_primer_mismatches: int = typer.Option(default=0,
-                                                  help="The maximum differences or 'edits' allowed between real-time "
-                                                       "PCR primer/probe sequences and the sample sequences."),
+        edit_distance: int = typer.Option(default=0,
+                                          help="The maximum differences or 'edits' allowed between real-time "
+                                               "PCR primer/probe sequences and the sample sequences."),
         verbose: bool = typer.Option(default=False, help="Verbose logs"),
         version: Optional[bool] = typer.Option(None,
                                                callback=version_callback,
@@ -63,9 +54,8 @@ def main(
     logger.info(VERSION)
     logger.info(f'{input_dir=}')
     logger.info(f'{output_html=}')
-    run(input_dir, low_coverage_threshold, is_segmented, primers_fasta,
-        max_primer_mismatches, dev,
-        output_html)
+    run(input_dir, low_coverage_threshold, is_segmented, primers_fasta, edit_distance, output_html)
+
 
 def init_logging(verbose):
     from rich.traceback import install
