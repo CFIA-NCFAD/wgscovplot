@@ -9,7 +9,9 @@ from wgscovplot.tools.mosdepth.flu import FluMosdepthDepthInfo
 def cov_stats_to_html_table(
         sample_depth_info: Dict[str, mosdepth.MosdepthDepthInfo]
 ) -> str:
-    df = pd.DataFrame([x.dict() for x in sample_depth_info.values()])
+    print (sample_depth_info)
+    df = pd.DataFrame([x.model_dump() for x in sample_depth_info.values()])
+    print (df)
     low_coverage_threshold = list(sample_depth_info.values())[0].low_coverage_threshold
     columns = [
         ('sample', 'Sample'),
@@ -27,6 +29,10 @@ def cov_stats_to_html_table(
     df.sort_values(by=['sample'], inplace=True)
     df.drop(columns=['low_coverage_threshold'], inplace=True)
     df.rename(columns={k: v for k, v in columns}, inplace=True)
+    print (df)
+    df1 = df.reset_index(drop=True)
+    print (df1)
+    print (df1.to_dict())
     return df.to_html(
         classes="table table-striped table-hover table-bordered table-responsive-md",
         float_format=lambda x: f'{x:0.2f}',

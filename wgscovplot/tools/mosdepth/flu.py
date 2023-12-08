@@ -181,7 +181,7 @@ def get_flu_mosdepth_info(
             mosdepth_bed = bed_files[0]
             df_mosdepth = read_mosdepth_bed(mosdepth_bed)
             arr = depth_array(df_mosdepth)
-            mean_cov = arr.mean()
+            mean_cov = "{:.2f}".format(arr.mean())
             median_cov = pd.Series(arr).median()
             depth_info = FluMosdepthDepthInfo(sample=sample,
                                               segment=segment,
@@ -192,8 +192,8 @@ def get_flu_mosdepth_info(
                                               zero_coverage_coords=get_interval_coords_bed(df_mosdepth),
                                               low_coverage_coords=get_interval_coords_bed(df_mosdepth,
                                                                                           low_coverage_threshold),
-                                              genome_coverage=get_genome_coverage(df_mosdepth,
-                                                                                  low_coverage_threshold),
+                                              genome_coverage="{:.2%}".format(get_genome_coverage(df_mosdepth,
+                                                                                                  low_coverage_threshold)),
                                               mean_coverage=mean_cov,
                                               median_coverage=median_cov,
                                               ref_seq_length=get_genome_length(df_mosdepth),

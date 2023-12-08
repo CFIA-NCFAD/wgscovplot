@@ -29,6 +29,7 @@ import {getDatasets} from "../chartOptions/dataset";
 import {getTooltips} from "../chartOptions/tooltips";
 import {DragDropProvider, DragDropSensors, DragEventHandler,} from "@thisbeyond/solid-dnd";
 import {ChartTooltip} from "./ChartTooltip";
+import {getVariantHeatmapOption} from "../chartOptions/variantHeatmap";
 
 
 echarts.use(
@@ -83,6 +84,58 @@ createEffect(() => {
     }
   });
 });
+
+const HeatMap: Component = () => {
+  let heatMapChartDiv: undefined | HTMLDivElement = undefined;
+  let heatMapChart: undefined | ECharts | EChartsType = undefined;
+  const initChart = () => {
+    if (heatMapChartDiv !== undefined) {
+      if (heatMapChart !== undefined) {
+        // @ts-ignore
+        echarts.dispose(heatMapChart)
+      }
+      // @ts-ignore
+      heatMapChart = echarts.init(heatMapChartDiv, state.chartOptions.darkMode ? "dark" : "white", {renderer: state.chartOptions.renderer});
+      if (heatMapChart === undefined) {
+        throw new Error("chart is undefined")
+      }
+      setState("heatMapChart", heatMapChart);
+    }
+  }
+  onMount(() => {
+    initChart();
+    const resizeObserver = new ResizeObserver(() => {
+      if (heatMapChart !== undefined) {
+        heatMapChart.resize();
+      }
+    });
+    if (heatMapChartDiv !== undefined) {
+      resizeObserver.observe(heatMapChartDiv);
+    }
+  });
+
+  createEffect(() => {
+    state.chartOptions.renderer;
+    state.chartOptions.darkMode;
+    // don't track any other state changes
+    untrack(() => {
+      initChart();
+      if (heatMapChart !== undefined) {
+        heatMapChart.setOption(getVariantHeatmapOption(state))
+      }
+    });
+  });
+
+
+  createEffect(() => {
+    if (heatMapChartDiv !== undefined) {
+      // @ts-ignore
+      heatMapChart.setOption(getVariantHeatmapOption(state))
+    }
+  })
+  return <div ref={heatMapChartDiv} class="flex-grow flex-shrink min-w-fit"></div>
+
+}
 
 const Chart: Component = () => {
   let chartDiv: undefined | HTMLDivElement = undefined;
@@ -258,5 +311,12 @@ export const ChartContainer: Component = () => {
       <Chart/>
       <ChartTooltip/>
     </main>
+
   </DragDropProvider>
+}
+
+export const HeatMapContainer: Component = () => {
+  return <main class={"flex p-4 w-screen"}>
+    <HeatMap/>
+  </main>
 }

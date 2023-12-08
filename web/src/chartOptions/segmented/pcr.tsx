@@ -46,7 +46,7 @@ export function getSegmentPrimerData(sample: string, db: WgsCovPlotDB) {
     return primerFeatures;
 }
 
-export function primerMatchRenderer() {
+export function primerMatchRenderer(db: WgsCovPlotDB) {
     // @ts-ignore
   return function ({coordSys}, api) {
         let [startX, startY] = api.coord([api.value(0), api.value(2)]);
@@ -64,6 +64,7 @@ export function primerMatchRenderer() {
             type: "rect",
             shape: rectShape,
             style: api.style(),
+            invisible: !db.show_primer_matches
         };
     };
 }
@@ -79,9 +80,9 @@ export function getSegmentPrimerSeries(db: WgsCovPlotDB) {
             type: "custom",
             xAxisIndex: i,
             yAxisIndex: i,
-            renderItem: primerMatchRenderer(),
+            renderItem: primerMatchRenderer(db),
             label: {
-                show: true,
+                show: db.show_primer_matches,
                 position: "top",
                 distance: 20,
                 rotate: 45

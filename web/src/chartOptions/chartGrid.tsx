@@ -15,7 +15,7 @@ export const getGrids = (db: WgsCovPlotDB) => {
   featureHeight = (db.doubleStrand && featureHeight > 0) ? (featureHeight + 6.0) : featureHeight;
   featureHeight *= (db.chartOptions.featurePlotHeightScaling / 100);
   let padTop = db.chartOptions.padTop;
-  let plotHeight = (db.chartOptions.showDataZoomSlider) ? 90 : 100;
+  let plotHeight = (db.chartOptions.showDataZoomSlider) ? 90 : 95;
   let subPlotHeight = plotHeight - featureHeight;
   let grids = [];
   let nSamples = db.chartOptions.selectedSamples.length;

@@ -21,13 +21,12 @@ GFF_GLOB_PATTERN = '**/genome/**/*.gff'
 
 
 class TemplateHTML(BaseModel):
-    about_html: str
+    #about_html: str
     cov_stats_html: str
 
 
 def write_html_coverage_plot(
         db: NonSegmentTemplateDB | SegmentTemplateDB,
-        html: TemplateHTML,
         output_html: Path,
 ) -> None:
     render_env = Environment(
@@ -41,7 +40,6 @@ def write_html_coverage_plot(
         fout.write(
             template_file.render(
                 db=db.model_dump(),
-                **html.model_dump(),
             )
         )
 
@@ -52,7 +50,7 @@ def pydantic_to_dict(x):
     if isinstance(x, dict):
         return {k: pydantic_to_dict(v) for k, v in x.items()}
     if isinstance(x, BaseModel):
-        return x.dict()
+        return x.model_dump()
 
 
 def parse_gff(path: Path) -> List[Feature]:

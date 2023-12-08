@@ -50,7 +50,7 @@ class MosdepthDepthInfo(BaseModel):
     low_coverage_threshold: int = 10
     n_low_coverage: int = 0
     low_coverage_coords: str = ""
-    genome_coverage: float = 0
+    genome_coverage: str = ""
     mean_coverage: float = 0
     median_coverage: float = 0
     ref_seq_length: int = 0
@@ -232,7 +232,7 @@ def get_info(
         arr = depth_array(df)
         arr[arr == 0] = 1E-7  # assign values for zero depth position so that it can be plotted in log scale mode
         sample_depths[sample] = base64.b64encode(arr).decode('utf-8')
-        mean_cov = arr.mean()
+        mean_cov = "{:.2f}".format(arr.mean())
         median_cov = pd.Series(arr).median()
         depth_info = MosdepthDepthInfo(sample=sample,
                                        low_coverage_threshold=low_coverage_threshold,
@@ -240,7 +240,7 @@ def get_info(
                                        n_zero_coverage=count_positions(df[df.depth == 0]),
                                        zero_coverage_coords=get_interval_coords_bed(df),
                                        low_coverage_coords=get_interval_coords_bed(df, low_coverage_threshold),
-                                       genome_coverage=get_genome_coverage(df, low_coverage_threshold),
+                                       genome_coverage="{:.2%}".format(get_genome_coverage(df, low_coverage_threshold)),
                                        mean_coverage=mean_cov,
                                        median_coverage=median_cov,
                                        ref_seq_length=get_genome_length(df),

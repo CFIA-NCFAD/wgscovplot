@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from wgscovplot.features import EChartsFeature
 from wgscovplot.tools.mosdepth import MosdepthDepthInfo
+from wgscovplot.tools.mosdepth.flu import FluMosdepthDepthInfo
 
 
 class BaseDB(BaseModel):
@@ -20,7 +21,7 @@ class SegmentTemplateDB(BaseDB):
     segments_ref_id: Dict[str, Dict[str, str]]
     segments_ref_seq: Dict[str, Dict]
     depths: Dict[str, Dict[str, str]]
-    mosdepth_info: Dict[str, Dict[str, MosdepthDepthInfo]]
+    mosdepth_info: Dict[str, Dict[str, FluMosdepthDepthInfo]]
     primer_matches:  Dict[str, Dict[str, List[Dict]]]
     variants: Dict[str, Dict[str, List[Dict]]]
 

@@ -58,26 +58,34 @@ export const DisplayOptionsPanel: Component = () => {
                type="color" value={state.chartOptions.subplotTitleColour}
                onChange={(e) => setState("chartOptions", "subplotTitleColour", e.currentTarget.value)}/>
       </div>
-      <Show when={!isNil(state.amplicon_depths)}>
+      <Show when={!isNil(state.amplicon_depths) && isNil(state.segments)}>
         <div class="mt-2">
           <input type="checkbox" id="show-amplicons" class="hover:ring h-4 w-4 form-check"
                  checked={state.show_amplicons}
                  onChange={(e) => setState("show_amplicons", e.currentTarget.checked)}/>
-          <label class="ml-1" for="show-amplicons">Show Amplicon Depths?</label>
+          <label class="ml-1" for="show-amplicons">Show Amplicon Depths</label>
+        </div>
+      </Show>
+      <Show when={!isNil(state.primer_matches)}>
+        <div class="mt-2">
+          <input type="checkbox" id="show-primer-matches" class="hover:ring h-4 w-4 form-check"
+                 checked={state.show_primer_matches}
+                 onChange={(e) => setState("show_primer_matches", e.currentTarget.checked)}/>
+          <label class="ml-1" for="show-primer-matches">Show Primer Matches</label>
         </div>
       </Show>
       <div class="mt-2">
         <input type="checkbox" id="show-features" class="hover:ring h-4 w-4 form-check"
                checked={state.chartOptions.showFeatures}
                onChange={(e) => setState("chartOptions", "showFeatures", e.currentTarget.checked)}/>
-        <label class="ml-1" for="show-features">Show features?</label>
+        <label class="ml-1" for="show-features">Show features</label>
       </div>
       <Show when={state.chartOptions.showFeatures}>
         <div class="mt-2">
           <input type="checkbox" id="show-gene-labels" class="hover:ring h-4 w-4 form-check"
                  checked={state.chartOptions.showGeneLabels}
                  onChange={(e) => setState("chartOptions", "showGeneLabels", e.currentTarget.checked)}/>
-          <label class="ml-1" for="show-gene-labels">Show gene labels?</label>
+          <label class="ml-1" for="show-gene-labels">Show gene labels</label>
         </div>
         <Show when={state.chartOptions.showGeneLabels}>
           <div class="mt-2">

@@ -36,7 +36,8 @@ def run(
         # Get reference seq for each segment of each sample
         ref_seq = wgscovplot.tools.mosdepth.flu.get_segments_ref_seq(input_dir, segments, sample_top_references)
         # Get coverage depth for each segment of each sample
-        mosdepth_info, coverage_depths = wgscovplot.tools.mosdepth.flu.get_flu_mosdepth_info(input_dir, segments, sample_top_references,
+        mosdepth_info, coverage_depths = wgscovplot.tools.mosdepth.flu.get_flu_mosdepth_info(input_dir, segments,
+                                                                                             sample_top_references,
                                                                                              low_coverage_threshold)
         # Get variant info for each segment of each sample
         variants_data = variants.get_segments_variants(
@@ -48,14 +49,9 @@ def run(
         primer_matches = {}
         if primer_seq_path is not None:
             # Get consensus sequence
-            consensus_seq = wgscovplot.tools.mosdepth.flu.get_segments_consensus_seq(input_dir, segments, sample_top_references)
+            consensus_seq = wgscovplot.tools.mosdepth.flu.get_segments_consensus_seq(input_dir, segments,
+                                                                                     sample_top_references)
             primer_matches = flu_rtpcr_matches(primer_seq_path, consensus_seq, edit_distance)
-
-        # Get summary of coverage statistics
-        cov_html_table = flu_cov_stats_to_html_table(
-            mosdepth_info,
-            low_coverage_threshold=low_coverage_threshold
-        )
         db = SegmentTemplateDB(
             samples=samples,
             segments=segments,
@@ -68,14 +64,9 @@ def run(
             low_coverage_threshold=low_coverage_threshold,
         )
 
-        html = TemplateHTML(
-            about_html=util.readme_to_html(),
-            cov_stats_html=cov_html_table,
-        )
         write_html_coverage_plot(
             output_html=output_html,
-            db=db,
-            html=html,
+            db=db
         )
     else:
         ref_seq, gene_features = get_ref_seq_and_annotation(input_dir)
@@ -91,17 +82,12 @@ def run(
 
         # Get coverage statistics information for all samples
         mosdepth_info, coverage_depths = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
-        cov_html_table = cov_stats_to_html_table(mosdepth_info)
 
         # Get Variant data
         samples_variants_info = variants.get_info(input_dir)
         variants_data = {}
         for sample, df_variants in samples_variants_info.items():
             variants_data[sample] = df_variants.to_dict(orient='records')
-
-        # encode sample coverage depth arrays in base64 for better compression vs dumping a regular list to JSON
-        #depths = mosdepth.get_base64_encoded_depth_arrays(sample_depths)
-        # depths = {sample: ds.astype(int).tolist() for sample, ds in sample_depths.items()}
 
         db = NonSegmentTemplateDB(
             samples=samples,
@@ -111,15 +97,10 @@ def run(
             mosdepth_info=mosdepth_info,
             variants=variants_data,
             low_coverage_threshold=low_coverage_threshold,
-            echart_features=echarts_features
-        )
-        html = TemplateHTML(
-            about_html=util.readme_to_html(),
-            cov_stats_html=cov_html_table,
+            echart_features=echarts_features,
         )
         # Write coverage plot to HTML file
         write_html_coverage_plot(
             output_html=output_html,
-            db=db,
-            html=html,
+            db=db
         )

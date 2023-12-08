@@ -24,6 +24,11 @@ export const Nav: Component = () => {
           </a>
         </Show>
         <a
+          class={"text-sm inline-block mr-4 py-1 " + (state.activePage === "info" ? " font-bold text-gray-700 dark:text-gray-300" : "text-gray-500 dark:text-gray-400")}
+          href="#" onClick={() => setState("activePage", "info")}>
+          Summary Information
+        </a>
+        <a
           class={"text-sm inline-block mr-4 py-1 " + (state.activePage === "about" ? " font-bold text-gray-700 dark:text-gray-300" : "text-gray-500 dark:text-gray-400")}
           href="#" onClick={() => setState("activePage", "about")}>
           About

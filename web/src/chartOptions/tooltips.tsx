@@ -14,7 +14,8 @@ export const getVariantComparison = (db: WgsCovPlotDB, position: any): Array<Arr
   let rows: any[][] = [];
   let variantArr: VariantCall[] = [];
   for (let sample of db.chartOptions.selectedSamples) {
-    let variant = find(db.variants[sample], {POS: position.toString() | position}, 0) as VariantCall;
+    // @ts-ignore
+    let variant = find(db.variants[sample], {POS: typeof POS === 'string' ? position.toString() : position}, 0) as VariantCall;
     if (!isNil(variant)) {
       variantArr.push(variant);
     } else {
@@ -80,8 +81,7 @@ export const getSegmentVariantComparison = (db: WgsCovPlotDB, sample: string, se
   let variantArr: any = [];
   db.chartOptions.selectedSamples.forEach(sample => {
     // @ts-ignore
-    let variantCall = find(db.variants[sample][segment],
-      {"POS": position.toString() | position}, 0);
+    let variantCall = find(db.variants[sample][segment], {POS: typeof POS === 'string' ? position.toString() : position}, 0);
     if (!isNil(variantCall)) {
       variantArr.push(variantCall);
     } else {
@@ -220,7 +220,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
           positionRows = getVariantComparison(db, position);
         } else {
           // @ts-ignore
-          let foundObj: any = find(db.variants[sample], {POS: position.toString() | position}, 0);
+          let foundObj: any = find(db.variants[sample], {POS: typeof POS === 'string' ? position.toString() : position}, 0);
           if (!isNil(foundObj)) {
             for (const [key, value] of Object.entries(foundObj)) {
               positionRows.push([key, value as string]);
@@ -309,7 +309,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
           positionRows = getSegmentVariantComparison(db, sample, segment, position)
         } else {
           // @ts-ignore
-          let foundObj = find(db.variants[sample][segment], {"POS": position.toString() | position});
+          let foundObj = find(db.variants[sample][segment], {POS: typeof POS === 'string' ? position.toString() : position}, 0);
           if (!isNil(foundObj)) {
             for (const [key, value] of Object.entries(foundObj)) {
               // @ts-ignore

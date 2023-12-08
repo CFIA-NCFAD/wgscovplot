@@ -205,7 +205,7 @@ export interface TooltipOptions {
   y: number;
   sample: string;
   position: number;
-  depth: number | string; // string is needed for flu
+  depth: number | string;
   tables: Table[];
 }
 
@@ -263,6 +263,8 @@ export interface WgsCovPlotDB {
 
   /** Show amplicon features? */
   show_amplicons: boolean;
+  /** Show primer matches? */
+  show_primer_matches: boolean;
   /** Show gene features? */
   show_genes: boolean;
   /** ECharts object for variant calling heatmap */
@@ -271,14 +273,27 @@ export interface WgsCovPlotDB {
   variants?: SampleVariantCalls | SampleSegmentVariantCalls;
 
   chart: any;
+  heatMapChart: any;
   chartOptions: ChartOptions;
   tooltipOptions: TooltipOptions;
+  summaryInfo: any
 }
 
 // @ts-ignore
 export const defaultDB: WgsCovPlotDB = {
   activePage: "chart",
   chart: null,
+  depths: {},
+  doubleStrand: false,
+  mosdepth_info: {},
+  positions: [],
+  ref_seq: "",
+  samples: [],
+  show_amplicons: false,
+  show_primer_matches: false,
+  show_genes: true,
+  variantHeatmap: undefined,
+  variants: {},
   tooltipOptions: {
     showTooltip: true,
     variantSitesOnly: true,
@@ -341,16 +356,6 @@ export const defaultDB: WgsCovPlotDB = {
       T: "#2b87d8",
     }
   },
-  depths: {},
-  doubleStrand: false,
-  mosdepth_info: {},
-  positions: [],
-  ref_seq: "",
-  samples: [],
-  show_amplicons: false,
-  show_genes: true,
-  variantHeatmap: undefined,
-  variants: {}
 }
 
 export interface ECFormatterFeature {

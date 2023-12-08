@@ -57,7 +57,7 @@ window.db = {
             "n_low_coverage": 3,
             "n_zero_coverage": 1,
             "ref_seq_length": 2316,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "1_PB2",
             "zero_coverage_coords": "2316"
           },
@@ -71,7 +71,7 @@ window.db = {
             "n_low_coverage": 1226,
             "n_zero_coverage": 1,
             "ref_seq_length": 2316,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "2_PB1",
             "zero_coverage_coords": "2316"
           },
@@ -85,7 +85,7 @@ window.db = {
             "n_low_coverage": 1475,
             "n_zero_coverage": 188,
             "ref_seq_length": 2208,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "3_PA",
             "zero_coverage_coords": "458-645"
           },
@@ -99,7 +99,7 @@ window.db = {
             "n_low_coverage": 2,
             "n_zero_coverage": 0,
             "ref_seq_length": 1753,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "4_HA",
             "zero_coverage_coords": ""
           },
@@ -113,7 +113,7 @@ window.db = {
             "n_low_coverage": 14,
             "n_zero_coverage": 7,
             "ref_seq_length": 1561,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "5_NP",
             "zero_coverage_coords": "1555-1561"
           },
@@ -128,7 +128,7 @@ window.db = {
             "n_low_coverage": 15,
             "n_zero_coverage": 10,
             "ref_seq_length": 1413,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "6_NA",
             "zero_coverage_coords": "1404-1413"
           },
@@ -142,7 +142,7 @@ window.db = {
             "n_low_coverage": 13,
             "n_zero_coverage": 12,
             "ref_seq_length": 1023,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "7_M",
             "zero_coverage_coords": "1012-1023"
           },
@@ -156,7 +156,7 @@ window.db = {
             "n_low_coverage": 14,
             "n_zero_coverage": 6,
             "ref_seq_length": 886,
-            "sample": "ERR6359501",
+            "sample": "Sample1",
             "segment": "8_NS",
             "zero_coverage_coords": "881-886"
           }
@@ -173,7 +173,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 2316,
-            "sample": "WIN_CFIA_AIV_SAMPLE_02",
+            "sample": "Sample2",
             "segment": "1_PB2",
             "zero_coverage_coords": ""
           },
@@ -187,7 +187,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 2316,
-            "sample": "WIN_CFIA_AIV_SAMPLE_02",
+            "sample": "Sample2",
             "segment": "2_PB1",
             "zero_coverage_coords": ""
           },
@@ -201,7 +201,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 2208,
-            "sample": "WIN_CFIA_AIV_SAMPLE_02",
+            "sample": "Sample2",
             "segment": "3_PA",
             "zero_coverage_coords": ""
           },
@@ -229,7 +229,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 1540,
-            "sample": "WIN_CFIA_AIV_SAMPLE_02",
+            "sample": "Sample2",
             "segment": "5_NP",
             "zero_coverage_coords": ""
           },
@@ -243,7 +243,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 1433,
-            "sample": "WIN_CFIA_AIV_SAMPLE_02",
+            "sample": "Sample2",
             "segment": "6_NA",
             "zero_coverage_coords": ""
           },
@@ -288,7 +288,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 2316,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "1_PB2",
             "zero_coverage_coords": ""
           },
@@ -302,7 +302,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 2316,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "2_PB1",
             "zero_coverage_coords": ""
           },
@@ -316,7 +316,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 2208,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "3_PA",
             "zero_coverage_coords": ""
           },
@@ -330,7 +330,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 1776,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "4_HA",
             "zero_coverage_coords": ""
           },
@@ -344,7 +344,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 1540,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "5_NP",
             "zero_coverage_coords": ""
           },
@@ -358,7 +358,7 @@ window.db = {
             "n_low_coverage": 2,
             "n_zero_coverage": 2,
             "ref_seq_length": 1433,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "6_NA",
             "zero_coverage_coords": "1432-1433"
           },
@@ -372,7 +372,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 1002,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "7_M",
             "zero_coverage_coords": ""
           },
@@ -386,7 +386,7 @@ window.db = {
             "n_low_coverage": 0,
             "n_zero_coverage": 0,
             "ref_seq_length": 865,
-            "sample": "WIN_CFIA_AIV_SAMPLE_03",
+            "sample": "Sample3",
             "segment": "8_NS",
             "zero_coverage_coords": ""
           }
