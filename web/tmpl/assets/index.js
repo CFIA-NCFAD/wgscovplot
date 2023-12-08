@@ -33931,10 +33931,12 @@ function UK(r) {
       type: "dotted",
       opacity: 1
     },
-    data: [{
-      name: "Low Coverage Threshold",
-      yAxis: r.chartOptions.low_coverage_threshold
-    }]
+    data: [
+      {
+        name: "Low Coverage Threshold",
+        yAxis: r.chartOptions.low_coverage_threshold
+      }
+    ]
   };
 }
 function YK(r, t) {
@@ -33951,21 +33953,27 @@ function YK(r, t) {
       let l = s[o];
       if (!it.isNil(l))
         for (let [u, f] of lM(l, n))
-          e.push([{
-            name: `${u}-${f} (<${r.chartOptions.low_coverage_threshold}X)`,
-            xAxis: u + r.segCoords[o].start - 1
-          }, {
-            xAxis: f + r.segCoords[o].start - 1
-          }]);
+          e.push([
+            {
+              name: `${u}-${f} (<${r.chartOptions.low_coverage_threshold}X)`,
+              xAxis: u + r.segCoords[o].start - 1
+            },
+            {
+              xAxis: f + r.segCoords[o].start - 1
+            }
+          ]);
     }
   } else {
     let a = i[t], o = lM(a, n);
     for (let [s, l] of o)
-      e.push([{
-        xAxis: s
-      }, {
-        xAxis: l
-      }]);
+      e.push([
+        {
+          xAxis: s
+        },
+        {
+          xAxis: l
+        }
+      ]);
   }
   return {
     itemStyle: {
@@ -34201,7 +34209,10 @@ function jK(r) {
       yAxisIndex: e,
       data: it.map(a, (o) => {
         let s = parseInt(o.POS);
-        return [s, n[i][s - 1]];
+        return [
+          s,
+          n[i][s - 1]
+        ];
       }),
       barWidth: 2,
       itemStyle: {
@@ -34220,11 +34231,7 @@ function jK(r) {
         rotate: r.chartOptions.variantLabelsRotation,
         formatter: function(o) {
           let s = "";
-          return Object.values(a).forEach(({
-            POS: l,
-            REF: u,
-            ALT: f
-          }) => {
+          return Object.values(a).forEach(({ POS: l, REF: u, ALT: f }) => {
             let c = `${o.data[0]}`;
             parseInt(l) === parseInt(c) && (s += `${u}${l}${f}`);
           }), s;
@@ -34242,10 +34249,7 @@ function jK(r) {
 }
 function tQ(r, t, e) {
   for (let n of t) {
-    let {
-      start: i,
-      end: a
-    } = e[n];
+    let { start: i, end: a } = e[n];
     if (r >= i && r <= a) {
       let o = r - i + 1;
       return `${n}:${o.toLocaleString()}`;
@@ -34281,10 +34285,7 @@ const eQ = (r) => {
   return t;
 }, Dy = (r, t) => {
   for (let e of Object.keys(t.segCoords)) {
-    let {
-      start: n,
-      end: i
-    } = t.segCoords[e];
+    let { start: n, end: i } = t.segCoords[e];
     if (r >= n && r <= i)
       return e;
   }
@@ -34292,11 +34293,7 @@ const eQ = (r) => {
 }, nQ = (r) => {
   let t = [], e = 0;
   for (let n of Object.keys(r.maxSegmentLength)) {
-    let {
-      maxLength: i,
-      start: a,
-      end: o
-    } = r.segCoords[n];
+    let { maxLength: i, start: a, end: o } = r.segCoords[n];
     t.push({
       name: `Segment ${n}`,
       value: {
@@ -34319,15 +34316,7 @@ const eQ = (r) => {
   let e = [];
   for (let n = 0; n < r.length; n++) {
     let i = r[n];
-    n === 0 ? e.push({
-      xAxis: t[i].end
-    }) : n === r.length - 1 ? e.push({
-      xAxis: t[i].start
-    }) : (e.push({
-      xAxis: t[i].start
-    }), e.push({
-      xAxis: t[i].end
-    }));
+    n === 0 ? e.push({ xAxis: t[i].end }) : n === r.length - 1 ? e.push({ xAxis: t[i].start }) : (e.push({ xAxis: t[i].start }), e.push({ xAxis: t[i].end }));
   }
   return {
     silent: !0,
@@ -34354,11 +34343,13 @@ function aQ(r) {
         a.push([]);
       else
         for (let [u, f] of l.entries())
-          e = parseInt(f.POS), a.push([
-            // @ts-ignore
-            e + r.segCoords[s].start - 1,
-            r.depths[o][s][e - 1]
-          ]);
+          e = parseInt(f.POS), a.push(
+            [
+              // @ts-ignore
+              e + r.segCoords[s].start - 1,
+              r.depths[o][s][e - 1]
+            ]
+          );
     }
     t.push({
       type: "bar",
@@ -34382,15 +34373,9 @@ function aQ(r) {
         color: "inherit",
         rotate: r.chartOptions.variantLabelsRotation,
         formatter: function(s) {
-          let l = s.data[0], u = Dy(l, r), f = l - r.segCoords[u].start + 1, c = it.find(r.variants[o][u], {
-            POS: typeof POS == "string" ? f.toString() : f
-          }, 0);
+          let l = s.data[0], u = Dy(l, r), f = l - r.segCoords[u].start + 1, c = it.find(r.variants[o][u], { POS: typeof POS == "string" ? f.toString() : f }, 0);
           if (!it.isNil(c)) {
-            const {
-              REF_SEQ: v,
-              POS: d,
-              ALT_SEQ: g
-            } = c;
+            const { REF_SEQ: v, POS: d, ALT_SEQ: g } = c;
             return `${v}${d}${g}`;
           }
           return "";
@@ -34441,24 +34426,23 @@ function oQ(r, t) {
             y,
             m
           ],
-          itemStyle: {
-            color: "#b71ae3"
-          }
+          itemStyle: { color: "#b71ae3" }
         });
       }
   }
   return e;
 }
 function sQ(r) {
-  return function({
-    coordSys: t
-  }, e) {
-    let [n, i] = e.coord([e.value(0), e.value(2)]), [a, o] = e.coord([e.value(1), 1]), s = l0({
-      x: n,
-      y: i,
-      width: a - n,
-      height: (o - i) * 0.3
-    }, t);
+  return function({ coordSys: t }, e) {
+    let [n, i] = e.coord([e.value(0), e.value(2)]), [a, o] = e.coord([e.value(1), 1]), s = l0(
+      {
+        x: n,
+        y: i,
+        width: a - n,
+        height: (o - i) * 0.3
+      },
+      t
+    );
     return s && {
       type: "rect",
       shape: s,
@@ -34509,22 +34493,24 @@ function uQ(r, t, e, n) {
       cigar: g,
       other_locations: y
     } = i[o];
-    t >= s && t <= l && (a = [["Primer Name", u], ["Primer Sequence", f], ["Match Aligned", c], ["Ref Sequence", v], ["Cigar", g], ["Start", s + 1], ["End", l + 1], ["Edit Distance", d], ["Other Locations", y]]);
+    t >= s && t <= l && (a = [
+      ["Primer Name", u],
+      ["Primer Sequence", f],
+      ["Match Aligned", c],
+      ["Ref Sequence", v],
+      ["Cigar", g],
+      ["Start", s + 1],
+      ["End", l + 1],
+      ["Edit Distance", d],
+      ["Other Locations", y]
+    ]);
   }
   return a;
 }
 const fQ = (r) => {
   let t = [];
   t.push(...ZK(r)), it.isNil(r.amplicon_depths) || t.push(...JK(r)), !it.isNil(r.variants) && r.chartOptions.showVariants && (it.isNil(r.segments) ? t.push(...jK(r)) : t.push(...aQ(r))), it.isNil(r.primer_matches) || t.push(...lQ(r));
-  let e = it.some(r.echart_features, {
-    value: {
-      strand: -1
-    }
-  }), n = it.some(r.echart_features, {
-    value: {
-      strand: 1
-    }
-  });
+  let e = it.some(r.echart_features, { value: { strand: -1 } }), n = it.some(r.echart_features, { value: { strand: 1 } });
   if (e && n && ft("doubleStrand", !0), r.chartOptions.showFeatures && (r.show_genes || r.show_amplicons)) {
     let i = KK(r);
     t.push(i);
@@ -34546,9 +34532,7 @@ const fQ = (r) => {
       gridIndex: n,
       min: 1,
       max: r.positions.length,
-      minorTick: {
-        show: !0
-      },
+      minorTick: { show: !0 },
       axisLabel: {
         show: r.chartOptions.showXAxisLabel,
         interval: "auto",
@@ -34614,33 +34598,33 @@ const fQ = (r) => {
   }), a;
 }, dQ = (r) => {
   let t = [...Array(r.chartOptions.selectedSamples.length + 1).keys()];
-  return [{
-    type: "inside",
-    filterMode: "none",
-    xAxisIndex: t,
-    zoomLock: !1
-  }, {
-    show: r.chartOptions.showDataZoomSlider,
-    filterMode: "none",
-    xAxisIndex: t,
-    type: "slider",
-    zoomLock: !1,
-    showDataShadow: !1,
-    showDetail: !0
-  }];
+  return [
+    {
+      type: "inside",
+      filterMode: "none",
+      xAxisIndex: t,
+      zoomLock: !1
+    },
+    {
+      show: r.chartOptions.showDataZoomSlider,
+      filterMode: "none",
+      xAxisIndex: t,
+      type: "slider",
+      zoomLock: !1,
+      showDataShadow: !1,
+      showDetail: !0
+    }
+  ];
 }, pQ = (r) => {
   console.log("Trigger getDatasets");
   let t = [];
   if (it.isNil(r.segments))
     for (let e of r.chartOptions.selectedSamples)
       t.push({
-        dimensions: [{
-          name: "depth",
-          type: "float"
-        }, {
-          name: "position",
-          type: "int"
-        }],
+        dimensions: [
+          { name: "depth", type: "float" },
+          { name: "position", type: "int" }
+        ],
         source: {
           position: r.positions,
           depth: r.depths[e]
@@ -34648,15 +34632,11 @@ const fQ = (r) => {
       });
   else {
     let e = eQ(q);
-    ft({
-      maxSegmentLength: e
-    });
+    ft({ maxSegmentLength: e });
     let n = [...Array(it.sum(it.values(e)) + 1).keys()];
     n.shift(), ft("positions", n), console.log("position length", n.length);
     let i = rQ(q);
-    ft({
-      segCoords: i
-    });
+    ft({ segCoords: i });
     let a = nQ(q);
     ft("echart_features", a);
     for (let o of r.chartOptions.selectedSamples) {
@@ -34670,13 +34650,10 @@ const fQ = (r) => {
         s = [...s, ...u];
       }
       t.push({
-        dimensions: [{
-          name: "depth",
-          type: "float"
-        }, {
-          name: "position",
-          type: "int"
-        }],
+        dimensions: [
+          { name: "depth", type: "float" },
+          { name: "position", type: "int" }
+        ],
         source: {
           position: r.positions,
           depth: s
@@ -34709,13 +34686,8 @@ const mQ = (r, t) => {
     return [];
   let e = [], n = [];
   for (let o of r.chartOptions.selectedSamples) {
-    let s = it.find(r.variants[o], {
-      POS: typeof POS == "string" ? t.toString() : t
-    }, 0);
-    it.isNil(s) ? n.push({
-      sample: o,
-      POS: t.toString()
-    }) : n.push(s);
+    let s = it.find(r.variants[o], { POS: typeof POS == "string" ? t.toString() : t }, 0);
+    it.isNil(s) ? n.push({ sample: o, POS: t.toString() }) : n.push(s);
   }
   let i = it.uniqBy(it.flatMap(n, it.keys)), a = En(r.depths);
   return i.push("Coverage Depth"), i.forEach((o) => {
@@ -34732,19 +34704,31 @@ const mQ = (r, t) => {
   }), e;
 }, yQ = (r, t, e, n) => {
   const i = r.chartOptions.selectedSamples, a = En(r.depths), o = r.chartOptions.low_coverage_threshold;
-  let s = [], l = ["Sample", `Depth at position ${n.toLocaleString()}`, "Range", "Mean Coverage (X)", "Median Coverage (X)", `Genome Coverage (>=${o}X) (%)`];
+  let s = [], l = [
+    "Sample",
+    `Depth at position ${n.toLocaleString()}`,
+    "Range",
+    "Mean Coverage (X)",
+    "Median Coverage (X)",
+    `Genome Coverage (>=${o}X) (%)`
+  ];
   s.push(l);
   for (let u of i) {
-    let f = a[u], c = qc(f, t, e).toFixed(2), v = Qc(f, t, e).toFixed(2), d = Kc(f, t, e, o).toFixed(2), g = f[n - 1], y = [u, g.toLocaleString(), `${t.toLocaleString()}-${e.toLocaleString()}`, c, v, d];
+    let f = a[u], c = qc(f, t, e).toFixed(2), v = Qc(f, t, e).toFixed(2), d = Kc(f, t, e, o).toFixed(2), g = f[n - 1], y = [
+      u,
+      g.toLocaleString(),
+      `${t.toLocaleString()}-${e.toLocaleString()}`,
+      c,
+      v,
+      d
+    ];
     s.push(y);
   }
   return s;
 }, _Q = (r, t, e, n) => {
   let i = [];
   r.chartOptions.selectedSamples.forEach((s) => {
-    let l = it.find(r.variants[s][e], {
-      POS: typeof POS == "string" ? n.toString() : n
-    }, 0);
+    let l = it.find(r.variants[s][e], { POS: typeof POS == "string" ? n.toString() : n }, 0);
     it.isNil(l) ? i.push({
       Sample: s,
       POS: n,
@@ -34772,11 +34756,29 @@ const mQ = (r, t) => {
     }), o.push(l);
   }), o;
 }, xQ = (r, t, e) => {
-  let n = [], i = ["Sample", `Depth at position ${e}`, "Segment", "Range", "Segment Length", "Mean Coverage (X)", "Median Coverage (X)", `Genome Coverage (>=${r.chartOptions.low_coverage_threshold}X) (%)`];
+  let n = [], i = [
+    "Sample",
+    `Depth at position ${e}`,
+    "Segment",
+    "Range",
+    "Segment Length",
+    "Mean Coverage (X)",
+    "Median Coverage (X)",
+    `Genome Coverage (>=${r.chartOptions.low_coverage_threshold}X) (%)`
+  ];
   return n.push(i), r.chartOptions.selectedSamples.forEach((a) => {
     let o = r.depths[a][t], s = qc(o, 1, o.length).toFixed(2), l = Qc(o, 1, o.length).toFixed(2), u = Kc(o, 1, o.length, r.chartOptions.low_coverage_threshold).toFixed(2), f;
     e <= o.length ? f = o[e - 1].toLocaleString() : o.length === 0 ? f = `No result reported for segment ${t}` : f = "No sequence at this position";
-    let c = [a, f, t, o.length > 0 ? `1-${o.length}` : `${o.length}-${o.length}`, o.length, s, l, u];
+    let c = [
+      a,
+      f,
+      t,
+      o.length > 0 ? `1-${o.length}` : `${o.length}-${o.length}`,
+      o.length,
+      s,
+      l,
+      u
+    ];
     n.push(c);
   }), n;
 }, wQ = (r) => {
@@ -34798,29 +34800,33 @@ const mQ = (r, t) => {
         if (r.chartOptions.crossSampleComparisonInTooltips)
           v = mQ(r, o);
         else {
-          let y = it.find(r.variants[s], {
-            POS: typeof POS == "string" ? o.toString() : o
-          }, 0);
+          let y = it.find(r.variants[s], { POS: typeof POS == "string" ? o.toString() : o }, 0);
           if (!it.isNil(y))
             for (const [m, x] of Object.entries(y))
               v.push([m, x]);
         }
-        d.push({
-          headers: ["Variant Info", ""],
-          rows: v
-        });
+        d.push({ headers: ["Variant Info", ""], rows: v });
       } else
-        v = [["Sample", s], ["Position", o.toString()], ["Sequence", r.ref_seq[o - 1]]], d.push({
-          headers: ["Position Info", ""],
-          rows: v
-        });
+        v = [
+          ["Sample", s],
+          ["Position", o.toString()],
+          ["Sequence", r.ref_seq[o - 1]]
+        ], d.push({ headers: ["Position Info", ""], rows: v });
       if (v.length && r.chartOptions.showCovStatsInTooltips) {
         let y = [];
         if (r.chartOptions.crossSampleComparisonInTooltips)
           y = yQ(r, f, c, o);
         else {
           let m = qc(l, f, c).toFixed(2), x = Qc(l, f, c).toFixed(2), w = Kc(l, f, c, r.chartOptions.low_coverage_threshold).toFixed(2);
-          y = [["Range", `${f.toLocaleString()} - ${c.toLocaleString()}`], ["Mean Coverage", `${m}X`], ["Median Coverage", `${x}X`], [`Genome Coverage (>= ${r.chartOptions.low_coverage_threshold}X)`, `${w}%`]];
+          y = [
+            [
+              "Range",
+              `${f.toLocaleString()} - ${c.toLocaleString()}`
+            ],
+            ["Mean Coverage", `${m}X`],
+            ["Median Coverage", `${x}X`],
+            [`Genome Coverage (>= ${r.chartOptions.low_coverage_threshold}X)`, `${w}%`]
+          ];
         }
         d.push({
           headers: ["Coverage View Stats", ""],
@@ -34843,24 +34849,29 @@ const mQ = (r, t) => {
         if (r.chartOptions.crossSampleComparisonInTooltips)
           i = _Q(r, o, s, n);
         else {
-          let y = it.find(r.variants[o][s], {
-            POS: typeof POS == "string" ? n.toString() : n
-          }, 0);
+          let y = it.find(r.variants[o][s], { POS: typeof POS == "string" ? n.toString() : n }, 0);
           if (!it.isNil(y))
             for (const [m, x] of Object.entries(y))
               i.push([m, x]);
           i.push(["Coverage Depth", f]);
         }
         let g = ["Sample", "Segment", "POS", "Segment Length", "Coverage Depth", "REF_ID", "REF_SEQ", "ALT_SEQ", "ALT_FREQ"];
-        i.sort((y, m) => g.indexOf(y[0]) - g.indexOf(m[0])), a.push({
-          headers: ["Variant Info", ""],
-          rows: i
-        });
+        i.sort((y, m) => g.indexOf(y[0]) - g.indexOf(m[0])), a.push({ headers: ["Variant Info", ""], rows: i });
       } else
-        n > u && (i = [["Position", n.toString()], [f, ""]]), i = [["Sample", o], ["Segment", s], ["POS", n.toString()], ["Coverage Depth", f], ["Segment Length", u.toString()], ["REF_ID", v], ["REF_SEQ", l[n - 1]], ["ALT_SEQ", ""], ["ALT_FREQ", ""]], a.push({
-          headers: ["Position Info", ""],
-          rows: i
-        });
+        n > u && (i = [
+          ["Position", n.toString()],
+          [f, ""]
+        ]), i = [
+          ["Sample", o],
+          ["Segment", s],
+          ["POS", n.toString()],
+          ["Coverage Depth", f],
+          ["Segment Length", u.toString()],
+          ["REF_ID", v],
+          ["REF_SEQ", l[n - 1]],
+          ["ALT_SEQ", ""],
+          ["ALT_FREQ", ""]
+        ], a.push({ headers: ["Position Info", ""], rows: i });
       if (i.length) {
         if (r.chartOptions.showCovStatsInTooltips) {
           let g = [];
@@ -34868,38 +34879,38 @@ const mQ = (r, t) => {
             g = xQ(r, s, n);
           else {
             let y = qc(c, 1, u).toFixed(2), m = Qc(c, 1, u).toFixed(2), x = Kc(c, 1, u, r.chartOptions.low_coverage_threshold).toFixed(2);
-            g = [["Mean Coverage", `${y}X`], ["Median Coverage", `${m}X`], [`Genome Coverage (>= ${r.chartOptions.low_coverage_threshold}X)`, `${x}%`]];
+            g = [
+              ["Mean Coverage", `${y}X`],
+              ["Median Coverage", `${m}X`],
+              [`Genome Coverage (>= ${r.chartOptions.low_coverage_threshold}X)`, `${x}%`]
+            ];
           }
-          a.push({
-            headers: ["Coverage View Stats", ""],
-            rows: g
-          });
+          a.push({ headers: ["Coverage View Stats", ""], rows: g });
         }
         if (!it.isNil(r.primer_matches)) {
           let g = uQ(o, n, s, r);
-          g.length && a.push({
-            headers: ["Primer Info", ""],
-            rows: g
-          });
+          g.length && a.push({ headers: ["Primer Info", ""], rows: g });
         }
       }
       ft("tooltipOptions", "tables", a);
     };
-}, SQ = (r) => [{
-  trigger: "axis",
-  enterable: !0,
-  triggerOn: r.tooltipOptions.showTooltip ? r.chartOptions.tooltipTriggerOn : "none",
-  appendToBody: !1,
-  renderMode: "html",
-  showContent: !0,
-  confine: !0,
-  position: "cursor",
-  className: "hidden",
-  axisPointer: {
-    type: "line"
-  },
-  formatter: wQ(r)
-}];
+}, SQ = (r) => [
+  {
+    trigger: "axis",
+    enterable: !0,
+    triggerOn: r.tooltipOptions.showTooltip ? r.chartOptions.tooltipTriggerOn : "none",
+    appendToBody: !1,
+    renderMode: "html",
+    showContent: !0,
+    confine: !0,
+    position: "cursor",
+    className: "hidden",
+    axisPointer: {
+      type: "line"
+    },
+    formatter: wQ(r)
+  }
+];
 var Fv = class {
   constructor(r) {
     wl(this, "x");
@@ -35573,18 +35584,14 @@ const $Q = (r, t, e) => ({
   showContent: !0,
   confine: !0,
   // @ts-ignore
-  formatter: function({
-    value: n
-  }) {
+  formatter: function({ value: n }) {
     let i = "", a = "", o = "";
     it.isNil(n) || (a = t[n[0]], o = r[n[1]]);
     let s = [], l = e.variants[o];
     if (it.isNil(l))
       i += `No variant calling results for ${o.bold()}`;
     else {
-      let u = it.find(Object.values(l), {
-        mutation: a
-      });
+      let u = it.find(Object.values(l), { mutation: a });
       it.isNil(u) || (s = [...Object.entries(u)]), it.isEmpty(s) ? i += `Mutation ${a.bold()} was not found in sample ${o.bold()}` : i += HK({
         headers: ["", ""],
         rows: s
@@ -35603,11 +35610,12 @@ function FQ(r) {
   for (let i = 0; i < r.chartOptions.selectedSamples.length; i++) {
     let a = r.chartOptions.selectedSamples[i];
     for (let o = 0; o < e.length; o++) {
-      let s = e[o], l = it.find(t, {
-        sample: a,
-        mutation: s
-      });
-      n.push([o, r.chartOptions.selectedSamples.length - 1 - i, it.isNil(l) ? 0 : l.ALT_FREQ]);
+      let s = e[o], l = it.find(t, { sample: a, mutation: s });
+      n.push([
+        o,
+        r.chartOptions.selectedSamples.length - 1 - i,
+        it.isNil(l) ? 0 : l.ALT_FREQ
+      ]);
     }
   }
   return [e, n];
@@ -35633,12 +35641,15 @@ function uM(r) {
         show: !0
       }
     },
-    dataZoom: [{
-      type: "inside"
-    }, {
-      type: "slider",
-      show: r.chartOptions.showDataZoomSlider
-    }],
+    dataZoom: [
+      {
+        type: "inside"
+      },
+      {
+        type: "slider",
+        show: r.chartOptions.showDataZoomSlider
+      }
+    ],
     visualMap: {
       min: 0,
       max: 1,
@@ -35648,22 +35659,31 @@ function uM(r) {
       left: "right",
       top: "5%",
       inRange: {
-        color: ["#a50026", "#f46d43", "#fdae61", "#fee08b", "#f7ff00", "#006837"]
+        color: [
+          "#a50026",
+          "#f46d43",
+          "#fdae61",
+          "#fee08b",
+          "#f7ff00",
+          "#006837"
+        ]
       }
     },
-    series: [{
-      type: "heatmap",
-      data: e,
-      label: {
-        show: !1
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowColor: "rgba(0, 0, 0, 0.5)"
+    series: [
+      {
+        type: "heatmap",
+        data: e,
+        label: {
+          show: !1
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: "rgba(0, 0, 0, 0.5)"
+          }
         }
       }
-    }],
+    ],
     tooltip: $Q(n, t, r),
     toolbox: {
       show: "true",
