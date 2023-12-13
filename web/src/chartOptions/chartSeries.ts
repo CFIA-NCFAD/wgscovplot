@@ -1,6 +1,6 @@
 import {WgsCovPlotDB} from "../db";
 import {getDepthSeries} from "./depthSeries";
-import {isNil, some} from "lodash";
+import {isEmpty, isNil, some} from "lodash";
 import {getGeneFeatureSeries, getRegionAmpliconDepthSeries} from "./geneFeatures";
 import {getVariantsSeries} from "./variantSeries";
 import {getSegmentVariantSeries} from "./segmented/variantSeries";
@@ -10,17 +10,17 @@ import {setState} from "../state";
 export const getSeries = (db: WgsCovPlotDB) => {
   let series: any[] = [];
   series.push(...getDepthSeries(db));
-  if (!isNil(db.amplicon_depths)) {
+  if (!isEmpty(db.amplicon_depths)) {
     series.push(...getRegionAmpliconDepthSeries(db));
   }
-  if (!isNil(db.variants) && db.chartOptions.showVariants) {
+  if (!isEmpty(db.variants) && db.chartOptions.showVariants) {
     if (isNil(db.segments)) {
       series.push(...getVariantsSeries(db));
     } else {
       series.push(...getSegmentVariantSeries(db));
     }
   }
-  if (!isNil(db.primer_matches)) {
+  if (!isEmpty(db.primer_matches)) {
     series.push(...getSegmentPrimerSeries(db));
   }
   let isNegativeStrand: boolean = some(db.echart_features, {value: {strand: -1}})

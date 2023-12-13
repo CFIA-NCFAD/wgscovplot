@@ -10,7 +10,7 @@ from typing import Dict, Tuple, List, Optional, Iterable, Union
 
 import pandas as pd
 from pydantic import BaseModel
-
+from wgscovplot.tools.mosdepth.flu import SampleSegmentRef
 from wgscovplot.util import try_parse_number, find_file_for_each_sample
 
 logger = logging.getLogger(__name__)
@@ -169,10 +169,6 @@ class VariantCaller(Enum):
     Nanopolish = 'nanopolish'
     Medaka = 'medaka'
 
-
-TOP_REFERENCE_PATTERNS = [
-    '**/reference_sequences/**/*.topsegments.csv',
-]
 
 VCF_GLOB_PATTERNS = [
     '**/nanopolish/*.pass.vcf.gz',
@@ -540,6 +536,7 @@ def parse_clair3_vcf(
     df = df.reindex(columns=['Sample', 'Segment', 'Segment Length',
                              'CHROM', 'POS', 'REF', 'ALT', 'ALT_FREQ'])
     df.rename(columns={'CHROM': 'REF_ID', 'ALT': 'ALT_SEQ', 'REF': 'REF_SEQ'}, inplace=True)
+    df = df.astype({"POS": int, "ALT_FREQ": float}) # change
     return df.to_dict(orient='records')
 
 
@@ -547,22 +544,21 @@ def get_segments_variants(
         basedir: Path,
         segments: List,
         req_seq: Dict[str, Dict[str, str]],
-        sample_top_references: Dict[str, pd.DataFrame],
+        sample_top_references: SampleSegmentRef,
 ) -> Dict[str, Dict[str, List[Dict]]]:
-    out = {}
-    for sample, df_top_references in sample_top_references.items():
-        out[sample] = {}
-        for segment in segments:
-            out[sample][segment] = []  # if sample, segment has now info so set to empty
-        for row in df_top_references.itertuples():
-            vcf_files = basedir.glob(f'**/variants/**/'
-                                     f'{row.sample}.Segment_{row.segment}.{row.ref_id}.no_frameshifts.vcf')
-            ref_seq_len = 0
-            if req_seq[sample][row.segment]:
-                ref_seq_len = len(req_seq[sample][row.segment])
-            for vcf_file in vcf_files:
-                variants_caller, df_vcf = read_vcf(vcf_file)
-                out[sample][row.segment] = parse_clair3_vcf(df_vcf, sample, row.segment, ref_seq_len)
+    out = defaultdict(lambda: defaultdict(dict, {k: [] for k in segments}))
+    for items in sample_top_references:
+        segment = items.segment
+        ref_id = items.ref_id
+        sample = items.sample
+        vcf_files = basedir.glob(f'**/variants/**/'
+                                 f'{sample}.Segment_{segment}.{ref_id}.no_frameshifts.vcf')
+        ref_seq_len = 0
+        if req_seq[sample][segment]:
+            ref_seq_len = len(req_seq[sample][segment])
+        for vcf_file in vcf_files:
+            variants_caller, df_vcf = read_vcf(vcf_file)
+            out[sample][segment] = parse_clair3_vcf(df_vcf, sample, segment, ref_seq_len)
     return out
 
 

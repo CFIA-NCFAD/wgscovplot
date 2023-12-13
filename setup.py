@@ -23,8 +23,7 @@ requirements = [
     'pydantic',
     'markdown',
     'edlib',
-    'bcbio-gff',
-    'textual'
+    'bcbio-gff'
 ]
 
 setup_requirements = ['pytest-runner', ]

@@ -10,7 +10,7 @@ from Bio.SeqRecord import SeqRecord
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
 
-from wgscovplot.db import NonSegmentTemplateDB, SegmentTemplateDB
+from wgscovplot.db import SegmentedGenomeDB, NonSegmentedGenomeDB
 from wgscovplot.features import Feature
 from wgscovplot.tools import mosdepth
 
@@ -26,7 +26,7 @@ class TemplateHTML(BaseModel):
 
 
 def write_html_coverage_plot(
-        db: NonSegmentTemplateDB | SegmentTemplateDB,
+        db: NonSegmentedGenomeDB | SegmentedGenomeDB,
         output_html: Path,
 ) -> None:
     render_env = Environment(

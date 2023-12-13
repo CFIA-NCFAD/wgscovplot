@@ -5,7 +5,7 @@ import {Slider} from "../components/Slider";
 import {setState, state} from "../../state";
 import {CovColour} from "./CovColour";
 import {HelpIcon} from "../components/HelpIcon";
-import {isNil} from "lodash";
+import {isEmpty, isNil} from "lodash";
 import {SelectEChartsRenderer} from "./SelectEChartsRenderer";
 import {ChartDarkModeToggle} from "./ChartDarkModeToggle";
 import {NuclColourSelect} from "./NuclColourSelect";
@@ -58,7 +58,7 @@ export const DisplayOptionsPanel: Component = () => {
                type="color" value={state.chartOptions.subplotTitleColour}
                onChange={(e) => setState("chartOptions", "subplotTitleColour", e.currentTarget.value)}/>
       </div>
-      <Show when={!isNil(state.amplicon_depths) && isNil(state.segments)}>
+      <Show when={!isEmpty(state.amplicon_depths) && isNil(state.segments)}>
         <div class="mt-2">
           <input type="checkbox" id="show-amplicons" class="hover:ring h-4 w-4 form-check"
                  checked={state.show_amplicons}
@@ -66,7 +66,7 @@ export const DisplayOptionsPanel: Component = () => {
           <label class="ml-1" for="show-amplicons">Show Amplicon Depths</label>
         </div>
       </Show>
-      <Show when={!isNil(state.primer_matches)}>
+      <Show when={!isEmpty(state.primer_matches)}>
         <div class="mt-2">
           <input type="checkbox" id="show-primer-matches" class="hover:ring h-4 w-4 form-check"
                  checked={state.show_primer_matches}

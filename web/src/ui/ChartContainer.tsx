@@ -222,7 +222,6 @@ const Chart: Component = () => {
   });
 
   let echartsOptions = createMemo(() => {
-    //console.time("build opts")
     let opts = {
       dataset: datasets(),
       xAxis: xAxes(),
@@ -240,32 +239,17 @@ const Chart: Component = () => {
       },
       dataZoom: getDataZoom(state),
     };
-    //console.timeEnd("build opts")
     return opts;
   });
 
   createEffect(() => {
     if (chart !== undefined) {
-      //console.time("chart setOption")
-      let dataZoom : any = chart.getOption().dataZoom;
-      let start = Math.floor(dataZoom[0]["startValue"]);
-      let end = Math.floor(dataZoom[0]["endValue"]);
       // tell ECharts to merge replace rather than normal merge
       // unwrap opts to pass a plain object instead of a Solid Proxy object to ECharts
       // this reduces deep cloning by ECharts and speeds up chart updates
       chart.setOption(unwrap(echartsOptions()), {
         replaceMerge: ['dataset', 'xAxis', 'yAxis', 'series', 'grid', 'dataZoom']
       });
-
-      state.chart.dispatchAction({
-        type: "dataZoom",
-        startValue: start,
-        endValue: end,
-      });
-
-      //console.log("Chart Options", chart.getOption())
-      //console.timeEnd("chart setOption")
-     // console.info("CHART UPDATE", Date.now());
     }
   })
 

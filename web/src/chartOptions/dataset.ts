@@ -4,7 +4,6 @@ import {getFluGeneFeature, getMaxSegmentLength, getSegmentCoords} from "./segmen
 import {setState, state} from "../state";
 
 export const getDatasets = (db: WgsCovPlotDB) => {
-  console.log("Trigger getDatasets")
   let datasets = [];
   if (!isNil(db.segments)) { // segmented virus
     /* For nf-flu, setup must be done before setting chart option:
@@ -15,7 +14,6 @@ export const getDatasets = (db: WgsCovPlotDB) => {
     let positions: number[] = [...Array(sum(values(maxSegmentLength)) + 1).keys()];
     positions.shift()
     setState("positions", positions);
-    console.log("position length", positions.length)
     let segCoords: SegmentCoords = getSegmentCoords(state);
     setState({"segCoords": segCoords}); // disable shallow merging and fully replace
     let echart_features: ECFeature[] = getFluGeneFeature(state);
@@ -30,7 +28,7 @@ export const getDatasets = (db: WgsCovPlotDB) => {
         let coords = db.segCoords[segment];
         if (ds.length < coords.maxLength) {
           // padding value 1E-5
-          let padding = times(coords.maxLength - ds.length, constant(1E-5));
+          let padding = times(coords.maxLength - ds.length, constant(1E-7));
           ds = [...ds, ...padding]
         }
         depthArray = [...depthArray, ...ds];

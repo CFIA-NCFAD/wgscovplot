@@ -4,7 +4,6 @@ import {state} from "../state";
 import {ECColorArg} from "../db";
 
 export function getVariantsSeries(db: WgsCovPlotDB) {
-  console.log("Trigger getVariantsSeries")
   let variantSeries = [];
   let i = 0;
   const depths = db.depths as SampleDepths;

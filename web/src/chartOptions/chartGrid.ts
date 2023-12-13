@@ -1,7 +1,6 @@
 import {WgsCovPlotDB} from "../db";
 
 export const getGrids = (db: WgsCovPlotDB) => {
-  console.log("Trigger getGrids")
   let featureHeight: number = 0.0;
   if (db.chartOptions.showFeatures && db.show_amplicons && db.show_genes) {
     featureHeight = 15.0;

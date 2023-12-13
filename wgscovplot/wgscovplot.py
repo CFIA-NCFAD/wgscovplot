@@ -2,14 +2,14 @@ import logging
 from pathlib import Path
 
 from Bio import Entrez
+import json
 
+import wgscovplot.flu
 import wgscovplot.tools.mosdepth.flu
-import wgscovplot.util as util
 from wgscovplot.features import build_echarts_features_array
-from wgscovplot.io import write_html_coverage_plot, get_ref_seq_and_annotation, TemplateHTML
-from wgscovplot.db import SegmentTemplateDB, NonSegmentTemplateDB
+from wgscovplot.io import write_html_coverage_plot, get_ref_seq_and_annotation
+from wgscovplot.db import NonSegmentedGenomeDB, SegmentedGenomeDB
 from wgscovplot.rtpcr import flu_rtpcr_matches
-from wgscovplot.stats import cov_stats_to_html_table, flu_cov_stats_to_html_table
 from wgscovplot.tools import variants, mosdepth
 
 logger = logging.getLogger(__name__)
@@ -19,22 +19,20 @@ Entrez.email = "wgscovplot@github.com"
 def run(
         input_dir: Path,
         low_coverage_threshold: int,
-        is_segmented: bool,
         primer_seq_path: Path,
         edit_distance: int,
-        output_html: Path
+        output_html: Path,
 ) -> None:
-    if is_segmented:
+    sample_top_references = wgscovplot.flu.get_sample_top_references(input_dir)
+    if sample_top_references:
         # Get list of samples name
-        samples = wgscovplot.tools.mosdepth.get_samples_name(input_dir, is_segmented)
-        # Find files sample.topsegments.csv for each sample
-        sample_top_references = wgscovplot.tools.mosdepth.flu.get_sample_top_references(input_dir)
+        samples = wgscovplot.tools.mosdepth.get_samples_name(input_dir, is_genome_segmented=True)
         # Get list of segments
-        segments = wgscovplot.tools.mosdepth.flu.get_segments(sample_top_references)
+        segments = wgscovplot.flu.get_segments(sample_top_references)
         # Get reference id for each segment of each sample
-        ref_id = wgscovplot.tools.mosdepth.flu.get_segments_ref_id(segments, sample_top_references)
+        ref_id = wgscovplot.flu.get_segments_ref_id(segments, sample_top_references)
         # Get reference seq for each segment of each sample
-        ref_seq = wgscovplot.tools.mosdepth.flu.get_segments_ref_seq(input_dir, segments, sample_top_references)
+        ref_seq = wgscovplot.flu.get_segments_ref_seq(input_dir, segments, sample_top_references)
         # Get coverage depth for each segment of each sample
         mosdepth_info, coverage_depths = wgscovplot.tools.mosdepth.flu.get_flu_mosdepth_info(input_dir, segments,
                                                                                              sample_top_references,
@@ -49,10 +47,9 @@ def run(
         primer_matches = {}
         if primer_seq_path is not None:
             # Get consensus sequence
-            consensus_seq = wgscovplot.tools.mosdepth.flu.get_segments_consensus_seq(input_dir, segments,
-                                                                                     sample_top_references)
+            consensus_seq = wgscovplot.flu.get_segments_consensus_seq(input_dir, segments, sample_top_references)
             primer_matches = flu_rtpcr_matches(primer_seq_path, consensus_seq, edit_distance)
-        db = SegmentTemplateDB(
+        db = SegmentedGenomeDB(
             samples=samples,
             segments=segments,
             segments_ref_id=ref_id,
@@ -78,7 +75,7 @@ def run(
         echarts_features = build_echarts_features_array(gene_features, region_amplicon_data)
 
         # Get the list of samples name
-        samples = wgscovplot.tools.mosdepth.get_samples_name(input_dir, is_segmented)
+        samples = wgscovplot.tools.mosdepth.get_samples_name(input_dir, is_genome_segmented=False)
 
         # Get coverage statistics information for all samples
         mosdepth_info, coverage_depths = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
@@ -89,7 +86,7 @@ def run(
         for sample, df_variants in samples_variants_info.items():
             variants_data[sample] = df_variants.to_dict(orient='records')
 
-        db = NonSegmentTemplateDB(
+        db = NonSegmentedGenomeDB(
             samples=samples,
             ref_seq=ref_seq,
             depths=coverage_depths,

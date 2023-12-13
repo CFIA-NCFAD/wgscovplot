@@ -1,4 +1,4 @@
-import {get, isNil, find, uniqBy, flatMap, keys} from "lodash";
+import {get, isNil, find, uniqBy, flatMap, keys, isEmpty} from "lodash";
 import {genomeCoverage, meanCoverage, medianCoverage} from "../stats";
 import {SampleDepths, SegmentCoords, VariantCall, WgsCovPlotDB} from "../db";
 import {unwrap} from "solid-js/store";
@@ -7,15 +7,15 @@ import {whichSegment} from "./segmented/getSegmentsInfo";
 import {getPrimerInfo} from "./segmented/pcr";
 
 
-export const getVariantComparison = (db: WgsCovPlotDB, position: any): Array<Array<string>> => {
-  if (isNil(db.variants)) {
+export const getVariantComparison = (db: WgsCovPlotDB, position: number): Array<Array<string>> => {
+  if (isEmpty(db.variants)) {
     return [];
   }
   let rows: any[][] = [];
   let variantArr: VariantCall[] = [];
   for (let sample of db.chartOptions.selectedSamples) {
     // @ts-ignore
-    let variant = find(db.variants[sample], {POS: typeof POS === 'string' ? position.toString() : position}, 0) as VariantCall;
+    let variant = find(db.variants[sample], {POS:  position}, 0) as VariantCall;
     if (!isNil(variant)) {
       variantArr.push(variant);
     } else {
@@ -77,11 +77,11 @@ export const getCoverageStatComparison = (db: WgsCovPlotDB, start: number, end: 
   return rows;
 }
 
-export const getSegmentVariantComparison = (db: WgsCovPlotDB, sample: string, segment: string, position: any): Array<Array<string>> => {
+export const getSegmentVariantComparison = (db: WgsCovPlotDB, sample: string, segment: string, position: number): Array<Array<string>> => {
   let variantArr: any = [];
   db.chartOptions.selectedSamples.forEach(sample => {
     // @ts-ignore
-    let variantCall = find(db.variants[sample][segment], {POS: typeof POS === 'string' ? position.toString() : position}, 0);
+    let variantCall = find(db.variants[sample][segment], {POS: position}, 0);
     if (!isNil(variantCall)) {
       variantArr.push(variantCall);
     } else {
@@ -220,7 +220,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
           positionRows = getVariantComparison(db, position);
         } else {
           // @ts-ignore
-          let foundObj: any = find(db.variants[sample], {POS: typeof POS === 'string' ? position.toString() : position}, 0);
+          let foundObj: any = find(db.variants[sample], {POS: position}, 0);
           if (!isNil(foundObj)) {
             for (const [key, value] of Object.entries(foundObj)) {
               positionRows.push([key, value as string]);
@@ -278,7 +278,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
       let segmentLength = sequence.length;
       // convert to pos in segment
       position = position - db.segCoords[segment].start + 1;
-      let coverageDepth;
+      let coverageDepth: any;
       // @ts-ignore
       let sampleSegDepths: number[] = db.depths[sample][segment];
       let refID = db.segments_ref_id[sample][segment];
@@ -309,7 +309,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
           positionRows = getSegmentVariantComparison(db, sample, segment, position)
         } else {
           // @ts-ignore
-          let foundObj = find(db.variants[sample][segment], {POS: typeof POS === 'string' ? position.toString() : position}, 0);
+          let foundObj = find(db.variants[sample][segment], {POS: position}, 0);
           if (!isNil(foundObj)) {
             for (const [key, value] of Object.entries(foundObj)) {
               // @ts-ignore
@@ -358,7 +358,7 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
           }
           tables.push({headers: ["Coverage View Stats", ""], rows: coverageStatRows});
         }
-        if (!isNil(db.primer_matches)) {
+        if (!isEmpty(db.primer_matches)) {
           let primerInfoRows = getPrimerInfo(sample, position, segment, db)
           if (primerInfoRows.length) {
             tables.push({headers: ["Primer Info", ""], rows: primerInfoRows});

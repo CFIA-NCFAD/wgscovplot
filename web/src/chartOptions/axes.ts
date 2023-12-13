@@ -5,7 +5,6 @@ import {FEATURE_PLOT_PROPS} from "../util";
 
 
 export const getXAxes = (db: WgsCovPlotDB) => {
-  console.log("Trigger getXAxes")
   let formatter: any = {};
   if (!isNil(db.segments)) {
     let segments = Object.keys(db.segCoords)
@@ -42,12 +41,10 @@ export const getXAxes = (db: WgsCovPlotDB) => {
       },
     });
   }
-  //console.timeEnd("Trigger getXAxes")
   return axes;
 }
 
 export const getYAxes = (db: WgsCovPlotDB) => {
-  console.log("Trigger getYAxes")
   let axes = [];
   for (let [i, sample] of db.chartOptions.selectedSamples.entries()) {
     axes.push({
@@ -76,6 +73,5 @@ export const getYAxes = (db: WgsCovPlotDB) => {
       show: false,
     });
   }
-  //console.timeEnd("Trigger getYAxes")
   return axes;
 }

@@ -11,7 +11,6 @@
 <div id="root"></div>
 <script>
   db = {{ db | tojson }}
-  console.log(db)
   if (db.segments === undefined) {
     for (let [sample, depthsBase64] of Object.entries(db.depths)) {
       let xs = Array.from(new Uint16Array(new Uint8Array([...atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));

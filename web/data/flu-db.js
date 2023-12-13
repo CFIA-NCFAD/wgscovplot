@@ -600,9 +600,9 @@ window.db = {
       "Sample1": {
         "1_PB2": [
           {
-            "ALT_FREQ": "0.8462",
+            "ALT_FREQ": 0.8462,
             "ALT_SEQ": "G",
-            "POS": "767",
+            "POS": 767,
             "REF_ID": "MH201221",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -610,9 +610,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8462",
+            "ALT_FREQ": 0.8462,
             "ALT_SEQ": "G",
-            "POS": "790",
+            "POS": 790,
             "REF_ID": "MH201221",
             "REF_SEQ": "T",
             "Sample": "Sample1",
@@ -620,9 +620,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9167",
+            "ALT_FREQ": 0.9167,
             "ALT_SEQ": "G",
-            "POS": "911",
+            "POS": 911,
             "REF_ID": "MH201221",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -630,9 +630,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8333",
+            "ALT_FREQ": 0.8333,
             "ALT_SEQ": "T",
-            "POS": "999",
+            "POS": 999,
             "REF_ID": "MH201221",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -640,9 +640,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9231",
+            "ALT_FREQ": 0.9231,
             "ALT_SEQ": "A",
-            "POS": "1094",
+            "POS": 1094,
             "REF_ID": "MH201221",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -650,9 +650,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9574",
+            "ALT_FREQ": 0.9574,
             "ALT_SEQ": "T",
-            "POS": "2013",
+            "POS": 2013,
             "REF_ID": "MH201221",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -660,9 +660,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8205",
+            "ALT_FREQ": 0.8205,
             "ALT_SEQ": "T",
-            "POS": "2064",
+            "POS": 2064,
             "REF_ID": "MH201221",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -670,9 +670,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8538",
+            "ALT_FREQ": 0.8538,
             "ALT_SEQ": "G",
-            "POS": "2226",
+            "POS": 2226,
             "REF_ID": "MH201221",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -682,9 +682,9 @@ window.db = {
         ],
         "2_PB1": [
           {
-            "ALT_FREQ": "0.8571",
+            "ALT_FREQ": 0.8571,
             "ALT_SEQ": "G",
-            "POS": "478",
+            "POS": 478,
             "REF_ID": "CY147460",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -692,9 +692,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.75",
+            "ALT_FREQ": 0.75,
             "ALT_SEQ": "C",
-            "POS": "567",
+            "POS": 567,
             "REF_ID": "CY147460",
             "REF_SEQ": "T",
             "Sample": "Sample1",
@@ -702,9 +702,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "1",
+            "ALT_FREQ": 1,
             "ALT_SEQ": "G",
-            "POS": "595",
+            "POS": 595,
             "REF_ID": "CY147460",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -712,9 +712,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "1",
+            "ALT_FREQ": 1,
             "ALT_SEQ": "A",
-            "POS": "1018",
+            "POS": 1018,
             "REF_ID": "CY147460",
             "REF_SEQ": "G",
             "Sample": "Sample1",
@@ -722,9 +722,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "1",
+            "ALT_FREQ": 1,
             "ALT_SEQ": "T",
-            "POS": "1140",
+            "POS": 1140,
             "REF_ID": "CY147460",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -732,9 +732,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "1",
+            "ALT_FREQ": 1,
             "ALT_SEQ": "G",
-            "POS": "1141",
+            "POS": 1141,
             "REF_ID": "CY147460",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -742,9 +742,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.75",
+            "ALT_FREQ": 0.75,
             "ALT_SEQ": "T",
-            "POS": "1780",
+            "POS": 1780,
             "REF_ID": "CY147460",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -754,9 +754,9 @@ window.db = {
         ],
         "3_PA": [
           {
-            "ALT_FREQ": "0.9524",
+            "ALT_FREQ": 0.9524,
             "ALT_SEQ": "G",
-            "POS": "201",
+            "POS": 201,
             "REF_ID": "CY146806",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -764,9 +764,9 @@ window.db = {
             "Segment Length": "2208"
           },
           {
-            "ALT_FREQ": "1",
+            "ALT_FREQ": 1,
             "ALT_SEQ": "T",
-            "POS": "402",
+            "POS": 402,
             "REF_ID": "CY146806",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -774,9 +774,9 @@ window.db = {
             "Segment Length": "2208"
           },
           {
-            "ALT_FREQ": "1",
+            "ALT_FREQ": 1,
             "ALT_SEQ": "T",
-            "POS": "920",
+            "POS": 920,
             "REF_ID": "CY146806",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -786,9 +786,9 @@ window.db = {
         ],
         "4_HA": [
           {
-            "ALT_FREQ": "0.8653",
+            "ALT_FREQ": 0.8653,
             "ALT_SEQ": "A",
-            "POS": "457",
+            "POS": 457,
             "REF_ID": "MH201222",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -796,9 +796,9 @@ window.db = {
             "Segment Length": "1753"
           },
           {
-            "ALT_FREQ": "0.8647",
+            "ALT_FREQ": 0.8647,
             "ALT_SEQ": "G",
-            "POS": "632",
+            "POS": 632,
             "REF_ID": "MH201222",
             "REF_SEQ": "T",
             "Sample": "Sample1",
@@ -806,9 +806,9 @@ window.db = {
             "Segment Length": "1753"
           },
           {
-            "ALT_FREQ": "0.8918",
+            "ALT_FREQ": 0.8918,
             "ALT_SEQ": "A",
-            "POS": "1400",
+            "POS": 1400,
             "REF_ID": "MH201222",
             "REF_SEQ": "G",
             "Sample": "Sample1",
@@ -819,9 +819,9 @@ window.db = {
         "5_NP": [],
         "6_NA": [
           {
-            "ALT_FREQ": "0.9239",
+            "ALT_FREQ": 0.9239,
             "ALT_SEQ": "A",
-            "POS": "779",
+            "POS": 779,
             "REF_ID": "EF190976",
             "REF_SEQ": "G",
             "Sample": "Sample1",
@@ -829,9 +829,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9406",
+            "ALT_FREQ": 0.9406,
             "ALT_SEQ": "G",
-            "POS": "924",
+            "POS": 924,
             "REF_ID": "EF190976",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -839,9 +839,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9554",
+            "ALT_FREQ": 0.9554,
             "ALT_SEQ": "T",
-            "POS": "980",
+            "POS": 980,
             "REF_ID": "EF190976",
             "REF_SEQ": "C",
             "Sample": "Sample1",
@@ -849,9 +849,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9466",
+            "ALT_FREQ": 0.9466,
             "ALT_SEQ": "G",
-            "POS": "1320",
+            "POS": 1320,
             "REF_ID": "EF190976",
             "REF_SEQ": "A",
             "Sample": "Sample1",
@@ -865,9 +865,9 @@ window.db = {
       "Sample2": {
         "1_PB2": [
           {
-            "ALT_FREQ": "0.9188",
+            "ALT_FREQ": 0.9188,
             "ALT_SEQ": "G",
-            "POS": "187",
+            "POS": 187,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample2",
@@ -875,9 +875,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9064",
+            "ALT_FREQ": 0.9064,
             "ALT_SEQ": "T",
-            "POS": "237",
+            "POS": 237,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "C",
             "Sample": "Sample2",
@@ -885,9 +885,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8836",
+            "ALT_FREQ": 0.8836,
             "ALT_SEQ": "G",
-            "POS": "1345",
+            "POS": 1345,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample2",
@@ -895,9 +895,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9539",
+            "ALT_FREQ": 0.9539,
             "ALT_SEQ": "G",
-            "POS": "2217",
+            "POS": 2217,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample2",
@@ -907,9 +907,9 @@ window.db = {
         ],
         "2_PB1": [
           {
-            "ALT_FREQ": "0.9284",
+            "ALT_FREQ": 0.9284,
             "ALT_SEQ": "A",
-            "POS": "1434",
+            "POS": 1434,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "G",
             "Sample": "Sample2",
@@ -917,9 +917,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8958",
+            "ALT_FREQ": 0.8958,
             "ALT_SEQ": "A",
-            "POS": "1455",
+            "POS": 1455,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "G",
             "Sample": "Sample2",
@@ -929,9 +929,9 @@ window.db = {
         ],
         "3_PA": [
           {
-            "ALT_FREQ": "0.9554",
+            "ALT_FREQ": 0.9554,
             "ALT_SEQ": "C",
-            "POS": "143",
+            "POS": 143,
             "REF_ID": "2021-FAV33-OS_segment3_PA",
             "REF_SEQ": "T",
             "Sample": "Sample2",
@@ -939,9 +939,9 @@ window.db = {
             "Segment Length": "2208"
           },
           {
-            "ALT_FREQ": "0.9001",
+            "ALT_FREQ": 0.9001,
             "ALT_SEQ": "C",
-            "POS": "1565",
+            "POS": 1565,
             "REF_ID": "2021-FAV33-OS_segment3_PA",
             "REF_SEQ": "T",
             "Sample": "Sample2",
@@ -952,9 +952,9 @@ window.db = {
         "4_HA": [],
         "5_NP": [
           {
-            "ALT_FREQ": "0.9131",
+            "ALT_FREQ": 0.9131,
             "ALT_SEQ": "C",
-            "POS": "1090",
+            "POS": 1090,
             "REF_ID": "2021-FAV33-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample2",
@@ -962,9 +962,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9342",
+            "ALT_FREQ": 0.9342,
             "ALT_SEQ": "G",
-            "POS": "1104",
+            "POS": 1104,
             "REF_ID": "2021-FAV33-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample2",
@@ -974,9 +974,9 @@ window.db = {
         ],
         "6_NA": [
           {
-            "ALT_FREQ": "0.8899",
+            "ALT_FREQ": 0.8899,
             "ALT_SEQ": "C",
-            "POS": "471",
+            "POS": 471,
             "REF_ID": "2021-FAV33-OS_segment6_NA",
             "REF_SEQ": "T",
             "Sample": "Sample2",
@@ -984,9 +984,9 @@ window.db = {
             "Segment Length": "1433"
           },
           {
-            "ALT_FREQ": "0.898",
+            "ALT_FREQ": 0.898,
             "ALT_SEQ": "A",
-            "POS": "1250",
+            "POS": 1250,
             "REF_ID": "2021-FAV33-OS_segment6_NA",
             "REF_SEQ": "G",
             "Sample": "Sample2",
@@ -1000,9 +1000,9 @@ window.db = {
       "Sample3": {
         "1_PB2": [
           {
-            "ALT_FREQ": "0.9112",
+            "ALT_FREQ": 0.9112,
             "ALT_SEQ": "T",
-            "POS": "237",
+            "POS": 237,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "C",
             "Sample": "Sample3",
@@ -1010,9 +1010,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8651",
+            "ALT_FREQ": 0.8651,
             "ALT_SEQ": "G",
-            "POS": "598",
+            "POS": 598,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1020,9 +1020,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.93",
+            "ALT_FREQ": 0.93,
             "ALT_SEQ": "T",
-            "POS": "675",
+            "POS": 675,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1030,9 +1030,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8464",
+            "ALT_FREQ": 0.8464,
             "ALT_SEQ": "G",
-            "POS": "1345",
+            "POS": 1345,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1040,9 +1040,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9294",
+            "ALT_FREQ": 0.9294,
             "ALT_SEQ": "G",
-            "POS": "1857",
+            "POS": 1857,
             "REF_ID": "2021-FAV33-OS_Segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1052,9 +1052,9 @@ window.db = {
         ],
         "2_PB1": [
           {
-            "ALT_FREQ": "0.8796",
+            "ALT_FREQ": 0.8796,
             "ALT_SEQ": "G",
-            "POS": "423",
+            "POS": 423,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1062,9 +1062,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8631",
+            "ALT_FREQ": 0.8631,
             "ALT_SEQ": "T",
-            "POS": "426",
+            "POS": 426,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1072,9 +1072,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9437",
+            "ALT_FREQ": 0.9437,
             "ALT_SEQ": "A",
-            "POS": "477",
+            "POS": 477,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "G",
             "Sample": "Sample3",
@@ -1082,9 +1082,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8101",
+            "ALT_FREQ": 0.8101,
             "ALT_SEQ": "G",
-            "POS": "583",
+            "POS": 583,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1092,9 +1092,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8863",
+            "ALT_FREQ": 0.8863,
             "ALT_SEQ": "C",
-            "POS": "1263",
+            "POS": 1263,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1102,9 +1102,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8663",
+            "ALT_FREQ": 0.8663,
             "ALT_SEQ": "G",
-            "POS": "1724",
+            "POS": 1724,
             "REF_ID": "2021-FAV33-OS_Segment2_PB1",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1114,9 +1114,9 @@ window.db = {
         ],
         "3_PA": [
           {
-            "ALT_FREQ": "0.9238",
+            "ALT_FREQ": 0.9238,
             "ALT_SEQ": "A",
-            "POS": "721",
+            "POS": 721,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment3_PA",
             "REF_SEQ": "G",
             "Sample": "Sample3",
@@ -1124,9 +1124,9 @@ window.db = {
             "Segment Length": "2208"
           },
           {
-            "ALT_FREQ": "0.919",
+            "ALT_FREQ": 0.919,
             "ALT_SEQ": "A",
-            "POS": "1758",
+            "POS": 1758,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment3_PA",
             "REF_SEQ": "G",
             "Sample": "Sample3",
@@ -1136,9 +1136,9 @@ window.db = {
         ],
         "4_HA": [
           {
-            "ALT_FREQ": "0.9541",
+            "ALT_FREQ": 0.9541,
             "ALT_SEQ": "C",
-            "POS": "57",
+            "POS": 57,
             "REF_ID": "2021-FAV33-OS_segment4_HA",
             "REF_SEQ": "T",
             "Sample": "Sample3",
@@ -1146,9 +1146,9 @@ window.db = {
             "Segment Length": "1776"
           },
           {
-            "ALT_FREQ": "0.878",
+            "ALT_FREQ": 0.878,
             "ALT_SEQ": "C",
-            "POS": "589",
+            "POS": 589,
             "REF_ID": "2021-FAV33-OS_segment4_HA",
             "REF_SEQ": "T",
             "Sample": "Sample3",
@@ -1156,9 +1156,9 @@ window.db = {
             "Segment Length": "1776"
           },
           {
-            "ALT_FREQ": "0.9432",
+            "ALT_FREQ": 0.9432,
             "ALT_SEQ": "A",
-            "POS": "704",
+            "POS": 704,
             "REF_ID": "2021-FAV33-OS_segment4_HA",
             "REF_SEQ": "G",
             "Sample": "Sample3",
@@ -1166,9 +1166,9 @@ window.db = {
             "Segment Length": "1776"
           },
           {
-            "ALT_FREQ": "0.9267",
+            "ALT_FREQ": 0.9267,
             "ALT_SEQ": "C",
-            "POS": "1366",
+            "POS": 1366,
             "REF_ID": "2021-FAV33-OS_segment4_HA",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1178,9 +1178,9 @@ window.db = {
         ],
         "5_NP": [
           {
-            "ALT_FREQ": "0.9058",
+            "ALT_FREQ": 0.9058,
             "ALT_SEQ": "C",
-            "POS": "183",
+            "POS": 183,
             "REF_ID": "2021-FAV33-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1188,9 +1188,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.8959",
+            "ALT_FREQ": 0.8959,
             "ALT_SEQ": "G",
-            "POS": "1317",
+            "POS": 1317,
             "REF_ID": "2021-FAV33-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1200,9 +1200,9 @@ window.db = {
         ],
         "6_NA": [
           {
-            "ALT_FREQ": "0.9135",
+            "ALT_FREQ": 0.9135,
             "ALT_SEQ": "T",
-            "POS": "728",
+            "POS": 728,
             "REF_ID": "WIN-AH-2022-FAV-0141-OS_segment6_NA",
             "REF_SEQ": "C",
             "Sample": "Sample3",
@@ -1210,9 +1210,9 @@ window.db = {
             "Segment Length": "1433"
           },
           {
-            "ALT_FREQ": "0.9111",
+            "ALT_FREQ": 0.9111,
             "ALT_SEQ": "G",
-            "POS": "870",
+            "POS": 870,
             "REF_ID": "WIN-AH-2022-FAV-0141-OS_segment6_NA",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1223,9 +1223,9 @@ window.db = {
         "7_M": [],
         "8_NS": [
           {
-            "ALT_FREQ": "0.9267",
+            "ALT_FREQ": 0.9267,
             "ALT_SEQ": "A",
-            "POS": "518",
+            "POS": 518,
             "REF_ID": "2021-FAV33-OS_segment8_NS",
             "REF_SEQ": "G",
             "Sample": "Sample3",
@@ -1233,9 +1233,9 @@ window.db = {
             "Segment Length": "865"
           },
           {
-            "ALT_FREQ": "0.8168",
+            "ALT_FREQ": 0.8168,
             "ALT_SEQ": "G",
-            "POS": "675",
+            "POS": 675,
             "REF_ID": "2021-FAV33-OS_segment8_NS",
             "REF_SEQ": "A",
             "Sample": "Sample3",
@@ -1247,9 +1247,9 @@ window.db = {
       "Sample4": {
         "1_PB2": [
           {
-            "ALT_FREQ": "0.8163",
+            "ALT_FREQ": 0.8163,
             "ALT_SEQ": "G",
-            "POS": "582",
+            "POS": 582,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1257,9 +1257,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9315",
+            "ALT_FREQ": 0.9315,
             "ALT_SEQ": "A",
-            "POS": "598",
+            "POS": 598,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1267,9 +1267,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8714",
+            "ALT_FREQ": 0.8714,
             "ALT_SEQ": "T",
-            "POS": "609",
+            "POS": 609,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1277,9 +1277,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8758",
+            "ALT_FREQ": 0.8758,
             "ALT_SEQ": "A",
-            "POS": "657",
+            "POS": 657,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1287,9 +1287,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8925",
+            "ALT_FREQ": 0.8925,
             "ALT_SEQ": "A",
-            "POS": "726",
+            "POS": 726,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1297,9 +1297,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8234",
+            "ALT_FREQ": 0.8234,
             "ALT_SEQ": "A",
-            "POS": "753",
+            "POS": 753,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1307,9 +1307,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.8797",
+            "ALT_FREQ": 0.8797,
             "ALT_SEQ": "G",
-            "POS": "786",
+            "POS": 786,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1317,9 +1317,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9444",
+            "ALT_FREQ": 0.9444,
             "ALT_SEQ": "C",
-            "POS": "810",
+            "POS": 810,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1327,9 +1327,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.759",
+            "ALT_FREQ": 0.759,
             "ALT_SEQ": "G",
-            "POS": "1035",
+            "POS": 1035,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1337,9 +1337,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9561",
+            "ALT_FREQ": 0.9561,
             "ALT_SEQ": "A",
-            "POS": "1158",
+            "POS": 1158,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1347,9 +1347,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9106",
+            "ALT_FREQ": 0.9106,
             "ALT_SEQ": "G",
-            "POS": "1251",
+            "POS": 1251,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1357,9 +1357,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9442",
+            "ALT_FREQ": 0.9442,
             "ALT_SEQ": "A",
-            "POS": "1402",
+            "POS": 1402,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1367,9 +1367,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.912",
+            "ALT_FREQ": 0.912,
             "ALT_SEQ": "A",
-            "POS": "1453",
+            "POS": 1453,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1377,9 +1377,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.928",
+            "ALT_FREQ": 0.928,
             "ALT_SEQ": "C",
-            "POS": "1485",
+            "POS": 1485,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1387,9 +1387,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9644",
+            "ALT_FREQ": 0.9644,
             "ALT_SEQ": "A",
-            "POS": "1629",
+            "POS": 1629,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1397,9 +1397,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9147",
+            "ALT_FREQ": 0.9147,
             "ALT_SEQ": "C",
-            "POS": "1902",
+            "POS": 1902,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1407,9 +1407,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.7614",
+            "ALT_FREQ": 0.7614,
             "ALT_SEQ": "A",
-            "POS": "1965",
+            "POS": 1965,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1417,9 +1417,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9245",
+            "ALT_FREQ": 0.9245,
             "ALT_SEQ": "C",
-            "POS": "2184",
+            "POS": 2184,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1427,9 +1427,9 @@ window.db = {
             "Segment Length": "2316"
           },
           {
-            "ALT_FREQ": "0.9206",
+            "ALT_FREQ": 0.9206,
             "ALT_SEQ": "G",
-            "POS": "2208",
+            "POS": 2208,
             "REF_ID": "WIN-AH-2022-FAV-0222-1-OS_segment1_PB2",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1439,9 +1439,9 @@ window.db = {
         ],
         "2_PB1": [
           {
-            "ALT_FREQ": "0.8382",
+            "ALT_FREQ": 0.8382,
             "ALT_SEQ": "G",
-            "POS": "111",
+            "POS": 111,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1449,9 +1449,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8571",
+            "ALT_FREQ": 0.8571,
             "ALT_SEQ": "A",
-            "POS": "150",
+            "POS": 150,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1459,9 +1459,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8655",
+            "ALT_FREQ": 0.8655,
             "ALT_SEQ": "C",
-            "POS": "321",
+            "POS": 321,
             "REF_ID": "MN430898",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1469,9 +1469,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9257",
+            "ALT_FREQ": 0.9257,
             "ALT_SEQ": "C",
-            "POS": "339",
+            "POS": 339,
             "REF_ID": "MN430898",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1479,9 +1479,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.89",
+            "ALT_FREQ": 0.89,
             "ALT_SEQ": "A",
-            "POS": "345",
+            "POS": 345,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1489,9 +1489,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8987",
+            "ALT_FREQ": 0.8987,
             "ALT_SEQ": "T",
-            "POS": "384",
+            "POS": 384,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1499,9 +1499,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.7718",
+            "ALT_FREQ": 0.7718,
             "ALT_SEQ": "G",
-            "POS": "414",
+            "POS": 414,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1509,9 +1509,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8464",
+            "ALT_FREQ": 0.8464,
             "ALT_SEQ": "C",
-            "POS": "438",
+            "POS": 438,
             "REF_ID": "MN430898",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1519,9 +1519,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9122",
+            "ALT_FREQ": 0.9122,
             "ALT_SEQ": "A",
-            "POS": "510",
+            "POS": 510,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1529,9 +1529,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9375",
+            "ALT_FREQ": 0.9375,
             "ALT_SEQ": "G",
-            "POS": "519",
+            "POS": 519,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1539,9 +1539,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9238",
+            "ALT_FREQ": 0.9238,
             "ALT_SEQ": "A",
-            "POS": "609",
+            "POS": 609,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1549,9 +1549,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8697",
+            "ALT_FREQ": 0.8697,
             "ALT_SEQ": "A",
-            "POS": "687",
+            "POS": 687,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1559,9 +1559,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.7972",
+            "ALT_FREQ": 0.7972,
             "ALT_SEQ": "G",
-            "POS": "696",
+            "POS": 696,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1569,9 +1569,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8543",
+            "ALT_FREQ": 0.8543,
             "ALT_SEQ": "T",
-            "POS": "720",
+            "POS": 720,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1579,9 +1579,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8404",
+            "ALT_FREQ": 0.8404,
             "ALT_SEQ": "A",
-            "POS": "777",
+            "POS": 777,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1589,9 +1589,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8049",
+            "ALT_FREQ": 0.8049,
             "ALT_SEQ": "A",
-            "POS": "837",
+            "POS": 837,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1599,9 +1599,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8845",
+            "ALT_FREQ": 0.8845,
             "ALT_SEQ": "C",
-            "POS": "849",
+            "POS": 849,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1609,9 +1609,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.892",
+            "ALT_FREQ": 0.892,
             "ALT_SEQ": "T",
-            "POS": "1017",
+            "POS": 1017,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1619,9 +1619,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9215",
+            "ALT_FREQ": 0.9215,
             "ALT_SEQ": "T",
-            "POS": "1051",
+            "POS": 1051,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1629,9 +1629,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8698",
+            "ALT_FREQ": 0.8698,
             "ALT_SEQ": "A",
-            "POS": "1173",
+            "POS": 1173,
             "REF_ID": "MN430898",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1639,9 +1639,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.7952",
+            "ALT_FREQ": 0.7952,
             "ALT_SEQ": "C",
-            "POS": "1185",
+            "POS": 1185,
             "REF_ID": "MN430898",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1649,9 +1649,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9185",
+            "ALT_FREQ": 0.9185,
             "ALT_SEQ": "T",
-            "POS": "1608",
+            "POS": 1608,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1659,9 +1659,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8197",
+            "ALT_FREQ": 0.8197,
             "ALT_SEQ": "T",
-            "POS": "1956",
+            "POS": 1956,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1669,9 +1669,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8688",
+            "ALT_FREQ": 0.8688,
             "ALT_SEQ": "G",
-            "POS": "1968",
+            "POS": 1968,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1679,9 +1679,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9058",
+            "ALT_FREQ": 0.9058,
             "ALT_SEQ": "A",
-            "POS": "1995",
+            "POS": 1995,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1689,9 +1689,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9361",
+            "ALT_FREQ": 0.9361,
             "ALT_SEQ": "C",
-            "POS": "2028",
+            "POS": 2028,
             "REF_ID": "MN430898",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1699,9 +1699,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9231",
+            "ALT_FREQ": 0.9231,
             "ALT_SEQ": "T",
-            "POS": "2046",
+            "POS": 2046,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1709,9 +1709,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.9517",
+            "ALT_FREQ": 0.9517,
             "ALT_SEQ": "T",
-            "POS": "2139",
+            "POS": 2139,
             "REF_ID": "MN430898",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1719,9 +1719,9 @@ window.db = {
             "Segment Length": "2274"
           },
           {
-            "ALT_FREQ": "0.8221",
+            "ALT_FREQ": 0.8221,
             "ALT_SEQ": "G",
-            "POS": "2214",
+            "POS": 2214,
             "REF_ID": "MN430898",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1731,9 +1731,9 @@ window.db = {
         ],
         "3_PA": [
           {
-            "ALT_FREQ": "0.8114",
+            "ALT_FREQ": 0.8114,
             "ALT_SEQ": "T",
-            "POS": "90",
+            "POS": 90,
             "REF_ID": "MN430891",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1741,9 +1741,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.9265",
+            "ALT_FREQ": 0.9265,
             "ALT_SEQ": "T",
-            "POS": "153",
+            "POS": 153,
             "REF_ID": "MN430891",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1751,9 +1751,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8675",
+            "ALT_FREQ": 0.8675,
             "ALT_SEQ": "G",
-            "POS": "378",
+            "POS": 378,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1761,9 +1761,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8847",
+            "ALT_FREQ": 0.8847,
             "ALT_SEQ": "A",
-            "POS": "423",
+            "POS": 423,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1771,9 +1771,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.876",
+            "ALT_FREQ": 0.876,
             "ALT_SEQ": "G",
-            "POS": "610",
+            "POS": 610,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1781,9 +1781,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.9352",
+            "ALT_FREQ": 0.9352,
             "ALT_SEQ": "G",
-            "POS": "785",
+            "POS": 785,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1791,9 +1791,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.9213",
+            "ALT_FREQ": 0.9213,
             "ALT_SEQ": "G",
-            "POS": "792",
+            "POS": 792,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1801,9 +1801,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8867",
+            "ALT_FREQ": 0.8867,
             "ALT_SEQ": "G",
-            "POS": "843",
+            "POS": 843,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1811,9 +1811,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.9154",
+            "ALT_FREQ": 0.9154,
             "ALT_SEQ": "C",
-            "POS": "846",
+            "POS": 846,
             "REF_ID": "MN430891",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1821,9 +1821,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8918",
+            "ALT_FREQ": 0.8918,
             "ALT_SEQ": "C",
-            "POS": "873",
+            "POS": 873,
             "REF_ID": "MN430891",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1831,9 +1831,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8976",
+            "ALT_FREQ": 0.8976,
             "ALT_SEQ": "A",
-            "POS": "894",
+            "POS": 894,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1841,9 +1841,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.9619",
+            "ALT_FREQ": 0.9619,
             "ALT_SEQ": "T",
-            "POS": "921",
+            "POS": 921,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1851,9 +1851,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8038",
+            "ALT_FREQ": 0.8038,
             "ALT_SEQ": "G",
-            "POS": "972",
+            "POS": 972,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1861,9 +1861,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.801",
+            "ALT_FREQ": 0.801,
             "ALT_SEQ": "C",
-            "POS": "993",
+            "POS": 993,
             "REF_ID": "MN430891",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1871,9 +1871,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8839",
+            "ALT_FREQ": 0.8839,
             "ALT_SEQ": "G",
-            "POS": "1032",
+            "POS": 1032,
             "REF_ID": "MN430891",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -1881,9 +1881,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8744",
+            "ALT_FREQ": 0.8744,
             "ALT_SEQ": "A",
-            "POS": "1155",
+            "POS": 1155,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1891,9 +1891,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.949",
+            "ALT_FREQ": 0.949,
             "ALT_SEQ": "A",
-            "POS": "1272",
+            "POS": 1272,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1901,9 +1901,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8855",
+            "ALT_FREQ": 0.8855,
             "ALT_SEQ": "C",
-            "POS": "1449",
+            "POS": 1449,
             "REF_ID": "MN430891",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1911,9 +1911,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.869",
+            "ALT_FREQ": 0.869,
             "ALT_SEQ": "A",
-            "POS": "1536",
+            "POS": 1536,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1921,9 +1921,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8475",
+            "ALT_FREQ": 0.8475,
             "ALT_SEQ": "C",
-            "POS": "1605",
+            "POS": 1605,
             "REF_ID": "MN430891",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -1931,9 +1931,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8904",
+            "ALT_FREQ": 0.8904,
             "ALT_SEQ": "A",
-            "POS": "1638",
+            "POS": 1638,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1941,9 +1941,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.9384",
+            "ALT_FREQ": 0.9384,
             "ALT_SEQ": "A",
-            "POS": "1660",
+            "POS": 1660,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1951,9 +1951,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.8858",
+            "ALT_FREQ": 0.8858,
             "ALT_SEQ": "T",
-            "POS": "1935",
+            "POS": 1935,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1961,9 +1961,9 @@ window.db = {
             "Segment Length": "2151"
           },
           {
-            "ALT_FREQ": "0.7839",
+            "ALT_FREQ": 0.7839,
             "ALT_SEQ": "A",
-            "POS": "1971",
+            "POS": 1971,
             "REF_ID": "MN430891",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1973,9 +1973,9 @@ window.db = {
         ],
         "4_HA": [
           {
-            "ALT_FREQ": "0.9318",
+            "ALT_FREQ": 0.9318,
             "ALT_SEQ": "T",
-            "POS": "37",
+            "POS": 37,
             "REF_ID": "MN431086",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -1983,9 +1983,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9489",
+            "ALT_FREQ": 0.9489,
             "ALT_SEQ": "A",
-            "POS": "39",
+            "POS": 39,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -1993,9 +1993,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9133",
+            "ALT_FREQ": 0.9133,
             "ALT_SEQ": "C",
-            "POS": "66",
+            "POS": 66,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2003,9 +2003,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8814",
+            "ALT_FREQ": 0.8814,
             "ALT_SEQ": "G",
-            "POS": "132",
+            "POS": 132,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2013,9 +2013,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8314",
+            "ALT_FREQ": 0.8314,
             "ALT_SEQ": "A",
-            "POS": "144",
+            "POS": 144,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2023,9 +2023,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9545",
+            "ALT_FREQ": 0.9545,
             "ALT_SEQ": "T",
-            "POS": "273",
+            "POS": 273,
             "REF_ID": "MN431086",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2033,9 +2033,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9062",
+            "ALT_FREQ": 0.9062,
             "ALT_SEQ": "C",
-            "POS": "279",
+            "POS": 279,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2043,9 +2043,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8901",
+            "ALT_FREQ": 0.8901,
             "ALT_SEQ": "T",
-            "POS": "306",
+            "POS": 306,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2053,9 +2053,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8907",
+            "ALT_FREQ": 0.8907,
             "ALT_SEQ": "G",
-            "POS": "376",
+            "POS": 376,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2063,9 +2063,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.946",
+            "ALT_FREQ": 0.946,
             "ALT_SEQ": "C",
-            "POS": "405",
+            "POS": 405,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2073,9 +2073,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9014",
+            "ALT_FREQ": 0.9014,
             "ALT_SEQ": "A",
-            "POS": "528",
+            "POS": 528,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2083,9 +2083,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8467",
+            "ALT_FREQ": 0.8467,
             "ALT_SEQ": "G",
-            "POS": "684",
+            "POS": 684,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2093,9 +2093,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8411",
+            "ALT_FREQ": 0.8411,
             "ALT_SEQ": "A",
-            "POS": "708",
+            "POS": 708,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2103,9 +2103,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9204",
+            "ALT_FREQ": 0.9204,
             "ALT_SEQ": "A",
-            "POS": "756",
+            "POS": 756,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2113,9 +2113,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8955",
+            "ALT_FREQ": 0.8955,
             "ALT_SEQ": "A",
-            "POS": "774",
+            "POS": 774,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2123,9 +2123,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8283",
+            "ALT_FREQ": 0.8283,
             "ALT_SEQ": "C",
-            "POS": "805",
+            "POS": 805,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2133,9 +2133,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.7761",
+            "ALT_FREQ": 0.7761,
             "ALT_SEQ": "A",
-            "POS": "813",
+            "POS": 813,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2143,9 +2143,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9443",
+            "ALT_FREQ": 0.9443,
             "ALT_SEQ": "G",
-            "POS": "826",
+            "POS": 826,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2153,9 +2153,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9299",
+            "ALT_FREQ": 0.9299,
             "ALT_SEQ": "A",
-            "POS": "836",
+            "POS": 836,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2163,9 +2163,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9095",
+            "ALT_FREQ": 0.9095,
             "ALT_SEQ": "T",
-            "POS": "882",
+            "POS": 882,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2173,9 +2173,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9267",
+            "ALT_FREQ": 0.9267,
             "ALT_SEQ": "G",
-            "POS": "916",
+            "POS": 916,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2183,9 +2183,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9347",
+            "ALT_FREQ": 0.9347,
             "ALT_SEQ": "C",
-            "POS": "951",
+            "POS": 951,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2193,9 +2193,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8355",
+            "ALT_FREQ": 0.8355,
             "ALT_SEQ": "C",
-            "POS": "1006",
+            "POS": 1006,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2203,9 +2203,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8717",
+            "ALT_FREQ": 0.8717,
             "ALT_SEQ": "A",
-            "POS": "1032",
+            "POS": 1032,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2213,9 +2213,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9344",
+            "ALT_FREQ": 0.9344,
             "ALT_SEQ": "T",
-            "POS": "1068",
+            "POS": 1068,
             "REF_ID": "MN431086",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2223,9 +2223,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8331",
+            "ALT_FREQ": 0.8331,
             "ALT_SEQ": "C",
-            "POS": "1140",
+            "POS": 1140,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2233,9 +2233,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.7809",
+            "ALT_FREQ": 0.7809,
             "ALT_SEQ": "A",
-            "POS": "1188",
+            "POS": 1188,
             "REF_ID": "MN431086",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2243,9 +2243,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.906",
+            "ALT_FREQ": 0.906,
             "ALT_SEQ": "A",
-            "POS": "1203",
+            "POS": 1203,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2253,9 +2253,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9142",
+            "ALT_FREQ": 0.9142,
             "ALT_SEQ": "C",
-            "POS": "1299",
+            "POS": 1299,
             "REF_ID": "MN431086",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2263,9 +2263,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.8857",
+            "ALT_FREQ": 0.8857,
             "ALT_SEQ": "A",
-            "POS": "1413",
+            "POS": 1413,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2273,9 +2273,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9198",
+            "ALT_FREQ": 0.9198,
             "ALT_SEQ": "T",
-            "POS": "1482",
+            "POS": 1482,
             "REF_ID": "MN431086",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2283,9 +2283,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.87",
+            "ALT_FREQ": 0.87,
             "ALT_SEQ": "G",
-            "POS": "1506",
+            "POS": 1506,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2293,9 +2293,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.9008",
+            "ALT_FREQ": 0.9008,
             "ALT_SEQ": "A",
-            "POS": "1537",
+            "POS": 1537,
             "REF_ID": "MN431086",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2303,9 +2303,9 @@ window.db = {
             "Segment Length": "1683"
           },
           {
-            "ALT_FREQ": "0.929",
+            "ALT_FREQ": 0.929,
             "ALT_SEQ": "G",
-            "POS": "1578",
+            "POS": 1578,
             "REF_ID": "MN431086",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2315,9 +2315,9 @@ window.db = {
         ],
         "5_NP": [
           {
-            "ALT_FREQ": "0.8571",
+            "ALT_FREQ": 0.8571,
             "ALT_SEQ": "A",
-            "POS": "108",
+            "POS": 108,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2325,9 +2325,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.861",
+            "ALT_FREQ": 0.861,
             "ALT_SEQ": "G",
-            "POS": "147",
+            "POS": 147,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2335,9 +2335,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9016",
+            "ALT_FREQ": 0.9016,
             "ALT_SEQ": "C",
-            "POS": "363",
+            "POS": 363,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2345,9 +2345,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.8552",
+            "ALT_FREQ": 0.8552,
             "ALT_SEQ": "G",
-            "POS": "378",
+            "POS": 378,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2355,9 +2355,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9036",
+            "ALT_FREQ": 0.9036,
             "ALT_SEQ": "A",
-            "POS": "420",
+            "POS": 420,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2365,9 +2365,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9127",
+            "ALT_FREQ": 0.9127,
             "ALT_SEQ": "C",
-            "POS": "540",
+            "POS": 540,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2375,9 +2375,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.8532",
+            "ALT_FREQ": 0.8532,
             "ALT_SEQ": "G",
-            "POS": "591",
+            "POS": 591,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2385,9 +2385,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9317",
+            "ALT_FREQ": 0.9317,
             "ALT_SEQ": "C",
-            "POS": "610",
+            "POS": 610,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2395,9 +2395,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.7581",
+            "ALT_FREQ": 0.7581,
             "ALT_SEQ": "G",
-            "POS": "630",
+            "POS": 630,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2405,9 +2405,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9124",
+            "ALT_FREQ": 0.9124,
             "ALT_SEQ": "C",
-            "POS": "753",
+            "POS": 753,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2415,9 +2415,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.8746",
+            "ALT_FREQ": 0.8746,
             "ALT_SEQ": "G",
-            "POS": "780",
+            "POS": 780,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2425,9 +2425,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9244",
+            "ALT_FREQ": 0.9244,
             "ALT_SEQ": "T",
-            "POS": "798",
+            "POS": 798,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2435,9 +2435,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9208",
+            "ALT_FREQ": 0.9208,
             "ALT_SEQ": "G",
-            "POS": "927",
+            "POS": 927,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2445,9 +2445,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9164",
+            "ALT_FREQ": 0.9164,
             "ALT_SEQ": "A",
-            "POS": "957",
+            "POS": 957,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2455,9 +2455,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.8538",
+            "ALT_FREQ": 0.8538,
             "ALT_SEQ": "C",
-            "POS": "1032",
+            "POS": 1032,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2465,9 +2465,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.8173",
+            "ALT_FREQ": 0.8173,
             "ALT_SEQ": "T",
-            "POS": "1092",
+            "POS": 1092,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2475,9 +2475,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.7695",
+            "ALT_FREQ": 0.7695,
             "ALT_SEQ": "G",
-            "POS": "1215",
+            "POS": 1215,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2485,9 +2485,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.9466",
+            "ALT_FREQ": 0.9466,
             "ALT_SEQ": "T",
-            "POS": "1329",
+            "POS": 1329,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2495,9 +2495,9 @@ window.db = {
             "Segment Length": "1540"
           },
           {
-            "ALT_FREQ": "0.959",
+            "ALT_FREQ": 0.959,
             "ALT_SEQ": "A",
-            "POS": "1362",
+            "POS": 1362,
             "REF_ID": "WIN-AH-2022-OTH-077-4-OS_segment5_NP",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2507,9 +2507,9 @@ window.db = {
         ],
         "6_NA": [
           {
-            "ALT_FREQ": "0.9091",
+            "ALT_FREQ": 0.9091,
             "ALT_SEQ": "A",
-            "POS": "46",
+            "POS": 46,
             "REF_ID": "MN430831",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2517,9 +2517,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.7975",
+            "ALT_FREQ": 0.7975,
             "ALT_SEQ": "T",
-            "POS": "108",
+            "POS": 108,
             "REF_ID": "MN430831",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2527,9 +2527,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8403",
+            "ALT_FREQ": 0.8403,
             "ALT_SEQ": "C",
-            "POS": "109",
+            "POS": 109,
             "REF_ID": "MN430831",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2537,9 +2537,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8984",
+            "ALT_FREQ": 0.8984,
             "ALT_SEQ": "G",
-            "POS": "119",
+            "POS": 119,
             "REF_ID": "MN430831",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2547,9 +2547,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.7944",
+            "ALT_FREQ": 0.7944,
             "ALT_SEQ": "G",
-            "POS": "282",
+            "POS": 282,
             "REF_ID": "MN430831",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2557,9 +2557,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.871",
+            "ALT_FREQ": 0.871,
             "ALT_SEQ": "A",
-            "POS": "300",
+            "POS": 300,
             "REF_ID": "MN430831",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2567,9 +2567,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9523",
+            "ALT_FREQ": 0.9523,
             "ALT_SEQ": "C",
-            "POS": "555",
+            "POS": 555,
             "REF_ID": "MN430831",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2577,9 +2577,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8784",
+            "ALT_FREQ": 0.8784,
             "ALT_SEQ": "A",
-            "POS": "627",
+            "POS": 627,
             "REF_ID": "MN430831",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2587,9 +2587,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9367",
+            "ALT_FREQ": 0.9367,
             "ALT_SEQ": "T",
-            "POS": "663",
+            "POS": 663,
             "REF_ID": "MN430831",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2597,9 +2597,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9165",
+            "ALT_FREQ": 0.9165,
             "ALT_SEQ": "T",
-            "POS": "666",
+            "POS": 666,
             "REF_ID": "MN430831",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2607,9 +2607,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8992",
+            "ALT_FREQ": 0.8992,
             "ALT_SEQ": "G",
-            "POS": "729",
+            "POS": 729,
             "REF_ID": "MN430831",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2617,9 +2617,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8918",
+            "ALT_FREQ": 0.8918,
             "ALT_SEQ": "A",
-            "POS": "784",
+            "POS": 784,
             "REF_ID": "MN430831",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2627,9 +2627,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9195",
+            "ALT_FREQ": 0.9195,
             "ALT_SEQ": "A",
-            "POS": "847",
+            "POS": 847,
             "REF_ID": "MN430831",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2637,9 +2637,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8514",
+            "ALT_FREQ": 0.8514,
             "ALT_SEQ": "T",
-            "POS": "870",
+            "POS": 870,
             "REF_ID": "MN430831",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2647,9 +2647,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.881",
+            "ALT_FREQ": 0.881,
             "ALT_SEQ": "T",
-            "POS": "946",
+            "POS": 946,
             "REF_ID": "MN430831",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2657,9 +2657,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8678",
+            "ALT_FREQ": 0.8678,
             "ALT_SEQ": "G",
-            "POS": "948",
+            "POS": 948,
             "REF_ID": "MN430831",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2667,9 +2667,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9668",
+            "ALT_FREQ": 0.9668,
             "ALT_SEQ": "C",
-            "POS": "992",
+            "POS": 992,
             "REF_ID": "MN430831",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2677,9 +2677,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9208",
+            "ALT_FREQ": 0.9208,
             "ALT_SEQ": "C",
-            "POS": "1126",
+            "POS": 1126,
             "REF_ID": "MN430831",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2687,9 +2687,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.9257",
+            "ALT_FREQ": 0.9257,
             "ALT_SEQ": "G",
-            "POS": "1164",
+            "POS": 1164,
             "REF_ID": "MN430831",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2697,9 +2697,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.948",
+            "ALT_FREQ": 0.948,
             "ALT_SEQ": "T",
-            "POS": "1194",
+            "POS": 1194,
             "REF_ID": "MN430831",
             "REF_SEQ": "C",
             "Sample": "Sample4",
@@ -2707,9 +2707,9 @@ window.db = {
             "Segment Length": "1413"
           },
           {
-            "ALT_FREQ": "0.8801",
+            "ALT_FREQ": 0.8801,
             "ALT_SEQ": "T",
-            "POS": "1362",
+            "POS": 1362,
             "REF_ID": "MN430831",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2719,9 +2719,9 @@ window.db = {
         ],
         "7_M": [
           {
-            "ALT_FREQ": "0.8982",
+            "ALT_FREQ": 0.8982,
             "ALT_SEQ": "C",
-            "POS": "85",
+            "POS": 85,
             "REF_ID": "MN938063",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2729,9 +2729,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.8946",
+            "ALT_FREQ": 0.8946,
             "ALT_SEQ": "A",
-            "POS": "196",
+            "POS": 196,
             "REF_ID": "MN938063",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2739,9 +2739,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.8934",
+            "ALT_FREQ": 0.8934,
             "ALT_SEQ": "A",
-            "POS": "316",
+            "POS": 316,
             "REF_ID": "MN938063",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2749,9 +2749,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.9114",
+            "ALT_FREQ": 0.9114,
             "ALT_SEQ": "A",
-            "POS": "319",
+            "POS": 319,
             "REF_ID": "MN938063",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2759,9 +2759,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.9425",
+            "ALT_FREQ": 0.9425,
             "ALT_SEQ": "A",
-            "POS": "415",
+            "POS": 415,
             "REF_ID": "MN938063",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2769,9 +2769,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.9004",
+            "ALT_FREQ": 0.9004,
             "ALT_SEQ": "A",
-            "POS": "472",
+            "POS": 472,
             "REF_ID": "MN938063",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2779,9 +2779,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.8254",
+            "ALT_FREQ": 0.8254,
             "ALT_SEQ": "C",
-            "POS": "565",
+            "POS": 565,
             "REF_ID": "MN938063",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2789,9 +2789,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.8907",
+            "ALT_FREQ": 0.8907,
             "ALT_SEQ": "C",
-            "POS": "864",
+            "POS": 864,
             "REF_ID": "MN938063",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2799,9 +2799,9 @@ window.db = {
             "Segment Length": "1002"
           },
           {
-            "ALT_FREQ": "0.8935",
+            "ALT_FREQ": 0.8935,
             "ALT_SEQ": "G",
-            "POS": "926",
+            "POS": 926,
             "REF_ID": "MN938063",
             "REF_SEQ": "A",
             "Sample": "Sample4",
@@ -2811,9 +2811,9 @@ window.db = {
         ],
         "8_NS": [
           {
-            "ALT_FREQ": "0.869",
+            "ALT_FREQ": 0.869,
             "ALT_SEQ": "C",
-            "POS": "203",
+            "POS": 203,
             "REF_ID": "KY983106",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2821,9 +2821,9 @@ window.db = {
             "Segment Length": "890"
           },
           {
-            "ALT_FREQ": "0.9037",
+            "ALT_FREQ": 0.9037,
             "ALT_SEQ": "C",
-            "POS": "266",
+            "POS": 266,
             "REF_ID": "KY983106",
             "REF_SEQ": "T",
             "Sample": "Sample4",
@@ -2831,9 +2831,9 @@ window.db = {
             "Segment Length": "890"
           },
           {
-            "ALT_FREQ": "0.8851",
+            "ALT_FREQ": 0.8851,
             "ALT_SEQ": "A",
-            "POS": "350",
+            "POS": 350,
             "REF_ID": "KY983106",
             "REF_SEQ": "G",
             "Sample": "Sample4",
@@ -2841,9 +2841,9 @@ window.db = {
             "Segment Length": "890"
           },
           {
-            "ALT_FREQ": "0.9019",
+            "ALT_FREQ": 0.9019,
             "ALT_SEQ": "A",
-            "POS": "735",
+            "POS": 735,
             "REF_ID": "KY983106",
             "REF_SEQ": "G",
             "Sample": "Sample4",

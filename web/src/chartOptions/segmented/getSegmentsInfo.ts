@@ -70,7 +70,7 @@ export const getFluGeneFeature = (db: WgsCovPlotDB): ECFeature[] => {
   for (let segment of Object.keys(db.maxSegmentLength)) {
     let {maxLength, start, end} = db.segCoords[segment];
     geneFeature.push({
-      name: `Segment ${segment}`,
+      name: `${segment}`,
       value: {
         idx: i,
         start,

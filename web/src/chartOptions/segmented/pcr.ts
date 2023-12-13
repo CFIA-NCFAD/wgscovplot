@@ -70,7 +70,6 @@ export function primerMatchRenderer(db: WgsCovPlotDB) {
 }
 
 export function getSegmentPrimerSeries(db: WgsCovPlotDB) {
-    console.log("Trigger getSegmentPrimerSeries")
     let primerSeries: any[] = [];
     if (isEmpty(db.primer_matches)) {
         return primerSeries;
@@ -95,7 +94,6 @@ export function getSegmentPrimerSeries(db: WgsCovPlotDB) {
             data: getSegmentPrimerData(sample, db),
         });
     }
-    //console.timeEnd("Trigger getSegmentPrimerSeries")
     return primerSeries;
 }
 

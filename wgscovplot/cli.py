@@ -40,8 +40,6 @@ def main(
         output_html: Path = typer.Option("wgscovplot.html", help="wgscovplot HTML output file"),
         primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
         low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
-        is_segmented: bool = typer.Option(default=False,
-                                          help="Output coverage plots for segmented viruses like Influenza A virus."),
         edit_distance: int = typer.Option(default=0,
                                           help="The maximum differences or 'edits' allowed between real-time "
                                                "PCR primer/probe sequences and the sample sequences."),
@@ -54,7 +52,7 @@ def main(
     logger.info(VERSION)
     logger.info(f'{input_dir=}')
     logger.info(f'{output_html=}')
-    run(input_dir, low_coverage_threshold, is_segmented, primers_fasta, edit_distance, output_html)
+    run(input_dir, low_coverage_threshold, primers_fasta, edit_distance, output_html)
 
 
 def init_logging(verbose):

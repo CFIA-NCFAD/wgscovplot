@@ -1,6 +1,6 @@
 import {WgsCovPlotDB} from "../db";
 import {unwrap} from "solid-js/store";
-import {isArray, isNil} from "lodash";
+import {isArray, isEmpty, isNil} from "lodash";
 import {getCoordsInterval} from "../util";
 
 
@@ -35,7 +35,7 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
   let threshold = db.chartOptions.low_coverage_threshold;
   // use unwrap Solid store util function to get underlying data for more rapid access to data
   let depths = unwrap(db.depths);
-  if (!isNil(db.segments) && !isNil(db.segCoords) && db.segments.length > 0) {
+  if (!isNil(db.segments) && !isEmpty(db.segCoords) && db.segments.length > 0) {
     let segments = Object.keys(db.segCoords)
     for (let segment of segments) {
       let sampleDepths = depths[sample];
@@ -43,7 +43,7 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
         continue;
       }
       let sampleSegDepths: number[] = sampleDepths[segment] as number[];
-      if (isNil(sampleSegDepths)) {
+      if (isEmpty(sampleSegDepths)) {
         continue;
       }
       for (let [start, end] of getCoordsInterval(sampleSegDepths, threshold)) {
@@ -64,6 +64,7 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
     for (let [start, end] of intervals) {
       data.push([
         {
+          name: `${start}-${end} (<${db.chartOptions.low_coverage_threshold}X)`,
           xAxis: start,
         },
         {
@@ -78,10 +79,10 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
       opacity: db.chartOptions.lowCoverageOpacity,
     },
     label: {
-      show: false,
+      show: db.chartOptions.showLowCoverageCoords,
       position: "insideTop",
       fontSize: 10,
-      rotate: 30,
+      rotate: db.chartOptions.coordsLabelsRotation,
       overflow: "truncate",
       ellipsis: "..."
     },
@@ -90,7 +91,6 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
 }
 
 export const getDepthSeries = (db: WgsCovPlotDB) => {
-  console.log("Trigger getDepthSeries")
   let depthSeries = [];
   for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
     let sample = db.chartOptions.selectedSamples[i];

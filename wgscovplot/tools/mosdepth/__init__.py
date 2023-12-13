@@ -57,8 +57,8 @@ class MosdepthDepthInfo(BaseModel):
     max_depth: int = 0
 
 
-def get_samples_name(basedir: Path, segment_virus: bool) -> List:
-    glob_patterns = TOP_REFERENCE_PATTERNS if segment_virus else PER_BASE_PATTERNS
+def get_samples_name(basedir: Path, is_genome_segmented: bool) -> List:
+    glob_patterns = TOP_REFERENCE_PATTERNS if is_genome_segmented else PER_BASE_PATTERNS
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=glob_patterns,
                                             sample_name_cleanup=SAMPLE_NAME_CLEANUP)
@@ -126,48 +126,6 @@ def get_refseq_id(basedir: Path) -> str:
     return refseq_name
 
 
-def get_base64_encoded_depth_arrays(sample_depths: Dict[str, np.ndarray]) -> Dict[str, str]:
-    """Encode depth arrays as base64 strings
-
-    Instead of dumping a list of numbers to a JSON list, the float32 array will be base64 encoded so
-    that it can be decoded into a Float32Array in JS. The base64 encoding will compress the numbers
-    significantly (~60% of the size of dumping list to JSON).
-
-    ```python
-    import base64
-    import numpy as np
-    import json
-
-    t = np.arange(30000, dtype=np.float32)
-    print(len(base64.b64encode(t)))
-    # 160000
-
-    print(json.dumps(t.tolist()))
-    # 258890
-    ```
-
-    The array can be converted to a JS Float32Array with:
-
-    ```js
-    // base64 encoded 32-bit float array
-    b64 = "AAAAAAAAgD8AAABAAABAQAAAgEAAAKBAAADAQAAA4..."
-    f32a = new Float32Array(new Uint8Array([...atob(b64)].map(c => c.charCodeAt(0))).buffer)
-    // to regular JS array
-    arr = Array.from(f32a)
-    ```
-
-    Args:
-        sample_depths: Dict of sample name to depths array
-
-    Returns:
-        Dict of sample name to 32-bit float depth arrays encoded with base64
-    """
-    out = {}
-    for sample, arr in sample_depths.items():
-        out[sample] = base64.b64encode(arr).decode('utf-8')
-    return out
-
-
 def get_amplicon_depths(basedir: Path) -> Dict[str, List]:
     sample_beds = find_file_for_each_sample(basedir,
                                             glob_patterns=REGIONS_PATTERNS,
@@ -230,7 +188,6 @@ def get_info(
     for sample, bed_path in sample_beds.items():
         df = read_mosdepth_bed(bed_path)
         arr = depth_array(df)
-        arr[arr == 0] = 1E-7  # assign values for zero depth position so that it can be plotted in log scale mode
         sample_depths[sample] = base64.b64encode(arr).decode('utf-8')
         mean_cov = "{:.2f}".format(arr.mean())
         median_cov = pd.Series(arr).median()

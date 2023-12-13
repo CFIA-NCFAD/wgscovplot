@@ -1,4 +1,4 @@
-from typing import List, Dict, DefaultDict
+from typing import List, Dict
 
 from pydantic import BaseModel
 
@@ -7,12 +7,12 @@ from wgscovplot.tools.mosdepth import MosdepthDepthInfo
 from wgscovplot.tools.mosdepth.flu import FluMosdepthDepthInfo
 
 
-class BaseDB(BaseModel):
+class DB(BaseModel):
     samples: List[str]
     low_coverage_threshold: int = 10
 
 
-class SegmentTemplateDB(BaseDB):
+class SegmentedGenomeDB(DB):
     """Singleton wgscovplot template DB class containing all data to populate HTML plots
 
     The single instance of this class will be serialized into a JS object for populating plots in the final HTML output.
@@ -26,7 +26,7 @@ class SegmentTemplateDB(BaseDB):
     variants: Dict[str, Dict[str, List[Dict]]]
 
 
-class NonSegmentTemplateDB(BaseDB):
+class NonSegmentedGenomeDB(DB):
     """Singleton wgscovplot template DB class containing all data to populate HTML plots
 
     The single instance of this class will be serialized into a JS object for populating plots in the final HTML output.

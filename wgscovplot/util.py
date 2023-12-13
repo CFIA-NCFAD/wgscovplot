@@ -5,7 +5,6 @@ from itertools import product
 from pathlib import Path
 from typing import Union, List, Optional, Mapping, Callable
 
-import markdown
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ def find_file_for_each_sample(
 ) -> Mapping[str, Path]:
     sample_files = defaultdict(list)
     for glob_pattern in glob_patterns:
-        for p in basedir.glob(glob_pattern):
+        for p in basedir.rglob(glob_pattern):
             sample = extract_sample_name(p.name,
                                          remove=sample_name_cleanup)
 
@@ -145,24 +144,9 @@ def try_parse_number(s: str) -> Union[int, float, List[float], List[int], str]:
     return s
 
 
-def readme_to_html() -> str:
-    """Read README.md Markdown to convert to HTML"""
-    # Read README.md
-    dirpath = Path(__file__).resolve().parent.parent
-    readme = dirpath / 'README.md'
-    with open(readme, "r", encoding="utf-8") as input_file:
-        text = input_file.read()
-    return markdown.markdown(
-        text, extensions=['tables', 'nl2br', 'extra', 'md_in_html']
-    )
-
-
 def expand_degenerate_bases(seq: str) -> List[str]:
     return list(map("".join, product(*map(NT_MAP.get, seq))))
 
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
     return start1 < start2 < end1 or start1 < end2 < end1
-
-#def overlap(start1, end1, start2, end2) :
-#    return max(0, min(end1, end2) - max(start1, start2)+1)

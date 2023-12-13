@@ -3,11 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "start": "vite",
-    "start-flu": "vite -c vite.config.flu.ts",
-    "dev": "vite",
-    "build": "vite build -c vite.config.build.ts",
-    "serve": "vite preview"
+    "dev": "vite -c vite.config.ts",
+    "dev-flu": "vite -c vite.config.flu.ts",
+    "build": "vite build -c vite.config.build.ts"
   },
   "license": "MIT",
   "devDependencies": {

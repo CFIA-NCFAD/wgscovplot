@@ -1,7 +1,7 @@
 import {ECFeature, ECFormatterFeature, WgsCovPlotDB} from "../db";
 import {getTextWidth, hexToHSL, shapePoints} from "../util";
 import {graphic} from "echarts/core";
-import {isNil} from "lodash";
+import {isEmpty, isNil} from "lodash";
 
 function getGeneFeatureRenderer(db: WgsCovPlotDB) {
   let yStart = 0;
@@ -201,7 +201,7 @@ export function getRegionAmpliconDepthRenderer(db: WgsCovPlotDB) {
 
 export function getRegionAmpliconDepthSeries(db: WgsCovPlotDB) {
   let ampliconDepthSeries: any[] = [];
-  if (isNil(db.amplicon_depths))
+  if (isEmpty(db.amplicon_depths))
     return ampliconDepthSeries;
   for (let [i, sample] of db.chartOptions.selectedSamples.entries()) {
     ampliconDepthSeries.push({

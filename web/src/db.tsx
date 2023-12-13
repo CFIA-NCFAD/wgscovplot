@@ -63,13 +63,7 @@ export interface MaxSegmentLength {
     [key: string]: number
 }
 
-export interface SegmentRegSeq {
-  [key: string]: {
-    [key: string] : string
-  }
-}
-
-export interface SegmentRegID {
+export interface SegmentRef {
   [key: string]: {
     [key: string] : string
   }
@@ -126,13 +120,14 @@ export interface ChartOptions {
   geneLabelDistance: number;
   geneLabelRotation: number;
   variantLabelsRotation: number;
+  coordsLabelsRotation: number;
   lowCovThresholdLineWidth: number;
   lowCovThresholdLineColour: string;
   lowCovColour: string;
   /** Selected sample names */
   selectedSamples: string[];
   /** list of selected virus segment names */
-  selectedSegments: string[];
+  selectedSegments?: string[];
   /** show coverage stats in tooltips */
   showCovStatsInTooltips: boolean;
   /** Show ECharts DataZoom slider? */
@@ -146,6 +141,7 @@ export interface ChartOptions {
   /** Show variant site labels below each cov subplot x-axis? */
   showVariantLabels: boolean;
   showXAxisLabel: boolean;
+  showLowCoverageCoords: boolean;
   /** y-axis max value. Can be adjusted by user, but also dependent on samples being shown. */
   yMax: number;
   covColour: string;
@@ -205,7 +201,7 @@ export interface TooltipOptions {
   y: number;
   sample: string;
   position: number;
-  depth: number | string;
+  depth: number;
   tables: Table[];
 }
 
@@ -230,7 +226,7 @@ export interface ECFeature {
 export interface WgsCovPlotDB {
   activePage: string;
   /** amplicon depths */
-  amplicon_depths: SampleAmpliconDepths;
+  amplicon_depths?: SampleAmpliconDepths;
   /** coverage depths */
   depths: SampleDepths | SampleSegmentDepths;
   /** ??? gene/amplicon features on both plus and minus strands? */
@@ -243,34 +239,34 @@ export interface WgsCovPlotDB {
   /** array of positions from 1 to length of reference sequence */
   positions: number[];
   /** reference sequence */
-  ref_seq: string;
-  segments_ref_seq: SegmentRegSeq;
-  segments_ref_id: SegmentRegID;
+  ref_seq?: string;
+  segments_ref_seq?: SegmentRef;
+  segments_ref_id?: SegmentRef;
 
   /** Primer data **/
-  primer_matches: PrimerMatches
+  primer_matches?: PrimerMatches
 
   /** array of all samples */
   samples: string[];
 
   /** plotting coordinates for virus segments */
-  segCoords: SegmentCoords;
+  segCoords?: SegmentCoords;
   /** list of virus segment names if segmented virus being shown */
-  segments: string[];
+  segments?: string[];
 
   /** Max length among samples of 1 segment**/
-  maxSegmentLength: MaxSegmentLength
+  maxSegmentLength?: MaxSegmentLength
 
   /** Show amplicon features? */
-  show_amplicons: boolean;
+  show_amplicons?: boolean;
   /** Show primer matches? */
-  show_primer_matches: boolean;
+  show_primer_matches?: boolean;
   /** Show gene features? */
   show_genes: boolean;
   /** ECharts object for variant calling heatmap */
   variantHeatmap?: ECharts | EChartsType;
   /** variant calls */
-  variants?: SampleVariantCalls | SampleSegmentVariantCalls;
+  variants: SampleVariantCalls | SampleSegmentVariantCalls;
 
   chart: any;
   heatMapChart: any;
@@ -315,6 +311,7 @@ export const defaultDB: WgsCovPlotDB = {
     geneLabelDistance: 10,
     geneLabelRotation: 0,
     variantLabelsRotation: -30,
+    coordsLabelsRotation: 30,
     lowCovThresholdLineWidth: 1,
     lowCovThresholdLineColour: "#910000",
     sidebarCollapsed: false,
@@ -340,6 +337,7 @@ export const defaultDB: WgsCovPlotDB = {
     showLowCovRegionsOpacity: 0.5,
     showVariantLabels: false,
     showXAxisLabel: false,
+    showLowCoverageCoords: false,
     yMax: 1000,
     lowCovColour: "#ffff00",
     featurePlotHeightScaling: 100,
