@@ -36,7 +36,7 @@ def find_file_for_each_sample(
 ) -> Mapping[str, Path]:
     sample_files = defaultdict(list)
     for glob_pattern in glob_patterns:
-        for p in basedir.rglob(glob_pattern):
+        for p in basedir.glob(glob_pattern):
             sample = extract_sample_name(p.name,
                                          remove=sample_name_cleanup)
 

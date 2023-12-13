@@ -20,7 +20,7 @@ export const getSeries = (db: WgsCovPlotDB) => {
       series.push(...getSegmentVariantSeries(db));
     }
   }
-  if (!isEmpty(db.primer_matches)) {
+  if (!isEmpty(db.primer_matches) && db.show_primer_matches) {
     series.push(...getSegmentPrimerSeries(db));
   }
   let isNegativeStrand: boolean = some(db.echart_features, {value: {strand: -1}})

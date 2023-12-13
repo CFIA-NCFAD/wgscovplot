@@ -13,7 +13,7 @@ from wgscovplot.tools.mosdepth import read_mosdepth_bed, depth_array, count_posi
 logger = logging.getLogger(__name__)
 
 TOP_REFERENCE_PATTERNS = [
-    '*.topsegments.csv',
+    '**/*.topsegments.csv',
 ]
 
 
@@ -33,11 +33,8 @@ def get_flu_mosdepth_info(
         sample_top_references: SampleSegmentRef,
         low_coverage_threshold: int = 5
 ) -> Tuple[Dict[str, Dict[str, MosdepthDepthInfo]], Dict[str, Dict[str, str]]]:
-    sample_depths = defaultdict(lambda: defaultdict(dict, {k: "" for k in segments}))
-    mosdepth_info = defaultdict(lambda: defaultdict(dict, {k: FluMosdepthDepthInfo(sample=sample,
-                                                                                   segment=segment,
-                                                                                   low_coverage_threshold=low_coverage_threshold)
-                                                           for k in segments}))
+    sample_depths = defaultdict(dict)
+    mosdepth_info = defaultdict(dict)
     for items in sample_top_references:
         segment = items.segment
         ref_id = items.ref_id

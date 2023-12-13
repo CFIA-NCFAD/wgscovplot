@@ -88,11 +88,11 @@ export const getSegmentVariantComparison = (db: WgsCovPlotDB, sample: string, se
       variantArr.push({
         "Sample": sample,
         "POS": position,
-        "REF_ID": db.segments_ref_id[sample][segment],
+        "REF_ID": isNil(db.segments_ref_id[sample][segment]) ? "" : db.segments_ref_id[sample][segment],
         "Segment": segment,
         // @ts-ignore
-        "Segment Length": db.depths[sample][segment].length,
-        "REF_SEQ": db.segments_ref_seq[sample][segment][position - 1],
+        "Segment Length": isNil(db.depths[sample][segment]) ? 0 : db.depths[sample][segment].length,
+        "REF_SEQ": isNil(db.segments_ref_seq[sample][segment]) ? "" : db.segments_ref_seq[sample][segment][position - 1],
       });
     }
   });
@@ -152,7 +152,7 @@ export const getSegmentCoverageStatComparison = (db: WgsCovPlotDB, segment: stri
   rows.push(...[tableHeader]);
   db.chartOptions.selectedSamples.forEach((sample) => {
     // @ts-ignore
-    let depthArr = db.depths[sample][segment];
+    let depthArr: number[] = isNil(db.depths[sample][segment]) ? [] : db.depths[sample][segment];
     let meanCov = meanCoverage(depthArr, 1, depthArr.length).toFixed(2);
     let medianCov = medianCoverage(depthArr, 1, depthArr.length).toFixed(2);
     let genomeCov = genomeCoverage(depthArr, 1, depthArr.length, db.chartOptions.low_coverage_threshold).toFixed(2);
@@ -272,16 +272,16 @@ export const tooltipFormatter = (db: WgsCovPlotDB) => {
       }] = params;
       let positionRows: string[][] = [];
       let tables = [];
-      let sample = db.chartOptions.selectedSamples[axisIndex];
-      let segment = whichSegment(position, db);
-      let sequence = db.segments_ref_seq[sample][segment];
+      let sample: string = db.chartOptions.selectedSamples[axisIndex];
+      let segment: string = whichSegment(position, db);
+      let sequence: string = isNil(db.segments_ref_seq[sample][segment]) ? "" : db.segments_ref_seq[sample][segment];
       let segmentLength = sequence.length;
       // convert to pos in segment
       position = position - db.segCoords[segment].start + 1;
       let coverageDepth: any;
       // @ts-ignore
       let sampleSegDepths: number[] = db.depths[sample][segment];
-      let refID = db.segments_ref_id[sample][segment];
+      let refID: string = isNil(db.segments_ref_id[sample][segment]) ? "" : db.segments_ref_id[sample][segment];
       if (segmentLength === 0) {
         coverageDepth = `No result reported for segment ${segment}`;
       } else {

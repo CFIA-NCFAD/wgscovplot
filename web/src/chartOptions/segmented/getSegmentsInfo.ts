@@ -1,6 +1,6 @@
 import {FLU_SEGMENT_COLOURS} from "../../util";
 import {ECFeature, MaxSegmentLength, SegmentCoords, WgsCovPlotDB} from "../../db";
-import {omitBy} from "lodash";
+import {isNil, omitBy} from "lodash";
 
 
 export function getCustomXAxisLabel(value: number, segments: string[], segCoords: SegmentCoords): string {
@@ -20,9 +20,11 @@ export const getMaxSegmentLength = (db: WgsCovPlotDB) => {
     let maxLength = 0;
     for (let sample of db.chartOptions.selectedSamples) {
       // @ts-ignore
-      let length = db.segments_ref_seq[sample][segment].length;
-      if (maxLength <= length) {
-        maxLength = length;
+      if (!isNil(db.segments_ref_seq[sample][segment])) {
+        let length = db.segments_ref_seq[sample][segment].length;
+        if (maxLength <= length) {
+          maxLength = length;
+        }
       }
     }
     out[segment] = maxLength;

@@ -68,9 +68,11 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
         color: function (arg: ECColorArg) {
           let pos = arg.data[0];
           const segment = whichSegment(pos, db)
-          const seqPosition = pos - db.segCoords[segment].start;
-          const nt = db.segments_ref_seq[sample][segment][seqPosition];
-          return get(state.chartOptions.ntColor, nt, "#333");
+          if (!isNil(db.segCoords[segment]) && !isNil(db.segments_ref_seq[sample][segment])) {
+            const seqPosition = pos - db.segCoords[segment].start;
+            const nt = db.segments_ref_seq[sample][segment][seqPosition];
+            return get(state.chartOptions.ntColor, nt, "#333");
+          }
         }
       },
       label: {

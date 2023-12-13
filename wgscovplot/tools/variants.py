@@ -546,7 +546,7 @@ def get_segments_variants(
         req_seq: Dict[str, Dict[str, str]],
         sample_top_references: SampleSegmentRef,
 ) -> Dict[str, Dict[str, List[Dict]]]:
-    out = defaultdict(lambda: defaultdict(dict, {k: [] for k in segments}))
+    out = defaultdict(dict)
     for items in sample_top_references:
         segment = items.segment
         ref_id = items.ref_id

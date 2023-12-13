@@ -2,6 +2,7 @@ import {ECFeature, MaxSegmentLength, SegmentCoords, WgsCovPlotDB} from "../db";
 import {constant, isNil, sum, times, values} from "lodash";
 import {getFluGeneFeature, getMaxSegmentLength, getSegmentCoords} from "./segmented/getSegmentsInfo";
 import {setState, state} from "../state";
+import {leaveSelect} from "echarts/types/src/util/states";
 
 export const getDatasets = (db: WgsCovPlotDB) => {
   let datasets = [];
@@ -24,10 +25,9 @@ export const getDatasets = (db: WgsCovPlotDB) => {
       let depthArray: number [] = [];
       for (let segment of Object.keys(segCoords)) {
         // @ts-ignore
-        let ds = db.depths[sample][segment];
+        let ds: number[] = isNil(db.depths[sample][segment]) ? [] : db.depths[sample][segment];
         let coords = db.segCoords[segment];
         if (ds.length < coords.maxLength) {
-          // padding value 1E-5
           let padding = times(coords.maxLength - ds.length, constant(1E-7));
           ds = [...ds, ...padding]
         }

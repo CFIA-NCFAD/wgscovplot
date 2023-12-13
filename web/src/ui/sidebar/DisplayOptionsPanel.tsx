@@ -80,7 +80,7 @@ export const DisplayOptionsPanel: Component = () => {
                onChange={(e) => setState("chartOptions", "showFeatures", e.currentTarget.checked)}/>
         <label class="ml-1" for="show-features">Show features</label>
       </div>
-      <Show when={state.chartOptions.showFeatures}>
+      <Show when={state.chartOptions.showFeatures && isNil(state.segments)}>
         <div class="mt-2">
           <input type="checkbox" id="show-gene-labels" class="hover:ring h-4 w-4 form-check"
                  checked={state.chartOptions.showGeneLabels}

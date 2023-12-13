@@ -79,7 +79,7 @@ def get_segments_ref_id(
                               '5_NP': 'OQ694923.1', '6_NA': 'OQ733005.1', '7_M': 'OQ733006.1', '8_NS': 'OQ694932.1'}
     """
 
-    out = defaultdict(lambda: defaultdict(dict, {k: "" for k in segments}))
+    out = defaultdict(dict)
     for items in sample_top_references:
         out[items.sample][items.segment] = items.ref_id
     return out
@@ -96,7 +96,7 @@ def get_segments_ref_seq(
     'WIN_CFIA_AIV_SAMPLE_96': {'1_PB2': 'ACGCGCAGCAGCG', '2_PB1': 'ACGCGCAGCAGCGGC', '3_PA': 'ACGCGCAGCAGCG', '4_HA': 'ACGCGCAGCAGCG',
                               '5_NP': 'ACGCGCAGCAGCG', '6_NA': 'ACGCGCAGCAGCG', '7_M': 'ACGCGCAGCAGCG', '8_NS': 'ACGCGCAGCAGCG'}
     """
-    out = defaultdict(lambda: defaultdict(dict, {k: "" for k in segments}))
+    out = defaultdict(dict)
     for items in sample_top_references:
         segment = items.segment
         ref_id = items.ref_id
@@ -125,7 +125,7 @@ def get_segments_consensus_seq(
     'WIN_CFIA_AIV_SAMPLE_96': {'1_PB2': 'ACGCGCAGCAGCG', '2_PB1': 'ACGCGCAGCAGCGGC', '3_PA': 'ACGCGCAGCAGCG', '4_HA': 'ACGCGCAGCAGCG',
                               '5_NP': 'ACGCGCAGCAGCG', '6_NA': 'ACGCGCAGCAGCG', '7_M': 'ACGCGCAGCAGCG', '8_NS': 'ACGCGCAGCAGCG'}
     """
-    out = defaultdict(lambda: defaultdict(dict, {k: "" for k in segments}))
+    out = defaultdict(dict)
     for items in sample_top_references:
         segment = items.segment
         ref_id = items.ref_id
