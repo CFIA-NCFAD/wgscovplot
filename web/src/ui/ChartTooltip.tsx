@@ -8,7 +8,7 @@ export const ChartTooltip: Component = () => {
   const draggable = createDraggable(1);
 
   // get the index of the column that contains the sample name
-  function getHighlightColumnIndex(rows: string[][], sample: string) {
+  function getHighlightColumnIndex(rows: (string | number)[][], sample: string) {
     for (let i = 0; i < rows.length; i++) {
       for (let j = 1; j < rows[i].length; j++) {
         if (rows[i][j] === sample) {
@@ -37,12 +37,11 @@ export const ChartTooltip: Component = () => {
       </div>
 
       <p class="ml-2">Position: {state.tooltipOptions.position.toLocaleString()}</p>
-      <p class="ml-2">Depth: {state.tooltipOptions.depth.toLocaleString()}X</p>
+      <p class="ml-2">Depth: {state.tooltipOptions.depth.toLocaleString()}</p>
       <For each={state.tooltipOptions.tables}>
-        {(table, i) => {
-          const sample = state.tooltipOptions.sample;
+        {(table) => {
           const props: { highlightColumn?: number } = {};
-          props.highlightColumn = getHighlightColumnIndex(table.rows, sample);
+          props.highlightColumn = getHighlightColumnIndex(table.rows, state.tooltipOptions.sample);
           return <div class="mt-4">
             <TooltipTable headers={table.headers}
                           rows={table.rows}

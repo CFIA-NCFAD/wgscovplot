@@ -8,7 +8,7 @@ import {mean, filter, sortBy, slice} from "lodash";
  * @returns {number} - Returns the mean
  */
 function meanCoverage(depths: number[], start: number, end: number): number {
-    let subArray = slice(depths, start - 1, end);
+    const subArray = slice(depths, start - 1, end);
     return mean(subArray);
 }
 
@@ -21,8 +21,8 @@ function meanCoverage(depths: number[], start: number, end: number): number {
  * @returns {number} - Returns the genome coverage
  */
 function genomeCoverage(depths: number[], start: number, end: number, low: number): number {
-    let subArr = slice(depths, start - 1, end);
-    let filteredArr = filter(subArr, function (x) {
+    const subArr = slice(depths, start - 1, end);
+    const filteredArr = filter(subArr, function (x) {
         return x >= low;
     });
     return (filteredArr.length / (end - start + 1)) * 100;
@@ -34,8 +34,8 @@ function genomeCoverage(depths: number[], start: number, end: number, low: numbe
  * @returns {number} - Returns the median
  */
 function median(arr: number[]): number {
-    let sortedArr = sortBy(arr);
-    let half = Math.floor(sortedArr.length / 2);
+    const sortedArr = sortBy(arr);
+    const half = Math.floor(sortedArr.length / 2);
     if (sortedArr.length % 2) {
         return sortedArr[half];
     } else {
@@ -51,7 +51,7 @@ function median(arr: number[]): number {
  * @returns {number} - Returns the median
  */
 function medianCoverage(depths: number[], start: number, end: number): number {
-    let subArray = slice(depths, start - 1, end);
+    const subArray = slice(depths, start - 1, end);
     return median(subArray);
 }
 

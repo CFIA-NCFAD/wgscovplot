@@ -5,7 +5,6 @@ import {join, map} from "lodash";
  */
 export const FEATURE_PLOT_PROPS = {
   "max_grid_height": 80,
-  "rec_items_height": 12,
   "grid_height": "15%"
 };
 
@@ -13,14 +12,14 @@ export const FEATURE_PLOT_PROPS = {
  * Define color for segmented gene segments
  */
 export const FLU_SEGMENT_COLOURS = {
-  "1_PB2": "#A6CEE3",
-  "2_PB1": "#1F78B4",
-  "3_PA": "#B2DF8A",
-  "4_HA": "#33A02C",
-  "5_NP": "#FB9A99",
-  "6_NA": "#E31A1C",
-  "7_M": "#FDBF6F",
-  "8_NS": "#FF7F00"
+  "1_PB2": "#1b9e77",
+  "2_PB1": "#d95f02",
+  "3_PA": "#7570b3",
+  "4_HA": "#e7298a",
+  "5_NP": "#66a61e",
+  "6_NA": "#e6ab02",
+  "7_M": "#a6761d",
+  "8_NS": "#666666"
 };
 
 /**
@@ -65,7 +64,7 @@ export const toTableHtml = ({headers, rows, classes = "table small"}
 export function getCoordsInterval(depths: number[], threshold: number) {
   let foundInterval = false;
   let firstCoord = 0;
-  let n = depths.length;
+  const n = depths.length;
   const out = [];
   let i = 0;
   for (; i < n; ++i) {
@@ -180,7 +179,15 @@ export function shapePoints(
         [x + taperOffset, y - height],
       ];
     }
-  } else if (type === "amplicon" || type === "segment") {
+  } else if (type === "amplicon") {
+    return [
+      [x, y],
+      [x + width, y],
+      [x + width, y - height],
+      [x, y - height],
+    ];
+  } else if (type === "segment") {
+    height *= 3;
     return [
       [x, y],
       [x + width, y],

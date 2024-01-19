@@ -1,17 +1,17 @@
 import {WgsCovPlotDB} from "../db";
-import {isNil} from "lodash";
+import {get, isNil} from "lodash";
 
-export const getDataZoom: (db: WgsCovPlotDB)
-  => (any[] | [{ filterMode: string; xAxisIndex: number[]; type: string; startValue: number; endValue: number,  zoomLock: boolean }, { filterMode: string; xAxisIndex: number[]; showDataShadow: boolean; show: boolean; type: string; zoomLock: boolean }])
-  = (db: WgsCovPlotDB) => {
-  let xAxisIndex = [...Array(db.chartOptions.selectedSamples.length + 1).keys()];
+export function getDataZoom(db: WgsCovPlotDB) {
+  const xAxisIndex = [...Array(db.chartOptions.selectedSamples.length + 1).keys()];
   let start: number = 1
   let end: number = db.positions.length;
   if (!isNil(db.chart)) {
-    if (!isNil(db.chart.getOption())) {
-      let dataZoom: any = db.chart.getOption().dataZoom;
-      start = Math.floor(dataZoom[0]["startValue"]);
-      end = Math.floor(dataZoom[0]["endValue"]);
+    const opts = db.chart.getOption();
+    const dataZoomStart = get(opts, ["dataZoom", 0, "startValue"], start);
+    const dataZoomEnd = get(opts, ["dataZoom", 0, "endValue"], end);
+    if (dataZoomEnd - dataZoomStart >= 5) {
+      start = dataZoomStart;
+      end = dataZoomEnd;
     }
   }
   return [

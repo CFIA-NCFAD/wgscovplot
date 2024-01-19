@@ -28,25 +28,25 @@ export function getCoverageThresholdLine(db: WgsCovPlotDB) {
 }
 
 export function getMarkArea(db: WgsCovPlotDB, sample: string) {
-  let data = [];
+  const data = [];
   if (!(sample in db.depths)) {
     return {};
   }
-  let threshold = db.chartOptions.low_coverage_threshold;
+  const threshold = db.chartOptions.low_coverage_threshold;
   // use unwrap Solid store util function to get underlying data for more rapid access to data
-  let depths = unwrap(db.depths);
+  const depths = unwrap(db.depths);
   if (!isNil(db.segments) && !isEmpty(db.segCoords) && db.segments.length > 0) {
-    let segments = Object.keys(db.segCoords)
-    for (let segment of segments) {
-      let sampleDepths = depths[sample];
+    const segments = Object.keys(db.segCoords)
+    for (const segment of segments) {
+      const sampleDepths = depths[sample];
       if (!(segment in sampleDepths) || isArray(sampleDepths)) {
         continue;
       }
-      let sampleSegDepths: number[] = sampleDepths[segment] as number[];
+      const sampleSegDepths: number[] = sampleDepths[segment] as number[];
       if (isEmpty(sampleSegDepths)) {
         continue;
       }
-      for (let [start, end] of getCoordsInterval(sampleSegDepths, threshold)) {
+      for (const [start, end] of getCoordsInterval(sampleSegDepths, threshold)) {
         data.push([
           {
             name: `${start}-${end} (<${db.chartOptions.low_coverage_threshold}X)`,
@@ -59,9 +59,9 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
       }
     }
   } else {
-    let sampleDepths: number[] = depths[sample] as number[];
-    let intervals = getCoordsInterval(sampleDepths, threshold);
-    for (let [start, end] of intervals) {
+    const sampleDepths: number[] = depths[sample] as number[];
+    const intervals = getCoordsInterval(sampleDepths, threshold);
+    for (const [start, end] of intervals) {
       data.push([
         {
           name: `${start}-${end} (<${db.chartOptions.low_coverage_threshold}X)`,
@@ -91,9 +91,9 @@ export function getMarkArea(db: WgsCovPlotDB, sample: string) {
 }
 
 export const getDepthSeries = (db: WgsCovPlotDB) => {
-  let depthSeries = [];
+  const depthSeries = [];
   for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
-    let sample = db.chartOptions.selectedSamples[i];
+    const sample = db.chartOptions.selectedSamples[i];
     let series = {
       type: "line",
       xAxisIndex: i,

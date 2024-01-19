@@ -1,18 +1,27 @@
+import logging
 from collections import defaultdict
 from pathlib import Path
-import pandas as pd
-import logging
-from Bio.SeqIO.FastaIO import SimpleFastaParser
-from typing import Dict, List
+from typing import DefaultDict, Dict
 
-from wgscovplot.util import find_file_for_each_sample
-from wgscovplot.tools.mosdepth.flu import TOP_REFERENCE_PATTERNS, SampleSegmentRef
+import pandas as pd
+from Bio.SeqIO.FastaIO import SimpleFastaParser
+from pydantic import BaseModel
+
 from wgscovplot.tools.mosdepth import SAMPLE_NAME_CLEANUP
+from wgscovplot.util import find_file_for_each_sample, select_most_recent_file
 
 logger = logging.getLogger(__name__)
 
+SEGMENTS = ["1_PB2", "2_PB1", "3_PA", "4_HA", "5_NP", "6_NA", "7_M", "8_NS"]
 
-def get_sample_top_references(basedir: Path) -> List[SampleSegmentRef]:
+
+class SampleSegmentRef(BaseModel):
+    sample: str
+    segment: str
+    ref_id: str
+
+
+def get_sample_top_references(basedir: Path) -> list[SampleSegmentRef]:
     """
     Find files sample.topsegments.csv for each sample
     File is located in reference_sequences/sample/sample.topsegments.csv
@@ -25,118 +34,76 @@ def get_sample_top_references(basedir: Path) -> List[SampleSegmentRef]:
     )
     if not sample_top_references:
         return []
-    df = pd.concat([read_top_references_table(p) for _, p in sample_top_references.items()])
+    df = pd.concat([read_nf_flu_topsegments_csv(p) for _, p in sample_top_references.items()])
     return [
         SampleSegmentRef(
             sample=r.sample,
             segment=r.segment,
             ref_id=r.ref_id,
-        ) for r in df.itertuples()]
+        )
+        for r in df.itertuples()
+    ]
 
 
-def get_segments(sample_top_references: List[SampleSegmentRef]) -> List:
-    """
-    Return the list of unique segments across all samples
-    ['1_PB2', '2_PB1', '3_PA', '4_HA', '5_NP', '6_NA', '7_M', '8_NS']
-    """
-    segments = []
-    for item in sample_top_references:
-        if item.segment not in segments:
-            segments.append(item.segment)
-    return sorted(list(segments))
-
-
-def read_top_references_table(basedir: Path) -> pd.DataFrame:
-    """
-    Parse sample.topsegments.csv into data frame with five columns:
-            'sample',
-            'segment',
-            'ref_id',
-            'blastn_bitscore',
-            'ref_sequence_id',
-    """
+def read_nf_flu_topsegments_csv(top_segments_csv: Path) -> pd.DataFrame:
     return pd.read_csv(
-        basedir,
+        top_segments_csv,
         header=0,
         names=[
-            'sample',
-            'segment',
-            'ref_id',
-            'blastn_bitscore',
-            'ref_sequence_id',
-        ]
+            "sample",
+            "segment",
+            "ref_id",
+            "blastn_bitscore",
+            "ref_sequence_id",
+        ],
     )
 
 
-def get_segments_ref_id(
-        segments: List,
-        sample_top_references: List[SampleSegmentRef]
-) -> Dict[str, Dict[str, str]]:
-    """
-    Return a dictionary of {sample name:{ segment: ref_id}}
-    For example:
-    'WIN_CFIA_AIV_SAMPLE_96': {'1_PB2': 'MZ171357.1', '2_PB1': 'OQ733010.1', '3_PA': 'OP377327.1', '4_HA': 'OQ733004.1',
-                              '5_NP': 'OQ694923.1', '6_NA': 'OQ733005.1', '7_M': 'OQ733006.1', '8_NS': 'OQ694932.1'}
-    """
-
-    out = defaultdict(dict)
+def get_segments_ref_id(sample_top_references: list[SampleSegmentRef]) -> dict[str, dict[str, str]]:
+    """Get reference id for each segment of each sample"""
+    out: DefaultDict[str, Dict[str, str]] = defaultdict(dict)
     for items in sample_top_references:
         out[items.sample][items.segment] = items.ref_id
-    return out
+    return dict(out)
 
 
-def get_segments_ref_seq(
-        basedir: Path,
-        segments: List,
-        sample_top_references: SampleSegmentRef
-) -> Dict[str, Dict[str, str]]:
+def get_sample_segment_seqs(
+    basedir: Path,
+    sample_top_references: list[SampleSegmentRef],
+) -> dict[str, dict[str, str]]:
+    """Get sequence for each segment of each sample
+
+    This function assumes that the nf-flu pipeline was used, so the consensus sequence would have the filename format:
+    {sample}.Segment_{segment}.{ref_id}.bcftools.consensus.fasta
     """
-    Return a dictionary of {sample name:{ segment: ref_seq}}
-    For example:
-    'WIN_CFIA_AIV_SAMPLE_96': {'1_PB2': 'ACGCGCAGCAGCG', '2_PB1': 'ACGCGCAGCAGCGGC', '3_PA': 'ACGCGCAGCAGCG', '4_HA': 'ACGCGCAGCAGCG',
-                              '5_NP': 'ACGCGCAGCAGCG', '6_NA': 'ACGCGCAGCAGCG', '7_M': 'ACGCGCAGCAGCG', '8_NS': 'ACGCGCAGCAGCG'}
-    """
-    out = defaultdict(dict)
-    for items in sample_top_references:
-        segment = items.segment
-        ref_id = items.ref_id
-        sample = items.sample
-        ref_files = list(basedir.glob(f'**/reference_sequences/**/'
-                                      f'{sample}.Segment_{segment}.{ref_id}.*'))
-        if not ref_files:
-            logger.error(f'No Reference file found for sample "{sample}" and segment "{segment}" ({ref_id}).')
+    out: DefaultDict[str, Dict[str, str]] = defaultdict(dict)
+    # Find the most recently modified FASTA file for each sample for each segment
+    # Only do the glob search once rather than once for every sample and segment
+    filename_to_fasta_file = find_file_for_each_sample(
+        basedir,
+        glob_patterns=["**/*.fasta"],
+        sample_name_cleanup=[".reference", ".fasta"],
+        single_entry_selector_func=select_most_recent_file,
+    )
+    logger.info(f"Found {len(filename_to_fasta_file)} FASTA files in '{basedir}'")
+    for ssr in sample_top_references:
+        segment = ssr.segment
+        ref_id = ssr.ref_id
+        sample = ssr.sample
+        filename = f"{sample}.Segment_{segment}.{ref_id}"
+        fasta_file = filename_to_fasta_file.get(filename)
+        if not fasta_file:
+            logger.error(f'No FASTA file found for sample "{sample}" and segment "{segment}" ({ref_id}).')
             continue
-        ref_file = ref_files[0]
-        with open(ref_file) as handle:
+        with open(fasta_file) as handle:
             for _, seq in SimpleFastaParser(handle):
-                out[sample][segment] = str(seq)
+                out[sample][segment] = seq
+    if not out:
+        msg = "No FASTA files found for any sample and segment"
+        raise FileNotFoundError(msg)
+    return dict(out)
 
-    return out
 
-
-def get_segments_consensus_seq(
-        basedir: Path,
-        segments: List,
-        sample_top_references: Dict[str, pd.DataFrame]
-) -> Dict[str, Dict[str, str]]:
-    """
-    Return a dictionary of {sample name:{ segment: consensus_sequence}}
-    For example:
-    'WIN_CFIA_AIV_SAMPLE_96': {'1_PB2': 'ACGCGCAGCAGCG', '2_PB1': 'ACGCGCAGCAGCGGC', '3_PA': 'ACGCGCAGCAGCG', '4_HA': 'ACGCGCAGCAGCG',
-                              '5_NP': 'ACGCGCAGCAGCG', '6_NA': 'ACGCGCAGCAGCG', '7_M': 'ACGCGCAGCAGCG', '8_NS': 'ACGCGCAGCAGCG'}
-    """
-    out = defaultdict(dict)
-    for items in sample_top_references:
-        segment = items.segment
-        ref_id = items.ref_id
-        sample = items.sample
-        consensus_files = list(basedir.glob(f'**/consensus/bcftools/**/'
-                                            f'{sample}.Segment_{segment}.{ref_id}.*'))
-        if not consensus_files:
-            logger.error(f'No Consensus file found for sample "{sample}" and segment "{segment}" ({ref_id}).')
-            continue
-        consensus_file = consensus_files[0]
-        with open(consensus_file) as handle:
-            for _, seq in SimpleFastaParser(handle):
-                out[sample][segment] = str(seq)
-    return out
+TOP_REFERENCE_PATTERNS = [
+    "**/*.topsegments.csv",
+]

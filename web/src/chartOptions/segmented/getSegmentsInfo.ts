@@ -1,13 +1,13 @@
 import {FLU_SEGMENT_COLOURS} from "../../util";
 import {ECFeature, MaxSegmentLength, SegmentCoords, WgsCovPlotDB} from "../../db";
-import {isNil, omitBy} from "lodash";
+import {find, get, isNil, omitBy} from "lodash";
 
 
 export function getCustomXAxisLabel(value: number, segments: string[], segCoords: SegmentCoords): string {
-  for (let segment of segments) {
-    let {start, end} = segCoords[segment];
+  for (const segment of segments) {
+    const {start, end} = segCoords[segment];
     if (value >= start && value <= end) {
-      let pos = value - start + 1
+      const pos = value - start + 1
       return `${segment}:${pos.toLocaleString()}`;
     }
   }
@@ -15,16 +15,18 @@ export function getCustomXAxisLabel(value: number, segments: string[], segCoords
 }
 
 export const getMaxSegmentLength = (db: WgsCovPlotDB) => {
-  let out: MaxSegmentLength = {};
-  for (let segment of db.chartOptions.selectedSegments) {
+  const out: MaxSegmentLength = {};
+  const selectedSegments = db.chartOptions.selectedSegments;
+  if (isNil(selectedSegments)) {
+    return out;
+  }
+  for (const segment of selectedSegments) {
     let maxLength = 0;
-    for (let sample of db.chartOptions.selectedSamples) {
-      // @ts-ignore
-      if (!isNil(db.segments_ref_seq[sample][segment])) {
-        let length = db.segments_ref_seq[sample][segment].length;
-        if (maxLength <= length) {
-          maxLength = length;
-        }
+    for (const sample of db.chartOptions.selectedSamples) {
+      const segmentsRefSeq = db.segments_ref_seq;
+      const n = get(segmentsRefSeq, [sample, segment, "length"], 0);
+      if (n > maxLength) {
+        maxLength = n;
       }
     }
     out[segment] = maxLength;
@@ -32,20 +34,23 @@ export const getMaxSegmentLength = (db: WgsCovPlotDB) => {
   /*Sample may miss some segments in analysis, remove those segment
   Handel the case when user select only samples that miss some segments in analysis
    */
-  let filteredResults: MaxSegmentLength = omitBy(out, segLength => segLength === 0)
-  return filteredResults
+  return omitBy(out, segLength => segLength === 0);
 }
 
 export const getSegmentCoords = (db: WgsCovPlotDB): SegmentCoords => {
-  let out: SegmentCoords = {};
+  const out: SegmentCoords = {};
   let prev = {
     maxLength: 0,
     start: 0,
     end: 0,
   }
-  for (let segment of Object.keys(db.maxSegmentLength)) {
-    let maxLength = db.maxSegmentLength[segment];
-    let tempCoords = {
+  const maxSegmentLength = db.maxSegmentLength;
+  if (isNil(maxSegmentLength) || isNil(db.chartOptions.selectedSegments)) {
+    return out;
+  }
+  for (const segment of db.chartOptions.selectedSegments) {
+    const maxLength = maxSegmentLength[segment];
+    const tempCoords = {
       maxLength,
       start: prev.end + 1,
       end: prev.end + maxLength,
@@ -57,8 +62,13 @@ export const getSegmentCoords = (db: WgsCovPlotDB): SegmentCoords => {
 }
 
 export const whichSegment = (position: number, db: WgsCovPlotDB): string => {
-  for (let segment of Object.keys(db.segCoords)) {
-    let {start, end} = db.segCoords[segment];
+  const segCoords = db.segCoords;
+  const selectedSegments = db.chartOptions.selectedSegments;
+  if (isNil(segCoords) || isNil(selectedSegments) || selectedSegments.length === 0) {
+    return '';
+  }
+  for (const segment of selectedSegments) {
+    const {start, end} = segCoords[segment];
     if (position >= start && position <= end) {
       return segment
     }
@@ -67,10 +77,22 @@ export const whichSegment = (position: number, db: WgsCovPlotDB): string => {
 }
 
 export const getFluGeneFeature = (db: WgsCovPlotDB): ECFeature[] => {
-  let geneFeature: ECFeature[] = [];
+  const geneFeature: ECFeature[] = [];
   let i = 0
-  for (let segment of Object.keys(db.maxSegmentLength)) {
-    let {maxLength, start, end} = db.segCoords[segment];
+  const segmentLength = db.maxSegmentLength;
+  const segCoords = db.segCoords;
+  if (isNil(segmentLength) || isNil(segCoords) || isNil(db.chartOptions.selectedSegments)) {
+    return geneFeature;
+  }
+  for (const segment of db.chartOptions.selectedSegments) {
+    const {start, end} = segCoords[segment];
+    let color = get(FLU_SEGMENT_COLOURS, segment, "#000");
+    if (!isNil(db.echart_features)) {
+      const feature = find(db.echart_features, ["name", segment]);
+      if (!isNil(feature)) {
+        color = get(feature, ["itemStyle", "color"], get(FLU_SEGMENT_COLOURS, segment, "#000"));
+      }
+    }
     geneFeature.push({
       name: `${segment}`,
       value: {
@@ -83,8 +105,7 @@ export const getFluGeneFeature = (db: WgsCovPlotDB): ECFeature[] => {
         type: "segment",
       },
       itemStyle: {
-        // @ts-ignore
-        "color": FLU_SEGMENT_COLOURS[segment]
+        "color": color
       }
     });
     i += 1;

@@ -9,7 +9,7 @@ import {MutationOptionsPanel} from "./sidebar/MutationOptionsPanel";
 import {DisplayOptionsPanel} from "./sidebar/DisplayOptionsPanel";
 import {SegmentSelect} from "./sidebar/SegmentSelect";
 import {CollapseSidebarButton} from "./sidebar/CollapseSidebarButton";
-
+import {ColourOptionsPanel} from "./sidebar/ColourOptionsPanel";
 
 export const Sidebar: Component = () => {
   return <aside
@@ -27,6 +27,7 @@ export const Sidebar: Component = () => {
         </Show>
         <TooltipOptionsPanel/>
         <DisplayOptionsPanel/>
+        <ColourOptionsPanel/>
       </div>
     </div>
   </aside>

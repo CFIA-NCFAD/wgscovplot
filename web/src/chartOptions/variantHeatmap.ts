@@ -1,40 +1,31 @@
 import {toTableHtml} from "../util";
 import {filter, find, isEmpty, isNil, map, orderBy, union, uniq} from "lodash";
 
-import {SampleVariantCalls, WgsCovPlotDB} from "../db";
+import {WgsCovPlotDB} from "../db";
 
-/**
- * Get tooltip for variant heatmap
- * @param {Array<string>} samples - Sample names
- * @param {Array<string>} mutations - Mutation names
- * @param {SampleVariantCalls} variants - Object of sample name to variant calls
- * @returns {Object}
- */
-const getTooltipHeatmap = (dataSamples: string[], mutations: any[], db: WgsCovPlotDB) => {
-
+// eslint-disable-next-line
+function getTooltipHeatmap(dataSamples: string[], mutations: any[], db: WgsCovPlotDB) {
   return {
     enterable: true,
     appendToBody: true,
     renderMode: "html",
     showContent: true,
     confine: true,
-    // @ts-ignore
-    formatter: function ({value}) {
+    formatter: function (arg: { value: never[] | undefined }) {
       let output = "";
       let mutation = "";
       let sample = "";
       // values may be undefined when mouse move and zoom/in out heat map (causing error log)
+      const value = arg.value;
       if (!isNil(value)) {
         mutation = mutations[value[0]];
         sample = dataSamples[value[1]];
       }
       let rows: string[][] = [];
-      // @ts-ignore
-      let sampleVariants = db.variants[sample];
+      const sampleVariants = db.variants[sample];
       if (!isNil(sampleVariants)) {
-        let variantOfInterest = find(Object.values(sampleVariants), {mutation});
+        const variantOfInterest: object | undefined = find(Object.values(sampleVariants), {mutation});
         if (!isNil(variantOfInterest)) {
-          // @ts-ignore
           rows = [...Object.entries(variantOfInterest)];
         }
         if (!isEmpty(rows)) {
@@ -53,27 +44,21 @@ const getTooltipHeatmap = (dataSamples: string[], mutations: any[], db: WgsCovPl
   }
 }
 
-/**
- * Prepare data for Variant heatmap
- * @param {Array<string>} samples - An array of samples name
- * @param {SampleVariantCalls} variants - The object of variants data
- * @returns {[string[], Array<[number, number, number]>]} - Tuple of mutation names array and array of mutation AF values for heatmap
- */
 function getMutationMatrix(db: WgsCovPlotDB) {
-  let sampleVariants: any = [];
+  // eslint-disable-next-line
+  let sampleVariants: any[] = [];
   db.chartOptions.selectedSamples.forEach(sample => {
-    // @ts-ignore
-    let variantCalls = db.variants[sample]
+    const variantCalls = db.variants[sample]
     sampleVariants = union(sampleVariants, filter(variantCalls, "mutation"));
   });
   sampleVariants = orderBy(sampleVariants, "POS", "asc");
-  let mutations = uniq(map(sampleVariants, "mutation"));
-  let altFreqMatrix = [];
+  const mutations = uniq(map(sampleVariants, "mutation"));
+  const altFreqMatrix = [];
   for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
-    let sample = db.chartOptions.selectedSamples[i];
+    const sample = db.chartOptions.selectedSamples[i];
     for (let j = 0; j < mutations.length; j++) {
-      let mutation = mutations[j];
-      let foundObj = find(sampleVariants, {sample, mutation});
+      const mutation = mutations[j];
+      const foundObj = find(sampleVariants, {sample, mutation});
       altFreqMatrix.push([
         j,
         db.chartOptions.selectedSamples.length - 1 - i,
@@ -106,11 +91,10 @@ function getMutationMatrix(db: WgsCovPlotDB) {
  2: {sample: 'SRR17230671', CHROM: 'MN908947.3', mutation: 'C3037T(orf1ab:F924F)', POS: 3037, REF: 'C', …}
  */
 export function getVariantHeatmapOption(db: WgsCovPlotDB) {
-
-  let [mutations, matrix]: any[][] = getMutationMatrix(db);
-  let dataSamples = [...db.chartOptions.selectedSamples].reverse();
-  let opts;
-  opts = {
+  // eslint-disable-next-line
+  const [mutations, matrix]: any[][] = getMutationMatrix(db);
+  const dataSamples = [...db.chartOptions.selectedSamples].reverse();
+  return {
     xAxis: {
       type: "category",
       data: mutations,
@@ -148,12 +132,14 @@ export function getVariantHeatmapOption(db: WgsCovPlotDB) {
       top: "5%",
       inRange: {
         color: [
-          "#a50026",
-          "#f46d43",
-          "#fdae61",
-          "#fee08b",
-          "#f7ff00",
-          "#006837"
+          "#ffffe5",
+          "#f7fcb9",
+          "#d9f0a3",
+          "#addd8e",
+          "#78c679",
+          "#41ab5d",
+          "#238443",
+          "#005a32",
         ]
       }
     },
@@ -190,5 +176,4 @@ export function getVariantHeatmapOption(db: WgsCovPlotDB) {
       top: "5%"
     }
   };
-  return opts;
 }

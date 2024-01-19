@@ -1,22 +1,35 @@
 import {whichSegment} from "./getSegmentsInfo";
 import {find} from "lodash";
 import {get, isNil} from "lodash";
-import {SegmentCoords, WgsCovPlotDB} from "../../db";
+import {SegmentCoords, VariantCall, WgsCovPlotDB} from "../../db";
 import {ECColorArg} from "../../db";
 import {state} from "../../state";
 
-const segmentSeparatorLines = (segments: string[], segCoords: SegmentCoords): {} => {
-
-  let data = [];
+function segmentSeparatorLines(
+  segments: string[] | undefined,
+  segCoords: SegmentCoords | undefined
+) {
+  if (isNil(segments) || segments.length === 0) {
+    return {};
+  }
+  if (isNil(segCoords)) {
+    return {};
+  }
+  const data = [];
   for (let i = 0; i < segments.length; i++) {
-    let segment = segments[i];
+    const segment = segments[i];
+    const start = get(segCoords, [segment, "start"], Number.MAX_VALUE);
+    const end = get(segCoords, [segment, "end"], Number.MAX_VALUE);
+    if (start === Number.MAX_VALUE || end === Number.MAX_VALUE) {
+      return {};
+    }
     if (i === 0) {
-      data.push({xAxis: segCoords[segment].end});
+      data.push({xAxis: end});
     } else if (i === segments.length - 1) {
-      data.push({xAxis: segCoords[segment].start});
+      data.push({xAxis: start});
     } else {
-      data.push({xAxis: segCoords[segment].start});
-      data.push({xAxis: segCoords[segment].end});
+      data.push({xAxis: start});
+      data.push({xAxis: end});
     }
   }
   return {
@@ -36,43 +49,63 @@ const segmentSeparatorLines = (segments: string[], segCoords: SegmentCoords): {}
 }
 
 export function getSegmentVariantSeries(db: WgsCovPlotDB) {
-  let variantSeries = [];
-  let pos;
-  let segments = Object.keys(db.segCoords) // trigger only segCoords is updated from get Dataset
+  const variantSeries: object[] = [];
+  let pos: number;
+  const segCoords = db.segCoords;
+  const segments = db.chartOptions.selectedSegments;
+  if (isNil(segCoords) || isNil(segments) || segments.length === 0) {
+    return variantSeries;
+  }
   for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
-    let data = [];
-    let sample = db.chartOptions.selectedSamples[i];
-    for (let segment of segments) {
-      // @ts-ignore
-      let vars = db.variants[sample][segment];
+    const data = [];
+    const sample = db.chartOptions.selectedSamples[i];
+    for (const segment of segments) {
+      const vars: undefined | VariantCall[]  = get(db, ["variants", sample, segment]);
       if (!isNil(vars)) {
-        for (let [k, varMap] of vars.entries()) {
-          pos = parseInt(varMap.POS);
+        for (const varMap of vars.values()) {
+          if (typeof varMap.POS === "string") {
+            pos = parseInt(varMap.POS);
+          } else {
+            pos = varMap.POS
+          }
+          const depth = get(db, ["depths", sample, segment, pos - 1], 1E-7);
+          const start = get(segCoords, [segment, 'start'], Number.MAX_VALUE);
+          if (start === Number.MAX_VALUE) {
+            continue;
+          }
           data.push(
             [
-              // @ts-ignore
-              pos + db.segCoords[segment].start - 1, db.depths[sample][segment][pos - 1]
+              pos + start - 1, depth
             ]);
         }
       } else {
         data.push([]);
       }
     }
+    const separatorLines = segmentSeparatorLines(db.chartOptions.selectedSegments, segCoords);
     variantSeries.push({
       type: "bar",
       xAxisIndex: i,
       yAxisIndex: i,
       data: data,
-      barWidth: 2,
+      animation: false,
+      barWidth: db.chartOptions.variantBarWidth,
       itemStyle: {
         color: function (arg: ECColorArg) {
-          let pos = arg.data[0];
+          const pos = arg.data[0];
           const segment = whichSegment(pos, db)
-          if (!isNil(db.segCoords[segment]) && !isNil(db.segments_ref_seq[sample][segment])) {
-            const seqPosition = pos - db.segCoords[segment].start;
-            const nt = db.segments_ref_seq[sample][segment][seqPosition];
-            return get(state.chartOptions.ntColor, nt, "#333");
+          const start = get(segCoords, [segment, 'start'], Number.MAX_VALUE);
+          const seqPosition = pos - start + 1;
+          const variants = get(db, ['variants', sample, segment], null);
+          if (isNil(variants)) {
+            return "#333";
           }
+          const variant = find(variants, ["POS", seqPosition]);
+          if (isNil(variant)) {
+            return "#333";
+          }
+          const nt = variant.ALT_SEQ;
+          return get(state.chartOptions.ntColor, nt, "#333");
         }
       },
       label: {
@@ -84,11 +117,11 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
         color: "inherit",
         rotate: db.chartOptions.variantLabelsRotation,
         formatter: function (arg: ECColorArg) {
-          let pos = arg.data[0];
-          let segment = whichSegment(pos, db);
-          let seqPosition = pos - db.segCoords[segment].start + 1;
-          // @ts-ignore
-          let variant = find(db.variants[sample][segment], {POS: seqPosition}, 0);
+          const pos = arg.data[0];
+          const segment = whichSegment(pos, db);
+          const start = get(segCoords, [segment, 'start'], Number.MAX_VALUE);
+          const seqPosition = pos - start + 1;
+          const variant = find(get(db.variants, [sample, segment]), {POS: seqPosition}, 0);
           if (!isNil(variant)) {
             const {REF_SEQ, POS, ALT_SEQ} = variant;
             return `${REF_SEQ}${POS}${ALT_SEQ}`;
@@ -99,7 +132,7 @@ export function getSegmentVariantSeries(db: WgsCovPlotDB) {
       labelLayout: {
         hideOverlap: db.chartOptions.hideOverlappingVariantLabels
       },
-      markLine: segmentSeparatorLines(segments, db.segCoords),
+      markLine: separatorLines,
       large: true,
       tooltip: {
         trigger: db.tooltipOptions.showTooltip ? "axis" : "none"

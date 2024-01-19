@@ -15,6 +15,13 @@ export const MutationOptionsPanel: Component = () => {
     </div>
     <Show when={state.chartOptions.showVariants} keyed>
       <div class="mt-2">
+        <label class="ml-1" for="variant-bar-width">Variant bar width</label>
+        <HelpIcon helpMsg="Set width of variant bars in the subplots."/>
+        <input type="number" id="variant-bar-width" class="w-1/6 ml-3 border border-gray-300 rounded px-1"
+               value={state.chartOptions.variantBarWidth} step="0.1"
+               onChange={(e) => setState("chartOptions", "variantBarWidth", parseFloat(e.currentTarget.value))}/>
+      </div>
+      <div class="mt-2">
         <input type="checkbox" id="show-mutation-labels" class="hover:ring h-4 w-4 form-check"
                checked={state.chartOptions.showVariantLabels}
                onChange={(e) => setState("chartOptions", "showVariantLabels", e.currentTarget.checked)}/>
@@ -33,7 +40,7 @@ export const MutationOptionsPanel: Component = () => {
           <label for="subplot-title-font-size">Variant labels rotation angle</label>
           <HelpIcon helpMsg="Set rotation angle for variant labels"/>
           <input id="subplot-title-font-size" class="w-1/6 ml-3 border border-gray-300 rounded px-1"
-                 type="number" min="-180" step="2" value={state.chartOptions.variantLabelsRotation}
+                 type="number" min="-180" step="1" value={state.chartOptions.variantLabelsRotation}
                  onChange={(e) => setState("chartOptions", "variantLabelsRotation", parseFloat(e.currentTarget.value))}/>
         </div>
       </Show>

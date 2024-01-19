@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
-
 """Console script."""
 import logging
-import typer
 from pathlib import Path
-from typing import Optional
-from rich.logging import RichHandler
 from sys import version_info
+from typing import Optional
+
+import typer
+from rich.logging import RichHandler
+
+from wgscovplot.__about__ import __version__
 from wgscovplot.wgscovplot import run
-from wgscovplot import __version__
 
 app = typer.Typer()
 logger = logging.getLogger(__name__)
@@ -23,40 +23,47 @@ def version_callback(value: bool):
 
 def check_dir_exists_callback(path: Path) -> Path:
     if not (path.exists() or path.is_dir()):
-        raise typer.BadParameter(f'An existing Nextflow workflow results directory must be specified! '
-                                 f'"{path}" does not exist or is not a directory!')
+        msg = (
+            f"An existing Nextflow workflow results directory must be specified! '{path}' does not exist or is not a"
+            " directory!"
+        )
+        raise typer.BadParameter(msg)
     return path
 
 
-@app.command(
-    epilog=VERSION
-)
+@app.command(epilog=VERSION)
 def main(
-        input_dir: Path = typer.Argument(...,
-                                         callback=check_dir_exists_callback,
-                                         help="Directory containing Mosdepth and variant calling results from "
-                                              "sequence analysis. For example, the output directory from execution of "
-                                              "the nf-core/viralrecon or CFIA-NCFAD/nf-flu Nextflow workflow"),
-        output_html: Path = typer.Option("wgscovplot.html", help="wgscovplot HTML output file"),
-        primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
-        low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
-        edit_distance: int = typer.Option(default=0,
-                                          help="The maximum differences or 'edits' allowed between real-time "
-                                               "PCR primer/probe sequences and the sample sequences."),
-        verbose: bool = typer.Option(default=False, help="Verbose logs"),
-        version: Optional[bool] = typer.Option(None,
-                                               callback=version_callback,
-                                               help=f'Print {"wgscovplot version"} and exit')
+    input_dir: Path = typer.Argument(
+        ...,
+        callback=check_dir_exists_callback,
+        help="Directory containing Mosdepth and variant calling results from "
+        "sequence analysis. For example, the output directory from execution of "
+        "the nf-core/viralrecon or CFIA-NCFAD/nf-flu Nextflow workflow",
+    ),
+    output_html: Path = typer.Option("wgscovplot.html", "-o", "--output-html", help="wgscovplot HTML output file"),
+    primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
+    low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
+    edit_distance: int = typer.Option(
+        default=0,
+        help="The maximum differences or 'edits' allowed between real-time "
+        "PCR primer/probe sequences and the sample sequences.",
+    ),
+    compress_depths: bool = typer.Option(default=True, is_flag=True, help="Compress coverage depth arrays?"),
+    verbose: bool = typer.Option(default=False, help="Verbose logs"),
+    version: Optional[bool] = typer.Option(  # noqa: ARG001
+        None, callback=version_callback, help=f'Print {"wgscovplot version"} and exit'
+    ),
 ):
     init_logging(verbose)
     logger.info(VERSION)
-    logger.info(f'{input_dir=}')
-    logger.info(f'{output_html=}')
-    run(input_dir, low_coverage_threshold, primers_fasta, edit_distance, output_html)
+    logger.info(f"{input_dir=}")
+    logger.info(f"{output_html=}")
+    run(input_dir, low_coverage_threshold, primers_fasta, edit_distance, output_html, compress_depths)
 
 
 def init_logging(verbose):
     from rich.traceback import install
+
     install(show_locals=True)
     logging.basicConfig(
         format="%(message)s",

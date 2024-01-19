@@ -1,92 +1,73 @@
-import {Component, For} from "solid-js";
+import {Component} from "solid-js";
 import {state} from "../state";
-import {isNil} from "lodash";
+import {isNil, get} from "lodash";
+import {MosdepthInfo, SampleMosdepthInfo, SampleSegmentMosdepthInfo} from "../db";
+import {TooltipTable} from "./components/TooltipTable";
 
-function orderRow(obj: any) {
-  let row = Object.keys(obj).map((key) => [key, obj[key]]);
-  let sortedRow: any[][];
-  if (isNil(state.segments)) {
-    let cols = ["sample", "n_zero_coverage", "zero_coverage_coords", "n_low_coverage",
-      "low_coverage_coords", "genome_coverage", "low_coverage_threshold", "mean_coverage", "median_coverage", "ref_seq_length", "max_depth"]
-    sortedRow = row.sort((a, b) => cols.indexOf(a[0]) - cols.indexOf(b[0]))
-  } else {
-    let cols = ["sample", "segment", "n_zero_coverage", "zero_coverage_coords", "n_low_coverage",
-      "low_coverage_coords", "genome_coverage", "low_coverage_threshold", "mean_coverage", "median_coverage", "ref_seq_length", "max_depth"]
-    sortedRow = row.sort((a, b) => cols.indexOf(a[0]) - cols.indexOf(b[0]))
+const COLUMNS = [
+  ["n_zero_coverage", "# 0X Coverage Positions", "integer"],
+  ["zero_coverage_coords", "0X Coverage Regions", "string"],
+  ["low_coverage_threshold", "Low Coverage Threshold (X)", "integer"],
+  ["n_low_coverage", "Low Coverage Positions", "integer"],
+  ["low_coverage_coords", "Low Coverage Regions", "string"],
+  ["genome_coverage", "Genome Coverage (%)", "percent"],
+  ["mean_coverage", "Mean Coverage Depth (X)", "float"],
+  ["median_coverage", "Median Coverage Depth (X)", "integer"],
+  ["ref_seq_length", "Ref Sequence Length (bp)", "integer"],
+  ["max_depth", "Max Depth (X)", "integer"],
+]
+
+
+function buildRow(depthInfo: MosdepthInfo, row: string[]) {
+  for (const [field, , dtype] of COLUMNS) {
+    let val = get(depthInfo, field, "");
+    if (dtype === "integer") {
+      val = parseInt(val).toLocaleString();
+    } else if (dtype === "float") {
+      val = parseFloat(val).toFixed(2);
+    } else if (dtype === "percent") {
+      val = (parseFloat(val) * 100).toFixed(2) + "%";
+    }
+    row.push(val);
   }
-  return sortedRow
 }
 
 export const SummaryInfoPage: Component = () => {
+  let headers: string[];
+  const rows: string[][] = [];
+
   if (isNil(state.segments)) {
-    return (
-      <div class="w-full">
-        <table class="min-w-full text-left text-sm font-light">
-          <thead class="border-b bg-white font-medium dark:border-neutral-500 dark:bg-neutral-600">
-          <tr>
-            <th scope="col" class="px-6 py-4">Sample</th>
-            <th scope="col" class="px-6 py-4"># 0 Coverage Positions</th>
-            <th scope="col" class="px-6 py-4">0 Coverage Regions</th>
-            <th scope="col" class="px-6 py-4"># Low Coverage Positions</th>
-            <th scope="col" class="px-6 py-4">Low Coverage Regions</th>
-            <th scope="col" class="px-6 py-4">% Genome Coverage</th>
-            <th scope="col" class="px-6 py-4">Low Coverage Threshold</th>
-            <th scope="col" class="px-6 py-4">Mean Coverage Depth (X)</th>
-            <th scope="col" class="px-6 py-4">Median Coverage Depth (X)</th>
-            <th scope="col" class="px-6 py-4">Ref Sequence Length (bp)</th>
-            <th scope="col" class="px-6 py-4">Max Depth (X)</th>
-          </tr>
-          </thead>
-          <tbody>
-          <For each={Object.values(state.mosdepth_info)}>{
-            (item, i) =>
-              <tr>
-                <For each={orderRow(item)}>{
-                  (ele, j) =>
-                    <td class="px-6 py-4">{ele[1]}</td>
-                }</For>
-              </tr>
-          }</For>
-          </tbody>
-        </table>
-      </div>
-    );
+    const sampleMosdepthInfos = state.mosdepth_info as SampleMosdepthInfo;
+    if (isNil(sampleMosdepthInfos)) {
+      return null;
+    }
+    headers = ["Sample", ...COLUMNS.map(([, y]) => y)];
+    for (const [sample, depthInfo] of Object.entries(sampleMosdepthInfos)) {
+      const row: string[] = [sample];
+      buildRow(depthInfo, row);
+      rows.push(row);
+    }
   } else {
-    return (
+    const sampleSegDepthInfos = state.mosdepth_info as SampleSegmentMosdepthInfo;
+    if (isNil(sampleSegDepthInfos)) {
+      return null;
+    }
+    headers = [
+      "Sample",
+      "Segment",
+      ...COLUMNS.map(([, y]) => y)
+    ];
+    for (const [sample, segDepthInfo] of Object.entries(sampleSegDepthInfos)) {
+      for (const [segment, depthInfo] of Object.entries(segDepthInfo)) {
+        const row: string[] = [sample, segment];
+        buildRow(depthInfo, row);
+        rows.push(row);
+      }
+    }
+  }
+  return (
       <div class="w-full">
-        <table class="min-w-full text-left text-sm font-light">
-          <thead class="border-b bg-white font-medium dark:border-neutral-500 dark:bg-neutral-600">
-          <tr>
-            <th scope="col" class="px-6 py-4">Sample</th>
-            <th scope="col" class="px-6 py-4">Segment</th>
-            <th scope="col" class="px-6 py-4"># 0 Coverage Positions</th>
-            <th scope="col" class="px-6 py-4">0 Coverage Regions</th>
-            <th scope="col" class="px-6 py-4"># Low Coverage Positions</th>
-            <th scope="col" class="px-6 py-4">Low Coverage Regions</th>
-            <th scope="col" class="px-6 py-4">% Genome Coverage</th>
-            <th scope="col" class="px-6 py-4">Low Coverage Threshold</th>
-            <th scope="col" class="px-6 py-4">Mean Coverage Depth (X)</th>
-            <th scope="col" class="px-6 py-4">Median Coverage Depth (X)</th>
-            <th scope="col" class="px-6 py-4">Ref Sequence Length (bp)</th>
-            <th scope="col" class="px-6 py-4">Max Depth (X)</th>
-          </tr>
-          </thead>
-          <tbody>
-          <For each={Object.values(state.mosdepth_info)}>{
-            (item, i) =>
-              <For each={Object.values(item)}>{
-                (item1, j) =>
-                  <tr>
-                    <For each={orderRow(item1)}>{
-                      (ele, k) =>
-                        <td class="px-6 py-4">{ele[1]}</td>
-                    }</For>
-                  </tr>
-              }</For>
-          }</For>
-          </tbody>
-        </table>
+        <TooltipTable headers={headers} rows={rows}/>
       </div>
     );
-  }
 }

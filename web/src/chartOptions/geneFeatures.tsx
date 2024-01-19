@@ -1,24 +1,37 @@
 import {ECFeature, ECFormatterFeature, WgsCovPlotDB} from "../db";
 import {getTextWidth, hexToHSL, shapePoints} from "../util";
 import {graphic} from "echarts/core";
-import {isEmpty, isNil} from "lodash";
+import {get, isEmpty, isNil} from "lodash";
+
+interface EChartsParams {
+  dataIndex: number;
+  coordSys: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
+
+interface EChartsRenderItemAPI {
+  // eslint-disable-next-line
+  coord: (arg0: any[]) => [any, any] | [any];
+  // eslint-disable-next-line
+  style: () => any;
+}
 
 function getGeneFeatureRenderer(db: WgsCovPlotDB) {
   let yStart = 0;
 
-  function renderGeneFeatures(params: { dataIndex: any; coordSys: any; }, api: {
-    coord: (arg0: any[]) => [any, any] | [any];
-    style: () => any;
-  }) {
+  function renderGeneFeatures(params: EChartsParams, api: EChartsRenderItemAPI) {
     const {
       dataIndex,
       coordSys,
     } = params;
-    if (db.echart_features === undefined) {
+    const feature: ECFeature | undefined = get(db, ["echart_features", dataIndex]);
+    if (isNil(feature)) {
       return null;
     }
-    const feature: ECFeature = db.echart_features[dataIndex];
-
     const leftCoord = coordSys.x;
     const rightCoord = coordSys.width + coordSys.x;
     const [startX, startY] = api.coord([feature.value.start, dataIndex]);
@@ -26,7 +39,7 @@ function getGeneFeatureRenderer(db: WgsCovPlotDB) {
       yStart = startY;
     }
     const [endX] = api.coord([feature.value.end, dataIndex]);
-    const height = db.chartOptions.geneLabelTextSize + 3;
+    const height = db.chartOptions.geneLabelTextSize + 6;
     const width = endX - startX;
     const y = yStart - height / 2 - feature.value.level;
     const points = shapePoints(startX, y, width, height, feature.value.strand, feature.value.type);
@@ -92,15 +105,16 @@ function getGeneFeatureRenderer(db: WgsCovPlotDB) {
           invisible: invisible,
           style: {
             text: feature.name,
-            fill: feature.itemStyle.color,
+            stroke: feature.itemStyle.color,
+            lineWidth: 1,
             fontStyle: "normal",
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: "bolder",
           },
         },
         textConfig: {
-          position: "top",
-          distance: 18,
+          position: "inside",
+          distance: 0,
           rotation: db.chartOptions.geneLabelRotation,
           origin: "center",
           local: true,
@@ -115,10 +129,11 @@ function getGeneFeatureRenderer(db: WgsCovPlotDB) {
 }
 
 export const getGeneFeatureSeries = (db: WgsCovPlotDB) => {
-  let index = db.chartOptions.selectedSamples.length;
+  const index = db.chartOptions.selectedSamples.length;
   return {
     type: "custom",
     animation: false,
+    silent: false,
     xAxisIndex: index,
     yAxisIndex: index,
     renderItem: getGeneFeatureRenderer(db),
@@ -128,7 +143,7 @@ export const getGeneFeatureSeries = (db: WgsCovPlotDB) => {
     data: db.echart_features,
     tooltip: {
       trigger: "item",
-      show: db.tooltipOptions.showTooltip,
+      show: true,
       enterable: true,
       appendToBody: true,
       triggerOn: "mousemove",
@@ -155,6 +170,9 @@ export const getGeneFeatureSeries = (db: WgsCovPlotDB) => {
                       "color": /*@once*/ feature.color !== undefined ? (hexToHSL(feature.color).l > 50 ? "black" : "white") : "#fff",
                     }}
                     onClick={(e) => {
+                      if (isNil(db.ref_seq)) {
+                        return;
+                      }
                       const seq = db.ref_seq.slice(feature.value.start - 1, feature.value.end);
                       // TODO: add reference ID/name to header; need to make sure that it is exported from the backend
                       const header = `>REFID|${feature.value.start}-${feature.value.end} ${feature.name}`;
@@ -175,11 +193,11 @@ export const getGeneFeatureSeries = (db: WgsCovPlotDB) => {
 }
 
 export function getRegionAmpliconDepthRenderer(db: WgsCovPlotDB) {
-  // @ts-ignore
-  function renderRegionAmpliconDepth({coordSys}, api) {
-    let [startX, startY] = api.coord([api.value(0), api.value(2)]);
-    let [endX, endY] = api.coord([api.value(1), 1]);
-    let rectShape = graphic.clipRectByRect(
+  // eslint-disable-next-line
+  function renderRegionAmpliconDepth({coordSys}: {coordSys: any}, api: any) {
+    const [startX, startY] = api.coord([api.value(0), api.value(2)]);
+    const [endX, endY] = api.coord([api.value(1), 1]);
+    const rectShape = graphic.clipRectByRect(
       {
         x: startX,
         y: startY,
@@ -200,10 +218,11 @@ export function getRegionAmpliconDepthRenderer(db: WgsCovPlotDB) {
 }
 
 export function getRegionAmpliconDepthSeries(db: WgsCovPlotDB) {
-  let ampliconDepthSeries: any[] = [];
+  // eslint-disable-next-line
+  const ampliconDepthSeries: any[] = [];
   if (isEmpty(db.amplicon_depths))
     return ampliconDepthSeries;
-  for (let [i, sample] of db.chartOptions.selectedSamples.entries()) {
+  for (const [i, sample] of db.chartOptions.selectedSamples.entries()) {
     ampliconDepthSeries.push({
       type: "custom",
       xAxisIndex: i,

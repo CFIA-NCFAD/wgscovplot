@@ -1,5 +1,5 @@
 import {Component} from "solid-js";
-import {isNil} from "lodash";
+import {isEmpty, isNil} from "lodash";
 import {setState, state} from "../../state";
 import {createOptions, Select} from "@thisbeyond/solid-select";
 import {HelpIcon} from "../components/HelpIcon";
@@ -7,7 +7,10 @@ import {HelpIcon} from "../components/HelpIcon";
 export const SegmentSelect: Component = () => {
   if (isNil(state.segments)) return null;
   const selectProps = createOptions(state.segments, {
-    disable: (value) => state.chartOptions.selectedSegments !== undefined ? state.chartOptions.selectedSegments.includes(value) : false
+    disable: (value) => {
+      if (isNil(state.chartOptions.selectedSegments) || isEmpty(state.chartOptions.selectedSegments)) return false;
+      return state.chartOptions.selectedSegments.includes(value);
+    }
   });
 
   return <div class="mb-3">

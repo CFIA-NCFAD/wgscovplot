@@ -8,7 +8,7 @@ import {HelpIcon} from "../components/HelpIcon";
 import {isEmpty, isNil} from "lodash";
 import {SelectEChartsRenderer} from "./SelectEChartsRenderer";
 import {ChartDarkModeToggle} from "./ChartDarkModeToggle";
-import {NuclColourSelect} from "./NuclColourSelect";
+
 
 export const DisplayOptionsPanel: Component = () => {
   return (
@@ -63,7 +63,8 @@ export const DisplayOptionsPanel: Component = () => {
           <input type="checkbox" id="show-amplicons" class="hover:ring h-4 w-4 form-check"
                  checked={state.show_amplicons}
                  onChange={(e) => setState("show_amplicons", e.currentTarget.checked)}/>
-          <label class="ml-1" for="show-amplicons">Show Amplicon Depths</label>
+          <label class="ml-1" for="show-amplicons">Show amplicons</label>
+          <HelpIcon helpMsg="Show depth of coverage for each amplicon."/>
         </div>
       </Show>
       <Show when={!isEmpty(state.primer_matches)}>
@@ -71,7 +72,8 @@ export const DisplayOptionsPanel: Component = () => {
           <input type="checkbox" id="show-primer-matches" class="hover:ring h-4 w-4 form-check"
                  checked={state.show_primer_matches}
                  onChange={(e) => setState("show_primer_matches", e.currentTarget.checked)}/>
-          <label class="ml-1" for="show-primer-matches">Show Primer Matches</label>
+          <label class="ml-1" for="show-primer-matches">Show rtPCR probe and primer binding sites</label>
+          <HelpIcon helpMsg="Show the locations of the rtPCR probe and primer binding sites."/>
         </div>
       </Show>
       <div class="mt-2">
@@ -79,6 +81,7 @@ export const DisplayOptionsPanel: Component = () => {
                checked={state.chartOptions.showFeatures}
                onChange={(e) => setState("chartOptions", "showFeatures", e.currentTarget.checked)}/>
         <label class="ml-1" for="show-features">Show features</label>
+        <HelpIcon helpMsg="Show features below the coverage subplots."/>
       </div>
       <Show when={state.chartOptions.showFeatures && isNil(state.segments)}>
         <div class="mt-2">
@@ -107,7 +110,6 @@ export const DisplayOptionsPanel: Component = () => {
       </Show>
       <SelectEChartsRenderer/>
       <ChartDarkModeToggle/>
-      <NuclColourSelect/>
     </CollapsiblePanel>
   );
 }

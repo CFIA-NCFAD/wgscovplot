@@ -31,7 +31,46 @@ export const TooltipOptionsPanel: Component = () => {
           <label class="ml-1" for="show-tooltips-variant-sites-only">Show tooltips only for variant sites?</label>
           <HelpIcon helpMsg="Show a tooltip only for variant sites (i.e. sites with a non-reference allele)."/>
         </div>
+        <div class="mt-2">
+          <label for="tooltip-top-position">Tooltip top position</label>
+          <HelpIcon helpMsg="Set the top position of the tooltip."/>
+          <input id="tooltip-top-position" class="w-1/6 ml-3 border border-gray-300 rounded px-1"
+                 type="number" min="0" step="1" value={state.tooltipOptions.top}
+                 onChange={(e) => setState("tooltipOptions", "top", parseFloat(e.currentTarget.value))}/>
+        </div>
+        <div class="mt-2">
+          <label for="tooltip-left-position">Tooltip left position</label>
+          <HelpIcon helpMsg="Set the left position of the tooltip."/>
+          <input id="tooltip-left-position" class="w-1/6 ml-3 border border-gray-300 rounded px-1"
+                 type="number" min="0" step="1" value={state.tooltipOptions.left}
+                 onChange={(e) => setState("tooltipOptions", "left", parseFloat(e.currentTarget.value))}/>
+        </div>
+        <div class="mt-2">
+          <button class="btn rounded
+          dark:bg-slate-900
+          dark:hover:bg-slate-700
+          hover:bg-gray-200
+          bg-slate-300
+          text-gray-900
+          dark:text-gray-100
+          p-1"
+            onClick={() => {
+            // get height and width of screen
+            const height = window.innerHeight;
+            const width = window.innerWidth;
+            // set tooltip position to top middle of screen
+            setState("tooltipOptions", "top", height * 0.1);
+            setState("tooltipOptions", "left", width * 0.5);
+          }}>
+            Reset tooltip position
+          </button>
+        </div>
       </Show>
+      <code class="text-xs">
+        x,y: {state.tooltipOptions.x},{state.tooltipOptions.y}
+        <br/>
+        top,left: {state.tooltipOptions.top},{state.tooltipOptions.left}
+      </code>
     </CollapsiblePanel>
   );
 }

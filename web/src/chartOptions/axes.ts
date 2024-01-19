@@ -5,16 +5,18 @@ import {FEATURE_PLOT_PROPS} from "../util";
 
 
 export const getXAxes = (db: WgsCovPlotDB) => {
-  let formatter: any = {};
-  if (!isNil(db.segments)) {
-    let segments = Object.keys(db.segCoords)
+  // eslint-disable-next-line
+  const formatter: any = {};
+  if (!isNil(db.segCoords)) {
+    const segments = Object.keys(db.segCoords)
     if (segments.length > 0) {
+      // eslint-disable-next-line
       formatter.formatter = function (value: any) {
         return getCustomXAxisLabel(value, segments, db.segCoords as SegmentCoords)
       }
     }
   }
-  let axes = [];
+  const axes = [];
   for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
     axes.push({
       type: "value",
@@ -45,8 +47,8 @@ export const getXAxes = (db: WgsCovPlotDB) => {
 }
 
 export const getYAxes = (db: WgsCovPlotDB) => {
-  let axes = [];
-  for (let [i, sample] of db.chartOptions.selectedSamples.entries()) {
+  const axes = [];
+  for (const [i, sample] of db.chartOptions.selectedSamples.entries()) {
     axes.push({
       type: db.chartOptions.scaleType,
       gridIndex: i,

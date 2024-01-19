@@ -13,13 +13,13 @@ export const getGrids = (db: WgsCovPlotDB) => {
   // TODO: find out what doubleStrand is
   featureHeight = (db.doubleStrand && featureHeight > 0) ? (featureHeight + 6.0) : featureHeight;
   featureHeight *= (db.chartOptions.featurePlotHeightScaling / 100);
-  let padTop = db.chartOptions.padTop;
-  let plotHeight = (db.chartOptions.showDataZoomSlider) ? 90 : 95;
-  let subPlotHeight = plotHeight - featureHeight;
-  let grids = [];
-  let nSamples = db.chartOptions.selectedSamples.length;
-  let heightOffset = db.chartOptions.heightOffset;
-  let sampleHeight = (subPlotHeight - padTop) / nSamples - heightOffset;
+  const padTop = db.chartOptions.padTop;
+  const plotHeight = (db.chartOptions.showDataZoomSlider) ? 90 : 95;
+  const subPlotHeight = plotHeight - featureHeight;
+  const grids = [];
+  const nSamples = db.chartOptions.selectedSamples.length;
+  const heightOffset = db.chartOptions.heightOffset;
+  const sampleHeight = (subPlotHeight - padTop) / nSamples - heightOffset;
   for (let idx = 0; idx < nSamples; idx++) {
     grids.push({
       show: true,

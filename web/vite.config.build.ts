@@ -1,6 +1,5 @@
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import handlebars from 'vite-plugin-handlebars';
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 
@@ -18,12 +17,12 @@ export default defineConfig({
             name: 'wgscovplot',
             fileName: 'wgscovplot'
         },
-        outDir: './tmpl',
+        outDir: './build',
         rollupOptions: {
             output: {
-                entryFileNames: `assets/[name].js`,
+                entryFileNames: `wgscovplot.js`,
             }
         },
-        watch: {}
+        watch: null
     },
 });
