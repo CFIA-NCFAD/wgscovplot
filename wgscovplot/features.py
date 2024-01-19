@@ -28,7 +28,7 @@ class EChartsFeatureValue(BaseModel):
     level: int = 0
     strand: int = 1
     rotate: float = 0.0
-    type: str = "gene"  # noqa: A003
+    type: str = "gene"
 
 
 class EChartsItemStyle(BaseModel):
