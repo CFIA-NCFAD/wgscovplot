@@ -20,7 +20,7 @@ GFF_GLOB_PATTERN = "**/genome/**/*.gff"
 
 
 def write_html_coverage_plot(
-    db: DB | SegmentedGenomeDB,
+    db: Union[DB, SegmentedGenomeDB],
     output_html: Path,
 ) -> None:
     """Write HTML coverage plot"""
