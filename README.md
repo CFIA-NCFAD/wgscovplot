@@ -6,42 +6,53 @@
 
 **wgscovplot** generates interactive comparative sequencing coverage plots in self-contained, offline-friendly HTML files with optional annotation of variant calling results, PCR amplicon coverage and genetic features.
 
+[//]: # (TODO: Add screenshots of wgscovplot output)
+[//]: # (TODO: Add updated example output for both segmented and non-segmented viruses)
 - [Live example output](https://nhhaidee.github.io)
-
 
 ## Installation
 
-### From PyPI
+### PyPI
 
 Install from PyPI with `pip`
 
-```
+```bash
 pip install wgscovplot
 ```
 
 If the installation was successful, you should be able to type `wgscovplot --help` and get a help message on how to use the tool.
 
-### Install from source
+### Source
 
-Clone the `wgscovplot` repository.
+Use `pip` to install from source:
 
-```
-git clone https://github.com/nhhaidee/wgscovplot.git
-```
-
-Then change directory to `wgscovplot` and install.
-
-```
-cd wgscovplot
-python setup.py install
+```bash
+# optionally, create a virtual environment
+python -m venv venv
+source venv/bin/activate
+# install from GitHub repo
+pip install git+https://github.com/nhhaidee/wgscovplot.git
+# run wgscovplot
+wgscovplot --help
+wgscovplot /path/to/results_folder
 ```
 
 ## Features
 
+- Easy-to-use: Simply provide a Nextflow output directory containing  and `wgscovplot` will figure out what files it needs to generate its interactive sequencing coverage plots 
+  - Compatible workflows: 
+    - [nf-core/viralrecon]
+    - [CFIA-NCFAD/nf-virontus] 
+    - [CFIA-NCFAD/nf-flu]
+- Fully-interactive plots featuring:
+  - Zoom, scroll, pan, select regions of interest 
+  - Informative tooltips highlighting variant calling results and coverage statistics across all samples being shown
+  - Change the y-axis scale to linear or log scale
+  - Select which samples to show (and which Influenza gene segments to show)
+  - Highlight regions of interest (e.g. genetic features, primer/probe binding sites, low coverage regions)
+- Annotate coverage plots with variant calling results from multiple different variant callers and variant effect results from [SnpEff]/[SnpSift]
+  - Supported variant callers: [iVar](https://github.com/andersen-lab/ivar), [Nanopolish](https://github.com/jts/nanopolish), [Longshot](https://github.com/pjedge/longshot), [Medaka](https://github.com/nanoporetech/medaka), [Clair3](https://github.com/HKU-BAL/Clair3) 
 - Compare sequencing coverage across multiple samples
-- Fully-interactive plots with informative tooltips highlighting variant calling results and coverage statistics across all samples being shown  
-- Easy-to-use: Simply provide a [nf-core/viralrecon], [peterk87/nf-virontus], [CFIA-NCFAD/nf-flu] Nextflow workflow results directory as input (`wgscovplot --input-dir /path/to/viralrecon/results`) and `wgscovplot` will figure out what files it needs to generate its interactive sequencing coverage plots 
-- Annotate coverage plots with variant calling results from multiple different variant callers ([iVar](https://github.com/andersen-lab/ivar), [Nanopolish](https://github.com/jts/nanopolish), [Longshot](https://github.com/pjedge/longshot), [Medaka](https://github.com/nanoporetech/medaka)) and variant effect results from [SnpEff]/[SnpSift]
 
 ## Usage
 
@@ -54,59 +65,84 @@ wgscovplot /path/to/results_folder
 Show help info with `$ wgscovplot --help`:
 
 ```
-Usage: wgscovplot [OPTIONS] INPUT_DIR
+ Usage: wgscovplot [OPTIONS] INPUT_DIR
 
-Arguments:
-  INPUT_DIR  Nextflow workflow results directory  [required]
+╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ *    input_dir      PATH  Directory containing Mosdepth and variant calling results from sequence analysis. For example, the output directory from execution of the nf-core/viralrecon or CFIA-NCFAD/nf-flu Nextflow workflow                │
+│                           [default: None]                                                                                                                                                                                                    │
+│                           [required]                                                                                                                                                                                                         │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --output-html             -o                          PATH                             wgscovplot HTML output file [default: wgscovplot.html]                                                                                                │
+│ --primers-fasta           -p                          PATH                             FASTA file containing real-time PCR primer/probe sequences. [default: None]                                                                           │
+│ --low-coverage-threshold  -l                          INTEGER                          Low sequencing coverage threshold. [default: 10]                                                                                                      │
+│ --edit-distance           -d                          INTEGER                          The maximum differences or 'edits' allowed between real-time PCR primer/probe sequences and the sample sequences. [default: 0]                        │
+│ --compress-depths             --no-compress-depths                                     Compress coverage depth arrays? [default: compress-depths]                                                                                            │
+│ --verbose                 -v                                                           Verbose logs                                                                                                                                          │
+│ --force                   -f                                                           Force overwrite of existing output files                                                                                                              │
+│ --version                     --no-version                                             Print wgscovplot version and exit [default: no-version]                                                                                               │
+│ --install-completion                                  [bash|zsh|fish|powershell|pwsh]  Install completion for the specified shell. [default: None]                                                                                           │
+│ --show-completion                                     [bash|zsh|fish|powershell|pwsh]  Show completion for the specified shell, to copy it or customize the installation. [default: None]                                                    │
+│ --help                                                                                 Show this message and exit.                                                                                                                           │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
-Options:
-  --output-html PATH              Output File of Interactive HTML Coverage
-                                  Plot  [default: wgscovplot.html]
-  --ref-seq-path PATH             Path to reference sequences (Fasta)
-  --primer-seq-path PATH          Path to primer sequences (Fasta)
-  --gene-feature-path PATH        Gene feature file contains gene features
-  --ncbi-accession-id TEXT        NCBI accession id to fetch gene features
-                                  and/or reference sequences
-  --low-coverage-threshold INTEGER
-                                  Low Coverage Threshold  [default: 10]
-  --amplicon / --no-amplicon      Plot Amplicon Coverage Depth  [default:
-                                  amplicon]
-  --gene-feature / --no-gene-feature
-                                  Plot Gene Features  [default: gene-feature]
-  --segment-virus / --no-segment-virus
-                                  Generate Coverage plot for segments virus
-                                  [default: no-segment-virus]
-  --gene-misc-feature / --no-gene-misc-feature
-                                  Plot Miscellaneous Features  [default: no-
-                                  gene-misc-feature]
-  --dev / --no-dev                Run tool with debug mode  [default: no-dev]
-  --edit-distance INTEGER         Maximum k errors allowed for primer sequence
-                                  alignment (use this option when --primer-seq
-                                  provided  [default: 0]
-  --verbose / --no-verbose        Verbose logs  [default: no-verbose]
-  --version / --no-version        Print wgscovplot version and exit
-  --install-completion [bash|zsh|fish|powershell|pwsh]
-                                  Install completion for the specified shell.
-  --show-completion [bash|zsh|fish|powershell|pwsh]
-                                  Show completion for the specified shell, to
-                                  copy it or customize the installation.
-  --help                          Show this message and exit.
+ wgscovplot version 0.3.0; Python 3.11.6
 ```
 
 ## Dependencies
 
-- [Python](https://www.python.org/) (>=3.8)
-    - [BioPython](https://github.com/biopython/biopython/)
-    - [rich](https://rich.readthedocs.io/)
-    - [typer](https://github.com/tiangolo/typer)
-    - [Pandas](https://pandas.pydata.org/)
-    - [requests](https://docs.python-requests.org/)
-    - [jinja2]
-- Javascript
-    - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) for building JS bundle
-    - [Echarts] for generating interactive plots
-    - [select2] for nice select boxes
-    - [Bootstrap](https://getbootstrap.com/) for styling
+- [Python](https://www.python.org/) (>=3.9)
+    - [BioPython](https://github.com/biopython/biopython/) for all things bioinformatics
+    - [rich](https://rich.readthedocs.io/) for pretty terminal output
+    - [typer](https://github.com/tiangolo/typer) for CLI
+    - [Pandas](https://pandas.pydata.org/) for data wrangling
+    - [jinja2] for HTML templating
+    - [Edlib](https://github.com/Martinsos/edlib) for fuzzy string matching
+- Typescript/Javascript
+  - [Echarts] for performant generating interactive plots
+  - [SolidJS](https://www.solidjs.com/) for reactive UI components
+  - [Vite](https://vitejs.dev/) for TS/JS dev and building bundle
+  - [Tailwind CSS](https://tailwindcss.com/) for styling
+
+## Development
+
+This project has two main components: a Python "backend" (CLI that spits out a templated HTML with built JS embedded) and a Javascript frontend.
+
+Python backend development is done in the `wgscovplot` directory. 
+
+Web frontend development is done in the `web` directory. The frontend is built with [Vite](https://vitejs.dev/), [SolidJS](https://www.solidjs.com/) and [ECharts]. 
+
+### Environment
+
+Python development is recommended with PyCharm. Jetbrains IDEs have great support for Python development and virtual environments.
+
+Jetbrains IDEs work great for Typescript/Javascript development as well, but any editor will do if you have Vite live reload enabled. 
+
+### Setup
+
+```bash
+# clone repo
+git clone https://github.com/nhhaidee/wgscovplot.git
+cd wgscovplot
+# optionally, create a virtual environment
+python -m venv venv
+source venv/bin/activate
+# install dev dependencies
+pip install hatch
+
+# start shell with Hatch
+hatch shell
+
+# run linting with Hatch
+hatch run lint:all
+
+# run tests with Hatch
+hatch run cov
+```
+
+### Frontend development
+
+See [web/README.md](web/README.md) for more details.
 
 ## Authors
 
@@ -115,7 +151,7 @@ Options:
 
 ## License
 
-Copyright 2021 Canadian Food Inspection Agency of Canada, Government of Canada.
+Copyright 2024 Canadian Food Inspection Agency of Canada, Government of Canada.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License at:
 
@@ -127,7 +163,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 [Hai Nguyen]: https://github.com/nhhaidee/
 [Echarts]: https://echarts.apache.org/en/index.html
 [select2]: https://select2.org/
-[jinja2]: https://jinja.palletsprojects.com/en/3.0.x/
+[jinja2]: https://jinja.palletsprojects.com/
 [SnpEff]: https://pcingola.github.io/SnpEff/se_introduction/
 [SnpSift]: https://pcingola.github.io/SnpEff/ss_introduction/
 [Mosdepth]: https://github.com/brentp/mosdepth

@@ -41,21 +41,34 @@ def main(
         "the nf-core/viralrecon or CFIA-NCFAD/nf-flu Nextflow workflow",
     ),
     output_html: Path = typer.Option("wgscovplot.html", "-o", "--output-html", help="wgscovplot HTML output file"),
-    primers_fasta: Path = typer.Option(None, help="FASTA file containing real-time PCR primer/probe sequences."),
-    low_coverage_threshold: int = typer.Option(default=10, help="Low sequencing coverage threshold."),
+    primers_fasta: Path = typer.Option(
+        None, "-p", "--primers-fasta", help="FASTA file containing real-time PCR primer/probe sequences."
+    ),
+    low_coverage_threshold: int = typer.Option(
+        10, "-l", "--low-coverage-threshold", help="Low sequencing coverage threshold."
+    ),
     edit_distance: int = typer.Option(
-        default=0,
+        0,
+        "-d",
+        "--edit-distance",
         help="The maximum differences or 'edits' allowed between real-time "
         "PCR primer/probe sequences and the sample sequences.",
     ),
     compress_depths: bool = typer.Option(default=True, is_flag=True, help="Compress coverage depth arrays?"),
-    verbose: bool = typer.Option(default=False, help="Verbose logs"),
+    verbose: bool = typer.Option(False, "-v", "--verbose", help="Verbose logs"),
+    force: bool = typer.Option(
+        False, "-f", "--force", is_flag=True, show_default=False, help="Force overwrite of existing output files"
+    ),
     version: Optional[bool] = typer.Option(  # noqa: ARG001
         None, callback=version_callback, help=f'Print {"wgscovplot version"} and exit'
     ),
 ):
     init_logging(verbose)
     logger.info(VERSION)
+    if output_html.exists() and not force:
+        msg = f"Output file '{output_html}' exists! Use --force to overwrite."
+        logger.error(msg)
+        raise typer.Exit(1)
     logger.info(f"{input_dir=}")
     logger.info(f"{output_html=}")
     run(input_dir, low_coverage_threshold, primers_fasta, edit_distance, output_html, compress_depths)

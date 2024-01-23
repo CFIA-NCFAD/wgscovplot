@@ -44,6 +44,7 @@ def run(
         )
     # Write coverage plot to HTML file
     write_html_coverage_plot(output_html=output_html, db=db)
+    logger.info(f"Coverage plot written to '{output_html}'")
 
 
 def build_db(
