@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import handlebars from 'vite-plugin-handlebars';
 
@@ -13,7 +13,8 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: 3000,
+    port: 3001,
+    open: true
   },
   build: {
     target: 'esnext',

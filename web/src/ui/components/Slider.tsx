@@ -12,7 +12,7 @@ type SliderProps = {
   step: number,
   value: number,
   helpInfo?: string,
-  onChange: (e: any) => void
+  onChange: (e: never) => void
 }
 export const Slider: Component<SliderProps> = (props) => {
   return <div>
@@ -28,6 +28,7 @@ export const Slider: Component<SliderProps> = (props) => {
     <input type="range" min={props.min} max={props.max} step={props.step}
            value={props.value}
            class="w-full"
+           // @ts-expect-error ignore TS
            onChange={props.onChange}></input>
   </div>
 }

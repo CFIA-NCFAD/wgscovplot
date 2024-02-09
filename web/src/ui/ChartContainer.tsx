@@ -14,22 +14,31 @@ import {
   TooltipComponent,
   VisualMapComponent,
 } from "echarts/components";
+import {LabelLayout} from "echarts/features";
 import {BarChart, CustomChart, HeatmapChart, LineChart} from "echarts/charts";
 import {CanvasRenderer, SVGRenderer} from "echarts/renderers";
 import type {ECharts, EChartsType} from "echarts";
-import {isNil, map, max, pick, values} from "lodash";
-import {MosdepthInfo} from "../db";
+import {isNil, map, max, pick, sum, values} from "lodash";
+import {ECFeature, MaxSegmentLength, MosdepthInfo, SegmentCoords} from "../db";
 import {unwrap} from "solid-js/store";
-import {getSegmentCoords} from "../chartOptions/axes";
-import {getDatasets, getDataZoom, getGrids, getSeries, getTooltips, getXAxes, getYAxes} from "../chart";
+import {getSeries} from "../chartOptions/chartSeries";
+import {getXAxes, getYAxes} from "../chartOptions/axes";
+import {getGrids} from "../chartOptions/chartGrid";
+import {getDataZoom} from "../chartOptions/dataZoom";
+import {getDatasets} from "../chartOptions/dataset";
+import {getTooltips} from "../chartOptions/tooltips";
 import {DragDropProvider, DragDropSensors, DragEventHandler,} from "@thisbeyond/solid-dnd";
 import {ChartTooltip} from "./ChartTooltip";
+import {getVariantHeatmapOption} from "../chartOptions/variantHeatmap";
+import {getFluGeneFeature, getMaxSegmentLength, getSegmentCoords} from "../chartOptions/segmented/getSegmentsInfo";
+
 
 echarts.use(
   [TooltipComponent, GridComponent,
     LineChart, BarChart, ToolboxComponent, HeatmapChart,
     DataZoomComponent, CustomChart, VisualMapComponent, TitleComponent,
-    DatasetComponent, SVGRenderer, CanvasRenderer, MarkAreaComponent, MarkLineComponent]
+    DatasetComponent, SVGRenderer, CanvasRenderer, MarkAreaComponent,
+    MarkLineComponent, LabelLayout]
 );
 
 // add global event listeners for mouse position
@@ -46,39 +55,102 @@ createEffect(() => {
   if (isNil(state.mosdepth_info) || isNil(state.chartOptions.selectedSamples)) {
     return;
   }
-  let sampleMaxDepth = map(state.chartOptions.selectedSamples, (sample) => {
-    let info: { [key: string]: MosdepthInfo } | MosdepthInfo = state.mosdepth_info[sample];
+  const sampleMaxDepth = map(state.chartOptions.selectedSamples, (sample) => {
+    const info: { [key: string]: MosdepthInfo } | MosdepthInfo = state.mosdepth_info[sample];
     if (isNil(info)) {
       return 0;
     }
     // for segmented viruses, we need to get the max depth of all selected segments
     if (!isNil(state.chartOptions.selectedSegments) && !isNil(state.segCoords)) {
-      let infos: MosdepthInfo[] = values(pick(info as { [key: string]: MosdepthInfo }, state.chartOptions.selectedSegments));
+      const infos: MosdepthInfo[] = values(pick(info as { [key: string]: MosdepthInfo }, state.chartOptions.selectedSegments));
       return max(map(infos, (i) => i.max_depth));
     }
     // for non-segmented viruses, we can just get the max depth of the sample
     return info.max_depth
   });
-  let ymax = max(values(sampleMaxDepth)) as number;
+  const ymax = max(values(sampleMaxDepth)) as number;
   setState("chartOptions", "yMax", ymax);
 });
 
 createEffect(() => {
-  if (isNil(state.segments)) return;
-  let selectedSegments = state.chartOptions.selectedSegments;
+  if (isNil(state.segments)) {
+    return;
+  }
+  const selectedSegments = state.chartOptions.selectedSegments;
+  const selectedSamples = state.chartOptions.selectedSamples;
   untrack(() => {
-    if (isNil(selectedSegments) || selectedSegments.length === 0) {
+    if (isNil(selectedSegments)) {
       setState("chartOptions", "selectedSegments", state.segments);
     }
-    let segmentCoords = getSegmentCoords(state);
-    console.log("segmentCoords", segmentCoords);
-    setState("segCoords", segmentCoords);
+    if (isNil(selectedSamples) || selectedSamples.length === 0) {
+      setState("chartOptions", "selectedSamples", state.samples.slice(0, 3));
+    }
+    const maxSegmentLength: MaxSegmentLength = getMaxSegmentLength(state);
+    setState("maxSegmentLength", maxSegmentLength) // disable shallow merging and fully replace
+    const positions: number[] = [...Array(sum(values(maxSegmentLength)) + 1).keys()];
+    positions.shift()
+    setState("positions", positions);
+    const segCoords: SegmentCoords = getSegmentCoords(state);
+    setState("segCoords", segCoords); // disable shallow merging and fully replace
+    const echart_features: ECFeature[] = getFluGeneFeature(state);
+    setState("echart_features", echart_features)
   });
 });
 
+const HeatMap: Component = () => {
+  const heatMapChartDiv: undefined | HTMLDivElement = undefined;
+  let heatMapChart: undefined | ECharts | EChartsType = undefined;
+  const initChart = () => {
+    if (heatMapChartDiv !== undefined) {
+      if (heatMapChart !== undefined) {
+        // @ts-expect-error ignore TS
+        echarts.dispose(heatMapChart)
+      }
+      // @ts-expect-error ignore TS
+      heatMapChart = echarts.init(heatMapChartDiv, state.chartOptions.darkMode ? "dark" : "white", {renderer: state.chartOptions.renderer});
+      if (heatMapChart === undefined) {
+        throw new Error("chart is undefined")
+      }
+      setState("heatMapChart", heatMapChart);
+    }
+  }
+  onMount(() => {
+    initChart();
+    const resizeObserver = new ResizeObserver(() => {
+      if (heatMapChart !== undefined) {
+        heatMapChart.resize();
+      }
+    });
+    if (heatMapChartDiv !== undefined) {
+      resizeObserver.observe(heatMapChartDiv);
+    }
+  });
+
+  createEffect(() => {
+    state.chartOptions.renderer;
+    state.chartOptions.darkMode;
+    // don't track any other state changes
+    untrack(() => {
+      initChart();
+      if (heatMapChart !== undefined) {
+        heatMapChart.setOption(getVariantHeatmapOption(state))
+      }
+    });
+  });
+
+
+  createEffect(() => {
+    if (heatMapChartDiv !== undefined) {
+      // @ts-expect-error ignore TS
+      heatMapChart.setOption(getVariantHeatmapOption(state))
+    }
+  })
+  return <div ref={heatMapChartDiv} class="flex-grow flex-shrink min-w-fit"></div>
+
+}
 
 const Chart: Component = () => {
-  let chartDiv: undefined | HTMLDivElement = undefined;
+  const chartDiv: undefined | HTMLDivElement = undefined;
   let chart: undefined | ECharts | EChartsType = undefined;
 
 
@@ -86,17 +158,17 @@ const Chart: Component = () => {
     if (chartDiv !== undefined) {
       // if the chart has already been initialized, dispose of it so that it can be re-initialized
       if (chart !== undefined) {
-        // @ts-ignore
+        // @ts-expect-error ignore TS
         echarts.dispose(chart);
       }
-      // @ts-ignore
+      // @ts-expect-error ignore TS
       chart = echarts.init(chartDiv, state.chartOptions.darkMode ? "dark" : "white", {renderer: state.chartOptions.renderer});
       if (chart === undefined) {
         throw new Error("chart is undefined")
       }
-      // @ts-ignore
+      // @ts-expect-error ignore TS
       chart.on("click", function ({componentIndex, componentSubType, value: {start, end}}) {
-        // @ts-ignore
+        // @ts-expect-error ignore TS
         if (componentIndex === chart.getOption().series.length - 1 && componentSubType === "custom") {
           setState("chartOptions", "startPos", start);
           setState("chartOptions", "endPos", end);
@@ -104,10 +176,10 @@ const Chart: Component = () => {
       });
 
       chart.on("dblclick", function ({componentIndex, componentSubType}) {
-        // @ts-ignore
+        // @ts-expect-error ignore TS
         if (componentIndex === chart.getOption().series.length - 1 && componentSubType === "custom") {
           const start = 1;
-          const end = state.ref_seq.length;
+          const end = state.positions.length;
           setState("chartOptions", "startPos", start);
           setState("chartOptions", "endPos", end);
         }
@@ -144,25 +216,25 @@ const Chart: Component = () => {
     });
   });
 
-  let datasets = createMemo(() => {
+
+  const datasets = createMemo(() => {
     return getDatasets(state);
   });
-  let xAxes = createMemo(() => {
+  const xAxes = createMemo(() => {
     return getXAxes(state);
   });
-  let yAxes = createMemo(() => {
+  const yAxes = createMemo(() => {
     return getYAxes(state);
   });
-  let grids = createMemo(() => {
+  const grids = createMemo(() => {
     return getGrids(state);
   });
-  let series = createMemo(() => {
+  const series = createMemo(() => {
     return getSeries(state);
   });
 
-  let echartsOptions = createMemo(() => {
-    console.time("build opts")
-    let opts = {
+  const echartsOptions = createMemo(() => {
+    const opts = {
       dataset: datasets(),
       xAxis: xAxes(),
       yAxis: yAxes(),
@@ -179,21 +251,17 @@ const Chart: Component = () => {
       },
       dataZoom: getDataZoom(state),
     };
-    console.timeEnd("build opts")
     return opts;
   });
 
   createEffect(() => {
     if (chart !== undefined) {
-      console.time("chart setOption")
       // tell ECharts to merge replace rather than normal merge
       // unwrap opts to pass a plain object instead of a Solid Proxy object to ECharts
       // this reduces deep cloning by ECharts and speeds up chart updates
       chart.setOption(unwrap(echartsOptions()), {
         replaceMerge: ['dataset', 'xAxis', 'yAxis', 'series', 'grid', 'dataZoom']
       });
-      console.timeEnd("chart setOption")
-      console.info("CHART UPDATE", Date.now());
     }
   })
 
@@ -208,8 +276,8 @@ const Chart: Component = () => {
   // dataZoom needs to be set in the chart options, i.e. state.chartOptions.showDataZoomSlider must be true
   createEffect(() => {
     if (state.chart !== undefined && state.chartOptions.startPos !== 0 && state.chartOptions.endPos !== 0) {
-      let start = state.chartOptions.startPos;
-      let end = state.chartOptions.endPos;
+      const start = state.chartOptions.startPos;
+      const end = state.chartOptions.endPos;
       state.chart.dispatchAction({
         type: "dataZoom",
         startValue: start,
@@ -239,5 +307,12 @@ export const ChartContainer: Component = () => {
       <Chart/>
       <ChartTooltip/>
     </main>
+
   </DragDropProvider>
+}
+
+export const HeatMapContainer: Component = () => {
+  return <main class={"flex p-4 w-screen"}>
+    <HeatMap/>
+  </main>
 }

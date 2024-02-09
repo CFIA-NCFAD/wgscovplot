@@ -1,20 +1,37 @@
 name: PyPI Deploy
-
 on:
-  push:
-    tags:
-      - v*.*.*
+  release:
+    types: [published]
+
+# Cancel if a newer run is started
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pypi_deploy:
     name: PyPI Deploy
     runs-on: ubuntu-latest
-    # Only run for the nhhaidee/wgscovplot repo, for releases and pushes to master
-    if: ${{ github.repository == 'nhhaidee/wgscovplot' }}
+    environment:
+      name: pypi
+      url: https://pypi.org/project/wgscovplot/
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: casperdcl/deploy-pypi@v2
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          password: ${{ secrets.pypi_token }}
-          build: true
+          python-version: 3.11
+          cache: 'pip'
+          cache-dependency-path: pyproject.toml
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip hatch
+      - name: Build distribution
+        run: |
+          hatch build
+      - name: Publish package distributions to PyPI
+        if: github.repository == 'CFIA-NCFAD/wgscovplot'
+        uses: pypa/gh-action-pypi-publish@release/v1

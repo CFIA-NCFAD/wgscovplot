@@ -1,91 +1,79 @@
+import {SegmentCoords, WgsCovPlotDB} from "../db";
 import {isNil} from "lodash";
-import {SampleSegmentMosdepthInfo, SegmentCoords, WgsCovPlotDB} from "../db";
+import {getCustomXAxisLabel} from "./segmented/getSegmentsInfo";
+import {FEATURE_PLOT_PROPS} from "../util";
 
 
-interface SegmentMaxLength {
-  [key: string]: number;
-}
-
-interface SegmentInfo {
-  [key: string]: {
-    start: number;
-    end: number;
-    maxLength: number;
-  }
-}
-
-const getMaxSegmentLength = (db: WgsCovPlotDB): SegmentMaxLength => {
-  let selectedSegments = db.chartOptions.selectedSegments;
-  if (isNil(selectedSegments)) {
-    selectedSegments = db.segments;
-  }
-  if (selectedSegments === undefined) {
-    return {};
-  }
-  let selectedSamples = db.chartOptions.selectedSamples;
-  let out: SegmentMaxLength = {}
-  const depthInfo = db.mosdepth_info as SampleSegmentMosdepthInfo;
-  for (let segment of selectedSegments) {
-    let maxLength = 0;
-
-    for (let sample of selectedSamples) {
-      if (depthInfo[sample] === undefined) {
-        continue;
+export const getXAxes = (db: WgsCovPlotDB) => {
+  // eslint-disable-next-line
+  const formatter: any = {};
+  if (!isNil(db.segCoords)) {
+    const segments = Object.keys(db.segCoords)
+    if (segments.length > 0) {
+      // eslint-disable-next-line
+      formatter.formatter = function (value: any) {
+        return getCustomXAxisLabel(value, segments, db.segCoords as SegmentCoords)
       }
-      if (depthInfo[sample][segment] === undefined) {
-        continue;
-      }
-      let length = depthInfo[sample][segment].ref_seq_length;
-      maxLength = Math.max(maxLength, length)
-    }
-    out[segment] = maxLength;
-  }
-  return out
-}
-
-
-export const getSegmentCoords = (db: WgsCovPlotDB): SegmentInfo => {
-  let selectedSegments = db.chartOptions.selectedSegments;
-  if (isNil(selectedSegments)) {
-    selectedSegments = db.segments;
-  }
-  if (selectedSegments === undefined) {
-    return {};
-  }
-  let out: SegmentInfo = {};
-  let prev = {
-    maxLength: 0,
-    start: 0,
-    end: 0,
-  }
-  let maxSegmentLength = getMaxSegmentLength(db);
-  for (let segment of selectedSegments) {
-    let maxLength = maxSegmentLength[segment];
-    let segCoords = {
-      maxLength,
-      start: prev.end + 1,
-      end: prev.end + maxLength,
-    };
-    out[segment] = segCoords;
-    prev = segCoords;
-  }
-  return out;
-}
-
-/**
- * Custom xAxis label (for segment virus)
- * @param {number} value - xAxis value
- * @param {Array<string>} segments - An array of segments names
- * @param {SegmentCoords} segCoords
- * @returns {string}
- */
-export function getCustomXAxisLabel(value: number, segments: string[], segCoords: SegmentCoords): string {
-  for (let segment of segments) {
-    let {start, end} = segCoords[segment];
-    if (value >= start && value <= end) {
-      let pos = value - start + 1
-      return `${segment}:${pos.toLocaleString()}`;
     }
   }
-  return ""
+  const axes = [];
+  for (let i = 0; i < db.chartOptions.selectedSamples.length; i++) {
+    axes.push({
+      type: "value",
+      gridIndex: i,
+      min: 1,
+      max: db.positions.length,
+      minorTick: {show: true},
+      axisLabel: {
+        show: db.chartOptions.showXAxisLabel,
+        interval: "auto",
+        ...formatter,
+      }
+    });
+  }
+  if (db.chartOptions.showFeatures && (db.show_amplicons || db.show_genes)) {
+    axes.push({
+      type: "value",
+      gridIndex: db.chartOptions.selectedSamples.length,
+      min: 1,
+      max: db.positions.length,
+      axisLabel: {
+        interval: "auto",
+        ...formatter,
+      },
+    });
+  }
+  return axes;
+}
+
+export const getYAxes = (db: WgsCovPlotDB) => {
+  const axes = [];
+  for (const [i, sample] of db.chartOptions.selectedSamples.entries()) {
+    axes.push({
+      type: db.chartOptions.scaleType,
+      gridIndex: i,
+      name: sample,
+      nameTextStyle: {
+        fontStyle: "normal",
+        fontWeight: "bolder",
+        fontSize: db.chartOptions.subplotTitleFontSize,
+        color: db.chartOptions.subplotTitleColour,
+      },
+      nameLocation: "end",
+      nameRotate: 0.01,
+      min: db.chartOptions.scaleType === "log" ? 1 : 0,
+      max: db.chartOptions.yMax === 0 ? 10000 : db.chartOptions.yMax,
+      minorSplitLine: {
+        show: true,
+      },
+    });
+  }
+  if (db.chartOptions.showFeatures && (db.show_amplicons || db.show_genes)) {
+    axes.push({
+      max: FEATURE_PLOT_PROPS.max_grid_height,
+      gridIndex: db.chartOptions.selectedSamples.length,
+      show: false,
+    });
+  }
+  return axes;
 }

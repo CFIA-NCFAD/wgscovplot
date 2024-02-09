@@ -1,6 +1,6 @@
 import {Component, createSignal} from "solid-js";
 
-export const CollapsiblePanel: Component<{ title: string, defaultCollapsed?: boolean, children: any }> = (props) => {
+export const CollapsiblePanel: Component<{ title: string, defaultCollapsed?: boolean, children: never }> = (props) => {
   const [isOpen, setIsOpen] = createSignal(!props.defaultCollapsed);
   return <div class="border border-gray-300 rounded dark:border-slate-700 w-full dark:text-gray-300">
     <button class="hover:bg-gray-300 dark:hover:bg-slate-900 flex w-full justify-between " onClick={() => setIsOpen(!isOpen())}>

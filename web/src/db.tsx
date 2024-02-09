@@ -10,10 +10,22 @@ export interface SampleDepths {
   [key: string]: number[];
 }
 
-export interface VariantCall {
-  [key: string]: string;
+export interface ECColorArg {
+  data: {
+    0: number;
+  }
+}
 
-  POS: string;
+export interface PrimerMatches {
+  [key: string]: {
+    [key: string]: PrimerMatchesInfo[]
+  }
+}
+
+export interface VariantCall {
+  [key: string]: string | number;
+
+  POS: string | number;
 }
 
 export interface SampleVariantCalls {
@@ -47,6 +59,16 @@ export interface SegmentCoords {
   }
 }
 
+export interface MaxSegmentLength {
+    [key: string]: number
+}
+
+export interface SegmentRef {
+  [key: string]: {
+    [key: string] : string
+  }
+}
+
 export interface MosdepthInfo {
   genome_coverage: number;
   low_coverage_coords: string;
@@ -59,6 +81,18 @@ export interface MosdepthInfo {
   ref_seq_length: number;
   sample: string;
   zero_coverage_coords: string;
+}
+
+export interface PrimerMatchesInfo {
+  cigar: string,
+  edit_distance: number,
+  end: number,
+  matched_aligned: string,
+  name: string,
+  other_locations: string
+  query_aligned: string,
+  start: number,
+  target_aligned: string
 }
 
 export interface SampleMosdepthInfo {
@@ -81,10 +115,13 @@ export interface ntColor {
 
 export interface ChartOptions {
   showVariants: boolean;
+  variantBarWidth: number;
   showFeatures: boolean;
   geneLabelTextSize: number;
   geneLabelDistance: number;
   geneLabelRotation: number;
+  variantLabelsRotation: number;
+  coordsLabelsRotation: number;
   lowCovThresholdLineWidth: number;
   lowCovThresholdLineColour: string;
   lowCovColour: string;
@@ -105,6 +142,7 @@ export interface ChartOptions {
   /** Show variant site labels below each cov subplot x-axis? */
   showVariantLabels: boolean;
   showXAxisLabel: boolean;
+  showLowCoverageCoords: boolean;
   /** y-axis max value. Can be adjusted by user, but also dependent on samples being shown. */
   yMax: number;
   covColour: string;
@@ -149,7 +187,7 @@ export interface Table {
   /** array of column names */
   headers: string[];
   /** array of arrays of row data */
-  rows: string[][];
+  rows: (string | number)[][];
 }
 
 export interface TooltipOptions {
@@ -188,23 +226,33 @@ export interface ECFeature {
 
 export interface WgsCovPlotDB {
   activePage: string;
-  /** amplicon depths */
+  /** Sample amplicon depths if amplicon sequencing was used to generate the sequencing data. */
   amplicon_depths?: SampleAmpliconDepths;
-  /** coverage depths */
+  /** Sample coverage depths by position or sample and segment coverage depths by position for segmented viruses */
   depths: SampleDepths | SampleSegmentDepths;
-  /** ??? gene/amplicon features on both plus and minus strands? */
+  /** Are there genetic features on both plus and minus strands? */
   doubleStrand: boolean;
   /** ECharts features */
-  echart_features?: ECFeature[];
+  echart_features: ECFeature[];
   /** mosdepth/coverage depth info */
   mosdepth_info: SampleMosdepthInfo | SampleSegmentMosdepthInfo;
 
-  /** array of positions from 1 to length of reference sequence */
+  /** Array of position numbers from 1 to length of reference sequences or
+   * the sum of max genome segment lengths for each selected genome segment.
+   */
   positions: number[];
-  /** reference sequence */
-  ref_seq: string;
+  /** Reference nucleotide sequence for non-segmented viruses. */
+  ref_seq?: string;
+  /** Reference nucleotide sequences for segmented viruses organized by sample name and segment name. */
+  segments_ref_seq?: SegmentRef;
+  segments_ref_id?: SegmentRef;
 
-  /** array of all samples */
+  /** Real-time PCR (rtPCR) primer and probe match data from Edlib analysis if
+   * rtPCR primers and probes were specified.
+   */
+  primer_matches?: PrimerMatches
+
+  /** All sample names, not to be confused with selectedSamples */
   samples: string[];
 
   /** plotting coordinates for virus segments */
@@ -212,23 +260,46 @@ export interface WgsCovPlotDB {
   /** list of virus segment names if segmented virus being shown */
   segments?: string[];
 
+  /** Max length among samples of 1 segment**/
+  maxSegmentLength?: MaxSegmentLength
+
   /** Show amplicon features? */
-  show_amplicons: boolean;
+  show_amplicons?: boolean;
+  /** Show primer matches? */
+  show_primer_matches?: boolean;
   /** Show gene features? */
   show_genes: boolean;
   /** ECharts object for variant calling heatmap */
   variantHeatmap?: ECharts | EChartsType;
   /** variant calls */
-  variants?: SampleVariantCalls | SampleSegmentVariantCalls;
+  variants: SampleVariantCalls | SampleSegmentVariantCalls;
 
+  // eslint-disable-next-line
   chart: any;
+  // eslint-disable-next-line
+  heatMapChart: any;
   chartOptions: ChartOptions;
   tooltipOptions: TooltipOptions;
+  // eslint-disable-next-line
+  summaryInfo: any
 }
 
+// eslint-disable-next-line
 export const defaultDB: WgsCovPlotDB = {
+  echart_features: [], heatMapChart: undefined, summaryInfo: undefined,
   activePage: "chart",
   chart: null,
+  depths: {},
+  doubleStrand: false,
+  mosdepth_info: {},
+  positions: [],
+  ref_seq: "",
+  samples: [],
+  show_amplicons: false,
+  show_primer_matches: false,
+  show_genes: true,
+  variantHeatmap: undefined,
+  variants: {},
   tooltipOptions: {
     showTooltip: true,
     variantSitesOnly: true,
@@ -245,10 +316,13 @@ export const defaultDB: WgsCovPlotDB = {
   },
   chartOptions: {
     showVariants: true,
+    variantBarWidth: 2,
     showFeatures: true,
-    geneLabelTextSize: 10,
+    geneLabelTextSize: 14,
     geneLabelDistance: 10,
     geneLabelRotation: 0,
+    variantLabelsRotation: -45,
+    coordsLabelsRotation: 30,
     lowCovThresholdLineWidth: 1,
     lowCovThresholdLineColour: "#910000",
     sidebarCollapsed: false,
@@ -256,15 +330,15 @@ export const defaultDB: WgsCovPlotDB = {
     crossSampleComparisonInTooltips: false,
     fixedTooltipPosition: false,
     heightOffset: 6.0,
-    hideOverlappingVariantLabels: false,
+    hideOverlappingVariantLabels: true,
     leftMargin: 3.0,
     lowCoverageOpacity: 0.3,
     low_coverage_threshold: 10,
-    padTop: 2.5,
+    padTop: 3,
     rightMargin: 2.0,
     scaleType: "log",
     tooltipEnabled: false,
-    tooltipTriggerOn: "click",
+    tooltipTriggerOn: "mousemove",
     selectedSamples: [],
     selectedSegments: [],
     showCovStatsInTooltips: true,
@@ -274,10 +348,11 @@ export const defaultDB: WgsCovPlotDB = {
     showLowCovRegionsOpacity: 0.5,
     showVariantLabels: false,
     showXAxisLabel: false,
+    showLowCoverageCoords: false,
     yMax: 1000,
     lowCovColour: "#ffff00",
     featurePlotHeightScaling: 100,
-    subplotTitleFontSize: 12,
+    subplotTitleFontSize: 16,
     subplotTitleColour: "#232323",
     startPos: 0,
     endPos: 0,
@@ -289,17 +364,7 @@ export const defaultDB: WgsCovPlotDB = {
       G: "#6ad82b",
       T: "#2b87d8",
     }
-  },
-  depths: {},
-  doubleStrand: false,
-  mosdepth_info: {},
-  positions: [],
-  ref_seq: "",
-  samples: [],
-  show_amplicons: false,
-  show_genes: true,
-  variantHeatmap: undefined,
-  variants: {},
+  }
 }
 
 export interface ECFormatterFeature {
