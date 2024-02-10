@@ -177,7 +177,7 @@ def get_amplicon_depths(basedir: Path) -> Dict[str, List]:
     sample = None
     try:
         for sample, path in sample_path.items():
-            if path.suffix == '.bam':
+            if path.suffix == ".bam":
                 break
             df = read_mosdepth_region_bed(path)
             for row in df.itertuples():
@@ -202,7 +202,7 @@ def get_region_amplicon(basedir: Path) -> List[Feature]:
     )
     try:
         for path in sample_path.values():
-            if path.suffix == '.bam':
+            if path.suffix == ".bam":
                 break
             df_amplicon = pd.read_table(path, names=["reference", "start", "end", "amplicon", "depth"], header=None)
             return [
