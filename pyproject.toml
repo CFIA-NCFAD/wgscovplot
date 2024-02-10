@@ -32,6 +32,7 @@ dependencies = [
     'pydantic',
     'jinja2',
     'edlib',
+    'pysam',
 ]
 
 [project.scripts]

@@ -150,9 +150,8 @@ const HeatMap: Component = () => {
 }
 
 const Chart: Component = () => {
-  const chartDiv: undefined | HTMLDivElement = undefined;
+  let chartDiv: undefined | HTMLDivElement = undefined;
   let chart: undefined | ECharts | EChartsType = undefined;
-
 
   const initChart = () => {
     if (chartDiv !== undefined) {
@@ -234,7 +233,7 @@ const Chart: Component = () => {
   });
 
   const echartsOptions = createMemo(() => {
-    const opts = {
+    return {
       dataset: datasets(),
       xAxis: xAxes(),
       yAxis: yAxes(),
@@ -251,7 +250,6 @@ const Chart: Component = () => {
       },
       dataZoom: getDataZoom(state),
     };
-    return opts;
   });
 
   createEffect(() => {
@@ -287,6 +285,7 @@ const Chart: Component = () => {
   });
 
   return <div ref={chartDiv} class="flex-grow flex-shrink min-w-fit"></div>
+
 }
 
 export const ChartContainer: Component = () => {
@@ -307,7 +306,6 @@ export const ChartContainer: Component = () => {
       <Chart/>
       <ChartTooltip/>
     </main>
-
   </DragDropProvider>
 }
 

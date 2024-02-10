@@ -62,7 +62,9 @@ def build_db(
     # Get the list of samples name
     samples = mosdepth.get_samples_name(input_dir, is_genome_segmented=False)
     # Get coverage statistics information for all samples
+    logger.info(f"Getting coverage depth info from {input_dir}")
     mosdepth_info, coverage_depths = mosdepth.get_info(input_dir, low_coverage_threshold=low_coverage_threshold)
+    logger.info(f"{mosdepth_info=}")
     # Compress coverage depth arrays to base64 encoded strings if requested
     if compress_depths:
         coverage_depths_str = mosdepth.get_base64_encoded_depth_arrays(coverage_depths)

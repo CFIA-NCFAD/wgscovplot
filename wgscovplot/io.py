@@ -97,18 +97,23 @@ def parse_genbank(gb_handle_or_path: Union[Path, TextIOWrapper]) -> Tuple[str, L
 
 def get_ref_seq_and_annotation(
     input_dir: Path,
-) -> Tuple[str, Optional[List[Feature]]]:
+) -> Tuple[Optional[str], Optional[List[Feature]]]:
     gff_path = find_ref_gff(input_dir)
     gene_features = parse_gff(gff_path) if gff_path else None
     fasta_path = find_ref_fasta(input_dir)
     ref_seq = read_first_seq_from_fasta(fasta_path) if fasta_path else None
     if ref_seq is None or gene_features is None:
+        logger.info(f"Could not find GFF or parse FASTA. Trying to get ref seq ID from {input_dir}")
         ref_id = mosdepth.get_refseq_id(input_dir)
+        logger.info(f"Ref seq id={ref_id}")
         ref_seq, gene_features = fetch_ref_seq_from_ncbi_entrez(ref_id)
     return ref_seq, gene_features
 
 
-def fetch_ref_seq_from_ncbi_entrez(ref_id: str) -> Tuple[str, List[Feature]]:
+def fetch_ref_seq_from_ncbi_entrez(ref_id: str) -> Tuple[Optional[str], Optional[List[Feature]]]:
+    if not ref_id:
+        logger.info("No ref seq ID provided. Cannot fetch seq from NCBI.")
+        return None, None
     logger.info(f'Fetching reference sequence "{ref_id}" from NCBI Entrez')
     with Entrez.efetch(db="nucleotide", rettype="gb", retmode="text", id=ref_id) as handle:
         return parse_genbank(handle)

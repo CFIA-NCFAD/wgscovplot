@@ -1,4 +1,5 @@
 """Console script."""
+
 import logging
 from pathlib import Path
 from sys import version_info

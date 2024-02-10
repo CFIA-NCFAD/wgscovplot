@@ -9,11 +9,9 @@ import pandas as pd
 from wgscovplot.flu import SampleSegmentRef
 from wgscovplot.tools.mosdepth import (
     MosdepthDepthInfo,
-    count_positions,
     depth_array,
     get_genome_coverage,
-    get_genome_length,
-    get_interval_coords_bed,
+    get_interval_coords,
     read_mosdepth_bed,
 )
 
@@ -48,15 +46,15 @@ def get_flu_mosdepth_info(
             sample=sample,
             segment=segment,
             low_coverage_threshold=low_coverage_threshold,
-            n_low_coverage=count_positions(df_mosdepth[df_mosdepth.depth < low_coverage_threshold]),
-            n_zero_coverage=count_positions(df_mosdepth[df_mosdepth.depth == 0]),
-            zero_coverage_coords=get_interval_coords_bed(df_mosdepth),
-            low_coverage_coords=get_interval_coords_bed(df_mosdepth, low_coverage_threshold),
-            genome_coverage=get_genome_coverage(df_mosdepth, low_coverage_threshold),
+            n_low_coverage=(arr < low_coverage_threshold).sum(),
+            n_zero_coverage=(arr == 0).sum(),
+            zero_coverage_coords=get_interval_coords(arr),
+            low_coverage_coords=get_interval_coords(arr, low_coverage_threshold),
+            genome_coverage=get_genome_coverage(arr, low_coverage_threshold),
             mean_coverage=mean_cov,
             median_coverage=median_cov,
-            ref_seq_length=get_genome_length(df_mosdepth),
-            max_depth=arr.max(),
+            ref_seq_length=len(arr),
+            max_depth=arr.max(initial=0),
         )
         sample_segment_depth_info[sample][segment] = depth_info
         sample_segment_depths[sample][segment] = arr

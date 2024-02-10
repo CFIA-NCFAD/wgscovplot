@@ -1,4 +1,5 @@
 """VCF and SnpEff/SnpSift parsing functions"""
+
 import gzip
 import logging
 import re
@@ -97,7 +98,7 @@ variants_cols = [
     (
         "aa",
         "Amino Acid Change",
-        "The change in the sample\'s gene amino acid sequence relative to the reference sequence",
+        "The change in the sample's gene amino acid sequence relative to the reference sequence",
     ),
     ("aa_pos", "Amino Acid Position", "Position of amino acid change in the reference sequence gene"),
     ("aa_len", "Gene Amino Acid Length", "Amino acid length of the reference sequence gene"),
