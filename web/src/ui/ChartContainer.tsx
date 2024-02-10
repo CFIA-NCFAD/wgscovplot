@@ -98,7 +98,7 @@ createEffect(() => {
 });
 
 const HeatMap: Component = () => {
-  const heatMapChartDiv: undefined | HTMLDivElement = undefined;
+  let heatMapChartDiv: undefined | HTMLDivElement = undefined;
   let heatMapChart: undefined | ECharts | EChartsType = undefined;
   const initChart = () => {
     if (heatMapChartDiv !== undefined) {
