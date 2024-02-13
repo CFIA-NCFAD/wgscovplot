@@ -1,4 +1,30 @@
 # History
+
+## 1.0.0 (2024-02-13)
+
+This is a major release of wgscovplot with many user experience and quality of life changes to make the tool easier to
+run and use. The frontend (HTML output) has been almost completely rewritten to have more of a single-page app (SPA) 
+like feel.
+
+There are also a number of improvements to the developer experience so that frontend dev can be done separately with 
+live-code reloading using real-world datasets.
+
+- Calculate depths from BAM files if Mosdepth `per-base.bed.gz` not found.
+- SolidJS instead of JQuery for UI
+- Migrated to Typescript and TSX from JS for frontend code.
+- Hatch for packaging, building and managing project. Migrated from `setup.py` to `pyproject.toml`.
+- Removed compiled JS from repo. JS/TS is compiled at build time with npm or bun if installed (`hatch_build.py`).
+- Migrated from Webpack to Vite for frontend dev and JS compilation.
+- Migrated from Bootstrap CSS to Tailwind CSS
+- Added frontend test datasets and profiles for isolated frontend dev. See `web/README.md` for details.
+- Moved CLI test data for easier testing with segmented and non-segmented virus pipeline output
+- Added Black formatting, Ruff linting and Mypy type checking.
+- Fixed variant bar colours to represent ALT allele rather than REF.
+- Simplified CLI options with auto-detection of files and parameters based on type of analysis results provided.
+- Coverage depths are compressed by default to base64 encoded string in HTML output to reduce HTML output size.
+- Added more coverage plot visual customization options for colours, fonts, sizes, etc.
+- Removed Jest JS/TS testing for now.
+
 ## 0.3.0 (2022-08-31)
 
 - Add support for segment virus (AIV)

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
+    <title>wgscovplot</title>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<script>
+  db = {{ db | tojson }}
+  if (db.segments === undefined) {
+    for (let [sample, depthsBase64] of Object.entries(db.depths)) {
+      let xs = Array.from(new Uint16Array(new Uint8Array([...atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
+      for (let i = 0; i < xs.length; i++) {
+        if (xs[i] === 0) {
+          xs[i] = 0.0000001;
+        }
+      }
+      db.depths[sample] = xs;
+    }
+    db.positions = [...Array(db.ref_seq.length + 1).keys()];
+    db.positions.shift();
+  } else {
+    for (let [sample, segmentDepths] of Object.entries(db.depths)) {
+      for (let [segment, depthsBase64] of Object.entries(segmentDepths)) {
+        let xs = Array.from(new Uint16Array(new Uint8Array([...atob(depthsBase64)].map(c => c.charCodeAt(0))).buffer));
+        for (let i = 0; i < xs.length; i++) {
+          if (xs[i] === 0) {
+            xs[i] = 0.0000001;
+          }
+        }
+        db.depths[sample][segment] = xs;
+      }
+    }
+  }
+</script>
+<script type="text/javascript">
+  {% include "build/wgscovplot.js" %}
+</script>
+</body>
+</html>
