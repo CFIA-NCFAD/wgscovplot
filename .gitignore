@@ -104,3 +104,5 @@ ENV/
 
 
 .idea/
+web/build/wgscovplot.js
+

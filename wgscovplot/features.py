@@ -1,9 +1,9 @@
 from itertools import cycle
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
-from wgscovplot.colors import palette, AmpliconColour
+from wgscovplot.colors import AmpliconColour, palette
 from wgscovplot.config import FeaturesProps
 from wgscovplot.util import overlap
 
@@ -38,13 +38,13 @@ class EChartsItemStyle(BaseModel):
 class EChartsFeature(BaseModel):
     name: str
     value: EChartsFeatureValue
-    itemStyle: EChartsItemStyle
+    itemStyle: EChartsItemStyle  # noqa: N815
 
 
 def build_echarts_features_array(
-        gene_features: Optional[List[Feature]],
-        amplicon_features: Optional[List[Feature]],
-        fp: FeaturesProps = None,
+    gene_features: Optional[List[Feature]],
+    amplicon_features: Optional[List[Feature]],
+    fp: Optional[FeaturesProps] = None,
 ) -> List[EChartsFeature]:
     """Build a list of gene/amplicon feature properties for ECharts
 
@@ -56,25 +56,33 @@ def build_echarts_features_array(
     """
     if fp is None:
         fp = FeaturesProps()
-    out = []
+    out: List[EChartsFeature] = []
     colour_cycle = cycle(palette)
     fcminus = FeatureCoords()
     fcplus = FeatureCoords()
     next_plus_strand_level = fp.plus_strand_level + fp.rec_items_height + fp.gene_feature_padding
     next_minus_strand_level = fp.minus_strand_level + fp.rec_items_height + fp.gene_feature_padding
     if gene_features:
+        colour_cycle = cycle(colour_cycle)
         for feature in gene_features:
             start_pos: int = feature.start
             end_pos: int = feature.end
             strand = feature.strand
-            level: int
             if strand == 1:
-                overlapping = overlap(fcplus.start, fcplus.end, start_pos, end_pos)
-                level = fp.plus_strand_level if overlapping or fcplus.level == next_plus_strand_level else next_plus_strand_level
+                if overlap(fcplus.start, fcplus.end, start_pos, end_pos):
+                    level = next_plus_strand_level
+                    if fcplus.level == level:
+                        level = fp.plus_strand_level
+                else:
+                    level = fp.plus_strand_level
                 fcplus = FeatureCoords(start=start_pos, end=end_pos, level=level)
-            else:  # strand == -1
-                overlapping = overlap(fcminus.start, fcminus.end, start_pos, end_pos)
-                level = fp.minus_strand_level if overlapping or fcminus.level == next_minus_strand_level else next_minus_strand_level
+            else:
+                if overlap(fcminus.start, fcminus.end, start_pos, end_pos):
+                    level = next_minus_strand_level
+                    if fcminus.level == level:
+                        level = fp.minus_strand_level
+                else:
+                    level = fp.minus_strand_level
                 fcminus = FeatureCoords(start=start_pos, end=end_pos, level=level)
             out.append(
                 EChartsFeature(
@@ -91,27 +99,29 @@ def build_echarts_features_array(
                     itemStyle=EChartsItemStyle(color=next(colour_cycle)),
                 )
             )
-
     if amplicon_features:
         for feature in amplicon_features:
-            # TODO: implement better logic for getting primer pool since not all schemes will have the same suffix format
-            primer_pool = int(feature.name.split('_')[-1])
+            primer_pool = int(feature.name.split("_")[-1])
+            offset = fp.amplicon_offset if gene_features is not None else 0
             if primer_pool % 2 == 0:
-                level = fp.amplicon_pool2_level + fp.amplicon_offset if gene_features is not None else fp.amplicon_pool2_level
-                amplicon_color = AmpliconColour.pool1
-            else:
-                level = fp.amplicon_pool1_level + fp.amplicon_offset if gene_features is not None else fp.amplicon_pool1_level
+                level = fp.amplicon_pool2_level + offset
                 amplicon_color = AmpliconColour.pool2
+            else:
+                level = fp.amplicon_pool1_level + offset
+                amplicon_color = AmpliconColour.pool1
             out.append(
-                EChartsFeature(name=feature.name,
-                               value=EChartsFeatureValue(
-                                   idx=len(out),
-                                   start=feature.start,
-                                   end=feature.end,
-                                   level=level,
-                                   strand=feature.strand,
-                                   rotate=0,
-                                   type="amplicon"),
-                               itemStyle=EChartsItemStyle(color=amplicon_color))
+                EChartsFeature(
+                    name=feature.name,
+                    value=EChartsFeatureValue(
+                        idx=len(out),
+                        start=feature.start,
+                        end=feature.end,
+                        level=level,
+                        strand=feature.strand,
+                        rotate=0,
+                        type="amplicon",
+                    ),
+                    itemStyle=EChartsItemStyle(color=amplicon_color),
+                )
             )
     return out
