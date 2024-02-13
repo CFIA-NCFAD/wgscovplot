@@ -1,6 +1,6 @@
 # History
 
-## 1.0.0 (2024-02-09)
+## 1.0.0 (2024-02-13)
 
 This is a major release of wgscovplot with many user experience and quality of life changes to make the tool easier to
 run and use. The frontend (HTML output) has been almost completely rewritten to have more of a single-page app (SPA) 
