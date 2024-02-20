@@ -1,5 +1,9 @@
 # History
 
+## 1.0.1 (2024-02-20)
+
+Fix issue with `model_dump` method not being available in Pydantic V1 (#55) so this patch release makes it so that Pydantic V2 is required.
+
 ## 1.0.0 (2024-02-13)
 
 This is a major release of wgscovplot with many user experience and quality of life changes to make the tool easier to
