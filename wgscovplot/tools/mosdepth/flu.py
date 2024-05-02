@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import DefaultDict, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -24,11 +23,11 @@ class FluMosdepthDepthInfo(MosdepthDepthInfo):
 
 def get_flu_mosdepth_info(
     basedir: Path,
-    sample_top_references: List[SampleSegmentRef],
+    sample_top_references: list[SampleSegmentRef],
     low_coverage_threshold: int = 5,
-) -> Tuple[Dict[str, Dict[str, FluMosdepthDepthInfo]], Dict[str, Dict[str, np.ndarray]]]:
-    sample_segment_depths: DefaultDict[str, Dict] = defaultdict(dict)
-    sample_segment_depth_info: DefaultDict[str, Dict] = defaultdict(dict)
+) -> tuple[dict[str, dict[str, FluMosdepthDepthInfo]], dict[str, dict[str, np.ndarray]]]:
+    sample_segment_depths: defaultdict[str, dict] = defaultdict(dict)
+    sample_segment_depth_info: defaultdict[str, dict] = defaultdict(dict)
     for item in sample_top_references:
         segment = item.segment
         ref_id = item.ref_id

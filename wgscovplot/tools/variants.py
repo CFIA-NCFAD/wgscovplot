@@ -7,7 +7,7 @@ from collections import defaultdict
 from enum import Enum
 from operator import itemgetter
 from pathlib import Path
-from typing import DefaultDict, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Iterable, Optional, Union
 
 import pandas as pd
 from pydantic import BaseModel
@@ -186,7 +186,7 @@ SNPSIFT_SAMPLE_NAME_CLEANUP = [
 ]
 
 
-def vcf_selector(paths: List[Path]) -> Optional[Path]:
+def vcf_selector(paths: list[Path]) -> Optional[Path]:
     xs = []
     for path in paths:
         variant_caller, df = read_vcf(path)
@@ -198,7 +198,7 @@ def vcf_selector(paths: List[Path]) -> Optional[Path]:
         return None
 
 
-def snpsift_selector(paths: List[Path]) -> Optional[Path]:
+def snpsift_selector(paths: list[Path]) -> Optional[Path]:
     xs = []
     for path in paths:
         df = pd.read_table(path)
@@ -210,7 +210,7 @@ def snpsift_selector(paths: List[Path]) -> Optional[Path]:
         return None
 
 
-def read_vcf(vcf_file: Path) -> Tuple[str, pd.DataFrame]:
+def read_vcf(vcf_file: Path) -> tuple[str, pd.DataFrame]:
     """Read VCF file into a DataFrame"""
     gzipped = vcf_file.name.endswith(".gz")
     with gzip.open(vcf_file, "rt") if gzipped else open(vcf_file) as fh:
@@ -226,8 +226,11 @@ def read_vcf(vcf_file: Path) -> Tuple[str, pd.DataFrame]:
             if line.startswith("#CHROM"):
                 vcf_cols = line[1:].strip().split("\t")
                 break
-        df = pd.read_table(fh, comment="#", header=None, names=vcf_cols)
-        df = df[~df.duplicated(["CHROM", "POS", "ID", "REF", "ALT", "FILTER"], keep="first")]
+        try:
+            df = pd.read_table(fh, comment="#", header=None, names=vcf_cols)
+            df = df[~df.duplicated(["CHROM", "POS", "ID", "REF", "ALT", "FILTER"], keep="first")]
+        except pd.errors.EmptyDataError:
+            return variant_caller, pd.DataFrame()
     return variant_caller, df
 
 
@@ -356,7 +359,7 @@ def parse_ivar_vcf(
         total_dp = infos["DP"]
         ks = row.FORMAT.split(":")
         vs = row[-1].split(":")
-        record: Dict[str, Union[float, int, str]] = {k: try_parse_number(v) for k, v in zip(ks, vs)}
+        record: dict[str, Union[float, int, str]] = {k: try_parse_number(v) for k, v in zip(ks, vs)}
         ref_dp = int(record["REF_DP"])
         alt_dp = int(record["ALT_DP"])
         # if the sum of the ref and alt dp does not equal the total dp reported by iVar then recalculate the ref dp
@@ -519,24 +522,24 @@ def parse_vcf_info(s: str) -> dict:
 def parse_clair3_vcf(
     df: pd.DataFrame,
     sample: str,
-) -> List[Dict[str, Union[str, float, int]]]:
+) -> Optional[pd.DataFrame]:
     if df.empty:
-        return []
+        return None
     df["Sample"] = sample
     df["ALT_FREQ"] = df["SAMPLE"].apply(lambda x: x.split(":")[-1])
     df.drop(columns=["ID", "INFO", "QUAL", "FILTER", "INFO", "FORMAT", "SAMPLE"], inplace=True)
     df = df.reindex(columns=["Sample", "Segment", "Segment Length", "CHROM", "POS", "REF", "ALT", "ALT_FREQ"])
     df.rename(columns={"CHROM": "REF_ID", "ALT": "ALT_SEQ", "REF": "REF_SEQ"}, inplace=True)
     df = df.astype({"POS": int, "ALT_FREQ": float})
-    return df.to_dict(orient="records")
+    return df
 
 
 def get_nf_flu_variant_info(
     basedir: Path,
-    req_seq: Dict[str, Dict[str, str]],
+    req_seq: dict[str, dict[str, str]],
     sample_top_references: list[SampleSegmentRef],
-) -> DefaultDict[str, Dict[str, List[Dict]]]:
-    out: DefaultDict[str, Dict[str, List[Dict]]] = defaultdict(dict)
+) -> defaultdict[str, dict[str, list[dict]]]:
+    out: defaultdict[str, dict[str, list[dict]]] = defaultdict(dict)
     for items in sample_top_references:
         segment = items.segment
         ref_id = items.ref_id
@@ -548,18 +551,17 @@ def get_nf_flu_variant_info(
         for vcf_file in vcf_files:
             variants_caller, df_vcf = read_vcf(vcf_file)
             vcf_infos = parse_clair3_vcf(df_vcf, sample)
-            if vcf_infos:
-                for vcf_info in vcf_infos:
-                    vcf_info["Segment"] = segment
-                    vcf_info["Segment Length"] = ref_seq_len
-                out[sample][segment] = vcf_infos
+            if vcf_infos is not None:
+                vcf_infos["Segment"] = segment
+                vcf_infos["Segment Length"] = ref_seq_len
+                out[sample][segment] = vcf_infos.to_dict(orient="records")
     return out
 
 
 def get_info(
     basedir: Path,
     min_coverage: int = 10,
-) -> Dict[str, pd.DataFrame]:
+) -> dict[str, pd.DataFrame]:
     sample_vcf = find_file_for_each_sample(
         basedir=basedir,
         glob_patterns=VCF_GLOB_PATTERNS,

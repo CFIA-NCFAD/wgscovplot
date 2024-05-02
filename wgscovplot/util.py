@@ -4,12 +4,12 @@ import re
 from collections import defaultdict
 from itertools import product
 from pathlib import Path
-from typing import Any, Callable, Iterable, List, Mapping, Optional, Union
+from typing import Any, Callable, Iterable, Mapping, Optional, Union
 
 import numpy as np
 import pandas as pd
 
-ListOfStrOrPattern = Union[List[str], List[re.Pattern[str]], List[Union[str, re.Pattern[str]]]]
+ListOfStrOrPattern = Union[list[str], list[re.Pattern[str]], list[Union[str, re.Pattern[str]]]]
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ NT_MAP = {
 
 def find_file_for_each_sample(
     basedir: Path,
-    glob_patterns: List[str],
+    glob_patterns: list[str],
     sample_name_cleanup: Optional[ListOfStrOrPattern] = None,
     single_entry_selector_func: Optional[Callable] = None,
 ) -> Mapping[str, Path]:
@@ -54,7 +54,7 @@ def find_file_for_each_sample(
     return sample_file
 
 
-def select_most_recent_file(files: List[Path]) -> Path:
+def select_most_recent_file(files: list[Path]) -> Path:
     return sorted(files, key=lambda x: x.stat().st_mtime, reverse=True)[0]
 
 
@@ -123,7 +123,7 @@ def get_col_widths(
         yield width
 
 
-def get_row_heights(df, idx, offset=0, multiplier=15):
+def get_row_heights(df: pd.DataFrame, idx: int, offset: int = 0, multiplier: int = 15):
     """Calculate row heights"""
     # get max number of newlines in the row
     newline_count = np.max(df.loc[idx, :].astype(str).str.count("\n").max())
@@ -131,15 +131,6 @@ def get_row_heights(df, idx, offset=0, multiplier=15):
     height = newline_count * multiplier + offset
     logger.debug(f'idx="{idx}" height={height} newline_count={newline_count}')
     return height
-
-
-def list_get(xs: Optional[List], idx: int, default: Optional[Any] = None) -> Optional[Any]:
-    if not xs:
-        return default
-    try:
-        return xs[idx]
-    except (TypeError, IndexError):
-        return default
 
 
 def try_parse_number(s: str) -> Any:
@@ -160,3 +151,17 @@ def expand_degenerate_bases(seq: str) -> Iterable[str]:
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
     return start1 < start2 < end1 or start1 < end2 < end1
+
+
+def get_ref_name_bam(path: Path) -> str:
+    import pysam
+
+    bam = pysam.AlignmentFile(path)
+    logger.info(f"BAM: {bam}")
+    ref_name = bam.get_reference_name(0)
+    logger.info(f"{ref_name=}")
+    if not ref_name:
+        for ref_name in bam.references:
+            if ref_name:
+                return ref_name
+    return ref_name
