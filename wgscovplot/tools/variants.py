@@ -4,11 +4,10 @@ import gzip
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Iterable
 from enum import Enum
 from operator import itemgetter
 from pathlib import Path
-from typing import Optional
+from typing import Iterable, Optional, Union
 
 import pandas as pd
 from pydantic import BaseModel
@@ -238,7 +237,7 @@ def read_vcf(vcf_file: Path) -> tuple[str, pd.DataFrame]:
 def parse_aa(gene: str, ref: str, alt: str, nt_pos: int, snpeff_aa: str, effect: str) -> str:
     if snpeff_aa == ".":
         return f"{ref}{nt_pos}{alt}"
-    m: re.Match[str] | None = re.match(r"p\.([a-zA-Z]+)(\d+)([a-zA-Z]+)", snpeff_aa)
+    m: Optional[re.Match[str]] = re.match(r"p\.([a-zA-Z]+)(\d+)([a-zA-Z]+)", snpeff_aa)
     if m is None and snpeff_aa.startswith("p."):
         aa_str = snpeff_aa[2:].upper()
         for aa3, aa1 in aa_codes.items():
@@ -360,7 +359,7 @@ def parse_ivar_vcf(
         total_dp = infos["DP"]
         ks = row.FORMAT.split(":")
         vs = row[-1].split(":")
-        record: dict[str, float | int | str] = {k: try_parse_number(v) for k, v in zip(ks, vs, strict=False)}
+        record: dict[str, Union[float, int, str]] = {k: try_parse_number(v) for k, v in zip(ks, vs, strict=False)}
         ref_dp = int(record["REF_DP"])
         alt_dp = int(record["ALT_DP"])
         # if the sum of the ref and alt dp does not equal the total dp reported by iVar then recalculate the ref dp

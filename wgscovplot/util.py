@@ -2,10 +2,9 @@ import contextlib
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Mapping
 from itertools import product
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Iterable, Mapping, Optional
 
 import numpy as np
 import pandas as pd
