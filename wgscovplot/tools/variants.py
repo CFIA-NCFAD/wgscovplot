@@ -359,7 +359,7 @@ def parse_ivar_vcf(
         total_dp = infos["DP"]
         ks = row.FORMAT.split(":")
         vs = row[-1].split(":")
-        record: dict[str, Union[float, int, str]] = {k: try_parse_number(v) for k, v in zip(ks, vs, strict=False)}
+        record: dict[str, Union[float, int, str]] = {k: try_parse_number(v) for k, v in zip(ks, vs)}
         ref_dp = int(record["REF_DP"])
         alt_dp = int(record["ALT_DP"])
         # if the sum of the ref and alt dp does not equal the total dp reported by iVar then recalculate the ref dp
@@ -676,7 +676,7 @@ def to_variant_pivot_table(df: pd.DataFrame) -> pd.DataFrame:
         fill_value=0.0,
     )
     nt_positions = [get_nt_position_int(x) for x in df_pivot.columns]
-    pivot_cols = list(zip(df_pivot.columns, nt_positions, strict=False))
+    pivot_cols = list(zip(df_pivot.columns, nt_positions))
     pivot_cols.sort(key=itemgetter(1))
     return df_pivot[[x for x, y in pivot_cols]]
 

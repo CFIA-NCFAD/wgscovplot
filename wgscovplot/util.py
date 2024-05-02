@@ -4,12 +4,12 @@ import re
 from collections import defaultdict
 from itertools import product
 from pathlib import Path
-from typing import Any, Callable, Iterable, Mapping, Optional
+from typing import Any, Callable, Iterable, Mapping, Optional, Union
 
 import numpy as np
 import pandas as pd
 
-ListOfStrOrPattern = list[str] | list[re.Pattern[str]] | list[str | re.Pattern[str]]
+ListOfStrOrPattern = Union[list[str], list[re.Pattern[str]], list[Union[str, re.Pattern[str]]]]
 
 logger = logging.getLogger(__name__)
 
