@@ -2,6 +2,7 @@ import base64
 import logging
 from collections import defaultdict
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -239,8 +240,8 @@ def get_info(
 
 
 def get_base64_encoded_depth_arrays(
-    sample_depths: dict[str, np.ndarray] | dict[str, dict[str, np.ndarray]]
-) -> dict[str, str] | dict[str, dict[str, str]]:
+    sample_depths: Union[dict[str, np.ndarray], dict[str, dict[str, np.ndarray]]]
+) -> Union[dict[str, str], dict[str, dict[str, str]]]:
     """Encode depth arrays as base64 strings
 
     Instead of dumping a list of numbers to a JSON list, the float32 array will be base64 encoded so

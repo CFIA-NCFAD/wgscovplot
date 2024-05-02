@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from enum import Enum
 from operator import itemgetter
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 from pydantic import BaseModel
@@ -186,7 +187,7 @@ SNPSIFT_SAMPLE_NAME_CLEANUP = [
 ]
 
 
-def vcf_selector(paths: list[Path]) -> Path | None:
+def vcf_selector(paths: list[Path]) -> Optional[Path]:
     xs = []
     for path in paths:
         variant_caller, df = read_vcf(path)
@@ -198,7 +199,7 @@ def vcf_selector(paths: list[Path]) -> Path | None:
         return None
 
 
-def snpsift_selector(paths: list[Path]) -> Path | None:
+def snpsift_selector(paths: list[Path]) -> Optional[Path]:
     xs = []
     for path in paths:
         df = pd.read_table(path)
@@ -278,7 +279,7 @@ def get_aa(s: str) -> str:
     return out
 
 
-def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> pd.DataFrame | None:
+def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     df = df[~df.duplicated(keep="first")]
@@ -340,8 +341,8 @@ def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> pd.DataFrame | None:
 
 def parse_ivar_vcf(
     df: pd.DataFrame,
-    sample_name: str | None = None,
-) -> pd.DataFrame | None:
+    sample_name: Optional[str] = None,
+) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     if not sample_name:
@@ -384,9 +385,9 @@ def parse_ivar_vcf(
 
 
 def merge_vcf_snpsift(
-    df_vcf: pd.DataFrame | None,
-    df_snpsift: pd.DataFrame | None,
-) -> pd.DataFrame | None:
+    df_vcf: Optional[pd.DataFrame],
+    df_snpsift: Optional[pd.DataFrame],
+) -> Optional[pd.DataFrame]:
     if df_snpsift is None and df_vcf is None:
         return None
     if df_vcf is None and df_snpsift is not None:
@@ -403,8 +404,8 @@ def merge_vcf_snpsift(
 
 def parse_longshot_vcf(
     df: pd.DataFrame,
-    sample_name: str | None = None,
-) -> pd.DataFrame | None:
+    sample_name: Optional[str] = None,
+) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     if not sample_name:
@@ -432,9 +433,9 @@ def parse_longshot_vcf(
 
 def parse_medaka_vcf(
     df: pd.DataFrame,
-    sample_name: str | None = None,
+    sample_name: Optional[str] = None,
     min_coverage: int = 10,
-) -> pd.DataFrame | None:
+) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     if not sample_name:
@@ -474,8 +475,8 @@ def parse_medaka_vcf(
 
 def parse_nanopolish_vcf(
     df: pd.DataFrame,
-    sample_name: str | None = None,
-) -> pd.DataFrame | None:
+    sample_name: Optional[str] = None,
+) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     if not sample_name:
@@ -522,7 +523,7 @@ def parse_vcf_info(s: str) -> dict:
 def parse_clair3_vcf(
     df: pd.DataFrame,
     sample: str,
-) -> pd.DataFrame | None:
+) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     df["Sample"] = sample

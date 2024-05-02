@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -41,9 +42,9 @@ class EChartsFeature(BaseModel):
 
 
 def build_echarts_features_array(
-    gene_features: list[Feature] | None,
-    amplicon_features: list[Feature] | None,
-    fp: FeaturesProps | None = None,
+    gene_features: Optional[list[Feature]],
+    amplicon_features: Optional[list[Feature]],
+    fp: Optional[FeaturesProps] = None,
 ) -> list[EChartsFeature]:
     """Build a list of gene/amplicon feature properties for ECharts
 

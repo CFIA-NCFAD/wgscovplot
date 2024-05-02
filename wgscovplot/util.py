@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping
 from itertools import product
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
@@ -36,8 +36,8 @@ NT_MAP = {
 def find_file_for_each_sample(
     basedir: Path,
     glob_patterns: list[str],
-    sample_name_cleanup: ListOfStrOrPattern | None = None,
-    single_entry_selector_func: Callable | None = None,
+    sample_name_cleanup: Optional[ListOfStrOrPattern] = None,
+    single_entry_selector_func: Optional[Callable] = None,
 ) -> Mapping[str, Path]:
     sample_files = defaultdict(list)
     for glob_pattern in glob_patterns:
@@ -61,7 +61,7 @@ def select_most_recent_file(files: list[Path]) -> Path:
 
 def extract_sample_name(
     filename: str,
-    remove: ListOfStrOrPattern | None = None,
+    remove: Optional[ListOfStrOrPattern] = None,
 ) -> str:
     if not remove:
         remove = [
@@ -99,7 +99,7 @@ def extract_sample_name(
 
 
 def get_col_widths(
-    df: pd.DataFrame, index: bool = False, offset: int = 2, max_width: int | None = None, include_header: bool = True
+    df: pd.DataFrame, index: bool = False, offset: int = 2, max_width: Optional[int] = None, include_header: bool = True
 ) -> Iterable[int]:
     """Calculate column widths based on column headers and contents"""
     if index:
@@ -124,7 +124,7 @@ def get_col_widths(
         yield width
 
 
-def get_row_heights(df, idx, offset=0, multiplier=15):
+def get_row_heights(df: pd.DataFrame, idx: int, offset: int = 0, multiplier: int = 15):
     """Calculate row heights"""
     # get max number of newlines in the row
     newline_count = np.max(df.loc[idx, :].astype(str).str.count("\n").max())
@@ -132,15 +132,6 @@ def get_row_heights(df, idx, offset=0, multiplier=15):
     height = newline_count * multiplier + offset
     logger.debug(f'idx="{idx}" height={height} newline_count={newline_count}')
     return height
-
-
-def list_get(xs: list | None, idx: int, default: Any | None = None) -> Any | None:
-    if not xs:
-        return default
-    try:
-        return xs[idx]
-    except (TypeError, IndexError):
-        return default
 
 
 def try_parse_number(s: str) -> Any:
