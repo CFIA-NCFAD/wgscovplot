@@ -178,6 +178,8 @@ ignore = [
     "UP007",
     # Ignore "Import from `collections.abc` instead: `Iterable`, `Mapping`, `Callable`"
     "UP035",
+    # Ignore "B905 [*] `zip()` without an explicit `strict=` parameter"
+    "B905",
 ]
 unfixable = [
     # Don't touch unused imports
