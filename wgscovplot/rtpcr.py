@@ -1,6 +1,5 @@
 from collections import defaultdict
 from pathlib import Path
-from typing import DefaultDict, Dict
 
 import edlib
 from Bio import SeqIO
@@ -22,10 +21,10 @@ class PrimerMatch(BaseModel):
 
 
 def flu_rtpcr_matches(
-    primer_seq_path: Path, sample_seg_seq: Dict[str, Dict[str, str]], edit_distance_threshold: int
-) -> DefaultDict[str, DefaultDict[str, list[PrimerMatch]]]:
+    primer_seq_path: Path, sample_seg_seq: dict[str, dict[str, str]], edit_distance_threshold: int
+) -> defaultdict[str, defaultdict[str, list[PrimerMatch]]]:
     """Find real-time PCR primer/probe matches to each segment of each sample using Edlib."""
-    out: DefaultDict[str, DefaultDict[str, list[PrimerMatch]]] = defaultdict(lambda: defaultdict(list))
+    out: defaultdict[str, defaultdict[str, list[PrimerMatch]]] = defaultdict(lambda: defaultdict(list))
     primer_seq_record = [(record.id, record.seq) for record in SeqIO.parse(open(primer_seq_path), "fasta")]
     for sample, seg_seq in sample_seg_seq.items():
         for seg, seq in seg_seq.items():

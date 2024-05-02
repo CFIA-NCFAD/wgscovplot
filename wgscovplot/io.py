@@ -1,7 +1,7 @@
 import logging
+from collections import OrderedDict
 from io import TextIOWrapper
 from pathlib import Path
-from typing import List, Optional, OrderedDict, Tuple, Union
 
 from BCBio import GFF
 from Bio import Entrez, SeqIO
@@ -12,15 +12,16 @@ from jinja2 import Environment, FileSystemLoader
 from wgscovplot.db import DB, SegmentedGenomeDB
 from wgscovplot.features import Feature
 from wgscovplot.tools import mosdepth
+from wgscovplot.util import get_ref_name_bam
 
 logger = logging.getLogger(__name__)
 
-REF_FASTA_GLOB_PATTERN = "**/genome/**/*.fa*"
-GFF_GLOB_PATTERN = "**/genome/**/*.gff"
+REF_FASTA_GLOB_PATTERN = "*.fa*"
+GFF_GLOB_PATTERN = "*.gff"
 
 
 def write_html_coverage_plot(
-    db: Union[DB, SegmentedGenomeDB],
+    db: DB | SegmentedGenomeDB,
     output_html: Path,
 ) -> None:
     """Write HTML coverage plot"""
@@ -42,7 +43,7 @@ def write_html_coverage_plot(
         )
 
 
-def parse_gff(path: Path) -> List[Feature]:
+def parse_gff(path: Path) -> list[Feature]:
     out = []
     with open(path) as fh:
         interest_info = {"gff_type": ["gene", "five_prime_UTR", "three_prime_UTR"]}
@@ -53,20 +54,20 @@ def parse_gff(path: Path) -> List[Feature]:
                 start_pos = int(feature.location.start) + 1
                 end_pos = int(feature.location.end)
                 strand = int(feature.location.strand)
-                qs: OrderedDict[str, List[str]] = feature.qualifiers
+                qs: OrderedDict[str, list[str]] = feature.qualifiers
                 feature_name = qs["Name"][0] if "Name" in qs else qs["gbkey"][0]
                 out.append(Feature(start=start_pos, end=end_pos, strand=strand, name=feature_name))
     out.sort(key=lambda k: k.start)
     return out
 
 
-def parse_genbank(gb_handle_or_path: Union[Path, TextIOWrapper]) -> Tuple[str, List[Feature]]:
+def parse_genbank(gb_handle_or_path: Path | TextIOWrapper) -> tuple[str, list[Feature]]:
     """Parse sequence and features from Genbank
 
     Args:
         gb_handle_or_path: Handle or path to Genbank file
     """
-    features: List[Feature] = []
+    features: list[Feature] = []
     skip_feature = {"CDS", "source", "repeat_region", "misc_feature"}
     seq = ""
     for seq_record in SeqIO.parse(gb_handle_or_path, "gb"):
@@ -78,7 +79,7 @@ def parse_genbank(gb_handle_or_path: Union[Path, TextIOWrapper]) -> Tuple[str, L
             if seq_feature.type in ["5'UTR", "3'UTR"]:
                 feature_name = seq_feature.type
             else:
-                qs: OrderedDict[str, List[str]] = seq_feature.qualifiers
+                qs: OrderedDict[str, list[str]] = seq_feature.qualifiers
                 gene = qs.get("gene")
                 locus_tag = qs.get("locus_tag")
                 if gene:
@@ -97,20 +98,28 @@ def parse_genbank(gb_handle_or_path: Union[Path, TextIOWrapper]) -> Tuple[str, L
 
 def get_ref_seq_and_annotation(
     input_dir: Path,
-) -> Tuple[Optional[str], Optional[List[Feature]]]:
-    gff_path = find_ref_gff(input_dir)
+) -> tuple[str | None, list[Feature] | None]:
+    try:
+        ref_id = mosdepth.get_refseq_id(input_dir)
+    except Exception as e:
+        logger.error(f"Error getting ref seq ID: {e}")
+        ref_id = None
+    if not ref_id:
+        ref_id = get_refseq_id_from_bam(input_dir)
+    if ref_id is None:
+        logger.error("Could not find reference sequence ID from BAM file. Exiting.")
+        return None, None
+    gff_path = find_ref_gff(input_dir, refseq_id=ref_id)
     gene_features = parse_gff(gff_path) if gff_path else None
-    fasta_path = find_ref_fasta(input_dir)
+    fasta_path = find_ref_fasta(input_dir, refseq_id=ref_id)
     ref_seq = read_first_seq_from_fasta(fasta_path) if fasta_path else None
     if ref_seq is None or gene_features is None:
-        logger.info(f"Could not find GFF or parse FASTA. Trying to get ref seq ID from {input_dir}")
-        ref_id = mosdepth.get_refseq_id(input_dir)
-        logger.info(f"Ref seq id={ref_id}")
+        logger.info(f"Could not find GFF or parse FASTA. Fetching from NCBI for ref seq ID {ref_id}")
         ref_seq, gene_features = fetch_ref_seq_from_ncbi_entrez(ref_id)
     return ref_seq, gene_features
 
 
-def fetch_ref_seq_from_ncbi_entrez(ref_id: str) -> Tuple[Optional[str], Optional[List[Feature]]]:
+def fetch_ref_seq_from_ncbi_entrez(ref_id: str) -> tuple[str | None, list[Feature] | None]:
     if not ref_id:
         logger.info("No ref seq ID provided. Cannot fetch seq from NCBI.")
         return None, None
@@ -126,11 +135,43 @@ def read_first_seq_from_fasta(fasta_path: Path) -> str:
     return ""
 
 
-def find_ref_fasta(input_dir: Path) -> Optional[Path]:
-    ref_fasta_paths = list(input_dir.glob(REF_FASTA_GLOB_PATTERN))
-    return ref_fasta_paths[0] if ref_fasta_paths else None
+def find_ref_fasta(input_dir: Path, refseq_id: str) -> Path | None:
+    for path in input_dir.rglob(REF_FASTA_GLOB_PATTERN):
+        with open(path) as fh:
+            for line in fh:
+                if line.startswith(">"):
+                    header = line.split()[0]
+                    if refseq_id in header:
+                        return path
+                    else:
+                        break
+                if line.strip() == "":
+                    continue
+                else:
+                    break
+    return None
 
 
-def find_ref_gff(input_dir: Path) -> Optional[Path]:
-    gff_paths = list(input_dir.glob(GFF_GLOB_PATTERN))
-    return gff_paths[0] if gff_paths else None
+def find_ref_gff(input_dir: Path, refseq_id: str) -> Path | None:
+    gff_paths = list(input_dir.rglob(GFF_GLOB_PATTERN))
+    for gff_path in gff_paths:
+        with open(gff_path) as fh:
+            for line in fh:
+                if line.startswith("#"):
+                    continue
+                first_col = line.split("\t")[0]
+                if refseq_id in first_col:
+                    return gff_path
+                else:
+                    break
+    return None
+
+
+def get_refseq_id_from_bam(input_dir: Path) -> str | None:
+    try:
+        bam_path = next(input_dir.rglob("*.bam"))
+        return get_ref_name_bam(bam_path) if bam_path else None
+    except Exception as e:
+        logger.error(f"Error getting ref seq ID from BAM file: {e}")
+        ref_id = None
+    return ref_id

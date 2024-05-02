@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import DefaultDict, Dict
 
 import pandas as pd
 from Bio.SeqIO.FastaIO import SimpleFastaParser
@@ -61,7 +60,7 @@ def read_nf_flu_topsegments_csv(top_segments_csv: Path) -> pd.DataFrame:
 
 def get_segments_ref_id(sample_top_references: list[SampleSegmentRef]) -> dict[str, dict[str, str]]:
     """Get reference id for each segment of each sample"""
-    out: DefaultDict[str, Dict[str, str]] = defaultdict(dict)
+    out: defaultdict[str, dict[str, str]] = defaultdict(dict)
     for items in sample_top_references:
         out[items.sample][items.segment] = items.ref_id
     return dict(out)
@@ -76,7 +75,7 @@ def get_sample_segment_seqs(
     This function assumes that the nf-flu pipeline was used, so the consensus sequence would have the filename format:
     {sample}.Segment_{segment}.{ref_id}.bcftools.consensus.fasta
     """
-    out: DefaultDict[str, Dict[str, str]] = defaultdict(dict)
+    out: defaultdict[str, dict[str, str]] = defaultdict(dict)
     # Find the most recently modified FASTA file for each sample for each segment
     # Only do the glob search once rather than once for every sample and segment
     filename_to_fasta_file = find_file_for_each_sample(

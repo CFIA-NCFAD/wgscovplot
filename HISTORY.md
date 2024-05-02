@@ -1,5 +1,15 @@
 # History
 
+## 1.0.2 (2024-04-27)
+
+This patch release fixes an issue with not capturing an EmptyDataError when reading VCF files and an issue where Clair3 
+VCFs from non nf-flu analyses are prematurely converted to a dict from a Pandas DataFrame.
+
+### Changes
+
+- dev: Update type hints given mypy and ruff linting
+- fix: check BAM files for reference sequence ID/name in addition to Mosdepth files. Improved searching for the reference sequence GFF and FASTA in the input directory before trying to fetch from NCBI. 
+
 ## 1.0.1 (2024-02-20)
 
 Fix issue with `model_dump` method not being available in Pydantic V1 (#55) so this patch release makes it so that Pydantic V2 is required.

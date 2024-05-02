@@ -2,14 +2,15 @@ import contextlib
 import logging
 import re
 from collections import defaultdict
+from collections.abc import Callable, Iterable, Mapping
 from itertools import product
 from pathlib import Path
-from typing import Any, Callable, Iterable, List, Mapping, Optional, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
-ListOfStrOrPattern = Union[List[str], List[re.Pattern[str]], List[Union[str, re.Pattern[str]]]]
+ListOfStrOrPattern = list[str] | list[re.Pattern[str]] | list[str | re.Pattern[str]]
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +35,9 @@ NT_MAP = {
 
 def find_file_for_each_sample(
     basedir: Path,
-    glob_patterns: List[str],
-    sample_name_cleanup: Optional[ListOfStrOrPattern] = None,
-    single_entry_selector_func: Optional[Callable] = None,
+    glob_patterns: list[str],
+    sample_name_cleanup: ListOfStrOrPattern | None = None,
+    single_entry_selector_func: Callable | None = None,
 ) -> Mapping[str, Path]:
     sample_files = defaultdict(list)
     for glob_pattern in glob_patterns:
@@ -54,13 +55,13 @@ def find_file_for_each_sample(
     return sample_file
 
 
-def select_most_recent_file(files: List[Path]) -> Path:
+def select_most_recent_file(files: list[Path]) -> Path:
     return sorted(files, key=lambda x: x.stat().st_mtime, reverse=True)[0]
 
 
 def extract_sample_name(
     filename: str,
-    remove: Optional[ListOfStrOrPattern] = None,
+    remove: ListOfStrOrPattern | None = None,
 ) -> str:
     if not remove:
         remove = [
@@ -98,7 +99,7 @@ def extract_sample_name(
 
 
 def get_col_widths(
-    df: pd.DataFrame, index: bool = False, offset: int = 2, max_width: Optional[int] = None, include_header: bool = True
+    df: pd.DataFrame, index: bool = False, offset: int = 2, max_width: int | None = None, include_header: bool = True
 ) -> Iterable[int]:
     """Calculate column widths based on column headers and contents"""
     if index:
@@ -133,7 +134,7 @@ def get_row_heights(df, idx, offset=0, multiplier=15):
     return height
 
 
-def list_get(xs: Optional[List], idx: int, default: Optional[Any] = None) -> Optional[Any]:
+def list_get(xs: list | None, idx: int, default: Any | None = None) -> Any | None:
     if not xs:
         return default
     try:
@@ -160,3 +161,17 @@ def expand_degenerate_bases(seq: str) -> Iterable[str]:
 
 def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
     return start1 < start2 < end1 or start1 < end2 < end1
+
+
+def get_ref_name_bam(path: Path) -> str:
+    import pysam
+
+    bam = pysam.AlignmentFile(path)
+    logger.info(f"BAM: {bam}")
+    ref_name = bam.get_reference_name(0)
+    logger.info(f"{ref_name=}")
+    if not ref_name:
+        for ref_name in bam.references:
+            if ref_name:
+                return ref_name
+    return ref_name

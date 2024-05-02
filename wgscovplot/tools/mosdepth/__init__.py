@@ -2,7 +2,6 @@ import base64
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -10,7 +9,7 @@ from pydantic import BaseModel
 
 from wgscovplot.colors import AmpliconColour
 from wgscovplot.features import Feature
-from wgscovplot.util import find_file_for_each_sample
+from wgscovplot.util import find_file_for_each_sample, get_ref_name_bam
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +62,7 @@ class MosdepthDepthInfo(BaseModel):
     max_depth: int
 
 
-def get_samples_name(basedir: Path, is_genome_segmented: bool) -> List:
+def get_samples_name(basedir: Path, is_genome_segmented: bool) -> list:
     glob_patterns = TOP_REFERENCE_PATTERNS if is_genome_segmented else PER_BASE_PATTERNS
     sample_beds = find_file_for_each_sample(
         basedir, glob_patterns=glob_patterns, sample_name_cleanup=SAMPLE_NAME_CLEANUP
@@ -139,20 +138,6 @@ def depth_array(df: pd.DataFrame) -> np.ndarray:
     return arr
 
 
-def get_ref_name_bam(path: Path) -> str:
-    import pysam
-
-    bam = pysam.AlignmentFile(path)
-    logger.info(f"BAM: {bam}")
-    ref_name = bam.get_reference_name(0)
-    logger.info(f"{ref_name=}")
-    if not ref_name:
-        for ref_name in bam.references:
-            if ref_name:
-                return ref_name
-    return ref_name
-
-
 def get_refseq_id(basedir: Path) -> str:
     sample_paths = find_file_for_each_sample(
         basedir, glob_patterns=PER_BASE_PATTERNS, sample_name_cleanup=SAMPLE_NAME_CLEANUP
@@ -169,7 +154,7 @@ def get_refseq_id(basedir: Path) -> str:
     return refseq_id
 
 
-def get_amplicon_depths(basedir: Path) -> Dict[str, List]:
+def get_amplicon_depths(basedir: Path) -> dict[str, list]:
     sample_path = find_file_for_each_sample(
         basedir, glob_patterns=REGIONS_PATTERNS, sample_name_cleanup=SAMPLE_NAME_CLEANUP
     )
@@ -196,7 +181,7 @@ def get_amplicon_depths(basedir: Path) -> Dict[str, List]:
         return {}
 
 
-def get_region_amplicon(basedir: Path) -> List[Feature]:
+def get_region_amplicon(basedir: Path) -> list[Feature]:
     sample_path = find_file_for_each_sample(
         basedir, glob_patterns=REGIONS_PATTERNS, sample_name_cleanup=SAMPLE_NAME_CLEANUP
     )
@@ -220,7 +205,7 @@ def get_region_amplicon(basedir: Path) -> List[Feature]:
 
 def get_info(
     basedir: Path, low_coverage_threshold: int = 5
-) -> Tuple[Dict[str, MosdepthDepthInfo], Dict[str, np.ndarray]]:
+) -> tuple[dict[str, MosdepthDepthInfo], dict[str, np.ndarray]]:
     sample_beds = find_file_for_each_sample(
         basedir, glob_patterns=PER_BASE_PATTERNS, sample_name_cleanup=SAMPLE_NAME_CLEANUP
     )
@@ -254,8 +239,8 @@ def get_info(
 
 
 def get_base64_encoded_depth_arrays(
-    sample_depths: Union[Dict[str, np.ndarray], Dict[str, Dict[str, np.ndarray]]]
-) -> Union[Dict[str, str], Dict[str, Dict[str, str]]]:
+    sample_depths: dict[str, np.ndarray] | dict[str, dict[str, np.ndarray]]
+) -> dict[str, str] | dict[str, dict[str, str]]:
     """Encode depth arrays as base64 strings
 
     Instead of dumping a list of numbers to a JSON list, the float32 array will be base64 encoded so
