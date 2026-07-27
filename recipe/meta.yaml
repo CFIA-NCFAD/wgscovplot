@@ -1,0 +1,46 @@
+{% set name = "wgscovplot" %}
+# You can set the version manually or read it dynamically
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ..  # Tells conda-build to use the local repository source files
+
+build:
+  number: 0
+  noarch: python  # Pure python package (architecture independent)
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - wgscovplot = wgscovplot.cli:app
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling  # Since the project uses hatchling as the build backend
+  run:
+    - python >=3.10
+    - typer
+    - rich
+    - pandas
+    - biopython
+    - bcbio-gff
+    - pydantic >=2.0.0
+    - jinja2
+    - python-edlib
+    - pysam
+
+test:
+  imports:
+    - wgscovplot
+    - wgscovplot.tools
+  commands:
+    - wgscovplot --help
+
+about:
+  home: https://github.com/CFIA-NCFAD/wgscovplot
+  license: Apache-2.0
+  summary: wgscovplot generates interactive comparative sequencing coverage plots in self-contained, offline-friendly HTML files with optional annotation of variant calling results, PCR amplicon coverage and genetic features.
