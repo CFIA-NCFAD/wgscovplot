@@ -581,6 +581,34 @@ def parse_clair3_vcf(
     return df
 
 
+def parse_flu_bcftools_vcf(
+    df: pd.DataFrame,
+    sample: str,
+) -> pd.DataFrame | None:
+    if df.empty:
+        return None
+
+    # 1. Define standard VCF columns
+    vcf_standard_cols = {"CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"}
+    print (df.columns)
+    # 2. Get columns that are NOT standard VCF columns
+    sample_cols = [col for col in df.columns if col not in vcf_standard_cols]
+    if not sample_cols:
+        raise ValueError(f"No sample columns found in VCF. Columns: {list(df.columns)}")
+
+    sample_col = sample_cols[0]  # Take the first (or only) sample column: unknow column name with Freebayes and SAMPLE columns with clair3
+
+    df["Sample"] = sample
+    df["ALT_FREQ"] = df[sample_col].apply(lambda x: x.split(":")[-1])
+
+    df.drop(columns=["ID", "INFO", "QUAL", "FILTER", "FORMAT", sample_col], inplace=True)
+
+    df = df.reindex(columns=["Sample", "Segment", "Segment Length", "CHROM", "POS", "REF", "ALT", "ALT_FREQ"])
+    df.rename(columns={"CHROM": "REF_ID", "ALT": "ALT_SEQ", "REF": "REF_SEQ"}, inplace=True)
+    df = df.astype({"POS": int, "ALT_FREQ": float})
+    return df
+
+
 def get_nf_flu_variant_info(
     basedir: Path,
     req_seq: dict[str, dict[str, str]],
@@ -597,7 +625,7 @@ def get_nf_flu_variant_info(
             ref_seq_len = len(req_seq[sample][segment])
         for vcf_file in vcf_files:
             _, df_vcf = read_vcf(vcf_file)
-            vcf_infos = parse_clair3_vcf(df_vcf, sample)
+            vcf_infos = parse_flu_bcftools_vcf(df_vcf, sample)
             if vcf_infos is not None:
                 vcf_infos["Segment"] = segment
                 vcf_infos["Segment Length"] = ref_seq_len
