@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+import contextlib
+import os
+import shutil
+import tempfile
 from os.path import exists
 from pathlib import Path
 
@@ -13,6 +17,21 @@ non_segmented_virus_data_dir = dirpath / "data/sars-cov-2"
 segmented_virus_data_dir = dirpath / "data/iav"
 
 
+@contextlib.contextmanager
+def isolated_filesystem():
+    cwd = os.getcwd()
+    t = tempfile.mkdtemp()
+    os.chdir(t)
+    try:
+        yield t
+    finally:
+        os.chdir(cwd)
+        try:
+            shutil.rmtree(t)
+        except OSError:
+            pass
+
+
 def test_basic_cli():
     result = runner.invoke(app)
     assert result.exit_code != 0
@@ -24,7 +43,7 @@ def test_basic_cli():
 
 
 def test_cli_non_segment_virus():
-    with runner.isolated_filesystem():
+    with isolated_filesystem():
         out_html = "wgscovplot_test1.html"
         test_result = runner.invoke(
             app,
@@ -39,10 +58,11 @@ def test_cli_non_segment_virus():
 
 
 def test_cli_segment_virus():
-    with runner.isolated_filesystem():
+    with isolated_filesystem():
         out_html = "wgscovplot_test_segment_virus.html"
         test_result = runner.invoke(
             app, [str(segmented_virus_data_dir.resolve().absolute()), "--output-html", out_html]
         )
         assert test_result.exit_code == 0
         assert exists(out_html)
+
