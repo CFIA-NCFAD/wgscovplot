@@ -131,10 +131,6 @@ export function getSegmentVariantComparison(
   const variantArr: (VariantCall | SegmentedVariantComparison)[] = [];
   for (const sample of samples) {
     const variants = get(db, ["variants", sample, segment]);
-    if (isNil(variants)) {
-      variantArr.push(missingSegmentVariantInfo(sample, position, segment));
-      continue;
-    }
     const variant = find(variants, {POS: position}, 0) as VariantCall;
     const ref_id = get(db, ["segments_ref_id", sample, segment], "");
     const ref_seq = get(db, ["segments_ref_seq", sample, segment, position - 1], "");

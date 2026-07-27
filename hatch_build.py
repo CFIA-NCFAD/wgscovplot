@@ -10,7 +10,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class CustomBuildHook(BuildHookInterface):
-    def initialize(self, version: str, build_data: dict[str, Any]) -> None:  # noqa: ARG002
+    def initialize(self, _version, build_data: dict[str, Any]) -> None:
         logger.warning("CustomBuildHook: running 'npm run build' to compile wgscovplot.js")
         workdir = Path(self.root, "web")
         has_npm = has_software("npm")
@@ -22,17 +22,15 @@ class CustomBuildHook(BuildHookInterface):
                 "Please install 'npm' or 'bun' and try again."
             )
             raise RuntimeError(msg)
-        run(
-            f"{js_installer} install",
+        run(  # noqa: S603
+            [js_installer, "install"],
             cwd=str(workdir),
             check=True,
-            shell=True,  # noqa: S602
         )
-        run(
-            f"{js_installer} run build",
+        run(  # noqa: S603
+            [js_installer, "run", "build"],
             cwd=str(workdir),
             check=True,
-            shell=True,  # noqa: S602
         )
         build_data["artifacts"].append("web/build/wgscovplot.js")
         logger.warning("Done! 'wgscovplot.js' built!")

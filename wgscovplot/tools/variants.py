@@ -7,9 +7,10 @@ from collections import defaultdict
 from enum import Enum
 from operator import itemgetter
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Iterable, Union
 
 import pandas as pd
+from pandas.api.types import is_string_dtype
 from pydantic import BaseModel
 
 from wgscovplot.flu import SampleSegmentRef
@@ -52,10 +53,12 @@ variants_cols = [
     (
         "mutation",
         "Mutation",
-        'Mutation found in sample with format '
-        '"{reference allele}{reference position}{allele in sample}"'
-        ' with predicted amino acid change information in brackets with format '
-        '"{gene name}:{reference AA}{gene AA position}{AA change}"',
+        (
+            'Mutation found in sample with format '
+            '"{reference allele}{reference position}{allele in sample}"'
+            ' with predicted amino acid change information in brackets with format '
+            '"{gene name}:{reference AA}{gene AA position}{AA change}"'
+        ),
     ),
     ("POS", "Position", "1-based nucleotide position in reference sequence"),
     ("REF", "Reference Allele", "Nucleotide allele sequence found in reference sequence"),
@@ -84,16 +87,20 @@ variants_cols = [
     (
         "impact",
         "Variant Impact",
-        "SnpEff estimation of putative impact or deleteriousness of variant "
-        "(see https://pcingola.github.io/SnpEff/se_inputoutput/#ann-field-vcf-output-files)",
+        (
+            "SnpEff estimation of putative impact or deleteriousness of variant "
+            "(see https://pcingola.github.io/SnpEff/se_inputoutput/#ann-field-vcf-output-files)"
+        ),
     ),
     (
         "effect",
         "Variant Effect",
-        'Effect of variant annotated using Sequence Ontology terms, e.g.'
-        'for "missense_variant", see http://www.sequenceontology.org/browser/current_release/term/SO:0001583'
-        ' where the definition is "A sequence variant, that changes one or more bases, resulting in a '
-        'different amino acid sequence but where the length is preserved."',
+        (
+            'Effect of variant annotated using Sequence Ontology terms, e.g.'
+            'for "missense_variant", see http://www.sequenceontology.org/browser/current_release/term/SO:0001583'
+            ' where the definition is "A sequence variant, that changes one or more bases, resulting in a '
+            'different amino acid sequence but where the length is preserved."'
+        ),
     ),
     (
         "aa",
@@ -108,10 +115,12 @@ variant_summary_cols = [
     (
         "Mutation",
         "Mutation",
-        'Mutation found in sample with format '
-        '"{reference allele}{reference position}{allele in sample}"'
-        ' with predicted amino acid change information in brackets with format '
-        '"{gene name}:{reference AA}{gene AA position}{AA change}"',
+        (
+            'Mutation found in sample with format '
+            '"{reference allele}{reference position}{allele in sample}"'
+            ' with predicted amino acid change information in brackets with format '
+            '"{gene name}:{reference AA}{gene AA position}{AA change}"'
+        ),
     ),
     ("n_samples", "# of Samples", "Number of samples with the mutation."),
     ("samples", "Samples", 'List of samples with mutation delimited by semicolon (";")'),
@@ -148,14 +157,17 @@ class VariantCaller(Enum):
     Nanopolish = "nanopolish"
     Medaka = "medaka"
     clair3 = "clair3"
+    Bcftools = "bcftools"
 
 
 VCF_GLOB_PATTERNS = [
     "**/nanopolish/*.pass.vcf.gz",
     "**/ivar/*.vcf.gz",
+    "**/bcftools/*.vcf.gz",
     "**/*.filt.no_fs.vcf",
     "**/*.longshot.vcf",
     "**/*.vcf",
+    "**/*.vcf.gz",
 ]
 
 VCF_SAMPLE_NAME_CLEANUP = [
@@ -166,6 +178,8 @@ VCF_SAMPLE_NAME_CLEANUP = [
     re.compile(r"\.longshot"),
     re.compile(r"\.snpeff"),
     re.compile(r"\.no_fs"),
+    re.compile(r"\.merged"),
+    re.compile(r"\.filtered"),
     re.compile(r"\.topsegments.csv"),
 ]
 
@@ -186,10 +200,10 @@ SNPSIFT_SAMPLE_NAME_CLEANUP = [
 ]
 
 
-def vcf_selector(paths: list[Path]) -> Optional[Path]:
+def vcf_selector(paths: list[Path]) -> Path | None:
     xs = []
     for path in paths:
-        variant_caller, df = read_vcf(path)
+        _, df = read_vcf(path)
         xs.append((df.shape[0], path))
     xs.sort(reverse=True)
     try:
@@ -198,7 +212,7 @@ def vcf_selector(paths: list[Path]) -> Optional[Path]:
         return None
 
 
-def snpsift_selector(paths: list[Path]) -> Optional[Path]:
+def snpsift_selector(paths: list[Path]) -> Path | None:
     xs = []
     for path in paths:
         df = pd.read_table(path)
@@ -221,6 +235,8 @@ def read_vcf(vcf_file: Path) -> tuple[str, pd.DataFrame]:
                 variant_caller = line.strip().replace("##source=", "").lower()
             if line.startswith("##nanopolish"):
                 variant_caller = "nanopolish"
+            if line.startswith("##bcftools_callVersion"):
+                variant_caller = "bcftools"
             if line.startswith("##medaka_version"):
                 variant_caller = "medaka"
             if line.startswith("#CHROM"):
@@ -237,7 +253,7 @@ def read_vcf(vcf_file: Path) -> tuple[str, pd.DataFrame]:
 def parse_aa(gene: str, ref: str, alt: str, nt_pos: int, snpeff_aa: str, effect: str) -> str:
     if snpeff_aa == ".":
         return f"{ref}{nt_pos}{alt}"
-    m: Optional[re.Match[str]] = re.match(r"p\.([a-zA-Z]+)(\d+)([a-zA-Z]+)", snpeff_aa)
+    m: re.Match[str] | None = re.match(r"p\.([a-zA-Z]+)(\d+)([a-zA-Z]+)", snpeff_aa)
     if m is None and snpeff_aa.startswith("p."):
         aa_str = snpeff_aa[2:].upper()
         for aa3, aa1 in aa_codes.items():
@@ -278,7 +294,7 @@ def get_aa(s: str) -> str:
     return out
 
 
-def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> Optional[pd.DataFrame]:
+def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> pd.DataFrame | None:
     if df.empty:
         return None
     df = df[~df.duplicated(keep="first")]
@@ -313,7 +329,8 @@ def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> Optional[pd.DataFram
             else:
                 field_names.add(new_series_name)
             dfc = df[c]
-            if dfc.dtype == "object" and isinstance(dfc.values[0], str):
+            # This handles 'object' or 'string' dtypes across all Python versions and pandas versions
+            if is_string_dtype(dfc) and isinstance(dfc.values[0], str):
                 new_series = dfc.str.split(",", n=1, expand=True)[0]
             else:
                 new_series = dfc.astype("str")
@@ -340,8 +357,8 @@ def simplify_snpsift(df: pd.DataFrame, sample_name: str) -> Optional[pd.DataFram
 
 def parse_ivar_vcf(
     df: pd.DataFrame,
-    sample_name: Optional[str] = None,
-) -> Optional[pd.DataFrame]:
+    sample_name: str | None,
+) -> pd.DataFrame | None:
     if df.empty:
         return None
     if not sample_name:
@@ -356,12 +373,15 @@ def parse_ivar_vcf(
         # misleading for deletions
         # See iVar issue: https://github.com/andersen-lab/ivar/issues/86
         infos = parse_vcf_info(row.INFO)
-        total_dp = infos["DP"]
         ks = row.FORMAT.split(":")
         vs = row[-1].split(":")
         record: dict[str, Union[float, int, str]] = {k: try_parse_number(v) for k, v in zip(ks, vs)}
         ref_dp = int(record["REF_DP"])
         alt_dp = int(record["ALT_DP"])
+        total_dp = infos.get("DP", record.get("DP", None))
+        if total_dp is None:
+            msg = f'No DP INFO field or DP FORMAT field found for iVar VCF for sample "{sample_name}"'
+            raise ValueError(msg)
         # if the sum of the ref and alt dp does not equal the total dp reported by iVar then recalculate the ref dp
         # since it is likely only reporting the ref dp for the first base of a longer deletion. SNPs should be fine.
         sum_ref_alt_dp = ref_dp + alt_dp
@@ -384,9 +404,9 @@ def parse_ivar_vcf(
 
 
 def merge_vcf_snpsift(
-    df_vcf: Optional[pd.DataFrame],
-    df_snpsift: Optional[pd.DataFrame],
-) -> Optional[pd.DataFrame]:
+    df_vcf: pd.DataFrame | None,
+    df_snpsift: pd.DataFrame | None,
+) -> pd.DataFrame | None:
     if df_snpsift is None and df_vcf is None:
         return None
     if df_vcf is None and df_snpsift is not None:
@@ -403,8 +423,8 @@ def merge_vcf_snpsift(
 
 def parse_longshot_vcf(
     df: pd.DataFrame,
-    sample_name: Optional[str] = None,
-) -> Optional[pd.DataFrame]:
+    sample_name: str | None,
+) -> pd.DataFrame | None:
     if df.empty:
         return None
     if not sample_name:
@@ -432,9 +452,9 @@ def parse_longshot_vcf(
 
 def parse_medaka_vcf(
     df: pd.DataFrame,
-    sample_name: Optional[str] = None,
+    sample_name: str | None,
     min_coverage: int = 10,
-) -> Optional[pd.DataFrame]:
+) -> pd.DataFrame | None:
     if df.empty:
         return None
     if not sample_name:
@@ -474,8 +494,8 @@ def parse_medaka_vcf(
 
 def parse_nanopolish_vcf(
     df: pd.DataFrame,
-    sample_name: Optional[str] = None,
-) -> Optional[pd.DataFrame]:
+    sample_name: str | None,
+) -> pd.DataFrame | None:
     if df.empty:
         return None
     if not sample_name:
@@ -509,10 +529,45 @@ def parse_nanopolish_vcf(
     return df_merge.loc[:, cols_to_keep]
 
 
+def parse_bcftools_vcf(df: pd.DataFrame, sample_name: str | None) -> pd.DataFrame | None:
+    if df.empty:
+        return None
+    if not sample_name:
+        sample_name = df.columns[-1] if df.columns[-1] != "sample" else None
+        if sample_name is None:
+            err_msg = f"Sample name is not defined for VCF: shape={df.shape}; columns={df.columns}"
+            raise ValueError(err_msg)
+    pos_info_val = {}
+    for row in df.itertuples():
+        infos = parse_vcf_info(row.INFO)
+        allele_count = infos["AC"]
+        if allele_count > 1:
+            err_msg = (
+                f"Handling of allele count of {allele_count} is not supported. "
+                "Only allele counts of 1 are supported."
+            )
+            raise NotImplementedError(err_msg)
+        ref_dp, alt_dp = infos["AD"]
+        infos["REF_DP"] = ref_dp
+        infos["ALT_DP"] = alt_dp
+        pos_info_val[row.POS] = infos
+    df_bcftools_info = pd.DataFrame(pos_info_val).transpose()
+    df_bcftools_info.index.name = "POS"
+    df_bcftools_info.reset_index(inplace=True)
+    df_merge = pd.merge(df, df_bcftools_info, on="POS")
+    df_merge["sample"] = sample_name
+    df_merge = df_merge[df_merge.DP > 0]
+    df_merge["ALT_FREQ"] = df_merge.ALT_DP / df_merge.DP
+    cols_to_keep = list({col for col, _, _ in variants_cols} & set(df_merge.columns))
+    return df_merge.loc[:, cols_to_keep]
+
+
 def parse_vcf_info(s: str) -> dict:
     out = {}
     for x in s.split(";"):
         if not x:
+            continue
+        if "=" not in x:
             continue
         key, val_str = x.split("=", maxsplit=1)
         out[key] = try_parse_number(val_str)
@@ -522,12 +577,40 @@ def parse_vcf_info(s: str) -> dict:
 def parse_clair3_vcf(
     df: pd.DataFrame,
     sample: str,
-) -> Optional[pd.DataFrame]:
+) -> pd.DataFrame | None:
     if df.empty:
         return None
     df["Sample"] = sample
     df["ALT_FREQ"] = df["SAMPLE"].apply(lambda x: x.split(":")[-1])
     df.drop(columns=["ID", "INFO", "QUAL", "FILTER", "INFO", "FORMAT", "SAMPLE"], inplace=True)
+    df = df.reindex(columns=["Sample", "Segment", "Segment Length", "CHROM", "POS", "REF", "ALT", "ALT_FREQ"])
+    df.rename(columns={"CHROM": "REF_ID", "ALT": "ALT_SEQ", "REF": "REF_SEQ"}, inplace=True)
+    df = df.astype({"POS": int, "ALT_FREQ": float})
+    return df
+
+
+def parse_flu_bcftools_vcf(
+    df: pd.DataFrame,
+    sample: str,
+) -> pd.DataFrame | None:
+    if df.empty:
+        return None
+
+    # 1. Define standard VCF columns
+    vcf_standard_cols = {"CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"}
+    # 2. Get columns that are NOT standard VCF columns
+    sample_cols = [col for col in df.columns if col not in vcf_standard_cols]
+    if not sample_cols:
+        msg = f"No sample columns found in VCF. Columns: {list(df.columns)}"
+        raise ValueError(msg)
+
+    sample_col = sample_cols[0]  # unknow column name with Freebayes and SAMPLE columns with clair3
+
+    df["Sample"] = sample
+    df["ALT_FREQ"] = df[sample_col].apply(lambda x: x.split(":")[-1])
+
+    df.drop(columns=["ID", "INFO", "QUAL", "FILTER", "FORMAT", sample_col], inplace=True)
+
     df = df.reindex(columns=["Sample", "Segment", "Segment Length", "CHROM", "POS", "REF", "ALT", "ALT_FREQ"])
     df.rename(columns={"CHROM": "REF_ID", "ALT": "ALT_SEQ", "REF": "REF_SEQ"}, inplace=True)
     df = df.astype({"POS": int, "ALT_FREQ": float})
@@ -544,13 +627,13 @@ def get_nf_flu_variant_info(
         segment = items.segment
         ref_id = items.ref_id
         sample = items.sample
-        vcf_files = basedir.glob(f"**/variants/**/{sample}.Segment_{segment}.{ref_id}.no_frameshifts.vcf")
+        vcf_files = basedir.glob(f"**/variants/**/{sample}.Segment_{segment}.{ref_id}.bcftools_filt.vcf")
         ref_seq_len = 0
         if req_seq[sample][segment]:
             ref_seq_len = len(req_seq[sample][segment])
         for vcf_file in vcf_files:
-            variants_caller, df_vcf = read_vcf(vcf_file)
-            vcf_infos = parse_clair3_vcf(df_vcf, sample)
+            _, df_vcf = read_vcf(vcf_file)
+            vcf_infos = parse_flu_bcftools_vcf(df_vcf, sample)
             if vcf_infos is not None:
                 vcf_infos["Segment"] = segment
                 vcf_infos["Segment Length"] = ref_seq_len
@@ -575,6 +658,12 @@ def get_info(
             df_parsed_ivar_vcf = parse_ivar_vcf(df_vcf, sample)
             if df_parsed_ivar_vcf is not None:
                 sample_dfvcf[sample] = df_parsed_ivar_vcf
+            else:
+                logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
+        elif variant_caller.startswith(VariantCaller.Bcftools.value):
+            df_bcftools_vcf = parse_bcftools_vcf(df_vcf, sample)
+            if df_bcftools_vcf is not None:
+                sample_dfvcf[sample] = df_bcftools_vcf
             else:
                 logger.warning(f'Sample "{sample}" has no entries in VCF "{vcf_path}"')
         elif variant_caller.startswith(VariantCaller.Medaka.value):
@@ -687,7 +776,7 @@ def to_summary(df: pd.DataFrame) -> pd.DataFrame:
     logger.debug(f"df_vars columns: {df_vars.columns}")
     df_summary = df_vars.groupby("Mutation", sort=False).agg(
         n_samples=("Sample", "size"),
-        samples=("Sample", lambda x: "; ".join(x)),
+        samples=("Sample", "; ".join),
         gene=("Gene", "first"),
         effect=("Variant Effect", "first"),
         impact=("Variant Impact", "first"),

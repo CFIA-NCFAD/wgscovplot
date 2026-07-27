@@ -4,10 +4,11 @@ import re
 from collections import defaultdict
 from itertools import product
 from pathlib import Path
-from typing import Any, Callable, Iterable, Mapping, Optional, Union
+from typing import Any, Callable, Iterable, Mapping, Union
 
 import numpy as np
 import pandas as pd
+import pysam
 
 ListOfStrOrPattern = Union[list[str], list[re.Pattern[str]], list[Union[str, re.Pattern[str]]]]
 
@@ -35,8 +36,8 @@ NT_MAP = {
 def find_file_for_each_sample(
     basedir: Path,
     glob_patterns: list[str],
-    sample_name_cleanup: Optional[ListOfStrOrPattern] = None,
-    single_entry_selector_func: Optional[Callable] = None,
+    sample_name_cleanup: ListOfStrOrPattern | None = None,
+    single_entry_selector_func: Callable | None = None,
 ) -> Mapping[str, Path]:
     sample_files = defaultdict(list)
     for glob_pattern in glob_patterns:
@@ -60,7 +61,7 @@ def select_most_recent_file(files: list[Path]) -> Path:
 
 def extract_sample_name(
     filename: str,
-    remove: Optional[ListOfStrOrPattern] = None,
+    remove: ListOfStrOrPattern | None = None,
 ) -> str:
     if not remove:
         remove = [
@@ -98,7 +99,7 @@ def extract_sample_name(
 
 
 def get_col_widths(
-    df: pd.DataFrame, index: bool = False, offset: int = 2, max_width: Optional[int] = None, include_header: bool = True
+    df: pd.DataFrame, index: bool = False, offset: int = 2, max_width: int | None = None, include_header: bool = True
 ) -> Iterable[int]:
     """Calculate column widths based on column headers and contents"""
     if index:
@@ -154,7 +155,6 @@ def overlap(start1: int, end1: int, start2: int, end2: int) -> bool:
 
 
 def get_ref_name_bam(path: Path) -> str:
-    import pysam
 
     bam = pysam.AlignmentFile(path)
     logger.info(f"BAM: {bam}")

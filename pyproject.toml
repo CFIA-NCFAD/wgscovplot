@@ -7,7 +7,7 @@ name = "wgscovplot"
 dynamic = ["version"]
 description = "Create interactive comparative sequencing coverage plots from virus sequencing data."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "Apache-2.0"
 keywords = []
 authors = [
@@ -17,9 +17,10 @@ authors = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [
@@ -97,24 +98,24 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.9", "3.10", "3.11"]
+python = ["3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
     "black>=23.1.0",
     "mypy>=1.0.0",
-    "ruff>=0.0.243",
+    "ruff>=0.3.0",
 ]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --ignore-missing-imports --non-interactive {args:wgscovplot tests}"
 style = [
-    "ruff {args:.}",
+    "ruff check {args:.}",
     "black --check --diff {args:.}",
 ]
 fmt = [
     "black {args:.}",
-    "ruff --fix {args:.}",
+    "ruff check --fix {args:.}",
     "style",
 ]
 all = [
@@ -123,12 +124,12 @@ all = [
 ]
 
 [tool.black]
-target-version = ["py311"]
+target-version = ["py310"]
 line-length = 120
 skip-string-normalization = true
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py310"
 line-length = 120
 [tool.ruff.lint]
 select = [
@@ -180,6 +181,8 @@ ignore = [
     "UP035",
     # Ignore "B905 [*] `zip()` without an explicit `strict=` parameter"
     "B905",
+    #   Too many positional arguments
+    "PLR0917",
 ]
 unfixable = [
     # Don't touch unused imports

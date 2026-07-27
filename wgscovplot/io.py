@@ -2,7 +2,7 @@ import logging
 from collections import OrderedDict
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 from BCBio import GFF
 from Bio import Entrez, SeqIO
@@ -91,7 +91,7 @@ def parse_genbank(gb_handle_or_path: Union[Path, TextIOWrapper]) -> tuple[str, l
                     feature_name = seq_feature.id
             start_pos = int(seq_feature.location.start) + 1
             end_pos = int(seq_feature.location.end)
-            strand = int(seq_feature.strand)
+            strand = int(seq_feature.location.strand)
             features.append(Feature(start=start_pos, end=end_pos, strand=strand, name=feature_name))
     features.sort(key=lambda f: f.start)
     return seq, features
@@ -99,7 +99,7 @@ def parse_genbank(gb_handle_or_path: Union[Path, TextIOWrapper]) -> tuple[str, l
 
 def get_ref_seq_and_annotation(
     input_dir: Path,
-) -> tuple[Optional[str], Optional[list[Feature]]]:
+) -> tuple[str | None, list[Feature] | None]:
     try:
         ref_id = mosdepth.get_refseq_id(input_dir)
     except Exception as e:
@@ -120,7 +120,7 @@ def get_ref_seq_and_annotation(
     return ref_seq, gene_features
 
 
-def fetch_ref_seq_from_ncbi_entrez(ref_id: str) -> tuple[Optional[str], Optional[list[Feature]]]:
+def fetch_ref_seq_from_ncbi_entrez(ref_id: str) -> tuple[str | None, list[Feature] | None]:
     if not ref_id:
         logger.info("No ref seq ID provided. Cannot fetch seq from NCBI.")
         return None, None
@@ -136,7 +136,7 @@ def read_first_seq_from_fasta(fasta_path: Path) -> str:
     return ""
 
 
-def find_ref_fasta(input_dir: Path, refseq_id: str) -> Optional[Path]:
+def find_ref_fasta(input_dir: Path, refseq_id: str) -> Path | None:
     for path in input_dir.rglob(REF_FASTA_GLOB_PATTERN):
         with open(path) as fh:
             for line in fh:
@@ -153,7 +153,7 @@ def find_ref_fasta(input_dir: Path, refseq_id: str) -> Optional[Path]:
     return None
 
 
-def find_ref_gff(input_dir: Path, refseq_id: str) -> Optional[Path]:
+def find_ref_gff(input_dir: Path, refseq_id: str) -> Path | None:
     gff_paths = list(input_dir.rglob(GFF_GLOB_PATTERN))
     for gff_path in gff_paths:
         with open(gff_path) as fh:
@@ -168,7 +168,7 @@ def find_ref_gff(input_dir: Path, refseq_id: str) -> Optional[Path]:
     return None
 
 
-def get_refseq_id_from_bam(input_dir: Path) -> Optional[str]:
+def get_refseq_id_from_bam(input_dir: Path) -> str | None:
     try:
         bam_path = next(input_dir.rglob("*.bam"))
         return get_ref_name_bam(bam_path) if bam_path else None

@@ -3,10 +3,10 @@
 import logging
 from pathlib import Path
 from sys import version_info
-from typing import Optional
 
 import typer
 from rich.logging import RichHandler
+from rich.traceback import install
 
 from wgscovplot.__about__ import __version__
 from wgscovplot.wgscovplot import run
@@ -60,7 +60,7 @@ def main(
     force: bool = typer.Option(
         False, "-f", "--force", is_flag=True, show_default=False, help="Force overwrite of existing output files"
     ),
-    version: Optional[bool] = typer.Option(  # noqa: ARG001
+    version: bool | None = typer.Option(  # noqa: ARG001
         None, callback=version_callback, help=f'Print {"wgscovplot version"} and exit'
     ),
 ):
@@ -76,7 +76,6 @@ def main(
 
 
 def init_logging(verbose):
-    from rich.traceback import install
 
     install(show_locals=True)
     logging.basicConfig(

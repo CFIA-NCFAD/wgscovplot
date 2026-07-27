@@ -1,5 +1,12 @@
 # History
 
+## 1.0.3 (2026-04-30)
+
+- Update package dependencies
+- Fix issue: for KeyError DP when parsing VCF files with no DP INFO field (viral recon moves DP to FORMAT field)
+- Fix parsing strand in genbank file with Biopython 1.80 or newer
+- Fix issue: handles object or string dtypes across all Python versions and pandas versions in simplify_snpsift function
+
 ## 1.0.2 (2024-04-27)
 
 This patch release fixes an issue with not capturing an EmptyDataError when reading VCF files and an issue where Clair3 

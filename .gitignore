@@ -72,6 +72,9 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Test file
+wgscovplot.html
+
 # pyenv
 .python-version
 

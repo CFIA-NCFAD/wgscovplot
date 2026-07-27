@@ -62,7 +62,7 @@ function getMutationMatrix(db: WgsCovPlotDB) {
       altFreqMatrix.push([
         j,
         db.chartOptions.selectedSamples.length - 1 - i,
-        !isNil(foundObj) ? foundObj.ALT_FREQ : 0
+        !isNil(foundObj) ? (!isNil(foundObj.ALT_FREQ) ? foundObj.ALT_FREQ : 0) : 0
       ]);
     }
   }
@@ -94,6 +94,7 @@ export function getVariantHeatmapOption(db: WgsCovPlotDB) {
   // eslint-disable-next-line
   const [mutations, matrix]: any[][] = getMutationMatrix(db);
   const dataSamples = [...db.chartOptions.selectedSamples].reverse();
+  console.log("matrix", matrix);
   return {
     xAxis: {
       type: "category",

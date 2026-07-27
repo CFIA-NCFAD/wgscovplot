@@ -58,7 +58,7 @@ def build_db(
     region_amplicon_data = mosdepth.get_region_amplicon(input_dir)
     if not (amplicon_depths and region_amplicon_data):
         logging.warning(f'No Mosdepth region BED file with amplicon data found in "{input_dir}"')
-    echarts_features = build_echarts_features_array(gene_features, region_amplicon_data)
+    echarts_features = build_echarts_features_array(gene_features, region_amplicon_data, None)
     # Get the list of samples name
     samples = mosdepth.get_samples_name(input_dir, is_genome_segmented=False)
     # Get coverage statistics information for all samples

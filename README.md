@@ -86,12 +86,12 @@ Show help info with `$ wgscovplot --help`:
 │ --help                                                                                 Show this message and exit.                                                                                                                           │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
- wgscovplot version 0.3.0; Python 3.11.6
+ wgscovplot version 1.0.3; Python 3.11.15
 ```
 
 ## Dependencies
 
-- [Python](https://www.python.org/) (>=3.9)
+- [Python](https://www.python.org/) (>=3.10)
     - [BioPython](https://github.com/biopython/biopython/) for all things bioinformatics
     - [rich](https://rich.readthedocs.io/) for pretty terminal output
     - [typer](https://github.com/tiangolo/typer) for CLI

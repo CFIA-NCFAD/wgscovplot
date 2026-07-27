@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import pysam
 from pydantic import BaseModel
 
 from wgscovplot.colors import AmpliconColour
@@ -240,7 +241,7 @@ def get_info(
 
 
 def get_base64_encoded_depth_arrays(
-    sample_depths: Union[dict[str, np.ndarray], dict[str, dict[str, np.ndarray]]]
+    sample_depths: Union[dict[str, np.ndarray], dict[str, dict[str, np.ndarray]]],
 ) -> Union[dict[str, str], dict[str, dict[str, str]]]:
     """Encode depth arrays as base64 strings
 
@@ -299,7 +300,6 @@ def parse_bam_depths(bam_path: Path) -> np.ndarray:
     Returns:
         Coverage depths
     """
-    import pysam
 
     bam = pysam.AlignmentFile(bam_path)
     reference_name = bam.references[0]

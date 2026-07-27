@@ -9,6 +9,7 @@ export default defineConfig({
         cssInjectedByJsPlugin({topExecutionPriority: false}),
     ],
     define: {
+        'process.env.NODE_ENV': JSON.stringify('production'),
         'process.env': {}
     },
     build: {
