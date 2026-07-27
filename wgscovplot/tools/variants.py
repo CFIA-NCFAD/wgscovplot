@@ -53,10 +53,12 @@ variants_cols = [
     (
         "mutation",
         "Mutation",
-        'Mutation found in sample with format '
-        '"{reference allele}{reference position}{allele in sample}"'
-        ' with predicted amino acid change information in brackets with format '
-        '"{gene name}:{reference AA}{gene AA position}{AA change}"',
+        (
+            'Mutation found in sample with format '
+            '"{reference allele}{reference position}{allele in sample}"'
+            ' with predicted amino acid change information in brackets with format '
+            '"{gene name}:{reference AA}{gene AA position}{AA change}"'
+        ),
     ),
     ("POS", "Position", "1-based nucleotide position in reference sequence"),
     ("REF", "Reference Allele", "Nucleotide allele sequence found in reference sequence"),
@@ -85,16 +87,20 @@ variants_cols = [
     (
         "impact",
         "Variant Impact",
-        "SnpEff estimation of putative impact or deleteriousness of variant "
-        "(see https://pcingola.github.io/SnpEff/se_inputoutput/#ann-field-vcf-output-files)",
+        (
+            "SnpEff estimation of putative impact or deleteriousness of variant "
+            "(see https://pcingola.github.io/SnpEff/se_inputoutput/#ann-field-vcf-output-files)"
+        ),
     ),
     (
         "effect",
         "Variant Effect",
-        'Effect of variant annotated using Sequence Ontology terms, e.g.'
-        'for "missense_variant", see http://www.sequenceontology.org/browser/current_release/term/SO:0001583'
-        ' where the definition is "A sequence variant, that changes one or more bases, resulting in a '
-        'different amino acid sequence but where the length is preserved."',
+        (
+            'Effect of variant annotated using Sequence Ontology terms, e.g.'
+            'for "missense_variant", see http://www.sequenceontology.org/browser/current_release/term/SO:0001583'
+            ' where the definition is "A sequence variant, that changes one or more bases, resulting in a '
+            'different amino acid sequence but where the length is preserved."'
+        ),
     ),
     (
         "aa",
@@ -109,10 +115,12 @@ variant_summary_cols = [
     (
         "Mutation",
         "Mutation",
-        'Mutation found in sample with format '
-        '"{reference allele}{reference position}{allele in sample}"'
-        ' with predicted amino acid change information in brackets with format '
-        '"{gene name}:{reference AA}{gene AA position}{AA change}"',
+        (
+            'Mutation found in sample with format '
+            '"{reference allele}{reference position}{allele in sample}"'
+            ' with predicted amino acid change information in brackets with format '
+            '"{gene name}:{reference AA}{gene AA position}{AA change}"'
+        ),
     ),
     ("n_samples", "# of Samples", "Number of samples with the mutation."),
     ("samples", "Samples", 'List of samples with mutation delimited by semicolon (";")'),
@@ -590,13 +598,13 @@ def parse_flu_bcftools_vcf(
 
     # 1. Define standard VCF columns
     vcf_standard_cols = {"CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"}
-    print (df.columns)
     # 2. Get columns that are NOT standard VCF columns
     sample_cols = [col for col in df.columns if col not in vcf_standard_cols]
     if not sample_cols:
-        raise ValueError(f"No sample columns found in VCF. Columns: {list(df.columns)}")
+        msg = f"No sample columns found in VCF. Columns: {list(df.columns)}"
+        raise ValueError(msg)
 
-    sample_col = sample_cols[0]  # Take the first (or only) sample column: unknow column name with Freebayes and SAMPLE columns with clair3
+    sample_col = sample_cols[0]  # unknow column name with Freebayes and SAMPLE columns with clair3
 
     df["Sample"] = sample
     df["ALT_FREQ"] = df[sample_col].apply(lambda x: x.split(":")[-1])

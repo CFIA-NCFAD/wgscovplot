@@ -181,6 +181,8 @@ ignore = [
     "UP035",
     # Ignore "B905 [*] `zip()` without an explicit `strict=` parameter"
     "B905",
+    #   Too many positional arguments
+    "PLR0917",
 ]
 unfixable = [
     # Don't touch unused imports
