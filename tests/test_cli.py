@@ -65,4 +65,3 @@ def test_cli_segment_virus():
         )
         assert test_result.exit_code == 0
         assert exists(out_html)
-
